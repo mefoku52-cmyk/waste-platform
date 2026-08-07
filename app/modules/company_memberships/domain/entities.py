@@ -8,16 +8,16 @@ from app.shared.domain.exceptions import ValidationDomainError
 from app.shared.domain.status_transition import ensure_transition
 
 
-@dataclass(slots=True)
+@dataclass(slots=True, kw_only=True)
 class CompanyMembership(AuditFields):
     status: CompanyMembershipStatus
     company_id: UUID
     user_id: UUID
     membership_role: CompanyMembershipRole
     is_primary_contact: bool
-    invited_at: datetime | None
-    joined_at: datetime | None
-    left_at: datetime | None
+    invited_at: datetime | None = None
+    joined_at: datetime | None = None
+    left_at: datetime | None = None
 
     def validate(self) -> None:
         if not self.company_id:

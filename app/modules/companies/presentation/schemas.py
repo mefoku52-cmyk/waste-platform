@@ -1,29 +1,26 @@
 from datetime import datetime
 from uuid import UUID
-
 from pydantic import BaseModel, HttpUrl
-
 
 class CompanyCreateRequest(BaseModel):
     legalName: str
-    tradingName: str | None = None
     registrationNumber: str
-    taxIdentifier: str | None = None
     companyType: str
-    email: str | None = None
-    phone: str | None = None
-    websiteUrl: HttpUrl | None = None
     countryCode: str
     addressLine1: str
-    addressLine2: str | None = None
     city: str
     postalCode: str
-    latitude: float | None = None
-    longitude: float | None = None
     sellerCapability: bool
     buyerCapability: bool
     logisticsCapability: bool
-
+    tradingName: str | None = None
+    taxIdentifier: str | None = None
+    email: str | None = None
+    phone: str | None = None
+    websiteUrl: HttpUrl | None = None
+    addressLine2: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
 
 class CompanyUpdateRequest(BaseModel):
     legalName: str | None = None
@@ -38,7 +35,6 @@ class CompanyUpdateRequest(BaseModel):
     postalCode: str | None = None
     latitude: float | None = None
     longitude: float | None = None
-
 
 class CompanyData(BaseModel):
     id: UUID
@@ -73,16 +69,13 @@ class CompanyData(BaseModel):
     updatedAt: datetime
     updatedByUserId: UUID | None
 
-
 class CompanyResponse(BaseModel):
     data: CompanyData
-
 
 class PaginationMeta(BaseModel):
     page: int
     pageSize: int
     total: int
-
 
 class PaginatedCompaniesResponse(BaseModel):
     items: list[CompanyData]
