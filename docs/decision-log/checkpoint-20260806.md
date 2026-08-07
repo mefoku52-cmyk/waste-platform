@@ -104,3 +104,21 @@ PORADIE PRI NAVRATE (nemenit bez noveho dovodu):
 3. Rozhodnutie o backend/ (potrebuje pouzivatelov kontext)
 4. Kontrola obsahu 7 novo-existujucich modulov (prazdne kostry vs realna logika)
 5. Oprava typovej anotacie v auth_dependencies.py (nizka priorita, rychla oprava)
+
+---
+
+## KRITICKE ROZHODNUTIE — 2026-08-08 — navrat k app/ + apps/web/
+
+Zistene: docker-compose.yml (od prveho commitu, zmenene paralelnou reláciou) ukazoval
+na backend/ + frontend/. Po hlbkovom vysetreni (KROK 36-50):
+- frontend/ je prazdny skelet (0 .ts/.tsx suborov)
+- backend/ ma funkcne modely a config, ale CHYBA CELA API vrstva (auth/companies/
+  listings/users/websocket router moduly neexistuju, iba health.py)
+- Viacero infrastrukturnych chyb postupne opravenych (SQLAlchemy verzia, DB driver,
+  logging/metrics/security modulovy konflikt), ale zakladny problem (chybajuca logika)
+  ostava.
+
+ROZHODNUTIE: docker-compose.yml sa vracia na povodny cielsofer (context: ./app,
+context: ./apps/web) - jediny funkcny, kompletne otestovany par. backend/ a frontend/
+ostavaju v git historii nedotknute, NEMAZANE, pre pripadne buduce vyuzitie
+(napr. ako referencia pre style/konvencie), ale nie su aktivny nasadzovaci ciel.

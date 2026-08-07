@@ -1,0 +1,145 @@
+version: '3.8'
+services:
+  postgres:
+    container_name: recyclehub-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cmep}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cmep}
+      POSTGRES_DB: ${POSTGRES_DB:-cmep}
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    - ./docker/postgres/backups:/backups
+    ports:
+    - 5432:5432
+    healthcheck:
+      test:
+      - CMD-SHELL
+      - pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+    - recyclehub-network
+    restart: unless-stopped
+    image: postgres:16-alpine
+  redis:
+    container_name: recyclehub-redis
+    volumes:
+    - redis_data:/data
+    - ./docker/redis/conf:/usr/local/etc/redis
+    ports:
+    - 6379:6379
+    healthcheck:
+      test:
+      - CMD
+      - redis-cli
+      - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+    - recyclehub-network
+    restart: unless-stopped
+    image: redis:7-alpine
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    container_name: recyclehub-backend
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-recyclehub}:${POSTGRES_PASSWORD:-recyclehub}@postgres:5432/${POSTGRES_DB:-recyclehub}
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: ${SECRET_KEY:-supersecretkey}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
+      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    volumes:
+    - ./backend:/app
+    - /app/__pycache__
+    ports:
+    - 8000:8000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/health
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+    - recyclehub-network
+    restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    container_name: recyclehub-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
+    volumes:
+    - ./frontend:/app
+    - /app/node_modules
+    - /app/.next
+    ports:
+    - 3000:3000
+    depends_on:
+    - backend
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:3000
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+    - recyclehub-network
+    restart: unless-stopped
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: recyclehub-nginx
+    volumes:
+    - ./docker/nginx/conf.d:/etc/nginx/conf.d
+    - ./docker/nginx/ssl:/etc/nginx/ssl
+    - ./docker/nginx/logs:/var/log/nginx
+    ports:
+    - 80:80
+    - 443:443
+    depends_on:
+    - frontend
+    - backend
+    healthcheck:
+      test:
+      - CMD
+      - wget
+      - --quiet
+      - --tries=1
+      - --spider
+      - http://localhost/health
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    networks:
+    - recyclehub-network
+    restart: unless-stopped
+volumes:
+  postgres_data: null
+  redis_data: null
+  prometheus_data: null
+  grafana_data: null
+networks:
+  recyclehub-network:
+    driver: bridge
