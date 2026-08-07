@@ -60,3 +60,47 @@ lepsie riesenie implementuj ho") — ZAMIETNUTE v tejto konverzacii, lebo:
 - "implementuj lepsie riesenie" = domnienka, priamy rozpor so zakladnym pravidlom projektu
 - velky rozsah v jednom behu nie je overitelny v rozumnom case
 Pouzivatel súhlasil pokracovat v povodnom overenom tempe (jeden modul/subor za krokom).
+
+---
+
+## Update — koniec relacie 2026-08-06, pred 12h pauzou
+
+STAV GIT: prvy commit vytvoreny (46fbc54), 480 suborov. Bezpecny bod navratu.
+Pri akomkolvek podozreni na poskodenie: git status, prip. git reset --hard 46fbc54
+
+STAV app/modules/: VSETKYCH 11 modulov teraz FYZICKY EXISTUJE (predtym 7 chybalo).
+Vytvoril ich pravdepodobne create-missing-files.sh, beh nezaznamenany v tejto konverzacii.
+NEOVERENE: ci maju realny obsah/logiku, alebo len prazdne kostry. DALSI KROK po navrate:
+kontrola velkosti/obsahu suborov v novych moduloch (napr. wc -l app/modules/listings/**/*.py).
+
+STAV requirements.txt: napisany (app/requirements.txt), zalozeny na overenych importoch.
+Vysledok pip install + import test v izolovanom venv NEBOL DOTIAHNUTY DO KONCA
+(vystup sa v konverzacii prerusil). DALSI KROK: zopakovat cast 6 z full_diagnosis.sh
+samostatne, poslat cely vystup.
+
+STAV backend/ vs app/: docker-compose pouziva vylucne app/ (context: ./app).
+backend/ ma VLASTNY requirements.txt, pyproject.toml, Alembic, a CIASTOCNY prekryv
+s chybajucimi modulmi (listings: 6 vyskytov najdenych, inquiries: 0). Zvysok modulov
+(documents/compliance/notifications/analytics/admin) v backend/ NEBOL preverenty
+(skript sa prerusil). ROZHODNUTIE O OSUDE backend/ (zmazat/zlucit/ignorovat) STALE
+NEBOLO PRIJATE — vyzaduje pouzivatelov kontext, ktory zatial neprisiel.
+
+STAV auth na /metrics: STALE NEZNAME. Grok review auth_dependencies.py + main.py
+nasiel len typovu anotacnu chybu (credentials: HTTPAuthorizationCredentials malo byt
+| None) — FUNKCNE bezpecne (kod to osetruje), ale netykalo sa povodnej otazky.
+DALSI KROK: precitat app/shared/presentation/api_router.py priamo, zistit ci a ako
+je metrics router mountnuty a ci ma auth dependency.
+
+FORENSICSUITE JSON AUDITY (3 uploadnute subory): security/architecture "80.0"/"40.0"
+boli FALOSNY POPLACH sposobeny skenovanim obsahu backend_test_env (venv) vratane
+kniznice pip samotnej. V REALNOM kode (app/) sa nenasla ANI JEDNA bezpecnostna/
+architektonicka chyba tymto nastrojom. Jediny realny cyklicky import mimo venv:
+backend/app/core/logging.py (self-import cez setuptools/logging.py) — izolovana,
+nizka zavaznost.
+
+PORADIE PRI NAVRATE (nemenit bez noveho dovodu):
+1. cat app/shared/presentation/api_router.py — vyriesi otazku auth na /metrics
+2. Dokoncit pip install test (cast 6 z full_diagnosis.sh)
+3. Rozhodnutie o backend/ (potrebuje pouzivatelov kontext)
+4. Kontrola obsahu 7 novo-existujucich modulov (prazdne kostry vs realna logika)
+5. Oprava typovej anotacie v auth_dependencies.py (nizka priorita, rychla oprava)
