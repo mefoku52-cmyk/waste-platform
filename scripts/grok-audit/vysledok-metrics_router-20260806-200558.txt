@@ -1,0 +1,78 @@
+## Forenzný review
+
+### Zistenie 1
+SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/metrics_router.py  
+STAV: FAIL  
+ISTOTA: OVERENE (vidim to priamo vo vstupe)  
+POPIS: Telo funkcie `metrics()` nie je odsadené. Riadok `return Response(...)` je na rovnakej úrovni odsadenia ako `async def metrics() -> Response:`. V Pythone ide o `IndentationError`; modul nejde naimportovať ani spustiť.  
+NAVRH OPRAVY:
+```python
+@router.get("/metrics")
+async def metrics() -> Response:
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+```
+
+### Zistenie 2
+SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/metrics_router.py  
+STAV: WARN  
+ISTOTA: OVERENE (vidim to priamo vo vstupe)  
+POPIS: Endpoint `GET /metrics` je definovaný bez akejkoľvek autentifikácie, autorizácie ani sieťového obmedzenia v tomto routeri. Exponuje Prometheus metriky (`generate_latest()` z default registry) vrátane počtov requestov, auth zlyhaní a rate-limit udalostí.  
+NAVRH OPRAVY: Chrániť endpoint podľa deployment modelu, napr.:
+- nepublikovať `/metrics` na public ingress a viazať ho len na internal/ops sieť, alebo
+- pridať explicitnú auth dependency na router/endpoint (napr. shared secret / mTLS / allowlist), napr. smerom:
+```python
+@router.get("/metrics", dependencies=[Depends(require_metrics_access)])
+async def metrics() -> Response:
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+```
+Konkrétny mechanizmus musí sedieť so zvyškom CMEP auth stacku (ten v tomto vstupe nie je).
+
+### Zistenie 3
+SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/metrics_router.py  
+STAV: WARN  
+ISTOTA: OVERENE (vidim to priamo vo vstupe)  
+POPIS: Argumenty volaní `Counter(...)` / `Histogram(...)` sú na stĺpci 0 (žiadne odsadenie vo vnútri závesných zátvoriek). Syntakticky to Python akceptuje kvôli implicitnému riadkovému pokračovaniu v `()`, ale ide o krehký štýl a pri miešaní s povinným odsadením tiel funkcií zvyšuje riziko ďalších `IndentationError`.  
+NAVRH OPRAVY:
+```python
+HTTP_REQUESTS_TOTAL = Counter(
+    "app_http_requests_total",
+    "Total HTTP requests",
+    ["method", "route", "status_code"],
+)
+
+HTTP_REQUEST_DURATION_SECONDS = Histogram(
+    "app_http_request_duration_seconds",
+    "HTTP request duration in seconds",
+    ["method", "route", "status_code"],
+    buckets=(0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0),
+)
+
+AUTH_FAILURES_TOTAL = Counter(
+    "app_auth_failures_total",
+    "Authentication failures total",
+)
+
+RATE_LIMIT_EXCEEDED_TOTAL = Counter(
+    "app_rate_limit_exceeded_total",
+    "Rate limit exceeded total",
+    ["route"],
+)
+```
+
+### Zistenie 4
+SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/metrics_router.py  
+STAV: PASS  
+ISTOTA: OVERENE (vidim to priamo vo vstupe)  
+POPIS: Importy (`APIRouter`, `Response`, `CONTENT_TYPE_LATEST`, `Counter`, `Histogram`, `generate_latest`) sedía s použitím. Názvy metrík, label sety a `buckets` u histogramu sú konzistentne deklarované. `Response(..., media_type=CONTENT_TYPE_LATEST)` je korektný spôsob exportu Prometheus text formátu.  
+NAVRH OPRAVY: (žiadny)
+
+---
+
+## NEOVERENE položky (tento beh nepokryl)
+- Či je `router` z tohto súboru skutočne mountnutý do FastAPI aplikácie (chýba main/app wiring).
+- Či sa `HTTP_REQUESTS_TOTAL`, `HTTP_REQUEST_DURATION_SECONDS`, `AUTH_FAILURES_TOTAL`, `RATE_LIMIT_EXCEEDED_TOTAL` niekde inkrementujú/observujú (middleware / auth / rate-limit kód nie je vo vstupe).
+- Či default Prometheus registry nie je duplicitne registrovaná pri viacnásobnom importe / testoch.
+- Či má byť `/metrics` verejný podľa infra/security politiky projektu (ingress, NetworkPolicy, auth middleware).
+- Skutočné whitespace znaky v súbore na disku — review berie presne text dodaný vo vstupe; ak transport odsadenie zmazal, treba re-dodanie súboru s zachovanými medzerami/tabmi.
+
+**Blokujúce:** Zistenie 1 (`IndentationError`) — súbor v dodanej podobe nie je validný Python.

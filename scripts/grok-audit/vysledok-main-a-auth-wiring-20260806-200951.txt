@@ -1,0 +1,73 @@
+## Review
+
+===SUBOR: /data/data/com.termux/files/home/waste-platform/app/main.py===
+STAV: PASS  
+ISTOTA: OVERENE  
+POPIS: Subor je syntakticky platny. Vytvara FastAPI app s title/version, registruje exception handlery a pripojuje api_router. Ziadna logika navyse, ziadny evidentny defekt v tomto subore.  
+NAVRH OPRAVY: (netreba)
+
+---
+
+===SUBOR: /data/data/com.termux/files/home/waste-platform/app/main.py===
+STAV: WARN  
+ISTOTA: NEOVERENE  
+POPIS: Importy `app.shared.presentation.api_router.api_router` a `app.shared.presentation.exception_handlers.register_exception_handlers` nie je mozne overit – obsah tychto suborov nie je vo vstupe. Funkcnost app startupu od nich priamo zavisi.  
+NAVRH OPRAVY: (nepisem – treba dodatinhal subory na overenie)
+
+---
+
+===SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/auth_dependencies.py===
+STAV: FAIL  
+ISTOTA: OVERENE  
+POPIS: Typova anotacia parametra `credentials` je `HTTPAuthorizationCredentials`, ale `HTTPBearer(auto_error=False)` vracia aj `None`. Kod to sam osetruje cez `if credentials is None`, cize runtime to pocita s None, anotacia je nespravna (`Optional` / `| None` chyba).  
+NAVRH OPRAVY:
+```python
+async def require_current_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    service: GetCurrentAuthContextService = Depends(get_auth_service),
+) -> CurrentUserResponse:
+```
+
+---
+
+===SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/auth_dependencies.py===
+STAV: WARN  
+ISTOTA: OVERENE  
+POPIS: Import `UnauthorizedDomainError` je vnutri tela funkcie (inline import), nie na urovni modulu. Ostatne importy su na vrchu. Funkcne to funguje, ale porusuje konzistenciu a oneskoruje odhalenie ImportError az na prve volanie vetvy bez credentials.  
+NAVRH OPRAVY:
+```python
+from app.shared.domain.exceptions import UnauthorizedDomainError
+# + na vrchu suboru s ostatnymi importmi; odobrat inline import vo funkcii
+```
+
+---
+
+===SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/auth_dependencies.py===
+STAV: WARN  
+ISTOTA: OVERENE  
+POPIS: Po prejdeni `if credentials is None` sa vola `service.execute(credentials.credentials)` bez kontroly, ci je token neprazdny retazec. `HTTPBearer(auto_error=False)` pri chybnom/ prazdnom vstupe moze v niektorych pripadoch dodat objekt s prazdnym `credentials`; tato vrstva to nefiltruje.  
+NAVRH OPRAVY:
+```python
+if credentials is None or not credentials.credentials:
+    raise UnauthorizedDomainError("Authentication required")
+return await service.execute(credentials.credentials)
+```
+
+---
+
+===SUBOR: /data/data/com.termux/files/home/waste-platform/app/shared/presentation/auth_dependencies.py===
+STAV: WARN  
+ISTOTA: NEOVERENE  
+POPIS: Nie je overene, ci `GetCurrentAuthContextService.execute` skutocne vracia `CurrentUserResponse`, ci `get_auth_service` je korektna FastAPI dependency, ani ci `UnauthorizedDomainError` existuje a ci ju `register_exception_handlers` mapuje na HTTP 401. Tieto symboly su len importovane; ich definicie nie su vo vstupe.  
+NAVRH OPRAVY: (nepisem – treba dodatinhal subory na overenie)
+
+---
+
+## NEOVERENE (tento beh nepokryl)
+
+1. `/data/data/com.termux/files/home/waste-platform/app/shared/presentation/api_router.py` – existencia a obsah `api_router`
+2. `/data/data/com.termux/files/home/waste-platform/app/shared/presentation/exception_handlers.py` – existencia a spravanie `register_exception_handlers`, mapovanie `UnauthorizedDomainError` → HTTP status
+3. `/data/data/com.termux/files/home/waste-platform/app/modules/auth/application/services.py` – `GetCurrentAuthContextService` a navratovy typ `execute`
+4. `/data/data/com.termux/files/home/waste-platform/app/modules/auth/presentation/dependencies.py` – `get_auth_service`
+5. `/data/data/com.termux/files/home/waste-platform/app/modules/auth/presentation/schemas.py` – `CurrentUserResponse`
+6. `/data/data/com.termux/files/home/waste-platform/app/shared/domain/exceptions.py` – `UnauthorizedDomainError`

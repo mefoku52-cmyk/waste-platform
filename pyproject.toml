@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waste-platform"
+version = "0.1.0"
+description = "Platform for circular materials exchange"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlalchemy",
+    "aiosqlite",
+    "alembic",
+    "PyJWT",
+    "passlib",
+    "python-multipart",
+    "python-dotenv",
+]
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "httpx"]

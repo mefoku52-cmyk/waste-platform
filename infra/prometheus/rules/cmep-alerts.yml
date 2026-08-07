@@ -1,0 +1,11 @@
+groups:
+  - name: cmep-platform-alerts
+    rules:
+      - alert: ApiDown
+        expr: up{job="api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API is down"
+          description: "FastAPI metrics endpoint has been unreachable for more than 2 minutes."
