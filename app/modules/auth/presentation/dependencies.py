@@ -10,7 +10,7 @@ from app.modules.auth.application.services import (
 )
 from app.shared.infrastructure.security.jwt_service import JwtService
 from app.shared.infrastructure.security.jwt_revocation_store import get_revocation_store
-from app.shared.infrastructure.database import get_db_session
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.domain.ports.clock import SystemClock
 from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
 
