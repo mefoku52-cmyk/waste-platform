@@ -13,6 +13,9 @@ from app.modules.inquiries.presentation.router import router as inquiries_router
 from app.modules.listings.presentation.router import router as listings_router
 from app.modules.notifications.presentation.router import router as notifications_router
 
+from app.shared.presentation.health_router import router as health_router
+from app.shared.presentation.metrics_router import router as metrics_router
+
 
 api_router = APIRouter()
 
@@ -29,3 +32,6 @@ api_router.include_router(documents_router)
 api_router.include_router(inquiries_router)
 api_router.include_router(listings_router)
 api_router.include_router(notifications_router)
+
+api_router.include_router(health_router)
+api_router.include_router(metrics_router)

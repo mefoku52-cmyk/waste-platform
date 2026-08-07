@@ -1,5 +1,4 @@
 import logging
-import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +8,7 @@ from app.shared.presentation.api_router import api_router
 from app.shared.presentation.exception_handlers import register_exception_handlers
 from app.shared.presentation.health_router import router as health_router
 from app.shared.presentation.metrics_router import router as metrics_router
-
+from app.core.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 
 logging.basicConfig(
-    level=getattr(logging, os.getenv("APP_LOG_LEVEL", "INFO").upper(), logging.INFO),
+    level=getattr(logging, settings.log_level.upper(), logging.INFO),
     format="%(asctime)s %(levelname)s %(name)s %(message)s",
 )
 
@@ -33,7 +32,7 @@ app = FastAPI(
 
 cors_origins = [
     item.strip() 
-    for item in os.getenv("CORS_ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:8000").split(",") 
+    for item in settings.cors.allowed_origins 
     if item.strip()
 ]
 

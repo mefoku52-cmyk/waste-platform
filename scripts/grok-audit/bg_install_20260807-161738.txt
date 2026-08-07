@@ -1,0 +1,104 @@
+nohup: ignoring input
+Requirement already satisfied: pip in ./scripts/grok-audit/test-venv/lib/python3.14/site-packages (26.1.2)
+Collecting pip
+  Using cached pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+Using cached pip-26.2.1-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 26.1.2
+    Uninstalling pip-26.1.2:
+      Successfully uninstalled pip-26.1.2
+Successfully installed pip-26.2.1
+Collecting fastapi<1.0,>=0.110 (from -r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 1))
+  Using cached fastapi-0.141.1-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn<1.0,>=0.29 (from uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached uvicorn-0.52.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting pydantic<3,>=2 (from -r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 3))
+  Using cached pydantic-2.13.4-py3-none-any.whl.metadata (109 kB)
+Collecting sqlalchemy<3.0,>=2.0 (from -r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 4))
+  Using cached sqlalchemy-2.0.51-py3-none-any.whl.metadata (9.5 kB)
+Collecting asyncpg<1.0,>=0.29 (from -r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 5))
+  Using cached asyncpg-0.31.0.tar.gz (993 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting PyJWT<3.0,>=2.8 (from -r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 6))
+  Using cached pyjwt-2.13.0-py3-none-any.whl.metadata (3.4 kB)
+Collecting passlib<2.0,>=1.7 (from passlib[bcrypt]<2.0,>=1.7->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 7))
+  Using cached passlib-1.7.4-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting prometheus-client<1.0,>=0.20 (from -r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 8))
+  Using cached prometheus_client-0.26.0-py3-none-any.whl.metadata (2.1 kB)
+Collecting starlette>=0.46.0 (from fastapi<1.0,>=0.110->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 1))
+  Using cached starlette-1.4.1-py3-none-any.whl.metadata (6.4 kB)
+Collecting typing-extensions>=4.8.0 (from fastapi<1.0,>=0.110->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 1))
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting typing-inspection>=0.4.2 (from fastapi<1.0,>=0.110->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 1))
+  Using cached typing_inspection-0.4.2-py3-none-any.whl.metadata (2.6 kB)
+Collecting annotated-doc>=0.0.2 (from fastapi<1.0,>=0.110->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 1))
+  Using cached annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+Collecting click>=7.0 (from uvicorn<1.0,>=0.29->uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached click-8.4.2-py3-none-any.whl.metadata (2.6 kB)
+Collecting h11>=0.8 (from uvicorn<1.0,>=0.29->uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting annotated-types>=0.6.0 (from pydantic<3,>=2->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 3))
+  Using cached annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.46.4 (from pydantic<3,>=2->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 3))
+  Using cached pydantic_core-2.46.4.tar.gz (471 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting greenlet>=1 (from sqlalchemy<3.0,>=2.0->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 4))
+  Using cached greenlet-3.5.4.tar.gz (206 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting bcrypt>=3.1.0 (from passlib[bcrypt]<2.0,>=1.7->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 7))
+  Using cached bcrypt-5.0.0.tar.gz (25 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting httptools>=0.8.0 (from uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached httptools-0.8.0.tar.gz (271 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting python-dotenv>=0.13 (from uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached python_dotenv-1.2.2-py3-none-any.whl.metadata (27 kB)
+Collecting pyyaml>=5.1 (from uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached pyyaml-6.0.3.tar.gz (130 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting uvloop>=0.15.1 (from uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached uvloop-0.22.1.tar.gz (2.4 MB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting watchfiles>=0.20 (from uvicorn[standard]<1.0,>=0.29->-r /data/data/com.termux/files/home/waste-platform/app/requirements.txt (line 2))
+  Using cached watchfiles-1.2.0.tar.gz (108 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started

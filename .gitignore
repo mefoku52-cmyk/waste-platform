@@ -1,4 +1,8 @@
-# Python
+# =============================================================================
+# CMEP / Waste Platform — Global .gitignore
+# =============================================================================
+
+# --- Python ---
 __pycache__/
 *.py[cod]
 *$py.class
@@ -6,54 +10,44 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
-pythonenv*
 *.egg-info/
 dist/
 build/
 *.egg
-*.log
-*.pid
-*.pid.lock
-*.sqlite
-*.db
-*.sqlite3
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+*.whl
+
+# --- Testing / Coverage ---
+.tox/
+.nox/
 .coverage
 .coverage.*
-htmlcov/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
 .pytest_cache/
+cover/
+htmlcov/
+
+# --- Type checking / Linting ---
 .mypy_cache/
 .dmypy.json
 dmypy.json
-*.pyre
-*.pytypes
+*.pyre/
+*.pytypes/
+.ruff_cache/
 
-# Node
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-.next/
-out/
-dist/
-.cache/
-.vercel
-*.tsbuildinfo
-
-# Environment
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.*.local
-.env.backup
-*.env.backup
-
-# IDE
+# --- IDEs ---
 .vscode/
 .idea/
 *.swp
@@ -65,81 +59,69 @@ dist/
 *.njsproj
 *.sln
 *.sw?
-.velite
-.velite-dist
 
-# Docker
-*.pid
-docker-compose.override.yml
-docker-compose.local.yml
+# --- Node.js / Next.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.next/
+out/
+.vercel
+*.tsbuildinfo
 
-# PostgreSQL
-*.pgdata
-*.dump
-postgresql-*.log
-
-# Redis
-*.rdb
-*.aof
-*.log
-
-# Prometheus
-prometheus.db
-prometheus.log
-
-# Grafana
-grafana.db
-
-# Logs
-logs/
-*.log
-*.log.*
-backend/logs/
-frontend/logs/
-docker/nginx/logs/
-
-# Data
-data/
-*.db
-*.sqlite
-*.sqlite-journal
-backend/data/
-*.pkl
-*.pickle
-*.h5
-*.model
-
-# Backups
-*.backup
-*.bak
-backups/
-*.backup.sql
-*.dump.sql
-*.tar.gz
-*.tgz
-*.zip
-
-# Temporary
-tmp/
-temp/
-*.tmp
-*.temp
-*.cache
-*.cached
-*.lock
-*.lock.*
-*.pid.lock
-
-# Secrets
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.*.local
+.env.backup
 *.pem
 *.key
 *.crt
-*.csr
-*.jks
-*.keystore
 *.p12
 *.pfx
-*.pwd
-.secrets/
 secrets/
+.secrets/
 *.secret
+
+# --- Docker ---
+docker-compose.override.yml
+docker-compose.local.yml
+*.pid
+*.pid.lock
+
+# --- PostgreSQL ---
+*.pgdata
+*.dump
+*.sql.gz
+*.backup.sql
+
+# --- Redis ---
+*.rdb
+*.aof
+dump.rdb
+
+# --- Logs & Data ---
+logs/
+*.log
+*.log.*
+!logs/.gitkeep
+var/
+!var/.gitkeep
+data/
+!data/.gitkeep
+
+# --- Alembic ---
+*.sqlite
+*.sqlite3
+*.db
+
+# --- Termux / Mobile ---
+backend_test_env/
+termux/
+
+# --- OS ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini

@@ -1,12 +1,56 @@
-fastapi
-uvicorn
-sqlalchemy
-aiosqlite
-alembic
-PyJWT
-passlib
-python-multipart
-python-dotenv
-pytest
-pytest-asyncio
-httpx
+# Auto-generated from forensic import scan
+# Timestamp: 20260807-113145
+
+# --- Core ---
+fastapi>=0.104.0
+pydantic>=2.4.0
+pydantic-settings>=2.0.3
+uvicorn[standard]>=0.24.0
+
+# --- Database ---
+alembic>=1.12.0
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.9
+sqlalchemy>=2.0.0
+
+# --- Security ---
+bcrypt>=4.0.1
+cryptography>=41.0.0
+email-validator>=2.0.0
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+
+# --- HTTP / API ---
+httpx>=0.25.0
+requests>=2.31.0
+
+# --- Background Tasks ---
+celery>=5.3.4
+redis>=5.0.1
+
+# --- Monitoring ---
+prometheus-client>=0.19.0
+
+# --- Utils ---
+Pillow>=10.1.0
+python-dateutil>=2.8.2
+Jinja2>=3.1.2
+python-json-logger>=2.0.7
+pytz>=2023.3
+python-slugify>=8.0.1
+typing-extensions>=4.8.0
+PyYAML>=6.0.1
+
+# --- Production Server ---
+gunicorn>=21.2.0
+httptools>=0.6.1
+uvloop>=0.19.0
+
+# --- Development (optional) ---
+# pytest>=7.4.2
+# pytest-asyncio>=0.21.1
+# pytest-cov>=4.1.0
+# black>=23.11.0
+# isort>=5.12.0
+# mypy>=1.6.1

@@ -4,11 +4,12 @@ from typing import Any
 from uuid import uuid4
 
 import jwt
+from app.core.config import settings
 
-JWT_SECRET = os.getenv("JWT_SECRET", "change-me")
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+JWT_SECRET = settings.jwt.secret_key
+JWT_ALGORITHM = settings.jwt.algorithm
 ACCESS_TOKEN_TTL_MINUTES = int(os.getenv("ACCESS_TOKEN_TTL_MINUTES", "15"))
-REFRESH_TOKEN_TTL_DAYS = int(os.getenv("REFRESH_TOKEN_TTL_DAYS", "30"))
+REFRESH_TOKEN_TTL_DAYS = int(str(settings.jwt.refresh_token_expire_days))
 
 
 class JwtService:

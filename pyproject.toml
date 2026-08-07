@@ -1,21 +1,157 @@
 [build-system]
-requires = ["setuptools>=61.0", "wheel"]
+requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "waste-platform"
-version = "0.1.0"
-description = "Platform for circular materials exchange"
-dependencies = [
-    "fastapi",
-    "uvicorn",
-    "sqlalchemy",
-    "aiosqlite",
-    "alembic",
-    "PyJWT",
-    "passlib",
-    "python-multipart",
-    "python-dotenv",
+name = "cmep-platform"
+version = "1.0.0"
+description = "CMEP — Circular Economy Marketplace Platform (Waste-to-Resource B2B)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [
+    {name = "CMEP Team", email = "dev@cmep.local"}
 ]
+keywords = ["fastapi", "marketplace", "circular-economy", "waste-management", "b2b"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.4.0",
+    "pydantic-settings>=2.0.3",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "asyncpg>=0.29.0",
+    "psycopg2-binary>=2.9.9",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.0.1",
+    "python-multipart>=0.0.6",
+    "email-validator>=2.0.0",
+    "httpx>=0.25.0",
+    "redis>=5.0.1",
+    "celery>=5.3.4",
+    "prometheus-client>=0.19.0",
+    "PyYAML>=6.0.1",
+    "Jinja2>=3.1.2",
+    "python-dateutil>=2.8.2",
+    "pytz>=2023.3",
+    "typing-extensions>=4.8.0",
+    "python-slugify>=8.0.1",
+    "Pillow>=10.1.0",
+    "python-json-logger>=2.0.7",
+    "gunicorn>=21.2.0",
+    "uvloop>=0.19.0",
+    "httptools>=0.6.1",
+]
+
 [project.optional-dependencies]
-dev = ["pytest", "pytest-asyncio", "httpx"]
+dev = [
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.1",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.1",
+    "pre-commit>=3.5.0",
+]
+test = [
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/cmep/platform"
+Documentation = "https://docs.cmep.local"
+Repository = "https://github.com/cmep/platform.git"
+Issues = "https://github.com/cmep/platform/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+exclude = ["tests*", "scripts*", "docs*", "infra*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | alembic
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=app --cov-report=term-missing"
+testpaths = ["app/tests"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "*/alembic/*",
+    "*/tests/*",
+    "*/scripts/*",
+    "*/infra/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@abstractmethod",
+]
