@@ -1,22 +1,50 @@
 """documents API schemas."""
 
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel
 
 
-class DocumentsResponse(BaseModel):
-    """Documents response."""
-    id: str
-    created_at: datetime
-    updated_at: datetime
+class DocumentCreateRequest(BaseModel):
+    title: str
+    documentType: str
+    fileUrl: str
+    companyId: UUID
+    listingId: UUID | None = None
 
 
-class DocumentsCreateRequest(BaseModel):
-    """Create documents request."""
-    pass
+class DocumentUpdateRequest(BaseModel):
+    title: str | None = None
+    documentType: str | None = None
+    fileUrl: str | None = None
+    companyId: UUID | None = None
+    listingId: UUID | None = None
+    status: str | None = None
 
 
-class DocumentsUpdateRequest(BaseModel):
-    """Update documents request."""
-    pass
+class DocumentData(BaseModel):
+    id: UUID
+    title: str
+    documentType: str
+    fileUrl: str
+    companyId: UUID
+    listingId: UUID | None
+    status: str
+    createdAt: datetime
+    updatedAt: datetime
+
+
+class DocumentResponse(BaseModel):
+    data: DocumentData
+
+
+class PaginationMeta(BaseModel):
+    page: int
+    pageSize: int
+    total: int
+
+
+class PaginatedDocumentsResponse(BaseModel):
+    items: list[DocumentData]
+    meta: PaginationMeta

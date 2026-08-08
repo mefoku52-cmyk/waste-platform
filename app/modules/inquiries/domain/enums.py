@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class InquiriesStatus(str, Enum):
-    """Inquiries status."""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
+class InquiryStatus(str, Enum):
+    OPEN = "open"
+    ANSWERED = "answered"
+    CLOSED = "closed"

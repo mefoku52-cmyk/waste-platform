@@ -1,16 +1,25 @@
 """inquiries database models."""
 
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.shared.infrastructure.db.base import Base
 
 
-class InquiriesModel(Base):
+class InquiryModel(Base):
     __tablename__ = "inquiries"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    listing_id = Column(UUID(as_uuid=True), nullable=False)
+    company_id = Column(UUID(as_uuid=True), nullable=False)
+    message = Column(Text, nullable=False)
+    contact_email = Column(String(255), nullable=False)
+    contact_phone = Column(String(64), nullable=True)
+    status = Column(String(32), nullable=False, default="open")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
+    updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)

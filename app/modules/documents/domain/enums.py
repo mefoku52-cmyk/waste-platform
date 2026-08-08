@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class DocumentsStatus(str, Enum):
-    """Documents status."""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
+class DocumentStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    REJECTED = "rejected"

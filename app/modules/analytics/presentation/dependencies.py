@@ -3,14 +3,15 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.shared.infrastructure.db.session import get_db
-from ..infrastructure.repositories import AnalyticsRepositoryImpl
-from ..application.services import AnalyticsService
+from app.shared.infrastructure.db.session import get_db_session
+
+from ..application.services import AnalyticsEventService
+from ..infrastructure.repositories import AnalyticsEventRepositoryImpl
 
 
-async def get_analytics_service(
-    session: AsyncSession = Depends(get_db)
-) -> AnalyticsService:
-    """Get analytics service."""
-    repository = AnalyticsRepositoryImpl(session)
-    return AnalyticsService(repository)
+def get_analytics_repo(session: AsyncSession = Depends(get_db_session)) -> AnalyticsEventRepositoryImpl:
+    return AnalyticsEventRepositoryImpl(session)
+
+
+def get_analytics_service(repo: AnalyticsEventRepositoryImpl = Depends(get_analytics_repo)) -> AnalyticsEventService:
+    return AnalyticsEventService(repository=repo)

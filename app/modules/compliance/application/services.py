@@ -2,18 +2,43 @@
 
 from typing import List, Optional
 
-from ..domain.entities import ComplianceEntity
-from ..domain.repositories import ComplianceRepository
+from app.shared.domain.exceptions import NotFoundDomainError
+
+from ..domain.entities import ComplianceRecordEntity
+from ..domain.repositories import ComplianceRecordRepository
 
 
-class ComplianceService:
-    """Compliance service."""
-    
-    def __init__(self, repository: ComplianceRepository):
+class ComplianceRecordService:
+    """ComplianceRecord service."""
+
+    def __init__(self, repository: ComplianceRecordRepository):
         self.repository = repository
-    
-    async def get_by_id(self, id: str) -> Optional[ComplianceEntity]:
+
+    async def get_by_id(self, id: str) -> Optional[ComplianceRecordEntity]:
         return await self.repository.get_by_id(id)
-    
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[ComplianceEntity]:
+
+    async def list_all(self, page: int = 1, limit: int = 20) -> List[ComplianceRecordEntity]:
         return await self.repository.list_all(page, limit)
+
+    async def count_all(self) -> int:
+        return await self.repository.count_all()
+
+    async def create(self, entity: ComplianceRecordEntity) -> ComplianceRecordEntity:
+        entity.validate()
+        return await self.repository.create(entity)
+
+    async def update(self, id: str, entity: ComplianceRecordEntity) -> ComplianceRecordEntity:
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"ComplianceRecord {id} not found")
+        entity.id = existing.id
+        entity.created_at = existing.created_at
+        entity.created_by_user_id = existing.created_by_user_id
+        entity.validate()
+        return await self.repository.update(entity)
+
+    async def delete(self, id: str) -> None:
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"ComplianceRecord {id} not found")
+        await self.repository.delete(id)

@@ -1,16 +1,25 @@
 """admin database models."""
 
-from sqlalchemy import Column, String, DateTime
-from sqlalchemy.dialects.postgresql import UUID
-from datetime import datetime
 import uuid
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.shared.infrastructure.db.base import Base
 
 
-class AdminModel(Base):
-    __tablename__ = "admin"
-    
+class AdminAuditEntryModel(Base):
+    __tablename__ = "admin_audit_entries"
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    actor_user_id = Column(UUID(as_uuid=True), nullable=False)
+    action = Column(String(120), nullable=False)
+    target_type = Column(String(120), nullable=False)
+    target_id = Column(UUID(as_uuid=True), nullable=True)
+    details = Column(Text, nullable=True)
+    status = Column(String(32), nullable=False, default="success")
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
+    updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)

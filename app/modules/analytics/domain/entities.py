@@ -1,16 +1,26 @@
 """analytics domain entities."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from uuid import UUID
 
-from app.shared.domain.base import BaseEntity
+from app.shared.domain.base import AuditFields
+from app.shared.domain.exceptions import ValidationDomainError
 
 
-@dataclass
-class AnalyticsEntity(BaseEntity):
-    """Analytics entity."""
+@dataclass(slots=True)
+class AnalyticsEventEntity(AuditFields):
+    """AnalyticsEvent entity."""
 
-    id: Optional[str] = None
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
+    event_type: str
+    entity_type: str
+    entity_id: UUID | None = None
+    company_id: UUID | None = None
+    event_metadata: str | None = None
+    recorded_at: datetime = field(default_factory=datetime.utcnow)
+
+    def validate(self) -> None:
+        if not self.event_type:
+            raise ValidationDomainError("AnalyticsEvent event_type is required")
+        if not self.entity_type:
+            raise ValidationDomainError("AnalyticsEvent entity_type is required")

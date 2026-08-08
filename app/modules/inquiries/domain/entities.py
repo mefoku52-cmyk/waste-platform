@@ -2,14 +2,26 @@
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
+from uuid import UUID
 
-from app.shared.domain.base import BaseEntity
+from app.modules.inquiries.domain.enums import InquiryStatus
+from app.shared.domain.base import AuditFields
+from app.shared.domain.exceptions import ValidationDomainError
 
 
-@dataclass
-class InquiriesEntity(BaseEntity):
-    """Inquiries entity."""
-    id: Optional[str] = None
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+@dataclass(slots=True)
+class InquiryEntity(AuditFields):
+    """Inquiry entity."""
+
+    listing_id: UUID
+    company_id: UUID
+    message: str
+    contact_email: str
+    status: InquiryStatus = InquiryStatus.OPEN
+    contact_phone: str | None = None
+
+    def validate(self) -> None:
+        if not self.message:
+            raise ValidationDomainError("Inquiry message is required")
+        if not self.contact_email:
+            raise ValidationDomainError("Inquiry contact_email is required")

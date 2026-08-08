@@ -1,116 +1,59 @@
-from uuid import UUID
-
-from fastapi import APIRouter, Depends, Query
-
-from app.modules.companies.presentation.dependencies import (
-    get_create_company_service,
-    get_get_company_service,
-    get_list_companies_service,
-    get_update_company_service,
-)
-from app.modules.companies.presentation.mappers import to_company_data
-from app.modules.companies.presentation.schemas import (
-    CompanyCreateRequest,
-    CompanyResponse,
-    CompanyUpdateRequest,
-    PaginatedCompaniesResponse,
-    PaginationMeta,
-)
-from app.shared.presentation.auth_dependencies import require_current_user
+from app.modules.companies.presentation.schemas import CompanyCreateRequest
+from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Dict, Any
+from app.shared.security import get_current_user, require_permission
+from app.modules.companies.presentation.dependencies import get_company_service
+from app.modules.companies.domain.service import CompanyService
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
-
-@router.get("", response_model=PaginatedCompaniesResponse)
-async def list_companies(
-    page: int = Query(default=1, ge=1),
-    pageSize: int = Query(default=25, ge=1, le=100),
-    status: str | None = None,
-    companyType: str | None = None,
-    sellerCapability: bool | None = None,
-    buyerCapability: bool | None = None,
-    logisticsCapability: bool | None = None,
-    q: str | None = None,
-    current_user=Depends(require_current_user),
-    service=Depends(get_list_companies_service),
+@router.get("/")
+async def get_all(
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    service: CompanyService = Depends(get_company_service)
 ):
-    items, total = await service.execute(
-        status=status,
-        company_type=companyType,
-        seller_capability=sellerCapability,
-        buyer_capability=buyerCapability,
-        logistics_capability=logisticsCapability,
-        q=q,
-        page=page,
-        page_size=pageSize,
-    )
-    return PaginatedCompaniesResponse(
-        items=[to_company_data(item) for item in items],
-        meta=PaginationMeta(page=page, pageSize=pageSize, total=total),
+    return await service.get_all(
+        owner_id=current_user.get("id"),
+        role=current_user.get("role", "user")
     )
 
-
-@router.post("", response_model=CompanyResponse, status_code=201)
-async def create_company(
-    payload: CompanyCreateRequest,
-    current_user=Depends(require_current_user),
-    service=Depends(get_create_company_service),
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def create(
+    data: CompanyCreateRequest,
+    current_user: Dict[str, Any] = Depends(require_permission("write_own")),
+    service: CompanyService = Depends(get_company_service)
 ):
-    dto = await service.execute(
-        legal_name=payload.legalName,
-        trading_name=payload.tradingName,
-        registration_number=payload.registrationNumber,
-        tax_identifier=payload.taxIdentifier,
-        company_type=payload.companyType,
-        email=payload.email,
-        phone=payload.phone,
-        website_url=str(payload.websiteUrl) if payload.websiteUrl else None,
-        country_code=payload.countryCode,
-        address_line_1=payload.addressLine1,
-        address_line_2=payload.addressLine2,
-        city=payload.city,
-        postal_code=payload.postalCode,
-        latitude=payload.latitude,
-        longitude=payload.longitude,
-        seller_capability=payload.sellerCapability,
-        buyer_capability=payload.buyerCapability,
-        logistics_capability=payload.logisticsCapability,
-        actor_user_id=current_user.user.id,
-    )
-    return CompanyResponse(data=to_company_data(dto))
+    return await service.create(data, current_user["id"])
 
-
-@router.get("/{company_id}", response_model=CompanyResponse)
-async def get_company(
-    company_id: UUID,
-    current_user=Depends(require_current_user),
-    service=Depends(get_get_company_service),
+@router.get("/{id}")
+async def get_by_id(
+    id: int,
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    service: CompanyService = Depends(get_company_service)
 ):
-    dto = await service.execute(company_id)
-    return CompanyResponse(data=to_company_data(dto))
+    result = service.get_by_id(id, current_user.get("id"), current_user.get("role", "user"))
+    if not result:
+        raise HTTPException(status_code=404, detail="Company not found or access denied")
+    return result
 
-
-@router.patch("/{company_id}", response_model=CompanyResponse)
-async def update_company(
-    company_id: UUID,
-    payload: CompanyUpdateRequest,
-    current_user=Depends(require_current_user),
-    service=Depends(get_update_company_service),
+@router.put("/{id}")
+async def update(
+    id: int,
+    data: CompanyCreateRequest,
+    current_user: Dict[str, Any] = Depends(require_permission("write_own")),
+    service: CompanyService = Depends(get_company_service)
 ):
-    dto = await service.execute(
-        company_id=company_id,
-        legal_name=payload.legalName,
-        trading_name=payload.tradingName,
-        tax_identifier=payload.taxIdentifier,
-        email=payload.email,
-        phone=payload.phone,
-        website_url=str(payload.websiteUrl) if payload.websiteUrl else None,
-        address_line_1=payload.addressLine1,
-        address_line_2=payload.addressLine2,
-        city=payload.city,
-        postal_code=payload.postalCode,
-        latitude=payload.latitude,
-        longitude=payload.longitude,
-        actor_user_id=current_user.user.id,
-    )
-    return CompanyResponse(data=to_company_data(dto))
+    result = service.update(id, data, current_user.get("id"), current_user.get("role", "user"))
+    if not result:
+        raise HTTPException(status_code=404, detail="Company not found or access denied")
+    return result
+
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete(
+    id: int,
+    current_user: Dict[str, Any] = Depends(require_permission("write_own")),
+    service: CompanyService = Depends(get_company_service)
+):
+    if not service.delete(id, current_user.get("id"), current_user.get("role", "user")):
+        raise HTTPException(status_code=404, detail="Company not found or access denied")
+    return None

@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class ComplianceStatus(str, Enum):
-    """Compliance status."""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
+class ComplianceRecordStatus(str, Enum):
+    PENDING = "pending"
+    COMPLIANT = "compliant"
+    NON_COMPLIANT = "non_compliant"

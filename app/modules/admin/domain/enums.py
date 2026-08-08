@@ -3,7 +3,7 @@
 from enum import Enum
 
 
-class AdminStatus(str, Enum):
-    """Admin status."""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
+class AdminAuditEntryStatus(str, Enum):
+    PENDING = "pending"
+    SUCCESS = "success"
+    FAILED = "failed"

@@ -1,22 +1,50 @@
 """admin API schemas."""
 
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel
 
 
-class AdminResponse(BaseModel):
-    """Admin response."""
-    id: str
-    created_at: datetime
-    updated_at: datetime
+class AdminAuditEntryCreateRequest(BaseModel):
+    actorUserId: UUID
+    action: str
+    targetType: str
+    targetId: UUID | None = None
+    details: str | None = None
 
 
-class AdminCreateRequest(BaseModel):
-    """Create admin request."""
-    pass
+class AdminAuditEntryUpdateRequest(BaseModel):
+    actorUserId: UUID | None = None
+    action: str | None = None
+    targetType: str | None = None
+    targetId: UUID | None = None
+    details: str | None = None
+    status: str | None = None
 
 
-class AdminUpdateRequest(BaseModel):
-    """Update admin request."""
-    pass
+class AdminAuditEntryData(BaseModel):
+    id: UUID
+    actorUserId: UUID
+    action: str
+    targetType: str
+    targetId: UUID | None
+    details: str | None
+    status: str
+    createdAt: datetime
+    updatedAt: datetime
+
+
+class AdminAuditEntryResponse(BaseModel):
+    data: AdminAuditEntryData
+
+
+class PaginationMeta(BaseModel):
+    page: int
+    pageSize: int
+    total: int
+
+
+class PaginatedAdminAuditEntrysResponse(BaseModel):
+    items: list[AdminAuditEntryData]
+    meta: PaginationMeta

@@ -1,22 +1,50 @@
 """inquiries API schemas."""
 
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from uuid import UUID
+
+from pydantic import BaseModel
 
 
-class InquiriesResponse(BaseModel):
-    """Inquiries response."""
-    id: str
-    created_at: datetime
-    updated_at: datetime
+class InquiryCreateRequest(BaseModel):
+    listingId: UUID
+    companyId: UUID
+    message: str
+    contactEmail: str
+    contactPhone: str | None = None
 
 
-class InquiriesCreateRequest(BaseModel):
-    """Create inquiries request."""
-    pass
+class InquiryUpdateRequest(BaseModel):
+    listingId: UUID | None = None
+    companyId: UUID | None = None
+    message: str | None = None
+    contactEmail: str | None = None
+    contactPhone: str | None = None
+    status: str | None = None
 
 
-class InquiriesUpdateRequest(BaseModel):
-    """Update inquiries request."""
-    pass
+class InquiryData(BaseModel):
+    id: UUID
+    listingId: UUID
+    companyId: UUID
+    message: str
+    contactEmail: str
+    contactPhone: str | None
+    status: str
+    createdAt: datetime
+    updatedAt: datetime
+
+
+class InquiryResponse(BaseModel):
+    data: InquiryData
+
+
+class PaginationMeta(BaseModel):
+    page: int
+    pageSize: int
+    total: int
+
+
+class PaginatedInquirysResponse(BaseModel):
+    items: list[InquiryData]
+    meta: PaginationMeta

@@ -3,28 +3,32 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from .entities import NotificationsEntity
+from .entities import NotificationEntity
 
 
-class NotificationsRepository(ABC):
-    """Notifications repository interface."""
-    
+class NotificationRepository(ABC):
+    """Notification repository interface."""
+
     @abstractmethod
-    async def get_by_id(self, id: str) -> Optional[NotificationsEntity]:
+    async def get_by_id(self, id: str) -> Optional[NotificationEntity]:
         pass
-    
+
     @abstractmethod
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[NotificationsEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> List[NotificationEntity]:
         pass
-    
+
     @abstractmethod
-    async def create(self, entity: NotificationsEntity) -> NotificationsEntity:
+    async def count_all(self) -> int:
         pass
-    
+
     @abstractmethod
-    async def update(self, entity: NotificationsEntity) -> NotificationsEntity:
+    async def create(self, entity: NotificationEntity) -> NotificationEntity:
         pass
-    
+
+    @abstractmethod
+    async def update(self, entity: NotificationEntity) -> NotificationEntity:
+        pass
+
     @abstractmethod
     async def delete(self, id: str) -> None:
         pass

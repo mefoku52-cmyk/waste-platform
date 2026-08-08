@@ -3,14 +3,15 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.shared.infrastructure.db.session import get_db
-from ..infrastructure.repositories import AdminRepositoryImpl
-from ..application.services import AdminService
+from app.shared.infrastructure.db.session import get_db_session
+
+from ..application.services import AdminAuditEntryService
+from ..infrastructure.repositories import AdminAuditEntryRepositoryImpl
 
 
-async def get_admin_service(
-    session: AsyncSession = Depends(get_db)
-) -> AdminService:
-    """Get admin service."""
-    repository = AdminRepositoryImpl(session)
-    return AdminService(repository)
+def get_admin_repo(session: AsyncSession = Depends(get_db_session)) -> AdminAuditEntryRepositoryImpl:
+    return AdminAuditEntryRepositoryImpl(session)
+
+
+def get_admin_service(repo: AdminAuditEntryRepositoryImpl = Depends(get_admin_repo)) -> AdminAuditEntryService:
+    return AdminAuditEntryService(repository=repo)

@@ -3,28 +3,32 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from .entities import AdminEntity
+from .entities import AdminAuditEntryEntity
 
 
-class AdminRepository(ABC):
-    """Admin repository interface."""
-    
+class AdminAuditEntryRepository(ABC):
+    """AdminAuditEntry repository interface."""
+
     @abstractmethod
-    async def get_by_id(self, id: str) -> Optional[AdminEntity]:
+    async def get_by_id(self, id: str) -> Optional[AdminAuditEntryEntity]:
         pass
-    
+
     @abstractmethod
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[AdminEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> List[AdminAuditEntryEntity]:
         pass
-    
+
     @abstractmethod
-    async def create(self, entity: AdminEntity) -> AdminEntity:
+    async def count_all(self) -> int:
         pass
-    
+
     @abstractmethod
-    async def update(self, entity: AdminEntity) -> AdminEntity:
+    async def create(self, entity: AdminAuditEntryEntity) -> AdminAuditEntryEntity:
         pass
-    
+
+    @abstractmethod
+    async def update(self, entity: AdminAuditEntryEntity) -> AdminAuditEntryEntity:
+        pass
+
     @abstractmethod
     async def delete(self, id: str) -> None:
         pass
