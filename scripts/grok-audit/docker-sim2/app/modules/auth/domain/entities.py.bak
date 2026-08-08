@@ -1,0 +1,17 @@
+from dataclasses import dataclass
+from datetime import datetime
+from uuid import UUID
+
+from app.shared.domain.base import AuditFields
+
+
+@dataclass(slots=True)
+class RefreshSession(AuditFields):
+    user_id: UUID
+    token_family_id: str
+    refresh_token_jti: str
+    refresh_token_hash: str
+    expires_at: datetime
+    revoked_at: datetime | None
+    replaced_by_jti: str | None
+    reuse_detected_at: datetime | None

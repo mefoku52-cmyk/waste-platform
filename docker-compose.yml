@@ -1,173 +1,73 @@
-version: '3.8'
-
 services:
   postgres:
-    build:
-      context: .
-      dockerfile: docker/postgres/Dockerfile
-    container_name: recyclehub-postgres
+    image: postgres:16-alpine
+    container_name: cmep-postgres
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-recyclehub}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-recyclehub}
-      POSTGRES_DB: ${POSTGRES_DB:-recyclehub}
+      POSTGRES_USER: ${POSTGRES_USER:-cmep}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}
+      POSTGRES_DB: ${POSTGRES_DB:-cmep}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./docker/postgres/init:/docker-entrypoint-initdb.d
-      - ./docker/postgres/backups:/backups
-    ports:
-      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-recyclehub}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cmep} -d ${POSTGRES_DB:-cmep}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - recyclehub-network
     restart: unless-stopped
+    networks:
+      - cmep-network
 
   redis:
-    build:
-      context: .
-      dockerfile: docker/redis/Dockerfile
-    container_name: recyclehub-redis
+    image: redis:7-alpine
+    container_name: cmep-redis
     volumes:
       - redis_data:/data
-      - ./docker/redis/conf:/usr/local/etc/redis
-    ports:
-      - "6379:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
-      timeout: 5s
+      timeout: 3s
       retries: 5
-    networks:
-      - recyclehub-network
     restart: unless-stopped
+    networks:
+      - cmep-network
 
-  backend:
+  api:
     build:
       context: .
-      dockerfile: docker/backend/Dockerfile
-    container_name: recyclehub-backend
+      dockerfile: app/Dockerfile
+    container_name: cmep-api
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-recyclehub}:${POSTGRES_PASSWORD:-recyclehub}@postgres:5432/${POSTGRES_DB:-recyclehub}
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY: ${SECRET_KEY:-supersecretkey}
-      ALGORITHM: ${ALGORITHM:-HS256}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-30}
-      REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
-      ENVIRONMENT: ${ENVIRONMENT:-development}
-    volumes:
-      - ./backend:/app
-      - /app/__pycache__
-    ports:
-      - "8000:8000"
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-cmep}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}@postgres:5432/${POSTGRES_DB:-cmep}
+      REDIS_HOST: redis
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?JWT_SECRET_KEY musi byt nastaveny}
+      JWT_REFRESH_SECRET_KEY: ${JWT_REFRESH_SECRET_KEY:?JWT_REFRESH_SECRET_KEY musi byt nastaveny}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3001}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - recyclehub-network
     restart: unless-stopped
+    networks:
+      - cmep-network
 
-  frontend:
+  web:
     build:
-      context: .
-      dockerfile: docker/frontend/Dockerfile
-    container_name: recyclehub-frontend
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: cmep-web
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000/api/v1}
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
-    ports:
-      - "3000:3000"
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}
     depends_on:
-      - backend
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - recyclehub-network
+      - api
     restart: unless-stopped
+    networks:
+      - cmep-network
 
-  nginx:
-    build:
-      context: .
-      dockerfile: docker/nginx/Dockerfile
-    container_name: recyclehub-nginx
-    volumes:
-      - ./docker/nginx/conf.d:/etc/nginx/conf.d
-      - ./docker/nginx/ssl:/etc/nginx/ssl
-      - ./docker/nginx/logs:/var/log/nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - frontend
-      - backend
-    healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 3s
-      retries: 3
-    networks:
-      - recyclehub-network
-    restart: unless-stopped
-
-  prometheus:
-    build:
-      context: .
-      dockerfile: docker/prometheus/Dockerfile
-    container_name: recyclehub-prometheus
-    volumes:
-      - ./docker/prometheus/config:/etc/prometheus
-      - prometheus_data:/prometheus
-    ports:
-      - "9090:9090"
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-    networks:
-      - recyclehub-network
-    restart: unless-stopped
-
-  grafana:
-    build:
-      context: .
-      dockerfile: docker/grafana/Dockerfile
-    container_name: recyclehub-grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-    volumes:
-      - ./docker/grafana/config:/etc/grafana
-      - grafana_data:/var/lib/grafana
-      - ./docker/grafana/dashboards:/etc/grafana/provisioning/dashboards
-    ports:
-      - "3001:3000"
-    depends_on:
-      - prometheus
-    networks:
-      - recyclehub-network
-    restart: unless-stopped
+networks:
+  cmep-network:
+    driver: bridge
 
 volumes:
   postgres_data:
   redis_data:
-  prometheus_data:
-  grafana_data:
-
-networks:
-  recyclehub-network:
-    driver: bridge

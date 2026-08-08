@@ -1,0 +1,15 @@
+"""notifications domain entities."""
+
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
+
+from app.shared.domain.base import BaseEntity
+
+
+@dataclass
+class NotificationsEntity(BaseEntity):
+    """Notifications entity."""
+    id: Optional[str] = None
+    created_at: datetime = datetime.utcnow()
+    updated_at: datetime = datetime.utcnow()
