@@ -1,51 +1,35 @@
 """analytics API router."""
 
-from fastapi import APIRouter, Depends
-from typing import List
+from fastapi import APIRouter, HTTPException
 
-from .schemas import AnalyticsResponse, AnalyticsCreateRequest, AnalyticsUpdateRequest
-from ..application.services import AnalyticsService
-from ..infrastructure.repositories import AnalyticsRepositoryImpl
+from app.modules.analytics.presentation.schemas import (
+    AnalyticsCreateRequest,
+    AnalyticsUpdateRequest,
+)
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 
-def get_service():
-    """Get analytics service."""
-    # TODO: Implement dependency injection
-    pass
+@router.get("/")
+async def list_analytics():
+    raise HTTPException(status_code=501, detail="Analytics listing is not implemented")
 
 
-@router.get("/", response_model=List[AnalyticsResponse])
-async def list_analytics(page: int = 1, limit: int = 20):
-    """List all analytics."""
-    # TODO: Implement
-    return []
-
-
-@router.get("/{id}", response_model=AnalyticsResponse)
+@router.get("/{id}")
 async def get_analytics(id: str):
-    """Get analytics by ID."""
-    # TODO: Implement
-    pass
+    raise HTTPException(status_code=501, detail="Analytics detail is not implemented")
 
 
-@router.post("/", response_model=AnalyticsResponse)
+@router.post("/")
 async def create_analytics(request: AnalyticsCreateRequest):
-    """Create new analytics."""
-    # TODO: Implement
-    pass
+    raise HTTPException(status_code=501, detail="Analytics creation is not implemented")
 
 
-@router.put("/{id}", response_model=AnalyticsResponse)
+@router.put("/{id}")
 async def update_analytics(id: str, request: AnalyticsUpdateRequest):
-    """Update analytics."""
-    # TODO: Implement
-    pass
+    raise HTTPException(status_code=501, detail="Analytics update is not implemented")
 
 
 @router.delete("/{id}")
 async def delete_analytics(id: str):
-    """Delete analytics."""
-    # TODO: Implement
-    pass
+    raise HTTPException(status_code=501, detail="Analytics deletion is not implemented")

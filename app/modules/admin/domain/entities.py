@@ -10,6 +10,7 @@ from app.shared.domain.base import BaseEntity
 @dataclass
 class AdminEntity(BaseEntity):
     """Admin entity."""
+
     id: Optional[str] = None
-    created_at: datetime = datetime.utcnow()
-    updated_at: datetime = datetime.utcnow()
+    created_at: datetime | None = None
+    updated_at: datetime | None = None
