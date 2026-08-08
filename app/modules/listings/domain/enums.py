@@ -4,6 +4,10 @@ from enum import Enum
 
 
 class ListingsStatus(str, Enum):
-    """Listings status."""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
+    """Listing workflow status."""
+
+    DRAFT = "draft"
+    PUBLISHED = "published"
+    RESERVED = "reserved"
+    COMPLETED = "completed"
+    ARCHIVED = "archived"
