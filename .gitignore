@@ -125,3 +125,15 @@ termux/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Diagnosticke/simulacne artefakty (grok-audit workflow)
+scripts/grok-audit/test-venv/
+scripts/grok-audit/test-venv-backend/
+scripts/grok-audit/docker-sim/
+scripts/grok-audit/docker-sim2/
+scripts/grok-audit/docker-sim-final/
+scripts/grok-audit/removed_stub_packages_backup/
+scripts/grok-audit/uloha.txt
+scripts/grok-audit/vysledok-*.txt
+scripts/grok-audit/log_diag*.txt
+scripts/grok-audit/bg_install_*.txt
