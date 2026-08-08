@@ -1,63 +1,57 @@
 from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from datetime import datetime, timedelta
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 import jwt
 from jwt.exceptions import InvalidTokenError
 import os
 
-# SECRET KEY - používame rovnaký pre všetky tokeny
-SECRET_KEY = os.getenv("SECRET_KEY", "my-super-secret-key-change-me-in-production-12345")
+# Secret key (v produkcii daj do .env)
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-me-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 security = HTTPBearer()
 
-# Simulovaná databáza používateľov (pre prípad, že DB nie je dostupná)
+# Simulovaná databáza používateľov (nahraď skutočnou DB)
 fake_users_db = {
     "admin@example.com": {
         "id": 1,
         "email": "admin@example.com",
-        "password": "admin123",
+        "password": "admin123",  # V produkcii hashované!
         "full_name": "Admin User",
         "role": "admin",
-        "permissions": ["read_all", "write_all", "delete_all", "manage_users"],
-        "is_active": True
-    },
-    "manager@example.com": {
-        "id": 2,
-        "email": "manager@example.com",
-        "password": "manager123",
-        "full_name": "Manager User",
-        "role": "manager",
-        "permissions": ["read_all", "write_own", "manage_team"],
         "is_active": True
     },
     "user@example.com": {
-        "id": 3,
+        "id": 2,
         "email": "user@example.com",
         "password": "user123",
         "full_name": "Regular User",
         "role": "user",
-        "permissions": ["read_own", "write_own"],
         "is_active": True
     }
 }
 
-def create_access_token(data: Dict[str, Any]) -> str:
+def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
     """Vytvorí JWT access token"""
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire, "type": "access"})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 def create_refresh_token(data: Dict[str, Any]) -> str:
     """Vytvorí JWT refresh token"""
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
     to_encode.update({"exp": expire, "type": "refresh"})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
 
 def verify_token(token: str, token_type: str = "access") -> Dict[str, Any]:
     """Overí JWT token a vráti payload"""
@@ -70,10 +64,10 @@ def verify_token(token: str, token_type: str = "access") -> Dict[str, Any]:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return payload
-    except InvalidTokenError as e:
+    except InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {str(e)}",
+            detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -90,26 +84,6 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # Najprv skús databázu, potom fake DB
-    try:
-        from app.shared.database.db import SessionLocal
-        from app.shared.models.base import User
-        db = SessionLocal()
-        user = db.query(User).filter(User.email == email).first()
-        db.close()
-        if user:
-            return {
-                "id": user.id,
-                "email": user.email,
-                "full_name": user.full_name,
-                "role": user.role,
-                "permissions": user.permissions.split(",") if user.permissions else [],
-                "is_active": user.is_active
-            }
-    except:
-        pass
-    
-    # Fallback na fake DB
     user = fake_users_db.get(email)
     if not user:
         raise HTTPException(
@@ -133,29 +107,16 @@ def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials
     except HTTPException:
         return None
 
-def require_role(required_roles: List[str]):
+def require_role(required_role: str):
     """Dekorátor pre kontrolu rolí"""
     def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
-        user_role = current_user.get("role")
-        if user_role not in required_roles:
+        if current_user.get("role") != required_role and current_user.get("role") != "admin":
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Required roles: {', '.join(required_roles)}. Current role: {user_role}"
+                detail=f"Role '{required_role}' required"
             )
         return current_user
     return role_checker
-
-def require_permission(required_permission: str):
-    """Dekorátor pre kontrolu permissions"""
-    def permission_checker(current_user: Dict[str, Any] = Depends(get_current_user)):
-        user_permissions = current_user.get("permissions", [])
-        if required_permission not in user_permissions:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Required permission: {required_permission}"
-            )
-        return current_user
-    return permission_checker
 
 # Schémy pre Pydantic
 from pydantic import BaseModel

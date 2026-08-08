@@ -1,13 +1,33 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.companies.application.services import (
+    CreateCompanyService,
+    GetCompanyService,
+    ListCompaniesService,
+    UpdateCompanyService,
+)
+from app.modules.companies.infrastructure.repositories import SqlAlchemyCompanyRepository
+from app.shared.application.clock import Clock
+from app.shared.application.uuid_generator import UuidGenerator
 from app.shared.infrastructure.db.session import get_db_session
-from app.shared.models.base import Company
-from app.shared.repositories.base_repository import BaseRepository
-from app.modules.companies.domain.service import CompanyService
 
-def get_company_repo(session: AsyncSession = Depends(get_db_session)):
-    return BaseRepository(Company, session)
 
-def get_company_service(repo = Depends(get_company_repo)):
-    return CompanyService(repository=repo)
+def get_company_repo(session: AsyncSession = Depends(get_db_session)) -> SqlAlchemyCompanyRepository:
+    return SqlAlchemyCompanyRepository(session)
+
+
+def get_create_company_service(repo: SqlAlchemyCompanyRepository = Depends(get_company_repo)) -> CreateCompanyService:
+    return CreateCompanyService(repo=repo, uuid_generator=UuidGenerator(), clock=Clock())
+
+
+def get_get_company_service(repo: SqlAlchemyCompanyRepository = Depends(get_company_repo)) -> GetCompanyService:
+    return GetCompanyService(repo=repo)
+
+
+def get_list_companies_service(repo: SqlAlchemyCompanyRepository = Depends(get_company_repo)) -> ListCompaniesService:
+    return ListCompaniesService(repo=repo)
+
+
+def get_update_company_service(repo: SqlAlchemyCompanyRepository = Depends(get_company_repo)) -> UpdateCompanyService:
+    return UpdateCompanyService(repo=repo, clock=Clock())
