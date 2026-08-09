@@ -13,6 +13,7 @@ from app.shared.infrastructure.security.jwt_revocation_store import get_revocati
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.domain.ports.clock import SystemClock
 from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
+from app.modules.company_memberships.infrastructure.repositories import SqlAlchemyCompanyMembershipRepository
 
 
 def get_jwt_service() -> JwtService:
@@ -22,8 +23,11 @@ def get_jwt_service() -> JwtService:
 
 def get_auth_service(
     jwt_service: Annotated[JwtService, Depends(get_jwt_service)],
+    session: Annotated[AsyncSession, Depends(get_db_session)],
 ) -> GetCurrentAuthContextService:
-    return GetCurrentAuthContextService(jwt_service=jwt_service)
+    user_repo = SqlAlchemyUserRepository(session=session)
+    membership_repo = SqlAlchemyCompanyMembershipRepository(session=session)
+    return GetCurrentAuthContextService(jwt_service=jwt_service, user_repo=user_repo, membership_repo=membership_repo)
 
 
 def get_login_service(

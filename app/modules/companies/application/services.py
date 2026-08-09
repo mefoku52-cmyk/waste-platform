@@ -8,11 +8,14 @@ from app.modules.companies.domain.repositories import CompanyRepository
 from app.shared.application.clock import Clock
 from app.shared.application.uuid_generator import UuidGenerator
 from app.shared.domain.exceptions import NotFoundDomainError
+from app.modules.company_memberships.domain.entities import CompanyMembership
+from app.modules.company_memberships.domain.enums import CompanyMembershipRole, CompanyMembershipStatus
 
 
 class CreateCompanyService:
-    def __init__(self, repo: CompanyRepository, uuid_generator: UuidGenerator, clock: Clock):
+    def __init__(self, repo: CompanyRepository, membership_repo, uuid_generator: UuidGenerator, clock: Clock):
         self.repo = repo
+        self.membership_repo = membership_repo
         self.uuid_generator = uuid_generator
         self.clock = clock
 
@@ -75,6 +78,26 @@ class CreateCompanyService:
         )
         company.validate()
         await self.repo.add(company)
+
+        if actor_user_id is not None:
+            membership = CompanyMembership(
+                id=self.uuid_generator.new(),
+                status=CompanyMembershipStatus.ACTIVE,
+                company_id=company.id,
+                user_id=actor_user_id,
+                membership_role=CompanyMembershipRole.OWNER,
+                is_primary_contact=True,
+                invited_at=now,
+                joined_at=now,
+                left_at=None,
+                created_at=now,
+                created_by_user_id=actor_user_id,
+                updated_at=now,
+                updated_by_user_id=actor_user_id,
+            )
+            membership.validate()
+            await self.membership_repo.add(membership)
+
         return to_company_dto(company)
 
 

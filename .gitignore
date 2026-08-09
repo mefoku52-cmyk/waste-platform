@@ -137,3 +137,4 @@ scripts/grok-audit/uloha.txt
 scripts/grok-audit/vysledok-*.txt
 scripts/grok-audit/log_diag*.txt
 scripts/grok-audit/bg_install_*.txt
+*.bak-*

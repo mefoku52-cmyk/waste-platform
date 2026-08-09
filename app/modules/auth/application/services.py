@@ -89,10 +89,16 @@ class RefreshTokenService:
 
 
 class GetCurrentAuthContextService:
-    def __init__(self, jwt_service: JwtService):
+    def __init__(self, jwt_service: JwtService, user_repo: SqlAlchemyUserRepository, membership_repo):
         self.jwt_service = jwt_service
+        self.user_repo = user_repo
+        self.membership_repo = membership_repo
 
-    async def execute(self, access_token: str) -> dict:
+    async def execute(self, access_token: str):
+        from uuid import UUID
+        from app.modules.auth.application.dto import CurrentAuthContextDTO
+        from app.modules.users.application.mappers import to_user_dto
+
         try:
             payload = await self.jwt_service.decode_and_validate(access_token, expected_type="access")
         except TokenExpiredError:
@@ -101,8 +107,32 @@ class GetCurrentAuthContextService:
             raise UnauthorizedDomainError("Token has been revoked")
         except InvalidTokenError as e:
             raise UnauthorizedDomainError(f"Invalid token: {e.message}")
-        
-        return {"sub": payload.get("sub"), "roles": payload.get("roles", [])}
+
+        sub = payload.get("sub")
+        user = await self.user_repo.get_by_id(UUID(sub))
+        if user is None:
+            raise UnauthorizedDomainError("User not found")
+
+        memberships = await self.membership_repo.list_by_user_id(UUID(sub))
+
+        role_codes = sorted({m.membership_role.value for m in memberships})
+
+        membership_dicts = [
+            {
+                "id": m.id,
+                "companyId": m.company_id,
+                "membershipRole": m.membership_role.value,
+                "status": m.status.value,
+                "isPrimaryContact": m.is_primary_contact,
+            }
+            for m in memberships
+        ]
+
+        return CurrentAuthContextDTO(
+            user=to_user_dto(user),
+            role_codes=role_codes,
+            memberships=membership_dicts,
+        )
 
 
 class LogoutService:

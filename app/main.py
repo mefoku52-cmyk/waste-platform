@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.shared.infrastructure.db.base import Base
+from app.shared.infrastructure.db import register_models  # noqa: F401
 from app.shared.infrastructure.db.session import engine
 from app.shared.presentation.api_router import api_router
 from app.shared.presentation.exception_handlers import register_exception_handlers
