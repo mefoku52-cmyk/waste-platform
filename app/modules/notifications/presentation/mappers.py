@@ -1,12 +1,12 @@
 """notifications mappers."""
 
-from ..domain.entities import NotificationsEntity
-from .schemas import NotificationsResponse
+from ..domain.entities import NotificationEntity
+from .schemas import NotificationResponse
 
 
-def map_entity_to_response(entity: NotificationsEntity) -> NotificationsResponse:
+def map_entity_to_response(entity: NotificationEntity) -> NotificationResponse:
     """Map entity to response."""
-    return NotificationsResponse(
+    return NotificationResponse(
         id=str(entity.id),
         created_at=entity.created_at,
         updated_at=entity.updated_at,

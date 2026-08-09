@@ -6,8 +6,8 @@ from app.core.config import settings
 
 _env_database_url = os.getenv("DATABASE_URL")
 
-if _env_database_url and _env_database_url.startswith("sqlite"):
-    if not _env_database_url.startswith("sqlite+aiosqlite"):
+if _env_database_url:
+    if _env_database_url.startswith("sqlite") and not _env_database_url.startswith("sqlite+aiosqlite"):
         DATABASE_URL = _env_database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
     else:
         DATABASE_URL = _env_database_url

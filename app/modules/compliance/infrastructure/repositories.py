@@ -36,7 +36,7 @@ class ComplianceRecordRepositoryImpl(ComplianceRecordRepository):
     async def create(self, entity: ComplianceRecordEntity) -> ComplianceRecordEntity:
         model = to_model(entity)
         self.session.add(model)
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
@@ -52,10 +52,10 @@ class ComplianceRecordRepositoryImpl(ComplianceRecordRepository):
         model.status = entity.status.value
         model.updated_at = entity.updated_at
         model.updated_by_user_id = entity.updated_by_user_id
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
         await self.session.execute(sql_delete(ComplianceRecordModel).where(ComplianceRecordModel.id == id))
-        await self.session.flush()
+        await self.session.commit()

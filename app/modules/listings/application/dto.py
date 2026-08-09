@@ -1,17 +1,35 @@
 """listings DTOs."""
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Optional
 
 
 @dataclass
 class ListingsCreateDTO:
     """Create listings DTO."""
-    pass
+
+    title: str
+    material_type: str
+    quantity: float
+    unit: str
+    condition: str
+    location: str
+    company_id: str
+    price: float | None = None
+    currency: str = "EUR"
+    description: str | None = None
 
 
 @dataclass
 class ListingsUpdateDTO:
     """Update listings DTO."""
-    pass
+
+    title: str | None = None
+    material_type: str | None = None
+    quantity: float | None = None
+    unit: str | None = None
+    price: float | None = None
+    currency: str | None = None
+    condition: str | None = None
+    location: str | None = None
+    status: str | None = None
+    description: str | None = None

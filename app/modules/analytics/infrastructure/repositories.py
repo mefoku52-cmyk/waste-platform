@@ -36,7 +36,7 @@ class AnalyticsEventRepositoryImpl(AnalyticsEventRepository):
     async def create(self, entity: AnalyticsEventEntity) -> AnalyticsEventEntity:
         model = to_model(entity)
         self.session.add(model)
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
@@ -52,10 +52,10 @@ class AnalyticsEventRepositoryImpl(AnalyticsEventRepository):
         model.recorded_at = entity.recorded_at
         model.updated_at = entity.updated_at
         model.updated_by_user_id = entity.updated_by_user_id
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
         await self.session.execute(sql_delete(AnalyticsEventModel).where(AnalyticsEventModel.id == id))
-        await self.session.flush()
+        await self.session.commit()

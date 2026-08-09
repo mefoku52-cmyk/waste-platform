@@ -40,7 +40,7 @@ class ListingsRepositoryImpl(ListingsRepository):
     async def create(self, entity: ListingsEntity) -> ListingsEntity:
         model = to_model(entity)
         self.session.add(model)
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
@@ -60,7 +60,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         model.description = entity.description
         model.updated_at = entity.updated_at
         model.updated_by_user_id = entity.updated_by_user_id
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
@@ -68,4 +68,4 @@ class ListingsRepositoryImpl(ListingsRepository):
         await self.session.execute(
             sql_delete(ListingsModel).where(ListingsModel.id == id)
         )
-        await self.session.flush()
+        await self.session.commit()

@@ -36,7 +36,7 @@ class DocumentRepositoryImpl(DocumentRepository):
     async def create(self, entity: DocumentEntity) -> DocumentEntity:
         model = to_model(entity)
         self.session.add(model)
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
@@ -52,10 +52,10 @@ class DocumentRepositoryImpl(DocumentRepository):
         model.status = entity.status.value
         model.updated_at = entity.updated_at
         model.updated_by_user_id = entity.updated_by_user_id
-        await self.session.flush()
+        await self.session.commit()
         await self.session.refresh(model)
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
         await self.session.execute(sql_delete(DocumentModel).where(DocumentModel.id == id))
-        await self.session.flush()
+        await self.session.commit()

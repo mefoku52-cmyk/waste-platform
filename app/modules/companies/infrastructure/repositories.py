@@ -83,6 +83,15 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
         model.postal_code = company.postal_code
         model.latitude = company.latitude
         model.longitude = company.longitude
+        model.verification_submitted_at = company.verification_submitted_at
+        model.verification_reviewed_at = company.verification_reviewed_at
+        model.verification_reviewed_by_user_id = (
+            str(company.verification_reviewed_by_user_id) if company.verification_reviewed_by_user_id else None
+        )
+        model.verified_at = company.verified_at
+        model.verified_by_user_id = str(company.verified_by_user_id) if company.verified_by_user_id else None
+        model.rejected_at = company.rejected_at
+        model.rejected_by_user_id = str(company.rejected_by_user_id) if company.rejected_by_user_id else None
         model.updated_at = company.updated_at
         model.updated_by_user_id = str(company.updated_by_user_id) if company.updated_by_user_id else None
         await self.session.commit()

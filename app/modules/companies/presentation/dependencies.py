@@ -6,6 +6,7 @@ from app.modules.companies.application.services import (
     GetCompanyService,
     ListCompaniesService,
     UpdateCompanyService,
+    TransitionCompanyStatusService,
 )
 from app.modules.companies.infrastructure.repositories import SqlAlchemyCompanyRepository
 from app.modules.company_memberships.infrastructure.repositories import SqlAlchemyCompanyMembershipRepository
@@ -41,3 +42,7 @@ def get_list_companies_service(repo: SqlAlchemyCompanyRepository = Depends(get_c
 
 def get_update_company_service(repo: SqlAlchemyCompanyRepository = Depends(get_company_repo)) -> UpdateCompanyService:
     return UpdateCompanyService(repo=repo, clock=Clock())
+
+
+def get_transition_company_status_service(repo: SqlAlchemyCompanyRepository = Depends(get_company_repo)) -> TransitionCompanyStatusService:
+    return TransitionCompanyStatusService(repo=repo, clock=Clock())

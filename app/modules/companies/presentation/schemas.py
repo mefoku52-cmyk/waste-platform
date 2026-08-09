@@ -80,3 +80,6 @@ class PaginationMeta(BaseModel):
 class PaginatedCompaniesResponse(BaseModel):
     items: list[CompanyData]
     meta: PaginationMeta
+
+class CompanyStatusTransitionRequest(BaseModel):
+    toStatus: str

@@ -7,6 +7,7 @@ from app.modules.companies.presentation.dependencies import (
     get_get_company_service,
     get_list_companies_service,
     get_update_company_service,
+    get_transition_company_status_service,
 )
 from app.modules.companies.presentation.mappers import to_company_data
 from app.modules.companies.presentation.schemas import (
@@ -15,6 +16,7 @@ from app.modules.companies.presentation.schemas import (
     CompanyUpdateRequest,
     PaginatedCompaniesResponse,
     PaginationMeta,
+    CompanyStatusTransitionRequest,
 )
 from app.shared.presentation.auth_dependencies import require_current_user
 
@@ -111,6 +113,21 @@ async def update_company(
         postal_code=payload.postalCode,
         latitude=payload.latitude,
         longitude=payload.longitude,
+        actor_user_id=current_user.user.id,
+    )
+    return CompanyResponse(data=to_company_data(dto))
+
+
+@router.patch("/{company_id}/status", response_model=CompanyResponse)
+async def transition_company_status(
+    company_id: UUID,
+    payload: CompanyStatusTransitionRequest,
+    current_user=Depends(require_current_user),
+    service=Depends(get_transition_company_status_service),
+):
+    dto = await service.execute(
+        company_id=company_id,
+        to_status=payload.toStatus,
         actor_user_id=current_user.user.id,
     )
     return CompanyResponse(data=to_company_data(dto))

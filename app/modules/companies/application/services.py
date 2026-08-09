@@ -196,3 +196,36 @@ class UpdateCompanyService:
         company.validate()
         await self.repo.update(company)
         return to_company_dto(company)
+
+
+class TransitionCompanyStatusService:
+    def __init__(self, repo: CompanyRepository, clock: Clock):
+        self.repo = repo
+        self.clock = clock
+
+    async def execute(self, *, company_id: UUID, to_status: str, actor_user_id: UUID | None) -> CompanyDTO:
+        company = await self.repo.get_by_id(company_id)
+        if not company:
+            raise NotFoundDomainError("Company not found")
+
+        target_status = CompanyStatus(to_status)
+        company.transition_status(target_status)
+
+        now = self.clock.now()
+        if target_status == CompanyStatus.VERIFICATION_SUBMITTED:
+            company.verification_submitted_at = now
+        elif target_status == CompanyStatus.VERIFIED:
+            company.verification_reviewed_at = now
+            company.verification_reviewed_by_user_id = actor_user_id
+            company.verified_at = now
+            company.verified_by_user_id = actor_user_id
+        elif target_status == CompanyStatus.REJECTED:
+            company.verification_reviewed_at = now
+            company.verification_reviewed_by_user_id = actor_user_id
+            company.rejected_at = now
+            company.rejected_by_user_id = actor_user_id
+
+        company.updated_at = now
+        company.updated_by_user_id = actor_user_id
+        await self.repo.update(company)
+        return to_company_dto(company)
