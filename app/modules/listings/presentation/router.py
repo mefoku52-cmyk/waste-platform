@@ -1,6 +1,7 @@
 """listings API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from app.shared.presentation.auth_dependencies import require_current_user
 
 from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
 
@@ -43,10 +44,36 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
 async def list_listings(
     page: int = 1,
     limit: int = 20,
+    current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
 ):
-    items = await service.list_all(page, limit)
-    total = await service.count_all()
+    company_ids = [
+        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
+        for m in (current_user.memberships or [])
+    ]
+    company_ids = [cid for cid in company_ids if cid is not None]
+    items = await service.list_all(page, limit, company_ids=company_ids)
+    total = await service.count_all(company_ids=company_ids)
+    return PaginatedListingsResponse(
+        items=[_to_listing_data(e) for e in items],
+        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    )
+
+
+@router.get("/marketplace", response_model=PaginatedListingsResponse)
+async def list_marketplace(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    company_ids = [
+        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
+        for m in (current_user.memberships or [])
+    ]
+    company_ids = [cid for cid in company_ids if cid is not None]
+    items = await service.list_marketplace(page, limit, exclude_company_ids=company_ids)
+    total = await service.count_marketplace(exclude_company_ids=company_ids)
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in items],
         meta=PaginationMeta(page=page, pageSize=limit, total=total),

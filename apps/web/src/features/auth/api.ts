@@ -1,5 +1,5 @@
 import { http } from '../../lib/api/http';
-import { AuthResponse, User } from './types';
+import { AuthResponse, MeResponse, User } from './types';
 import { LoginInput } from './schemas';
 
 export const authApi = {
@@ -10,5 +10,5 @@ export const authApi = {
     http.post('/api/v1/auth/logout', {}),
 
   getMe: () =>
-    http.get<User>('/api/v1/auth/me'),
+    http.get<MeResponse>('/api/v1/auth/me'),
 };

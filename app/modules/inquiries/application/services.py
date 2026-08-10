@@ -23,6 +23,18 @@ class InquiryService:
     async def count_all(self) -> int:
         return await self.repository.count_all()
 
+    async def list_sent(self, page: int = 1, limit: int = 20, company_ids=None):
+        return await self.repository.list_sent(page, limit, company_ids=company_ids)
+
+    async def count_sent(self, company_ids=None) -> int:
+        return await self.repository.count_sent(company_ids=company_ids)
+
+    async def list_received(self, page: int = 1, limit: int = 20, seller_company_ids=None):
+        return await self.repository.list_received(page, limit, seller_company_ids=seller_company_ids)
+
+    async def count_received(self, seller_company_ids=None) -> int:
+        return await self.repository.count_received(seller_company_ids=seller_company_ids)
+
     async def create(self, entity: InquiryEntity) -> InquiryEntity:
         entity.validate()
         return await self.repository.create(entity)

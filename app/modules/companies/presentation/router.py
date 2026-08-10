@@ -36,6 +36,11 @@ async def list_companies(
     current_user=Depends(require_current_user),
     service=Depends(get_list_companies_service),
 ):
+    company_ids = [
+        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
+        for m in (current_user.memberships or [])
+    ]
+    company_ids = [cid for cid in company_ids if cid is not None]
     items, total = await service.execute(
         status=status,
         company_type=companyType,
@@ -45,6 +50,7 @@ async def list_companies(
         q=q,
         page=page,
         page_size=pageSize,
+        company_ids=company_ids,
     )
     return PaginatedCompaniesResponse(
         items=[to_company_data(item) for item in items],

@@ -1,6 +1,7 @@
 """inquiries API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
+from app.shared.presentation.auth_dependencies import require_current_user
 
 from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
 
@@ -38,6 +39,40 @@ def _to_data(entity: InquiryEntity) -> InquiryData:
 async def list_inquiries(page: int = 1, limit: int = 20, service: InquiryService = Depends(get_inquiries_service)):
     items = await service.list_all(page, limit)
     total = await service.count_all()
+    return PaginatedInquirysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+
+
+@router.get("/received", response_model=PaginatedInquirysResponse)
+async def list_received_inquiries(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: InquiryService = Depends(get_inquiries_service),
+):
+    company_ids = [
+        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
+        for m in (current_user.memberships or [])
+    ]
+    company_ids = [cid for cid in company_ids if cid is not None]
+    items = await service.list_received(page, limit, seller_company_ids=company_ids)
+    total = await service.count_received(seller_company_ids=company_ids)
+    return PaginatedInquirysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+
+
+@router.get("/sent", response_model=PaginatedInquirysResponse)
+async def list_sent_inquiries(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: InquiryService = Depends(get_inquiries_service),
+):
+    company_ids = [
+        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
+        for m in (current_user.memberships or [])
+    ]
+    company_ids = [cid for cid in company_ids if cid is not None]
+    items = await service.list_sent(page, limit, company_ids=company_ids)
+    total = await service.count_sent(company_ids=company_ids)
     return PaginatedInquirysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 

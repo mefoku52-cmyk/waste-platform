@@ -17,11 +17,17 @@ class ListingsService:
     async def get_by_id(self, id: str) -> Optional[ListingsEntity]:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[ListingsEntity]:
-        return await self.repository.list_all(page, limit)
+    async def list_all(self, page: int = 1, limit: int = 20, company_ids=None) -> List[ListingsEntity]:
+        return await self.repository.list_all(page, limit, company_ids=company_ids)
 
-    async def count_all(self) -> int:
-        return await self.repository.count_all()
+    async def count_all(self, company_ids=None) -> int:
+        return await self.repository.count_all(company_ids=company_ids)
+
+    async def list_marketplace(self, page: int = 1, limit: int = 20, exclude_company_ids=None):
+        return await self.repository.list_marketplace(page, limit, exclude_company_ids=exclude_company_ids)
+
+    async def count_marketplace(self, exclude_company_ids=None) -> int:
+        return await self.repository.count_marketplace(exclude_company_ids=exclude_company_ids)
 
     async def create(self, entity: ListingsEntity) -> ListingsEntity:
         entity.validate()

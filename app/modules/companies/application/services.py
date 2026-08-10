@@ -127,6 +127,7 @@ class ListCompaniesService:
         q: str | None,
         page: int,
         page_size: int,
+        company_ids: list | None = None,
     ) -> tuple[list[CompanyDTO], int]:
         companies, total = await self.repo.list(
             status=status,
@@ -137,6 +138,7 @@ class ListCompaniesService:
             q=q,
             page=page,
             page_size=page_size,
+            company_ids=company_ids,
         )
         return [to_company_dto(company) for company in companies], total
 

@@ -32,9 +32,17 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
         q,
         page,
         page_size,
+        company_ids=None,
     ):
         stmt = select(CompanyModel)
         count_stmt = select(func.count()).select_from(CompanyModel)
+
+        if company_ids is not None:
+            ids = [str(x) for x in company_ids]
+            if not ids:
+                return [], 0
+            stmt = stmt.where(CompanyModel.id.in_(ids))
+            count_stmt = count_stmt.where(CompanyModel.id.in_(ids))
 
         if status:
             stmt = stmt.where(CompanyModel.status == status)
