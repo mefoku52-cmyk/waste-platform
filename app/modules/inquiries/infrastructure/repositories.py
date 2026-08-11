@@ -37,7 +37,10 @@ class InquiryRepositoryImpl(InquiryRepository):
 
     async def list_sent(self, page: int = 1, limit: int = 20, company_ids=None) -> list:
         offset = (page - 1) * limit
-        stmt = select(InquiryModel)
+        stmt = (
+            select(InquiryModel, ListingsModel.title)
+            .outerjoin(ListingsModel, InquiryModel.listing_id == ListingsModel.id)
+        )
         if company_ids is not None:
             ids = [str(x) for x in company_ids if x is not None]
             if not ids:
@@ -45,7 +48,7 @@ class InquiryRepositoryImpl(InquiryRepository):
             stmt = stmt.where(InquiryModel.company_id.in_(ids))
         stmt = stmt.order_by(InquiryModel.created_at.desc()).offset(offset).limit(limit)
         result = await self.session.execute(stmt)
-        return [to_domain(m) for m in result.scalars().all()]
+        return [(to_domain(m), title) for m, title in result.all()]
 
     async def count_sent(self, company_ids=None) -> int:
         stmt = select(func.count()).select_from(InquiryModel)
@@ -58,10 +61,10 @@ class InquiryRepositoryImpl(InquiryRepository):
         return int(result.scalar_one())
 
     async def list_received(self, page: int = 1, limit: int = 20, seller_company_ids=None) -> list:
-        """Dopyty na listingy, ktoré patria mojim firmám."""
+        """Dopyty na listingy, ktoré patria mojim firmám. Vracia (entity, listing_title)."""
         offset = (page - 1) * limit
         stmt = (
-            select(InquiryModel)
+            select(InquiryModel, ListingsModel.title)
             .join(ListingsModel, InquiryModel.listing_id == ListingsModel.id)
         )
         if seller_company_ids is not None:
@@ -71,7 +74,7 @@ class InquiryRepositoryImpl(InquiryRepository):
             stmt = stmt.where(ListingsModel.company_id.in_(ids))
         stmt = stmt.order_by(InquiryModel.created_at.desc()).offset(offset).limit(limit)
         result = await self.session.execute(stmt)
-        return [to_domain(m) for m in result.scalars().all()]
+        return [(to_domain(m), title) for m, title in result.all()]
 
     async def count_received(self, seller_company_ids=None) -> int:
         stmt = (
@@ -86,6 +89,21 @@ class InquiryRepositoryImpl(InquiryRepository):
             stmt = stmt.where(ListingsModel.company_id.in_(ids))
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
+
+
+    async def seller_owns_inquiry(self, inquiry_id: str, seller_company_ids) -> bool:
+        ids = [str(x) for x in (seller_company_ids or []) if x is not None]
+        if not ids:
+            return False
+        stmt = (
+            select(func.count())
+            .select_from(InquiryModel)
+            .join(ListingsModel, InquiryModel.listing_id == ListingsModel.id)
+            .where(InquiryModel.id == inquiry_id)
+            .where(ListingsModel.company_id.in_(ids))
+        )
+        result = await self.session.execute(stmt)
+        return int(result.scalar_one()) > 0
 
     async def create(self, entity: InquiryEntity) -> InquiryEntity:
         model = to_model(entity)

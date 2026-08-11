@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { ListingsTable } from "@/features/listings/components/listings-table";
 import { MarketplaceTable } from "@/features/listings/components/marketplace-table";
 import { InquiriesTable } from "@/features/inquiries/components/inquiries-table";
+import { OpenInquiriesBadge } from "@/features/inquiries/components/open-inquiries-badge";
 import { CompaniesTable } from "@/features/companies/components/companies-table";
 import { useRouter } from "next/navigation";
 
@@ -69,7 +70,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Prijaté dopyty</h2>
+              <h2 className="text-xl font-semibold text-gray-800">Prijaté dopyty <OpenInquiriesBadge /></h2>
             </div>
             <p className="mb-3 text-sm text-gray-500">Záujem o tvoje ponuky</p>
             <InquiriesTable mode="received" />

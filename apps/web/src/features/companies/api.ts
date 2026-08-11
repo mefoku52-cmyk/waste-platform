@@ -16,6 +16,6 @@ export const companiesApi = {
   updateCompany: (id: string, data: Partial<CompanyInput>) =>
     http.patch<Company>(`/api/v1/companies/${id}`, data),
 
-  verifyCompany: (id: string) =>
-    http.post<Company>(`/api/v1/companies/${id}/verify`, {}),
+  transitionStatus: (id: string, toStatus: string) =>
+    http.patch<Company>(`/api/v1/companies/${id}/status`, { toStatus }),
 };

@@ -24,6 +24,7 @@ class ListingsModel(Base):
     status = Column(String(32), nullable=False, default="draft")
     company_id = Column(UUID(as_uuid=True), nullable=False)
     description = Column(Text, nullable=True)
+    image_url = Column(String(512), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     created_by_user_id = Column(UUID(as_uuid=True), nullable=True)

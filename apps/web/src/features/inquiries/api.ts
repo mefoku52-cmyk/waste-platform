@@ -17,4 +17,7 @@ export const inquiriesApi = {
 
   getSent: (params?: Record<string, any>) =>
     http.get<{ items: any[]; meta: any }>('/api/v1/inquiries/sent', { ...params }),
+
+  updateStatus: (id: string, status: 'open' | 'answered' | 'closed') =>
+    http.patch<{ data: any }>(`/api/v1/inquiries/${id}/status`, { status }),
 };

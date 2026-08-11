@@ -17,6 +17,7 @@ class ListingCreateRequest(BaseModel):
     location: str
     companyId: UUID
     description: str | None = None
+    imageUrl: str | None = None
 
 
 class ListingUpdateRequest(BaseModel):
@@ -30,6 +31,7 @@ class ListingUpdateRequest(BaseModel):
     location: str | None = None
     status: str | None = None
     description: str | None = None
+    imageUrl: str | None = None
 
 
 class ListingData(BaseModel):
@@ -45,6 +47,7 @@ class ListingData(BaseModel):
     status: str
     companyId: UUID | None
     description: str | None
+    imageUrl: str | None = None
     createdAt: datetime
     updatedAt: datetime
 

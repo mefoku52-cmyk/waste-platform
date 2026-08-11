@@ -22,6 +22,7 @@ class ListingsEntity(AuditFields):
     price: float | None = None
     currency: str = "EUR"
     description: str | None = None
+    image_url: str | None = None
 
     def validate(self) -> None:
         if not self.title:

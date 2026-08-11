@@ -23,6 +23,10 @@ class InquiryUpdateRequest(BaseModel):
     status: str | None = None
 
 
+class InquiryStatusUpdateRequest(BaseModel):
+    status: str  # open | answered | closed
+
+
 class InquiryData(BaseModel):
     id: UUID
     listingId: UUID
@@ -33,6 +37,7 @@ class InquiryData(BaseModel):
     status: str
     createdAt: datetime
     updatedAt: datetime
+    listingTitle: str | None = None
 
 
 class InquiryResponse(BaseModel):

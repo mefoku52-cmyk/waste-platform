@@ -49,6 +49,21 @@ class InquiryService:
         entity.validate()
         return await self.repository.update(entity)
 
+
+    async def update_status_as_seller(self, id: str, new_status, seller_company_ids=None):
+        """Zmení status len ak listing patrí seller_company_ids."""
+        from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"Inquiry {id} not found")
+        ok = await self.repository.seller_owns_inquiry(id, seller_company_ids or [])
+        if not ok:
+            raise ValidationDomainError("Nie si predávajúci tejto ponuky")
+        existing.status = new_status
+        from datetime import datetime
+        existing.updated_at = datetime.utcnow()
+        return await self.repository.update(existing)
+
     async def delete(self, id: str) -> None:
         existing = await self.repository.get_by_id(id)
         if existing is None:
