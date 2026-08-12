@@ -88,6 +88,15 @@ export default function ListingDetailPage() {
         <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
           <div className="mb-2 text-sm text-gray-500 uppercase tracking-wide">{data.status}</div>
           <h1 className="text-2xl font-bold text-gray-900">{data.title}</h1>
+          {data.imageUrl ? (
+            <div className="mt-4 overflow-hidden rounded-lg border border-gray-200">
+              <img
+                src={data.imageUrl}
+                alt={data.title}
+                className="max-h-80 w-full object-cover"
+              />
+            </div>
+          ) : null}
           <p className="mt-2 text-gray-600 whitespace-pre-wrap">{data.description || 'Bez popisu'}</p>
 
           <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">

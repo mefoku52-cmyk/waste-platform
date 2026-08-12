@@ -69,6 +69,18 @@ class ListingsRepositoryImpl(ListingsRepository):
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
+
+    async def get_company_status(self, company_id) -> str | None:
+        from sqlalchemy import text
+        if company_id is None:
+            return None
+        result = await self.session.execute(
+            text("SELECT status FROM companies WHERE id = :id"),
+            {"id": str(company_id)},
+        )
+        row = result.first()
+        return row[0] if row else None
+
     async def create(self, entity: ListingsEntity) -> ListingsEntity:
         model = to_model(entity)
         self.session.add(model)

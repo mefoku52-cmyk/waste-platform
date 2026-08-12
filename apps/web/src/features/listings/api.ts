@@ -1,5 +1,5 @@
 import { http } from '../../lib/api/http';
-import { PaginatedResponse, ApiResponse } from '../../lib/types/common';
+import { PaginatedResponse } from '../../lib/types/common';
 import { Listing } from './types';
 import { ListingInput } from './schemas';
 
@@ -20,7 +20,7 @@ export const listingsApi = {
     http.put<Listing>(`/api/v1/listings/${id}`, data),
 
   publishListing: (id: string) =>
-    http.put<Listing>(`/api/v1/listings/${id}`, { status: "published" }),
+    http.post<{ data: any }>(`/api/v1/listings/${id}/publish`, {}),
 
   deleteListing: (id: string) =>
     http.delete(`/api/v1/listings/${id}`),

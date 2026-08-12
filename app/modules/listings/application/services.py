@@ -43,6 +43,28 @@ class ListingsService:
         entity.validate()
         return await self.repository.update(entity)
 
+
+    async def publish(self, id: str):
+        """draft → published, len ak firma listing-u je verified."""
+        from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+        from app.modules.listings.domain.enums import ListingsStatus
+        from datetime import datetime
+
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"Listing {id} not found")
+
+        # overenie firmy cez raw SQL v repo
+        status_val = await self.repository.get_company_status(existing.company_id)
+        if status_val != "verified":
+            raise ValidationDomainError(
+                "Publikovať môže len overená firma (status verified). Najprv over firmu."
+            )
+
+        existing.status = ListingsStatus.PUBLISHED
+        existing.updated_at = datetime.utcnow()
+        return await self.repository.update(existing)
+
     async def delete(self, id: str) -> None:
         existing = await self.repository.get_by_id(id)
         if existing is None:

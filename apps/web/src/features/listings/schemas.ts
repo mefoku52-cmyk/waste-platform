@@ -11,6 +11,7 @@ export const listingSchema = z.object({
   location: z.string().min(2, 'Lokalita je povinná'),
   companyId: z.string().uuid('Vyber firmu'),
   description: z.string().optional(),
+  imageUrl: z.string().url().optional().or(z.literal('')),
 });
 
 export type ListingInput = z.infer<typeof listingSchema>;

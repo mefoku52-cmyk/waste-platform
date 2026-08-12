@@ -29,6 +29,7 @@ export const ListingForm = () => {
   } = useForm<ListingInput>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
+      imageUrl: '',
       quantity: 0,
       unit: 'kg',
       currency: 'EUR',
@@ -83,6 +84,13 @@ export const ListingForm = () => {
           rows={3}
           {...register('description')}
           disabled={isPending}
+        />
+      </FormField>
+
+      <FormField label="URL fotky (voliteľné)" error={(errors as any).imageUrl?.message}>
+        <Input
+          placeholder="https://..."
+          {...register('imageUrl')}
         />
       </FormField>
 

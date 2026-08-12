@@ -35,6 +35,7 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
         status=entity.status.value,
         companyId=entity.company_id,
         description=entity.description,
+        imageUrl=getattr(entity, "image_url", None),
         createdAt=entity.created_at,
         updatedAt=entity.updated_at,
     )
@@ -104,6 +105,7 @@ async def create_listing(
         location=request.location,
         company_id=str(request.companyId),
         description=request.description,
+        image_url=getattr(request, "imageUrl", None),
     )
     try:
         created = await service.create(entity)
@@ -122,6 +124,11 @@ async def update_listing(
     if existing is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Listing not found")
 
+    if request.status is not None and str(request.status).lower() == "published":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Na publikáciu použi POST /listings/{id}/publish (vyžaduje verified firmu).",
+        )
     updated_entity = ListingsEntity(
         title=request.title if request.title is not None else existing.title,
         material_type=request.materialType if request.materialType is not None else existing.material_type,
@@ -134,6 +141,7 @@ async def update_listing(
         status=ListingsStatus(request.status) if request.status is not None else existing.status,
         company_id=existing.company_id,
         description=request.description if request.description is not None else existing.description,
+        image_url=request.imageUrl if getattr(request, "imageUrl", None) is not None else getattr(existing, "image_url", None),
     )
     try:
         result = await service.update(id, updated_entity)
@@ -142,6 +150,24 @@ async def update_listing(
     except ValidationDomainError as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
     return ListingResponse(data=_to_listing_data(result))
+
+
+
+@router.post("/{id}/publish", response_model=ListingResponse)
+async def publish_listing(
+    id: str,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    """Publikovať smie len overená (verified) firma vlastníca ponuky."""
+    try:
+        result = await service.publish(id)
+    except ValidationDomainError as exc:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=exc.message) from exc
+    except NotFoundDomainError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+    return ListingResponse(data=_to_listing_data(result))
+
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
