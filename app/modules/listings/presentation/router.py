@@ -1,3 +1,5 @@
+from app.shared.application.side_effects import write_audit
+from app.shared.infrastructure.db.session import get_db_session
 """listings API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -158,6 +160,7 @@ async def publish_listing(
     id: str,
     current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
+    session=Depends(get_db_session),
 ):
     """Publikovať smie len overená (verified) firma vlastníca ponuky."""
     try:
@@ -166,6 +169,19 @@ async def publish_listing(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=exc.message) from exc
     except NotFoundDomainError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+    try:
+        u = getattr(current_user, "user", None)
+        actor = getattr(u, "id", None) if u is not None else getattr(current_user, "id", None)
+        await write_audit(
+            session=session,
+            actor_user_id=actor,
+            action="listing.published",
+            target_type="listing",
+            target_id=id,
+            details=f"title={getattr(result, 'title', '')}",
+        )
+    except Exception:
+        pass
     return ListingResponse(data=_to_listing_data(result))
 
 

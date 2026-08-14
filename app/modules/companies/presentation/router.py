@@ -1,3 +1,5 @@
+from app.shared.application.side_effects import write_audit
+from app.shared.infrastructure.db.session import get_db_session
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query

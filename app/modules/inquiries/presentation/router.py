@@ -1,3 +1,5 @@
+from app.shared.infrastructure.db.session import get_db_session
+from app.shared.application.side_effects import write_audit, notify_company_members
 """inquiries API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
@@ -101,19 +103,74 @@ async def get_inquiry(id: str, service: InquiryService = Depends(get_inquiries_s
 
 
 @router.post("/", response_model=InquiryResponse, status_code=http_status.HTTP_201_CREATED)
-async def create_inquiry(request: InquiryCreateRequest, service: InquiryService = Depends(get_inquiries_service)):
+async def create_inquiry(
+    request: InquiryCreateRequest,
+    current_user=Depends(require_current_user),
+    service: InquiryService = Depends(get_inquiries_service),
+    session=Depends(get_db_session),
+):
+    from uuid import UUID
+    from app.modules.inquiries.domain.entities import InquiryEntity
+    from app.modules.inquiries.domain.enums import InquiryStatus
+    from datetime import datetime
+    from uuid import uuid4
+
+    now = datetime.utcnow()
     entity = InquiryEntity(
+        id=uuid4(),
         listing_id=request.listingId,
         company_id=request.companyId,
         message=request.message,
         contact_email=request.contactEmail,
         contact_phone=request.contactPhone,
+        status=InquiryStatus.OPEN,
+        created_at=now,
+        updated_at=now,
+        created_by_user_id=None,
+        updated_by_user_id=None,
     )
     try:
         created = await service.create(entity)
-    except ValidationDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+    except Exception as exc:
+        # keep original error mapping if present in project
+        from app.shared.domain.exceptions import ValidationDomainError
+        if isinstance(exc, ValidationDomainError):
+            raise HTTPException(status_code=422, detail=exc.message) from exc
+        raise
+
+    try:
+        u = getattr(current_user, "user", None)
+        actor = getattr(u, "id", None) if u is not None else getattr(current_user, "id", None)
+        await write_audit(
+            session=session,
+            actor_user_id=actor,
+            action="inquiry.created",
+            target_type="inquiry",
+            target_id=created.id,
+            details=f"listing={created.listing_id}",
+        )
+        # seller company from listing
+        from sqlalchemy import text
+        r = await session.execute(
+            text("SELECT company_id FROM listings WHERE id = :id"),
+            {"id": str(created.listing_id)},
+        )
+        row = r.first()
+        seller_cid = row[0] if row else None
+        await notify_company_members(
+            session=session,
+            company_id=seller_cid,
+            title="Nový dopyt k ponuke",
+            message=(created.message or "")[:500],
+            notif_type="inquiry_received",
+            related_entity_id=created.id,
+            exclude_user_id=actor,
+        )
+    except Exception:
+        pass
+
     return InquiryResponse(data=_to_data(created))
+
 
 
 @router.patch("/{id}/status", response_model=InquiryResponse)

@@ -4,6 +4,7 @@ import { useAuthRequired } from "@/features/auth/hooks/use-auth-required";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { Button } from "@/components/ui/button";
 import { ListingsTable } from "@/features/listings/components/listings-table";
+import { NotificationsPanel } from "@/features/notifications/components/notifications-panel";
 import { MarketplaceTable } from "@/features/listings/components/marketplace-table";
 import { InquiriesTable } from "@/features/inquiries/components/inquiries-table";
 import { OpenInquiriesBadge } from "@/features/inquiries/components/open-inquiries-badge";
@@ -50,6 +51,10 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid gap-12">
+          <section>
+            <NotificationsPanel />
+          </section>
+
           <section>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">Aktuálne ponuky</h2>
