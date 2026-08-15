@@ -23,6 +23,29 @@ class ComplianceRecordRepositoryImpl(ComplianceRecordRepository):
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
+    async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20):
+        if not company_ids:
+            return []
+        offset = (page - 1) * limit
+        result = await self.session.execute(
+            select(ComplianceRecordModel)
+            .where(ComplianceRecordModel.company_id.in_(list(company_ids)))
+            .order_by(ComplianceRecordModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        return [to_domain(m) for m in result.scalars().all()]
+
+    async def count_by_company_ids(self, company_ids) -> int:
+        if not company_ids:
+            return 0
+        result = await self.session.execute(
+            select(func.count()).select_from(ComplianceRecordModel).where(
+                ComplianceRecordModel.company_id.in_(list(company_ids))
+            )
+        )
+        return int(result.scalar_one())
+
     async def list_all(self, page: int = 1, limit: int = 20) -> List[ComplianceRecordEntity]:
         offset = (page - 1) * limit
         result = await self.session.execute(select(ComplianceRecordModel).order_by(ComplianceRecordModel.created_at.desc()).offset(offset).limit(limit))

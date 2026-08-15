@@ -1,3 +1,4 @@
+from app.shared.presentation.auth_dependencies import require_current_user
 """compliance API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
@@ -35,9 +36,19 @@ def _to_data(entity: ComplianceRecordEntity) -> ComplianceRecordData:
 
 
 @router.get("/", response_model=PaginatedComplianceRecordsResponse)
-async def list_compliance(page: int = 1, limit: int = 20, service: ComplianceRecordService = Depends(get_compliance_service)):
-    items = await service.list_all(page, limit)
-    total = await service.count_all()
+async def list_compliance(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: ComplianceRecordService = Depends(get_compliance_service),
+):
+    company_ids = []
+    for m in (current_user.memberships or []):
+        cid = m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None)
+        if cid is not None:
+            company_ids.append(cid)
+    items = await service.list_by_company_ids(company_ids, page, limit)
+    total = await service.count_by_company_ids(company_ids)
     return PaginatedComplianceRecordsResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 
@@ -50,7 +61,7 @@ async def get_compliance(id: str, service: ComplianceRecordService = Depends(get
 
 
 @router.post("/", response_model=ComplianceRecordResponse, status_code=http_status.HTTP_201_CREATED)
-async def create_compliance(request: ComplianceRecordCreateRequest, service: ComplianceRecordService = Depends(get_compliance_service)):
+async def create_compliance(request: ComplianceRecordCreateRequest, current_user=Depends(require_current_user), service: ComplianceRecordService = Depends(get_compliance_service)):
     entity = ComplianceRecordEntity(
         company_id=request.companyId,
         regulation_type=request.regulationType,

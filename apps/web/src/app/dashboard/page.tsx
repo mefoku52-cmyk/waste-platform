@@ -1,5 +1,7 @@
 'use client';
 
+import { ComplianceTable } from "@/features/compliance/components/compliance-table";
+
 import { AuditTable } from "@/features/admin/components/audit-table";
 import { DocumentsTable } from "@/features/documents/components/documents-table";
 
@@ -117,6 +119,13 @@ export default function DashboardPage() {
               <h2 className="text-xl font-semibold text-gray-800">Audit log</h2>
             </div>
             <AuditTable />
+          </section>
+
+          <section>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Compliance</h2>
+            </div>
+            <ComplianceTable />
           </section>
         </div>
       </div>

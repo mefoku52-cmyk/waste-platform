@@ -20,6 +20,12 @@ class ComplianceRecordService:
     async def list_all(self, page: int = 1, limit: int = 20) -> List[ComplianceRecordEntity]:
         return await self.repository.list_all(page, limit)
 
+    async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20):
+        return await self.repository.list_by_company_ids(company_ids, page, limit)
+
+    async def count_by_company_ids(self, company_ids) -> int:
+        return await self.repository.count_by_company_ids(company_ids)
+
     async def count_all(self) -> int:
         return await self.repository.count_all()
 
