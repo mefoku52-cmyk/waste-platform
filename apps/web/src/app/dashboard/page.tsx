@@ -1,3 +1,4 @@
+import { DocumentsTable } from "@/features/documents/components/documents-table";
 'use client';
 
 import { useAuthRequired } from "@/features/auth/hooks/use-auth-required";
@@ -97,6 +98,13 @@ export default function DashboardPage() {
               </Button>
             </div>
             <CompaniesTable />
+          </section>
+
+          <section>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Dokumenty</h2>
+            </div>
+            <DocumentsTable />
           </section>
         </div>
       </div>
