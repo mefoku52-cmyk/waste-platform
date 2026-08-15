@@ -132,10 +132,23 @@ async def transition_company_status(
     payload: CompanyStatusTransitionRequest,
     current_user=Depends(require_current_user),
     service=Depends(get_transition_company_status_service),
+    session=Depends(get_db_session),
 ):
     dto = await service.execute(
         company_id=company_id,
         to_status=payload.toStatus,
         actor_user_id=current_user.user.id,
     )
+    try:
+        actor = getattr(getattr(current_user, "user", None), "id", None)
+        await write_audit(
+            session=session,
+            actor_user_id=actor,
+            action="company.status_changed",
+            target_type="company",
+            target_id=company_id,
+            details=f"toStatus={payload.toStatus}",
+        )
+    except Exception:
+        pass
     return CompanyResponse(data=to_company_data(dto))
