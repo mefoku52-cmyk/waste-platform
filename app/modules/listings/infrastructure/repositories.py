@@ -113,3 +113,15 @@ class ListingsRepositoryImpl(ListingsRepository):
             sql_delete(ListingsModel).where(ListingsModel.id == id)
         )
         await self.session.commit()
+
+    async def find_matches(self, *, material_type: str, exclude_company_ids, limit: int = 20):
+        """Published listings with same material_type, excluding given companies."""
+        stmt = select(ListingsModel).where(ListingsModel.status == "published")
+        if material_type:
+            stmt = stmt.where(ListingsModel.material_type.ilike(f"%{material_type.strip()}%"))
+        if exclude_company_ids:
+            stmt = stmt.where(~ListingsModel.company_id.in_(list(exclude_company_ids)))
+        stmt = stmt.order_by(ListingsModel.created_at.desc()).limit(limit)
+        rows = (await self.session.execute(stmt)).scalars().all()
+        return [to_domain(r) for r in rows]
+

@@ -70,3 +70,10 @@ class ListingsService:
         if existing is None:
             raise NotFoundDomainError(f"Listing {id} not found")
         await self.repository.delete(id)
+
+    async def find_matches(self, *, material_type: str, exclude_company_ids, limit: int = 20):
+        return await self.repository.find_matches(
+            material_type=material_type,
+            exclude_company_ids=exclude_company_ids or [],
+            limit=limit,
+        )

@@ -24,4 +24,7 @@ export const listingsApi = {
 
   deleteListing: (id: string) =>
     http.delete(`/api/v1/listings/${id}`),
+
+  getMatches: (materialType: string, params?: Record<string, any>) =>
+    http.get<PaginatedResponse<Listing>>(`/api/v1/listings/matches?materialType=${encodeURIComponent(materialType)}`, { ...params }),
 };

@@ -83,6 +83,34 @@ async def list_marketplace(
     )
 
 
+@router.get("/matches", response_model=PaginatedListingsResponse)
+async def list_matches(
+    materialType: str,
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    """Rule-based match: published listings with same materialType, not own companies."""
+    company_ids = []
+    for m in (current_user.memberships or []):
+        cid = m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None)
+        if cid is not None:
+            company_ids.append(cid)
+    items = await service.find_matches(
+        material_type=materialType,
+        exclude_company_ids=company_ids,
+        limit=limit,
+    )
+    # page slice simple
+    start = (page - 1) * limit
+    slice_items = items[start:start + limit]
+    return PaginatedListingsResponse(
+        items=[_to_listing_data(e) for e in slice_items],
+        meta=PaginationMeta(page=page, pageSize=limit, total=len(items)),
+    )
+
+
 @router.get("/{id}", response_model=ListingResponse)
 async def get_listing(id: str, service: ListingsService = Depends(get_listings_service)):
     entity = await service.get_by_id(id)

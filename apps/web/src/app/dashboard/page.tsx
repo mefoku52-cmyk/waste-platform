@@ -1,5 +1,7 @@
 'use client';
 
+import { MatchesPanel } from "@/features/listings/components/matches-panel";
+
 import { ComplianceTable } from "@/features/compliance/components/compliance-table";
 
 import { AuditTable } from "@/features/admin/components/audit-table";
@@ -76,6 +78,14 @@ export default function DashboardPage() {
             </div>
             <p className="mb-3 text-sm text-gray-500">Publikované ponuky od iných firiem</p>
             <MarketplaceTable />
+          </section>
+
+          <section>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Odporúčané zhody</h2>
+            </div>
+            <p className="mb-3 text-sm text-gray-500">Publikované ponuky s rovnakým typom materiálu (bez tvojich firiem)</p>
+            <MatchesPanel />
           </section>
 
           <section>
