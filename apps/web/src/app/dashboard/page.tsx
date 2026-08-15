@@ -1,6 +1,7 @@
+'use client';
+
 import { AuditTable } from "@/features/admin/components/audit-table";
 import { DocumentsTable } from "@/features/documents/components/documents-table";
-'use client';
 
 import { useAuthRequired } from "@/features/auth/hooks/use-auth-required";
 import { useLogout } from "@/features/auth/hooks/use-logout";

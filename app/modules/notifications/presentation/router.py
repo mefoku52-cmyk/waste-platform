@@ -1,3 +1,4 @@
+from app.shared.presentation.auth_dependencies import require_current_user
 """notifications API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
@@ -34,9 +35,15 @@ def _to_data(entity: NotificationEntity) -> NotificationData:
 
 
 @router.get("/", response_model=PaginatedNotificationsResponse)
-async def list_notifications(page: int = 1, limit: int = 20, service: NotificationService = Depends(get_notifications_service)):
-    items = await service.list_all(page, limit)
-    total = await service.count_all()
+async def list_notifications(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: NotificationService = Depends(get_notifications_service),
+):
+    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
+    items = await service.list_by_user_id(uid, page, limit)
+    total = await service.count_by_user_id(uid)
     return PaginatedNotificationsResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 

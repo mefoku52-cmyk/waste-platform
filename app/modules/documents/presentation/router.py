@@ -1,3 +1,4 @@
+from app.shared.presentation.auth_dependencies import require_current_user
 """documents API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
@@ -35,9 +36,19 @@ def _to_data(entity: DocumentEntity) -> DocumentData:
 
 
 @router.get("/", response_model=PaginatedDocumentsResponse)
-async def list_documents(page: int = 1, limit: int = 20, service: DocumentService = Depends(get_documents_service)):
-    items = await service.list_all(page, limit)
-    total = await service.count_all()
+async def list_documents(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: DocumentService = Depends(get_documents_service),
+):
+    company_ids = []
+    for m in (current_user.memberships or []):
+        cid = m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None)
+        if cid is not None:
+            company_ids.append(cid)
+    items = await service.list_by_company_ids(company_ids, page, limit)
+    total = await service.count_by_company_ids(company_ids)
     return PaginatedDocumentsResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 

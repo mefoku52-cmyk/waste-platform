@@ -2,7 +2,7 @@
 
 from typing import List, Optional
 
-from sqlalchemy import delete as sql_delete
+from sqlalchemy import and_,  delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,6 +22,28 @@ class DocumentRepositoryImpl(DocumentRepository):
         result = await self.session.execute(select(DocumentModel).where(DocumentModel.id == id))
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
+
+    async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20):
+        if not company_ids:
+            return []
+        offset = (page - 1) * limit
+        ids = list(company_ids)
+        result = await self.session.execute(
+            select(DocumentModel)
+            .where(DocumentModel.company_id.in_(ids))
+            .order_by(DocumentModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        return [to_domain(m) for m in result.scalars().all()]
+
+    async def count_by_company_ids(self, company_ids) -> int:
+        if not company_ids:
+            return 0
+        result = await self.session.execute(
+            select(func.count()).select_from(DocumentModel).where(DocumentModel.company_id.in_(list(company_ids)))
+        )
+        return int(result.scalar_one())
 
     async def list_all(self, page: int = 1, limit: int = 20) -> List[DocumentEntity]:
         offset = (page - 1) * limit

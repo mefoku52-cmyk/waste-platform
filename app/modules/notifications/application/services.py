@@ -20,6 +20,12 @@ class NotificationService:
     async def list_all(self, page: int = 1, limit: int = 20) -> List[NotificationEntity]:
         return await self.repository.list_all(page, limit)
 
+    async def list_by_user_id(self, user_id, page: int = 1, limit: int = 20):
+        return await self.repository.list_by_user_id(user_id, page, limit)
+
+    async def count_by_user_id(self, user_id) -> int:
+        return await self.repository.count_by_user_id(user_id)
+
     async def count_all(self) -> int:
         return await self.repository.count_all()
 

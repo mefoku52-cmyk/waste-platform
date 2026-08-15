@@ -23,6 +23,23 @@ class AdminAuditEntryRepositoryImpl(AdminAuditEntryRepository):
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
+    async def list_by_actor(self, actor_user_id, page: int = 1, limit: int = 20):
+        offset = (page - 1) * limit
+        result = await self.session.execute(
+            select(AdminAuditEntryModel)
+            .where(AdminAuditEntryModel.actor_user_id == actor_user_id)
+            .order_by(AdminAuditEntryModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        return [to_domain(m) for m in result.scalars().all()]
+
+    async def count_by_actor(self, actor_user_id) -> int:
+        result = await self.session.execute(
+            select(func.count()).select_from(AdminAuditEntryModel).where(AdminAuditEntryModel.actor_user_id == actor_user_id)
+        )
+        return int(result.scalar_one())
+
     async def list_all(self, page: int = 1, limit: int = 20) -> List[AdminAuditEntryEntity]:
         offset = (page - 1) * limit
         result = await self.session.execute(select(AdminAuditEntryModel).order_by(AdminAuditEntryModel.created_at.desc()).offset(offset).limit(limit))

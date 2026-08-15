@@ -1,3 +1,4 @@
+from app.shared.presentation.auth_dependencies import require_current_user
 """admin API router."""
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
@@ -35,9 +36,15 @@ def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
 
 
 @router.get("/", response_model=PaginatedAdminAuditEntrysResponse)
-async def list_admin(page: int = 1, limit: int = 20, service: AdminAuditEntryService = Depends(get_admin_service)):
-    items = await service.list_all(page, limit)
-    total = await service.count_all()
+async def list_admin(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_current_user),
+    service: AdminAuditEntryService = Depends(get_admin_service),
+):
+    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
+    items = await service.list_by_actor(uid, page, limit)
+    total = await service.count_by_actor(uid)
     return PaginatedAdminAuditEntrysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 
