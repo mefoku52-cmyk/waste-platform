@@ -1,3 +1,4 @@
+import { AuditTable } from "@/features/admin/components/audit-table";
 import { DocumentsTable } from "@/features/documents/components/documents-table";
 'use client';
 
@@ -103,8 +104,18 @@ export default function DashboardPage() {
           <section>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">Dokumenty</h2>
+              <Button size="sm" variant="secondary" onClick={() => router.push('/dashboard/documents/new')}>
+                Pridať dokument
+              </Button>
             </div>
             <DocumentsTable />
+          </section>
+
+          <section>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">Audit log</h2>
+            </div>
+            <AuditTable />
           </section>
         </div>
       </div>
