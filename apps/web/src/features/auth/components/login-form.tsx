@@ -76,6 +76,11 @@ export const LoginForm = () => {
           Zabudnuté heslo – zatiaľ nie je dostupné (pridáme neskôr)
         </p>
       </div>
+          <p className="text-center text-sm text-gray-600">
+        <Link href="/forgot-password" className="text-blue-600 hover:underline">Zabudnuté heslo?</Link>
+        {' · '}
+        <Link href="/register" className="text-blue-600 hover:underline">Registrácia</Link>
+      </p>
     </form>
   );
 };

@@ -1,3 +1,4 @@
+from app.shared.infrastructure.db.session import get_db_session
 from fastapi import APIRouter, Depends, Response, status
 
 from app.modules.auth.presentation.dependencies import (
@@ -9,10 +10,12 @@ from app.modules.auth.presentation.dependencies import (
 from app.modules.auth.presentation.schemas import (
     AuthTokenPairResponse,
     CurrentUserResponse,
+    ForgotPasswordRequest,
     LoginRequest,
     LogoutRequest,
     MembershipContext,
     RefreshTokenRequest,
+    ResetPasswordRequest,
 )
 from app.modules.users.presentation.mappers import to_user_data
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -65,3 +68,34 @@ async def me(current_user=Depends(require_current_user), service=Depends(get_aut
             for item in context.memberships
         ],
     )
+
+
+@router.post("/forgot-password")
+async def forgot_password(payload: ForgotPasswordRequest, session=Depends(get_db_session)):
+    from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
+    from app.shared.application.passwords import PasswordService
+    from app.modules.auth.application.password_reset import PasswordResetService
+
+    repo = SqlAlchemyUserRepository(session)
+    svc = PasswordResetService(user_repo=repo, password_service=PasswordService())
+    return await svc.request_reset(payload.email)
+
+
+@router.post("/reset-password")
+async def reset_password(payload: ResetPasswordRequest, session=Depends(get_db_session)):
+    from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
+    from app.shared.application.passwords import PasswordService
+    from app.modules.auth.application.password_reset import PasswordResetService
+    from app.shared.domain.exceptions import ValidationDomainError, NotFoundDomainError
+    from fastapi import HTTPException
+
+    repo = SqlAlchemyUserRepository(session)
+    svc = PasswordResetService(user_repo=repo, password_service=PasswordService())
+    try:
+        await svc.reset_password(payload.token, payload.newPassword)
+    except ValidationDomainError as exc:
+        raise HTTPException(status_code=400, detail=getattr(exc, "message", str(exc)))
+    except NotFoundDomainError as exc:
+        raise HTTPException(status_code=404, detail=getattr(exc, "message", str(exc)))
+    return {"ok": True, "message": "Heslo bolo zmenené."}
+

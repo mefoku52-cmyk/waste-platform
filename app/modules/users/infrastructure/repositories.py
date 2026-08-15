@@ -59,6 +59,7 @@ class SqlAlchemyUserRepository(UserRepository):
         model = await self.session.get(UserModel, str(user.id))
         if model is None:
             return
+        model.password_hash = user.password_hash
         model.status = user.status.value
         model.first_name = user.first_name
         model.last_name = user.last_name

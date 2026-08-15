@@ -11,4 +11,10 @@ export const authApi = {
 
   getMe: () =>
     http.get<MeResponse>('/api/v1/auth/me'),
+
+  forgotPassword: (email: string) =>
+    http.post<{ ok: boolean; message: string; resetToken?: string }>('/api/v1/auth/forgot-password', { email }),
+
+  resetPassword: (token: string, newPassword: string) =>
+    http.post<{ ok: boolean; message: string }>('/api/v1/auth/reset-password', { token, newPassword }),
 };

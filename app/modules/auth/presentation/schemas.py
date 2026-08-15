@@ -38,3 +38,12 @@ class CurrentUserResponse(BaseModel):
     user: UserData
     roleCodes: list[str]
     memberships: list[MembershipContext]
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    newPassword: str
+
