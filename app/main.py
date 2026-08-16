@@ -9,7 +9,18 @@ from app.shared.infrastructure.db.base import Base
 from app.shared.infrastructure.db import register_models  # noqa: F401
 from app.shared.infrastructure.db.session import engine
 from app.shared.presentation.api_router import api_router
-from app.shared.presentation.exception_handlers import register_exception_handlers
+from app.shared.presentation.exception_handlers import 
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    if settings.is_production:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
+
+register_exception_handlers
 from app.shared.presentation.health_router import router as health_router
 from app.shared.presentation.metrics_router import router as metrics_router
 

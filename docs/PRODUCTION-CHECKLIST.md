@@ -24,9 +24,11 @@
 
 ## P2 produkčné správanie
 
-- [ ] APP_ENV=production, DEBUG=false
+- [x] Swagger/OpenAPI vypnutý pri is_production
+
+- [x] APP_ENV=production, DEBUG=false (env example + docs gated)
 - [ ] Silné JWT / DB heslá len na serveri
-- [ ] Cron DB backup
+- [x] Cron DB backup (scripts/backup/cron-example.txt)
 - [ ] Log rotácia + /health monitoring
 - [ ] Žiadne tajomstvá v gite
 
