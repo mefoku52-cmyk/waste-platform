@@ -1,3 +1,4 @@
+from app.shared.presentation.auth_dependencies import require_admin
 from app.shared.presentation.auth_dependencies import require_current_user
 """admin API router."""
 
@@ -47,6 +48,22 @@ async def list_admin(
     total = await service.count_by_actor(uid)
     return PaginatedAdminAuditEntrysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
+
+
+
+@router.get("/all", response_model=PaginatedAdminAuditEntrysResponse)
+async def list_all_admin(
+    page: int = 1,
+    limit: int = 20,
+    current_user=Depends(require_admin),
+    service: AdminAuditEntryService = Depends(get_admin_service),
+):
+    items = await service.list_all(page, limit)
+    total = await service.count_all()
+    return PaginatedAdminAuditEntrysResponse(
+        items=[_to_data(e) for e in items],
+        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    )
 
 @router.get("/{id}", response_model=AdminAuditEntryResponse)
 async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin_service)):

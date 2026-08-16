@@ -207,6 +207,7 @@ class Settings(BaseSettings):
 
     # --- GDPR ---
     gdpr_enabled: bool = Field(default=True, alias="GDPR_ENABLED")
+    platform_admin_emails: str = Field(default="admin@cmep-bootstrap.dev", alias="PLATFORM_ADMIN_EMAILS")
     gdpr_cookie_consent: bool = Field(default=True, alias="GDPR_COOKIE_CONSENT")
 
     @property
