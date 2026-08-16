@@ -67,18 +67,19 @@ class PasswordResetService:
         token = secrets.token_urlsafe(32)
         self._store_token(token, str(user.id))
         body = (
-            "Obnova hesla CMEP\n\n"
-            f"Token (platný 30 min): {token}\n\n"
-            f"Link: {settings.frontend_url.rstrip(chr(47))}/reset-password?token={token}\n"
+            "Obnova hesla CMEP
+
+"
+            f"Token (platný 30 min): {token}
+
+"
+            f"Link: {settings.frontend_url.rstrip('/')}/reset-password?token={token}
 "
         )
         sent = send_email(to=email_n, subject="CMEP – obnova hesla", body=body)
-        if settings.is_development or not sent:
-            if getattr(settings, "is_development", True):
+        result["emailSent"] = bool(sent)
+        if settings.is_development:
             result["resetToken"] = token
-            result["emailSent"] = bool(sent)
-        else:
-            result["emailSent"] = True
         return result
 
     async def reset_password(self, token: str, new_password: str) -> None:
