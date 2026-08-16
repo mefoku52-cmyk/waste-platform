@@ -10,6 +10,7 @@ import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { companiesApi } from '../../companies/api';
+import { uploadFile } from '../../uploads/api';
 
 export const ListingForm = () => {
   const { mutate: createListing, isPending, error } = useCreateListing();
@@ -89,8 +90,27 @@ export const ListingForm = () => {
 
       <FormField label="URL fotky (voliteľné)" error={(errors as any).imageUrl?.message}>
         <Input
-          placeholder="https://..."
+          placeholder="https://... alebo nahraj nižšie"
           {...register('imageUrl')}
+          disabled={isPending}
+        />
+        <input
+          type="file"
+          accept="image/*,.pdf"
+          className="mt-2 block w-full text-sm text-gray-600"
+          disabled={isPending}
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            if (!f) return;
+            try {
+              const res = await uploadFile(f);
+              const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
+              const full = res.url.startsWith('http') ? res.url : base + res.url;
+              setValue('imageUrl', full as any, { shouldValidate: true });
+            } catch (err: any) {
+              alert(err?.message || 'Upload zlyhal');
+            }
+          }}
         />
       </FormField>
 
