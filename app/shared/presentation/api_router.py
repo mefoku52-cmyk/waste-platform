@@ -12,6 +12,7 @@ from app.modules.documents.presentation.router import router as documents_router
 from app.modules.inquiries.presentation.router import router as inquiries_router
 from app.modules.listings.presentation.router import router as listings_router
 from app.modules.notifications.presentation.router import router as notifications_router
+from app.modules.uploads.presentation.router import router as uploads_router
 
 
 api_router = APIRouter()
@@ -29,3 +30,4 @@ api_router.include_router(documents_router)
 api_router.include_router(inquiries_router)
 api_router.include_router(listings_router)
 api_router.include_router(notifications_router)
+api_router.include_router(uploads_router)

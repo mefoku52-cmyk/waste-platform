@@ -138,3 +138,5 @@ scripts/grok-audit/vysledok-*.txt
 scripts/grok-audit/log_diag*.txt
 scripts/grok-audit/bg_install_*.txt
 *.bak-*
+var/uploads/*
+!var/uploads/.gitkeep
