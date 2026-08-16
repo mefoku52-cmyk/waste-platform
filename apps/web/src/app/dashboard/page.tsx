@@ -57,6 +57,19 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        
+        <nav className="mb-6 flex flex-wrap gap-2 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
+          <a href="#ponuky" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Ponuky</a>
+          <a href="#trhovisko" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Trhovisko</a>
+          <a href="#zhody" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Zhody</a>
+          <a href="#prijate" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Prijaté dopyty</a>
+          <a href="#odoslane" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Odoslané</a>
+          <a href="#firmy" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Firmy</a>
+          <a href="#dokumenty" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Dokumenty</a>
+          <a href="#audit" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Audit</a>
+          <a href="#compliance" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Compliance</a>
+        </nav>
+
         <div className="grid gap-12">
           <section>
             <NotificationsPanel />
@@ -64,7 +77,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Aktuálne ponuky</h2>
+              <h2 id="ponuky" className="text-xl font-semibold text-gray-800">Aktuálne ponuky</h2>
               <Button size="sm" onClick={() => router.push('/dashboard/listings/new')}>
                 Pridať ponuku
               </Button>
@@ -74,7 +87,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Trhovisko</h2>
+              <h2 id="trhovisko" className="text-xl font-semibold text-gray-800">Trhovisko</h2>
             </div>
             <p className="mb-3 text-sm text-gray-500">Publikované ponuky od iných firiem</p>
             <MarketplaceTable />
@@ -82,7 +95,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Odporúčané zhody</h2>
+              <h2 id="zhody" className="text-xl font-semibold text-gray-800">Odporúčané zhody</h2>
             </div>
             <p className="mb-3 text-sm text-gray-500">Publikované ponuky s rovnakým typom materiálu (bez tvojich firiem)</p>
             <MatchesPanel />
@@ -90,7 +103,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Prijaté dopyty <OpenInquiriesBadge /></h2>
+              <h2 id="prijate" className="text-xl font-semibold text-gray-800">Prijaté dopyty <OpenInquiriesBadge /></h2>
             </div>
             <p className="mb-3 text-sm text-gray-500">Záujem o tvoje ponuky</p>
             <InquiriesTable mode="received" />
@@ -98,7 +111,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Odoslané dopyty</h2>
+              <h2 id="odoslane" className="text-xl font-semibold text-gray-800">Odoslané dopyty</h2>
             </div>
             <p className="mb-3 text-sm text-gray-500">Tvoj záujem o cudzie ponuky</p>
             <InquiriesTable mode="sent" />
@@ -106,7 +119,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Registrované firmy</h2>
+              <h2 id="firmy" className="text-xl font-semibold text-gray-800">Registrované firmy</h2>
               <Button size="sm" variant="secondary" onClick={() => router.push('/dashboard/companies/new')}>
                 Pridať firmu
               </Button>
@@ -116,7 +129,7 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Dokumenty</h2>
+              <h2 id="dokumenty" className="text-xl font-semibold text-gray-800">Dokumenty</h2>
               <Button size="sm" variant="secondary" onClick={() => router.push('/dashboard/documents/new')}>
                 Pridať dokument
               </Button>
@@ -126,14 +139,14 @@ export default function DashboardPage() {
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Audit log</h2>
+              <h2 id="audit" className="text-xl font-semibold text-gray-800">Audit log</h2>
             </div>
             <AuditTable />
           </section>
 
           <section>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">Compliance</h2>
+              <h2 id="compliance" className="text-xl font-semibold text-gray-800">Compliance</h2>
             </div>
             <ComplianceTable />
           </section>
