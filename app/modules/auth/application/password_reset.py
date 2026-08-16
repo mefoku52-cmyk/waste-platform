@@ -69,7 +69,8 @@ class PasswordResetService:
         body = (
             "Obnova hesla CMEP\n\n"
             f"Token (platný 30 min): {token}\n\n"
-            f"Link: http://localhost:3001/reset-password?token={token}\n"
+            f"Link: {settings.frontend_url.rstrip(\"/\")}/reset-password?token={token}
+"
         )
         sent = send_email(to=email_n, subject="CMEP – obnova hesla", body=body)
         if settings.is_development or not sent:

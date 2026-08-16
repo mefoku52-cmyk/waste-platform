@@ -188,6 +188,7 @@ class Settings(BaseSettings):
 
     # --- Application ---
     app_env: str = Field(default="development", alias="APP_ENV")
+    frontend_url: str = Field(default="http://localhost:3001", alias="FRONTEND_URL")
     app_name: str = Field(default="RecycleHub Platform", alias="APP_NAME")
     debug: bool = Field(default=False, alias="DEBUG")
     log_level: str = Field(default="INFO", alias="LOG_LEVEL")
