@@ -47,4 +47,4 @@ curl -s -m 5 -o /dev/null -w "frontend HTTP %{http_code}\n" http://localhost:300
 echo ""
 echo "API:  http://localhost:8001/docs"
 echo "WEB:  http://localhost:3001"
-echo "Logs: tail -f \~/cmep-backend.log \~/cmep-frontend.log"
+echo "Logs: tail -f ~/cmep-backend.log ~/cmep-frontend.log"
