@@ -1,5 +1,5 @@
 from app.shared.infrastructure.db.session import get_db_session
-from fastapi import APIRouter, Depends, Response, status
+from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.modules.auth.presentation.dependencies import (
     get_auth_service,
@@ -24,7 +24,11 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/login", response_model=AuthTokenPairResponse)
-async def login(payload: LoginRequest, service=Depends(get_login_service)):
+async def login(request: Request, payload: LoginRequest, service=Depends(get_login_service)):
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+    ip = client_ip(request)
+    check_rate_limit(f"login:{ip}", limit=10, period=60)
+    check_rate_limit(f"login:email:{payload.email.lower().strip()}", limit=5, period=60)
     dto = await service.execute(email=payload.email, password=payload.password)
     return AuthTokenPairResponse(
         accessToken=dto.access_token,
@@ -71,7 +75,11 @@ async def me(current_user=Depends(require_current_user), service=Depends(get_aut
 
 
 @router.post("/forgot-password")
-async def forgot_password(payload: ForgotPasswordRequest, session=Depends(get_db_session)):
+async def forgot_password(request: Request, payload: ForgotPasswordRequest, session=Depends(get_db_session)):
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+    ip = client_ip(request)
+    check_rate_limit(f"forgot:{ip}", limit=5, period=60)
+    check_rate_limit(f"forgot:email:{payload.email.lower().strip()}", limit=3, period=300)
     from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
     from app.shared.application.passwords import PasswordService
     from app.modules.auth.application.password_reset import PasswordResetService

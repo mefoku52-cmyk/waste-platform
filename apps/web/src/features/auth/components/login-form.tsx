@@ -73,7 +73,7 @@ export const LoginForm = () => {
           </Link>
         </p>
         <p className="text-gray-400 text-xs">
-          Zabudnuté heslo – zatiaľ nie je dostupné (pridáme neskôr)
+          
         </p>
       </div>
           <p className="text-center text-sm text-gray-600">
