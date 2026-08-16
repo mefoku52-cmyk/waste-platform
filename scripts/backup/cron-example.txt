@@ -1,0 +1,2 @@
+# On VPS crontab -e (daily 03:15):
+# 15 3 * * * cd /opt/cmep && docker compose -f docker-compose.production.yml exec -T postgres pg_dump -U cmep cmep | gzip > /var/backups/cmep-$(date +\%Y\%m\%d).sql.gz
