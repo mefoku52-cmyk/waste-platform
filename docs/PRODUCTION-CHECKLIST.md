@@ -1,12 +1,38 @@
-# CMEP – produkčný checklist
+# CMEP – Production checklist
 
-1. APP_ENV=production, DEBUG=false
-2. Silné JWT_SECRET_KEY a JWT_REFRESH_SECRET_KEY (nie auto-generované)
-3. Silné POSTGRES_PASSWORD, zálohy DB
-4. CORS len na reálnu doménu
-5. HTTPS (reverse proxy: Caddy/Nginx)
-6. Redis ak queue/cache
-7. Nespoliehať sa na --reload v produkcii
-8. Monitoring: /health, logy
-9. Overené firmy pred publish (fáza C)
-10. Audit + notifikácie (C2/C3)
+## P0 stabilizácia (hotové 2026-08-16)
+
+- [x] Git checkpoint + tag `checkpoint-pre-production-20260816`
+- [x] Tar archív + DB backup (`\~/cmep-backups/`)
+- [x] FRONTEND_URL v reset e-maile (`settings.frontend_url`)
+- [x] resetToken len v development
+- [x] JWT secrets regenerované (nie v gite)
+- [x] SMTP Gmail App Password funguje (emailSent=true)
+- [x] Rate limit login + forgot
+- [x] Admin ACL (`PLATFORM_ADMIN_EMAILS`)
+- [x] Smoke: health, login, companies, listings, marketplace
+
+## P1 server (ďalej)
+
+- [ ] VPS / cloud inštancia
+- [ ] Docker Compose (api + web + postgres + redis)
+- [ ] Doména + DNS
+- [ ] Nginx reverse proxy
+- [ ] HTTPS (Let's Encrypt)
+- [ ] FRONTEND_URL=https://tvoja-domena
+- [ ] CORS_ALLOWED_ORIGINS na produkčnú doménu
+
+## P2 produkčné správanie
+
+- [ ] APP_ENV=production, DEBUG=false
+- [ ] Silné JWT / DB heslá len na serveri
+- [ ] Cron DB backup
+- [ ] Log rotácia + /health monitoring
+- [ ] Žiadne tajomstvá v gite
+
+## P3 produkt
+
+- [ ] Upload súborov (MinIO/S3)
+- [ ] Admin UI oddelené
+- [ ] E-mail šablóny
+- [ ] GDPR / cookies texty
