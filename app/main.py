@@ -9,18 +9,7 @@ from app.shared.infrastructure.db.base import Base
 from app.shared.infrastructure.db import register_models  # noqa: F401
 from app.shared.infrastructure.db.session import engine
 from app.shared.presentation.api_router import api_router
-from app.shared.presentation.exception_handlers import 
-@app.middleware("http")
-async def security_headers(request, call_next):
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    if settings.is_production:
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    return response
-
-register_exception_handlers
+from app.shared.presentation.exception_handlers import register_exception_handlers
 from app.shared.presentation.health_router import router as health_router
 from app.shared.presentation.metrics_router import router as metrics_router
 
@@ -59,6 +48,20 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-API-Key"],
 )
 
+
+@app.middleware("http")
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    if settings.is_production:
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+    return response
+
+
 register_exception_handlers(app)
 
 app.include_router(health_router, tags=["health"])
@@ -68,4 +71,10 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/", include_in_schema=False)
 async def root():
-    return {"name": "CMEP API", "version": "0.1.0", "status": "operational", "docs": "/docs", "health": "/health"}
+    return {
+        "name": "CMEP API",
+        "version": "0.1.0",
+        "status": "operational",
+        "docs": "/docs",
+        "health": "/health",
+    }
