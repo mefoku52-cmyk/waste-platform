@@ -33,7 +33,7 @@ def _to_data(entity: AnalyticsEventEntity) -> AnalyticsEventData:
     )
 
 
-@router.get(""), response_model=PaginatedAnalyticsEventsResponse)
+@router.get("", response_model=PaginatedAnalyticsEventsResponse)
 async def list_analytics(page: int = 1, limit: int = 20, service: AnalyticsEventService = Depends(get_analytics_service)):
     items = await service.list_all(page, limit)
     total = await service.count_all()
@@ -48,7 +48,7 @@ async def get_analytic(id: str, service: AnalyticsEventService = Depends(get_ana
     return AnalyticsEventResponse(data=_to_data(entity))
 
 
-@router.post(""), response_model=AnalyticsEventResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post("", response_model=AnalyticsEventResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_analytic(request: AnalyticsEventCreateRequest, service: AnalyticsEventService = Depends(get_analytics_service)):
     entity = AnalyticsEventEntity(
         event_type=request.eventType,

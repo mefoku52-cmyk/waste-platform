@@ -47,7 +47,7 @@ def _user_company_ids(current_user) -> list:
     return [cid for cid in ids if cid is not None]
 
 
-@router.get(""), response_model=PaginatedInquiriesResponse)
+@router.get("", response_model=PaginatedInquiriesResponse)
 async def list_inquiries(page: int = 1, limit: int = 20, service: InquiryService = Depends(get_inquiries_service)):
     items = await service.list_all(page, limit)
     total = await service.count_all()
@@ -102,7 +102,7 @@ async def get_inquiry(id: str, service: InquiryService = Depends(get_inquiries_s
     return InquiryResponse(data=_to_data(entity))
 
 
-@router.post(""), response_model=InquiryResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post("", response_model=InquiryResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_inquiry(
     request: InquiryCreateRequest,
     current_user=Depends(require_current_user),

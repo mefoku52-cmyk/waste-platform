@@ -42,7 +42,7 @@ async def upload_file(
     dest.write_bytes(data)
 
     # relative URL served by this API
-    url = f"/api/v1/uploads/files/{name}"
+    url = f"/api/v1/uploads/files/{name}"  # name is uuid+ext file_id
     return {
         "url": url,
         "filename": name,
@@ -52,10 +52,19 @@ async def upload_file(
     }
 
 
-@router.get("/files/{filename}")
-async def get_uploaded_file(filename: str):
-    # prevent path traversal
-    safe = Path(filename).name
+@router.get("/files/{file_id}")
+async def get_uploaded_file(
+    file_id: str,
+    current_user=Depends(require_current_user),
+):
+    """file_id = uuid + extension (nie user-controlled path)."""
+    safe = Path(file_id).name
+    if safe != file_id or ".." in file_id or "/" in file_id or "\\" in file_id:
+        raise HTTPException(status_code=400, detail="Invalid file id")
+    # must look like uuid.ext
+    stem = Path(safe).stem
+    if len(stem) != 32 or any(c not in "0123456789abcdef" for c in stem.lower()):
+        raise HTTPException(status_code=400, detail="Invalid file id format")
     path = UPLOAD_ROOT / safe
     if not path.is_file():
         raise HTTPException(status_code=404, detail="File not found")

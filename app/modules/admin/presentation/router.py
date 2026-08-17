@@ -36,7 +36,7 @@ def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
     )
 
 
-@router.get(""), response_model=PaginatedAdminAuditEntriesResponse)
+@router.get("", response_model=PaginatedAdminAuditEntriesResponse)
 async def list_admin(
     page: int = 1,
     limit: int = 20,
@@ -73,7 +73,7 @@ async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin
     return AdminAuditEntryResponse(data=_to_data(entity))
 
 
-@router.post(""), response_model=AdminAuditEntryResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post("", response_model=AdminAuditEntryResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_admin(request: AdminAuditEntryCreateRequest, service: AdminAuditEntryService = Depends(get_admin_service)):
     entity = AdminAuditEntryEntity(
         actor_user_id=request.actorUserId,
