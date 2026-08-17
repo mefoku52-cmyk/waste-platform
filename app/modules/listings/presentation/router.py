@@ -43,7 +43,7 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
     )
 
 
-@router.get("/", response_model=PaginatedListingsResponse)
+@router.get(""), response_model=PaginatedListingsResponse)
 async def list_listings(
     page: int = 1,
     limit: int = 20,
@@ -119,7 +119,7 @@ async def get_listing(id: str, service: ListingsService = Depends(get_listings_s
     return ListingResponse(data=_to_listing_data(entity))
 
 
-@router.post("/", response_model=ListingResponse, status_code=status.HTTP_201_CREATED)
+@router.post(""), response_model=ListingResponse, status_code=status.HTTP_201_CREATED)
 async def create_listing(
     request: ListingCreateRequest,
     service: ListingsService = Depends(get_listings_service),

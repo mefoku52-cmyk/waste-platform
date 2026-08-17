@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Request, Response, HTTPException, status
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 router = APIRouter(tags=["metrics"])
@@ -29,5 +29,9 @@ RATE_LIMIT_EXCEEDED_TOTAL = Counter(
 
 
 @router.get("/metrics")
-async def metrics() -> Response:
+async def metrics(request: Request) -> Response:
+    # DEV: len localhost. PROD: docs už vypnuté; metrics tiež nie z internetu.
+    client = request.client.host if request.client else ""
+    if client not in ("127.0.0.1", "::1", "localhost"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Metrics are internal only")
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

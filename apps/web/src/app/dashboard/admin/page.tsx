@@ -8,6 +8,12 @@ import { redirect } from "next/navigation";
 export default function AdminPage() {
   const { user, isLoading } = useAuthRequired();
   const { data: stats, isLoading: isLoadingStats } = useAdminStats();
+  const safeStats = (stats || {}) as {
+    total_users?: number;
+    total_listings?: number;
+    total_companies?: number;
+    pending_verifications?: number;
+  };
 
   if (isLoading) return null;
 
@@ -21,10 +27,10 @@ export default function AdminPage() {
       <h1 className="text-3xl font-bold text-gray-900">Administrácia systému</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard title="Používatelia" value={stats?.total_users} loading={isLoadingStats} />
-        <StatCard title="Ponuky" value={stats?.total_listings} loading={isLoadingStats} />
-        <StatCard title="Firmy" value={stats?.total_companies} loading={isLoadingStats} />
-        <StatCard title="Čakajúce overenia" value={stats?.pending_verifications} loading={isLoadingStats} color="text-orange-600" />
+        <StatCard title="Používatelia" value={safeStats.total_users} loading={isLoadingStats} />
+        <StatCard title="Ponuky" value={safeStats.total_listings} loading={isLoadingStats} />
+        <StatCard title="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
+        <StatCard title="Čakajúce overenia" value={safeStats.pending_verifications} loading={isLoadingStats} color="text-orange-600" />
       </div>
 
       <section className="space-y-4">

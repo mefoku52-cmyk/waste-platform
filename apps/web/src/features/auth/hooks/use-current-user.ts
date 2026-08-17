@@ -7,12 +7,11 @@ export const useCurrentUser = () => {
   const token = tokenStore.getToken();
 
   return useQuery<User | null>({
-    queryKey: ['auth-user'],
+    queryKey: ['auth-user', token],
     queryFn: async () => {
       if (!token) return null;
       try {
         const me: any = await authApi.getMe();
-        // Backend: { user, memberships, roleCodes }
         if (me?.user) {
           return {
             ...me.user,
@@ -25,11 +24,18 @@ export const useCurrentUser = () => {
           } as User;
         }
         return me as User;
-      } catch (error) {
-        return null;
+      } catch (error: any) {
+        // Iba skutočné odhlásenie
+        if (error?.status === 401) {
+          tokenStore.clearToken();
+          return null;
+        }
+        // sieť / 500 – nevyhadzuj session
+        throw error;
       }
     },
     enabled: !!token,
     staleTime: 1000 * 60 * 5,
+    retry: 2,
   });
 };

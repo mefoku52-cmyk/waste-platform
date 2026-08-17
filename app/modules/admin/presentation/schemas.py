@@ -45,6 +45,6 @@ class PaginationMeta(BaseModel):
     total: int
 
 
-class PaginatedAdminAuditEntrysResponse(BaseModel):
+class PaginatedAdminAuditEntriesResponse(BaseModel):
     items: list[AdminAuditEntryData]
     meta: PaginationMeta

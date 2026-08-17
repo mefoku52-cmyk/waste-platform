@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const loginSchema = z.object({
   email: z.string().email('Neplatný formát e-mailu'),
   password: z.string().min(6, 'Heslo musí mať aspoň 6 znakov'),
+  remember: z.boolean().optional(),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

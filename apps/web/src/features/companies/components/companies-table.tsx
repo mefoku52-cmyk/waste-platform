@@ -4,10 +4,37 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCompanies } from '../hooks/use-companies';
 import { companiesApi } from '../api';
 import { cn } from '../../../lib/utils/cn';
+import { useCurrentUser } from '../../auth/hooks/use-current-user';
+
+function useIsPlatformAdmin() {
+  const { data: me } = useCurrentUser();
+  const roles = (
+    (me as any)?.roleCodes ||
+    (me as any)?.role_codes ||
+    [(me as any)?.role] ||
+    []
+  )
+    .filter(Boolean)
+    .map((r: string) => String(r).toLowerCase());
+
+  const email = String(
+    (me as any)?.email ||
+      (me as any)?.user?.email ||
+      ''
+  ).toLowerCase();
+
+  const adminEmails = ['admin@cmep-bootstrap.dev'];
+  return (
+    roles.includes('admin') ||
+    roles.includes('platform_admin') ||
+    adminEmails.includes(email)
+  );
+}
 
 export const CompaniesTable = () => {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useCompanies();
+  const isAdmin = useIsPlatformAdmin();
 
   const mutation = useMutation({
     mutationFn: ({ id, toStatus }: { id: string; toStatus: string }) =>
@@ -24,7 +51,8 @@ export const CompaniesTable = () => {
     <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
       {mutation.isError && (
         <div className="bg-red-50 px-4 py-2 text-sm text-red-700">
-          Prechod stavu zlyhal (skontroluj povolenú cestu draft → verification_submitted → verified).
+          {(mutation.error as any)?.message ||
+            'Akcia zlyhala. Schválenie (verified) môže len administrátor.'}
         </div>
       )}
       <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
@@ -69,23 +97,33 @@ export const CompaniesTable = () => {
                   </span>
                 </td>
                 <td className="px-4 py-2 space-x-2 whitespace-nowrap">
+                  {/* majiteľ: len požiadať o overenie */}
                   {company.status === 'draft' && (
                     <button
                       type="button"
                       disabled={mutation.isPending}
                       onClick={() =>
-                        mutation.mutate({ id: company.id, toStatus: 'verification_submitted' })
+                        mutation.mutate({
+                          id: company.id,
+                          toStatus: 'verification_submitted',
+                        })
                       }
                       className="rounded bg-amber-600 px-2 py-1 text-xs text-white hover:bg-amber-700 disabled:opacity-50"
                     >
-                      Na overenie
+                      Požiadať o overenie
                     </button>
                   )}
-                  {company.status === 'verification_submitted' && (
+                  {company.status === 'verification_submitted' && !isAdmin && (
+                    <span className="text-xs text-amber-700">Čaká na administrátora</span>
+                  )}
+                  {/* len admin smie Overiť */}
+                  {isAdmin && company.status === 'verification_submitted' && (
                     <button
                       type="button"
                       disabled={mutation.isPending}
-                      onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified' })}
+                      onClick={() =>
+                        mutation.mutate({ id: company.id, toStatus: 'verified' })
+                      }
                       className="rounded bg-blue-600 px-2 py-1 text-xs text-white hover:bg-blue-700 disabled:opacity-50"
                     >
                       Overiť
@@ -97,6 +135,11 @@ export const CompaniesTable = () => {
           )}
         </tbody>
       </table>
+      {isAdmin && (
+        <div className="border-t bg-slate-50 px-4 py-2 text-xs text-slate-600">
+          Režim administrátora – môžeš schvaľovať firmy.
+        </div>
+      )}
     </div>
   );
 };

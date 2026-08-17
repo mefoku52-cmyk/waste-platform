@@ -20,29 +20,29 @@ export const DocumentForm = () => {
   const [documentType, setDocumentType] = useState('certificate');
   const [fileUrl, setFileUrl] = useState('');
   const [companyId, setCompanyId] = useState('');
-  const [localError, setLocalError] = useState(null);
+  const [localError, setLocalError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  const onFileChange = async (e) => {
+  const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     setLocalError(null);
     setUploading(true);
     try {
       const res = await uploadFile(file);
-      var path = res.url;
+      let path = res.url;
       if (path && path.indexOf('http') !== 0) {
         path = String(config.apiBaseUrl || '') + path;
       }
       setFileUrl(path);
     } catch (err) {
-      setLocalError((err && err.message) || 'Upload zlyhal');
+      setLocalError(((err as any)?.message) || 'Upload zlyhal');
     } finally {
       setUploading(false);
     }
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLocalError(null);
     const cid = companyId || (companies[0] && companies[0].id);
@@ -59,7 +59,7 @@ export const DocumentForm = () => {
       });
       router.push('/dashboard');
     } catch (err) {
-      setLocalError((err && err.message) || 'Uloženie zlyhalo');
+      setLocalError(((err as any)?.message) || 'Uloženie zlyhalo');
     }
   };
 
@@ -114,7 +114,7 @@ export const DocumentForm = () => {
           disabled={busy}
         >
           <option value="">— vyber firmu —</option>
-          {companies.map((c) => (
+          {companies.map((c: any) => (
             <option key={c.id} value={c.id}>
               {c.legalName || c.legal_name || c.id}
             </option>

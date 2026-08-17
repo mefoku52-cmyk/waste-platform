@@ -11,6 +11,7 @@ export const AuthBootstrap = ({ children }: AuthBootstrapProps) => {
   const [mounted, setMounted] = useState(false);
   const { isLoading } = useCurrentUser();
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     setMounted(true);
   }, []);

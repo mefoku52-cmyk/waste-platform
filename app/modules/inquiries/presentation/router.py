@@ -17,7 +17,7 @@ from .schemas import (
     InquiryResponse,
     InquiryUpdateRequest,
     InquiryStatusUpdateRequest,
-    PaginatedInquirysResponse,
+    PaginatedInquiriesResponse,
     PaginationMeta,
 )
 
@@ -47,14 +47,14 @@ def _user_company_ids(current_user) -> list:
     return [cid for cid in ids if cid is not None]
 
 
-@router.get("/", response_model=PaginatedInquirysResponse)
+@router.get(""), response_model=PaginatedInquiriesResponse)
 async def list_inquiries(page: int = 1, limit: int = 20, service: InquiryService = Depends(get_inquiries_service)):
     items = await service.list_all(page, limit)
     total = await service.count_all()
-    return PaginatedInquirysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+    return PaginatedInquiriesResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 
-@router.get("/received", response_model=PaginatedInquirysResponse)
+@router.get("/received", response_model=PaginatedInquiriesResponse)
 async def list_received_inquiries(
     page: int = 1,
     limit: int = 20,
@@ -68,13 +68,13 @@ async def list_received_inquiries(
     company_ids = [cid for cid in company_ids if cid is not None]
     rows = await service.list_received(page, limit, seller_company_ids=company_ids)
     total = await service.count_received(seller_company_ids=company_ids)
-    return PaginatedInquirysResponse(
+    return PaginatedInquiriesResponse(
         items=[_to_data(e, title) for e, title in rows],
         meta=PaginationMeta(page=page, pageSize=limit, total=total),
     )
 
 
-@router.get("/sent", response_model=PaginatedInquirysResponse)
+@router.get("/sent", response_model=PaginatedInquiriesResponse)
 async def list_sent_inquiries(
     page: int = 1,
     limit: int = 20,
@@ -88,7 +88,7 @@ async def list_sent_inquiries(
     company_ids = [cid for cid in company_ids if cid is not None]
     rows = await service.list_sent(page, limit, company_ids=company_ids)
     total = await service.count_sent(company_ids=company_ids)
-    return PaginatedInquirysResponse(
+    return PaginatedInquiriesResponse(
         items=[_to_data(e, title) for e, title in rows],
         meta=PaginationMeta(page=page, pageSize=limit, total=total),
     )
@@ -102,7 +102,7 @@ async def get_inquiry(id: str, service: InquiryService = Depends(get_inquiries_s
     return InquiryResponse(data=_to_data(entity))
 
 
-@router.post("/", response_model=InquiryResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post(""), response_model=InquiryResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_inquiry(
     request: InquiryCreateRequest,
     current_user=Depends(require_current_user),

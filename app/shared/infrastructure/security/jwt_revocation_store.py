@@ -38,7 +38,11 @@ class TokenRevocationStore:
     
     async def is_access_token_revoked(self, jti: str) -> bool:
         client = await self._get_client()
-        return await client.exists(f"revoked:access:{jti}") > 0
+        try:
+            return await client.exists(f"revoked:access:{jti}") > 0
+        except Exception:
+            # fail-open: Redis nedostupny – neodmietaj session
+            return False
     
     async def is_family_revoked(self, family_id: str) -> bool:
         """Check if entire token family is revoked (replay attack detected)."""

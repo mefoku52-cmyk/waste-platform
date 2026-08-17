@@ -15,7 +15,7 @@ from .schemas import (
     AdminAuditEntryData,
     AdminAuditEntryResponse,
     AdminAuditEntryUpdateRequest,
-    PaginatedAdminAuditEntrysResponse,
+    PaginatedAdminAuditEntriesResponse,
     PaginationMeta,
 )
 
@@ -36,7 +36,7 @@ def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
     )
 
 
-@router.get("/", response_model=PaginatedAdminAuditEntrysResponse)
+@router.get(""), response_model=PaginatedAdminAuditEntriesResponse)
 async def list_admin(
     page: int = 1,
     limit: int = 20,
@@ -46,12 +46,12 @@ async def list_admin(
     uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
     items = await service.list_by_actor(uid, page, limit)
     total = await service.count_by_actor(uid)
-    return PaginatedAdminAuditEntrysResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+    return PaginatedAdminAuditEntriesResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
 
 
 
 
-@router.get("/all", response_model=PaginatedAdminAuditEntrysResponse)
+@router.get("/all", response_model=PaginatedAdminAuditEntriesResponse)
 async def list_all_admin(
     page: int = 1,
     limit: int = 20,
@@ -60,7 +60,7 @@ async def list_all_admin(
 ):
     items = await service.list_all(page, limit)
     total = await service.count_all()
-    return PaginatedAdminAuditEntrysResponse(
+    return PaginatedAdminAuditEntriesResponse(
         items=[_to_data(e) for e in items],
         meta=PaginationMeta(page=page, pageSize=limit, total=total),
     )
@@ -73,7 +73,7 @@ async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin
     return AdminAuditEntryResponse(data=_to_data(entity))
 
 
-@router.post("/", response_model=AdminAuditEntryResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post(""), response_model=AdminAuditEntryResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_admin(request: AdminAuditEntryCreateRequest, service: AdminAuditEntryService = Depends(get_admin_service)):
     entity = AdminAuditEntryEntity(
         actor_user_id=request.actorUserId,

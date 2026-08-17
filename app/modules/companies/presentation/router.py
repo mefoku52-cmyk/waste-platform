@@ -20,7 +20,7 @@ from app.modules.companies.presentation.schemas import (
     PaginationMeta,
     CompanyStatusTransitionRequest,
 )
-from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.auth_dependencies import require_current_user, require_admin
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
@@ -66,6 +66,27 @@ async def create_company(
     current_user=Depends(require_current_user),
     service=Depends(get_create_company_service),
 ):
+    
+    # Admin-only statusy (self-verify zakázaný)
+    admin_only = {"verified", "rejected", "suspended", "inactive"}
+    target = str(payload.toStatus).lower()
+    if target in admin_only:
+        roles = list(getattr(current_user, "roleCodes", None) or [])
+        # fallback: memberships / user
+        u = getattr(current_user, "user", None)
+        email = (getattr(u, "email", None) if u is not None else None) or getattr(current_user, "email", None)
+        is_admin = (
+            "admin" in [str(r).lower() for r in roles]
+            or "platform_admin" in [str(r).lower() for r in roles]
+            or (email and str(email).lower() == "admin@cmep-bootstrap.dev")
+        )
+        if not is_admin:
+            from fastapi import HTTPException, status as http_status
+            raise HTTPException(
+                status_code=http_status.HTTP_403_FORBIDDEN,
+                detail="Overenie firmy môže vykonať len administrátor.",
+            )
+
     dto = await service.execute(
         legal_name=payload.legalName,
         trading_name=payload.tradingName,
@@ -134,6 +155,33 @@ async def transition_company_status(
     service=Depends(get_transition_company_status_service),
     session=Depends(get_db_session),
 ):
+    """draft→verification_submitted: majiteľ; verified/rejected/suspended: len admin."""
+    from fastapi import HTTPException, status as http_status
+    from app.core.config import settings
+
+    target = str(getattr(payload, "toStatus", None) or getattr(payload, "to_status", "")).lower()
+    admin_only = {"verified", "rejected", "suspended", "inactive"}
+
+    if target in admin_only:
+        codes = list(
+            getattr(current_user, "roleCodes", None)
+            or getattr(current_user, "role_codes", None)
+            or []
+        )
+        codes = [str(c).lower() for c in codes]
+        u = getattr(current_user, "user", None)
+        email = ""
+        if u is not None:
+            email = str(getattr(u, "email", "") or "").lower()
+        raw = getattr(settings, "platform_admin_emails", None) or "admin@cmep-bootstrap.dev"
+        admins = {x.strip().lower() for x in str(raw).split(",") if x.strip()}
+        is_admin = email in admins or "admin" in codes or "platform_admin" in codes
+        if not is_admin:
+            raise HTTPException(
+                status_code=http_status.HTTP_403_FORBIDDEN,
+                detail="Overenie firmy môže vykonať len administrátor platformy.",
+            )
+
     dto = await service.execute(
         company_id=company_id,
         to_status=payload.toStatus,
@@ -152,3 +200,5 @@ async def transition_company_status(
     except Exception:
         pass
     return CompanyResponse(data=to_company_data(dto))
+
+

@@ -1,12 +1,11 @@
 'use client';
 
+import { Logo } from "@/components/brand/logo";
+
 import { MatchesPanel } from "@/features/listings/components/matches-panel";
-
 import { ComplianceTable } from "@/features/compliance/components/compliance-table";
-
 import { AuditTable } from "@/features/admin/components/audit-table";
 import { DocumentsTable } from "@/features/documents/components/documents-table";
-
 import { useAuthRequired } from "@/features/auth/hooks/use-auth-required";
 import { useLogout } from "@/features/auth/hooks/use-logout";
 import { Button } from "@/components/ui/button";
@@ -18,140 +17,192 @@ import { OpenInquiriesBadge } from "@/features/inquiries/components/open-inquiri
 import { CompaniesTable } from "@/features/companies/components/companies-table";
 import { useRouter } from "next/navigation";
 
+const nav = [
+  { href: "#ponuky", label: "Ponuky" },
+  { href: "#trhovisko", label: "Trhovisko" },
+  { href: "#zhody", label: "Zhody" },
+  { href: "#prijate", label: "Prijaté" },
+  { href: "#odoslane", label: "Odoslané" },
+  { href: "#firmy", label: "Firmy" },
+  { href: "#dokumenty", label: "Dokumenty" },
+  { href: "#audit", label: "Audit" },
+  { href: "#compliance", label: "Compliance" },
+];
+
+function SectionCard({
+  id,
+  title,
+  action,
+  children,
+  subtitle,
+}: {
+  id: string;
+  title: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  subtitle?: string;
+}) {
+  return (
+    <section id={id} className="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-emerald-50/40 px-4 py-3 sm:px-5">
+        <div>
+          <h2 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">{title}</h2>
+          {subtitle ? <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p> : null}
+        </div>
+        {action}
+      </div>
+      <div className="p-3 sm:p-4">{children}</div>
+    </section>
+  );
+}
+
 export default function DashboardPage() {
   const { user, isLoading } = useAuthRequired();
   const { mutate: logout, isPending: isLoggingOut } = useLogout();
   const router = useRouter();
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-100">
+        <div className="text-sm font-medium text-slate-500">Načítavam…</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Platforma pre obehové materiály</h1>
-            {user?.role === 'admin' && (
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 via-slate-50 to-emerald-50/30">
+      {/* sticky top */}
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-3 sm:px-6">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">CMEP</p>
+            <h1 className="truncate text-base font-bold text-slate-900 sm:text-xl">
+              Obehové materiály
+            </h1>
+            {user?.role === "admin" && (
               <button
                 type="button"
-                onClick={() => router.push('/dashboard/admin')}
-                className="text-xs text-blue-600 hover:underline font-medium"
+                onClick={() => router.push("/dashboard/admin")}
+                className="text-[11px] font-medium text-emerald-700 hover:underline"
               >
-                Vstúpiť do Admin panelu →
+                Admin panel →
               </button>
             )}
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <div className="hidden text-right xs:block sm:block">
+              <p className="max-w-[140px] truncate text-xs font-medium text-slate-800 sm:max-w-[200px] sm:text-sm">
+                {user?.email}
+              </p>
+              <p className="text-[10px] capitalize text-slate-500">{user?.role || "user"}</p>
             </div>
             <Button
               variant="outline"
               size="sm"
+              className="border-slate-200 text-slate-700"
               onClick={() => logout()}
               disabled={isLoggingOut}
             >
-              {isLoggingOut ? 'Odhlasujem...' : 'Odhlásiť sa'}
+              {isLoggingOut ? "…" : "Odhlásiť"}
             </Button>
           </div>
         </div>
 
-        
-        <nav className="mb-6 flex flex-wrap gap-2 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
-          <a href="#ponuky" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Ponuky</a>
-          <a href="#trhovisko" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Trhovisko</a>
-          <a href="#zhody" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Zhody</a>
-          <a href="#prijate" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Prijaté dopyty</a>
-          <a href="#odoslane" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Odoslané</a>
-          <a href="#firmy" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Firmy</a>
-          <a href="#dokumenty" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Dokumenty</a>
-          <a href="#audit" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Audit</a>
-          <a href="#compliance" className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-800 hover:bg-blue-50 hover:text-blue-700">Compliance</a>
-        </nav>
-
-        <div className="grid gap-12">
-          <section>
-            <NotificationsPanel />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="ponuky" className="text-xl font-semibold text-gray-800">Aktuálne ponuky</h2>
-              <Button size="sm" onClick={() => router.push('/dashboard/listings/new')}>
-                Pridať ponuku
-              </Button>
-            </div>
-            <ListingsTable />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="trhovisko" className="text-xl font-semibold text-gray-800">Trhovisko</h2>
-            </div>
-            <p className="mb-3 text-sm text-gray-500">Publikované ponuky od iných firiem</p>
-            <MarketplaceTable />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="zhody" className="text-xl font-semibold text-gray-800">Odporúčané zhody</h2>
-            </div>
-            <p className="mb-3 text-sm text-gray-500">Publikované ponuky s rovnakým typom materiálu (bez tvojich firiem)</p>
-            <MatchesPanel />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="prijate" className="text-xl font-semibold text-gray-800">Prijaté dopyty <OpenInquiriesBadge /></h2>
-            </div>
-            <p className="mb-3 text-sm text-gray-500">Záujem o tvoje ponuky</p>
-            <InquiriesTable mode="received" />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="odoslane" className="text-xl font-semibold text-gray-800">Odoslané dopyty</h2>
-            </div>
-            <p className="mb-3 text-sm text-gray-500">Tvoj záujem o cudzie ponuky</p>
-            <InquiriesTable mode="sent" />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="firmy" className="text-xl font-semibold text-gray-800">Registrované firmy</h2>
-              <Button size="sm" variant="secondary" onClick={() => router.push('/dashboard/companies/new')}>
-                Pridať firmu
-              </Button>
-            </div>
-            <CompaniesTable />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="dokumenty" className="text-xl font-semibold text-gray-800">Dokumenty</h2>
-              <Button size="sm" variant="secondary" onClick={() => router.push('/dashboard/documents/new')}>
-                Pridať dokument
-              </Button>
-            </div>
-            <DocumentsTable />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="audit" className="text-xl font-semibold text-gray-800">Audit log</h2>
-            </div>
-            <AuditTable />
-          </section>
-
-          <section>
-            <div className="flex justify-between items-center mb-4">
-              <h2 id="compliance" className="text-xl font-semibold text-gray-800">Compliance</h2>
-            </div>
-            <ComplianceTable />
-          </section>
+        {/* mobile nav chips */}
+        <div className="border-t border-slate-100">
+          <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-3 py-2.5 scrollbar-none sm:px-6">
+            {nav.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="shrink-0 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 active:scale-[0.98]"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-8">
+        <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
+          <div className="border-b border-emerald-50 bg-emerald-50/50 px-4 py-2.5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Notifikácie</p>
+          </div>
+          <div className="p-3 sm:p-4">
+            <NotificationsPanel />
+          </div>
+        </div>
+
+        <SectionCard
+          id="ponuky"
+          title="Aktuálne ponuky"
+          action={
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/dashboard/listings/new")}>
+              + Ponuka
+            </Button>
+          }
+        >
+          <ListingsTable />
+        </SectionCard>
+
+        <SectionCard id="trhovisko" title="Trhovisko" subtitle="Publikované ponuky od iných firiem">
+          <MarketplaceTable />
+        </SectionCard>
+
+        <SectionCard id="zhody" title="Odporúčané zhody" subtitle="Podľa typu materiálu tvojich ponúk">
+          <MatchesPanel />
+        </SectionCard>
+
+        <SectionCard
+          id="prijate"
+          title={
+            <span className="inline-flex items-center gap-2">
+              Prijaté dopyty <OpenInquiriesBadge />
+            </span>
+          }
+        >
+          <InquiriesTable mode="received" />
+        </SectionCard>
+
+        <SectionCard id="odoslane" title="Odoslané dopyty">
+          <InquiriesTable mode="sent" />
+        </SectionCard>
+
+        <SectionCard
+          id="firmy"
+          title="Registrované firmy"
+          action={
+            <Button size="sm" variant="secondary" onClick={() => router.push("/dashboard/companies/new")}>
+              + Firma
+            </Button>
+          }
+        >
+          <CompaniesTable />
+        </SectionCard>
+
+        <SectionCard
+          id="dokumenty"
+          title="Dokumenty"
+          action={
+            <Button size="sm" variant="secondary" onClick={() => router.push("/dashboard/documents/new")}>
+              + Dokument
+            </Button>
+          }
+        >
+          <DocumentsTable />
+        </SectionCard>
+
+        <SectionCard id="audit" title="Audit log">
+          <AuditTable />
+        </SectionCard>
+
+        <SectionCard id="compliance" title="Compliance">
+          <ComplianceTable />
+        </SectionCard>
+
+        <p className="pb-6 text-center text-[11px] text-slate-400">CMEP · lokálny vývoj</p>
+      </main>
     </div>
   );
 }

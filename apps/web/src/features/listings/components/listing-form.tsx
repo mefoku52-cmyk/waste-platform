@@ -26,6 +26,7 @@ export const ListingForm = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<ListingInput>({
     resolver: zodResolver(listingSchema),

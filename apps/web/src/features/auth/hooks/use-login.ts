@@ -7,11 +7,12 @@ export const useLogin = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: LoginInput) => authApi.login(data),
-    onSuccess: (response) => {
-      // Backend vracia accessToken, nie token
-      tokenStore.setToken(response.accessToken);
-      // User sa načíta samostatne cez /auth/me
+    mutationFn: (data: LoginInput) =>
+      authApi.login({ email: data.email, password: data.password }),
+    onSuccess: (response: any, variables) => {
+      const remember = variables.remember !== false;
+      tokenStore.setToken(response.accessToken, remember);
+      queryClient.invalidateQueries({ queryKey: ['auth-user'] });
     },
   });
 };

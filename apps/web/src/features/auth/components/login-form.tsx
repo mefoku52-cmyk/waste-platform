@@ -33,12 +33,15 @@ export const LoginForm = () => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-4 w-full max-w-sm p-6 bg-white rounded-lg shadow-md"
+      className="w-full max-w-sm space-y-4 rounded-2xl border border-white/60 bg-white/90 p-6 shadow-xl shadow-slate-900/5 backdrop-blur-md sm:p-8"
     >
-      <h2 className="text-2xl font-bold text-center mb-6">Prihlásenie</h2>
+      <div className="mb-2 text-center">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">Prihlásenie</h2>
+        <p className="mt-1 text-xs text-slate-500">Vstup do firemného účtu</p>
+      </div>
 
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
           {(error as any).message || 'Nesprávne meno alebo heslo'}
         </div>
       )}
@@ -49,6 +52,7 @@ export const LoginForm = () => {
           placeholder="vas@email.sk"
           {...register('email')}
           disabled={isPending}
+          className="rounded-xl"
         />
       </FormField>
 
@@ -58,29 +62,38 @@ export const LoginForm = () => {
           placeholder="******"
           {...register('password')}
           disabled={isPending}
+          className="rounded-xl"
         />
       </FormField>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
+      <label className="flex items-center gap-2 text-sm text-slate-600">
+        <input type="checkbox" defaultChecked {...register('remember')} className="rounded border-slate-300" />
+        Zapamätať prihlásenie
+      </label>
+
+      <Button
+        type="submit"
+        className="w-full rounded-xl bg-emerald-600 py-2.5 font-semibold hover:bg-emerald-700"
+        disabled={isPending}
+      >
         {isPending ? 'Prihlasujem...' : 'Prihlásiť sa'}
       </Button>
 
-      <div className="text-center text-sm space-y-2 pt-2">
-        <p className="text-gray-600">
-          Nemáte účet?{' '}
-          <Link href="/register" className="text-blue-600 hover:underline font-medium">
-            Registrácia
-          </Link>
-        </p>
-        <p className="text-gray-400 text-xs">
-          
-        </p>
+      <div className="flex flex-col items-center gap-2 pt-1 text-center text-sm">
+        <Link href="/forgot-password" className="text-emerald-700 hover:underline">
+          Zabudnuté heslo?
+        </Link>
+        <button
+          type="button"
+          onClick={() => alert('Google login: treba GOOGLE_CLIENT_ID z Google Cloud Console. Dáme to hneď ako pošleš Client ID.')}
+          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50"
+        >
+          Prihlásiť cez Google
+        </button>
+        <Link href="/register" className="font-medium text-slate-700 hover:text-emerald-700 hover:underline">
+          Vytvoriť účet
+        </Link>
       </div>
-          <p className="text-center text-sm text-gray-600">
-        <Link href="/forgot-password" className="text-blue-600 hover:underline">Zabudnuté heslo?</Link>
-        {' · '}
-        <Link href="/register" className="text-blue-600 hover:underline">Registrácia</Link>
-      </p>
     </form>
   );
 };

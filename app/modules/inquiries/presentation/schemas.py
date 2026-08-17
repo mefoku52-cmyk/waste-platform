@@ -50,6 +50,6 @@ class PaginationMeta(BaseModel):
     total: int
 
 
-class PaginatedInquirysResponse(BaseModel):
+class PaginatedInquiriesResponse(BaseModel):
     items: list[InquiryData]
     meta: PaginationMeta

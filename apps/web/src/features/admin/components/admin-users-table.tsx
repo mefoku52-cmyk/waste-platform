@@ -9,7 +9,7 @@ export const AdminUsersTable = () => {
   if (isLoading) return <div className="p-4 text-center text-gray-600">Načítavam používateľov...</div>;
   if (error) return <div className="p-4 text-red-500 text-center font-medium">Chyba pri načítaní používateľov.</div>;
 
-  const users = data?.data || [];
+  const users = (data as any)?.data || [];
 
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
@@ -30,7 +30,7 @@ export const AdminUsersTable = () => {
               </td>
             </tr>
           ) : (
-            users.map((user) => (
+            users.map((user: any) => (
               <tr key={user.id} className="hover:bg-gray-50 transition-colors">
                 <td className="px-4 py-3 font-medium text-gray-900">{user.first_name} {user.last_name}</td>
                 <td className="px-4 py-3 text-gray-600">{user.email}</td>

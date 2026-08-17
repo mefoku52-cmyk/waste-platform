@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import { AppProviders } from "@/components/providers/app-providers";
 
 export const metadata = {
-  title: "CMEP Web",
+  title: "CMEP · Obehové materiály",
   description: "Circular Materials Exchange Platform frontend"
 };
 

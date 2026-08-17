@@ -10,7 +10,7 @@ export type InquiryCreateInput = {
 
 export const inquiriesApi = {
   create: (data: InquiryCreateInput) =>
-    http.post<{ data: any }>('/api/v1/inquiries/', data),
+    http.post<{ data: any }>('/api/v1/inquiries', data),
 
   getReceived: (params?: Record<string, any>) =>
     http.get<{ items: any[]; meta: any }>('/api/v1/inquiries/received', { ...params }),

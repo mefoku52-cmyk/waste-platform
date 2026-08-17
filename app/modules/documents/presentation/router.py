@@ -35,7 +35,7 @@ def _to_data(entity: DocumentEntity) -> DocumentData:
     )
 
 
-@router.get("/", response_model=PaginatedDocumentsResponse)
+@router.get(""), response_model=PaginatedDocumentsResponse)
 async def list_documents(
     page: int = 1,
     limit: int = 20,
@@ -60,7 +60,7 @@ async def get_document(id: str, service: DocumentService = Depends(get_documents
     return DocumentResponse(data=_to_data(entity))
 
 
-@router.post("/", response_model=DocumentResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post(""), response_model=DocumentResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_document(request: DocumentCreateRequest, service: DocumentService = Depends(get_documents_service)):
     entity = DocumentEntity(
         title=request.title,

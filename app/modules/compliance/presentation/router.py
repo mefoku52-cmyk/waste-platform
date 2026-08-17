@@ -35,7 +35,7 @@ def _to_data(entity: ComplianceRecordEntity) -> ComplianceRecordData:
     )
 
 
-@router.get("/", response_model=PaginatedComplianceRecordsResponse)
+@router.get(""), response_model=PaginatedComplianceRecordsResponse)
 async def list_compliance(
     page: int = 1,
     limit: int = 20,
@@ -60,7 +60,7 @@ async def get_compliance(id: str, service: ComplianceRecordService = Depends(get
     return ComplianceRecordResponse(data=_to_data(entity))
 
 
-@router.post("/", response_model=ComplianceRecordResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post(""), response_model=ComplianceRecordResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_compliance(request: ComplianceRecordCreateRequest, current_user=Depends(require_current_user), service: ComplianceRecordService = Depends(get_compliance_service)):
     entity = ComplianceRecordEntity(
         company_id=request.companyId,

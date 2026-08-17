@@ -34,7 +34,7 @@ def _to_data(entity: NotificationEntity) -> NotificationData:
     )
 
 
-@router.get("/", response_model=PaginatedNotificationsResponse)
+@router.get(""), response_model=PaginatedNotificationsResponse)
 async def list_notifications(
     page: int = 1,
     limit: int = 20,
@@ -55,7 +55,7 @@ async def get_notification(id: str, service: NotificationService = Depends(get_n
     return NotificationResponse(data=_to_data(entity))
 
 
-@router.post("/", response_model=NotificationResponse, status_code=http_status.HTTP_201_CREATED)
+@router.post(""), response_model=NotificationResponse, status_code=http_status.HTTP_201_CREATED)
 async def create_notification(request: NotificationCreateRequest, service: NotificationService = Depends(get_notifications_service)):
     entity = NotificationEntity(
         user_id=request.userId,
