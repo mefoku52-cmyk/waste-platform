@@ -89,31 +89,4 @@ async def create_admin(request: AdminAuditEntryCreateRequest, service: AdminAudi
     return AdminAuditEntryResponse(data=_to_data(created))
 
 
-@router.put("/{id}", response_model=AdminAuditEntryResponse)
-async def update_admin(id: str, request: AdminAuditEntryUpdateRequest, service: AdminAuditEntryService = Depends(get_admin_service)):
-    existing = await service.get_by_id(id)
-    if existing is None:
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="AdminAuditEntry not found")
-    updated_entity = AdminAuditEntryEntity(
-        actor_user_id=request.actorUserId if request.actorUserId is not None else existing.actor_user_id,
-        action=request.action if request.action is not None else existing.action,
-        target_type=request.targetType if request.targetType is not None else existing.target_type,
-        target_id=request.targetId if request.targetId is not None else existing.target_id,
-        details=request.details if request.details is not None else existing.details,
-        status=AdminAuditEntryStatus(request.status) if request.status is not None else existing.status,
-    )
-    try:
-        result = await service.update(id, updated_entity)
-    except NotFoundDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
-    except ValidationDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
-    return AdminAuditEntryResponse(data=_to_data(result))
 
-
-@router.delete("/{id}", status_code=http_status.HTTP_204_NO_CONTENT)
-async def delete_admin(id: str, service: AdminAuditEntryService = Depends(get_admin_service)):
-    try:
-        await service.delete(id)
-    except NotFoundDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
