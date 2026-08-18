@@ -33,7 +33,7 @@ def _role_codes(current_user) -> list[str]:
 async def require_admin(current_user: CurrentUserResponse = Depends(require_current_user)) -> CurrentUserResponse:
     """Platform admin: email in PLATFORM_ADMIN_EMAILS or role code admin."""
     from app.core.config import settings
-    from app.shared.domain.exceptions import UnauthorizedDomainError
+    from app.shared.domain.exceptions import ForbiddenDomainError
 
     email = _user_email(current_user)
     raw = getattr(settings, "platform_admin_emails", None)
@@ -44,5 +44,4 @@ async def require_admin(current_user: CurrentUserResponse = Depends(require_curr
     codes = _role_codes(current_user)
     if email in admins or "admin" in codes or "platform_admin" in codes:
         return current_user
-    raise UnauthorizedDomainError("Admin access required")
-
+    raise ForbiddenDomainError("Admin access required")

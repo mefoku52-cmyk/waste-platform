@@ -3,6 +3,7 @@ from typing import Any
 
 class JwtServiceError(Exception):
     """Base exception for JWT service errors."""
+
     def __init__(self, message: str, details: dict[str, Any] | None = None):
         self.message = message
         self.details = details or {}
@@ -21,6 +22,11 @@ class TokenRevokedError(JwtServiceError):
 
 class TokenFamilyRevokedError(JwtServiceError):
     """Token family has been revoked (replay attack detected)."""
+    pass
+
+
+class TokenUserRevokedError(JwtServiceError):
+    """All user sessions issued before cutoff have been revoked."""
     pass
 
 
