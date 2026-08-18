@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import secrets
 from uuid import UUID
@@ -10,11 +11,16 @@ from app.core.config import settings
 from app.modules.users.domain.repositories import UserRepository
 from app.shared.application.passwords import PasswordService
 from app.shared.infrastructure.email.sender import send_email
+from app.shared.infrastructure.security.jwt_service import JwtService
 
 logger = logging.getLogger(__name__)
 
 RESET_PREFIX = "pwdreset:"
 RESET_TTL_SECONDS = 60 * 30
+
+
+def _token_digest(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 class PasswordResetService:
@@ -24,10 +30,12 @@ class PasswordResetService:
         self,
         user_repo: UserRepository,
         password_service: PasswordService,
+        jwt_service: JwtService,
         redis_client=None,
     ):
         self.user_repo = user_repo
         self.password_service = password_service
+        self.jwt_service = jwt_service
         self.redis = redis_client
 
     def _get_redis(self):
@@ -47,22 +55,37 @@ class PasswordResetService:
             return None
 
     def _store_token(self, token: str, user_id: str) -> None:
-        key = RESET_PREFIX + token
+        from app.shared.domain.exceptions import ValidationDomainError
+
+        key = RESET_PREFIX + _token_digest(token)
         r = self._get_redis()
         if r is not None:
-            r.setex(key, RESET_TTL_SECONDS, user_id)
-        else:
+            r.set(key, user_id, ex=RESET_TTL_SECONDS)
+            return
+
+        if settings.is_development:
+            logger.warning("Password reset using in-memory fallback storage")
             PasswordResetService._mem[key] = user_id
+            return
+
+        logger.error("Password reset unavailable: Redis is not reachable")
+        raise ValidationDomainError(
+            "Obnova hesla je dočasne nedostupná. Skúste to neskôr."
+        )
 
     def _pop_token(self, token: str) -> str | None:
-        key = RESET_PREFIX + token
+        key = RESET_PREFIX + _token_digest(token)
         r = self._get_redis()
         if r is not None:
             uid = r.get(key)
             if uid:
                 r.delete(key)
             return uid
-        return PasswordResetService._mem.pop(key, None)
+
+        if settings.is_development:
+            return PasswordResetService._mem.pop(key, None)
+
+        return None
 
     async def request_reset(self, email: str) -> dict:
         email_n = email.lower().strip()
@@ -78,10 +101,14 @@ class PasswordResetService:
         self._store_token(token, str(user.id))
 
         base = settings.frontend_url.rstrip("/")
+        nl = chr(10)
         body = (
-            "Obnova hesla CMEP\n\n"
-            f"Token (platný 30 min): {token}\n\n"
-            f"Link: {base}/reset-password?token={token}\n"
+            "Obnova hesla CMEP"
+            + nl + nl
+            + f"Token (platný 30 min): {token}"
+            + nl + nl
+            + f"Link: {base}/reset-password?token={token}"
+            + nl
         )
         sent = send_email(to=email_n, subject="CMEP – obnova hesla", body=body)
         result["emailSent"] = bool(sent)
@@ -107,3 +134,4 @@ class PasswordResetService:
             raise NotFoundDomainError("User not found")
         user.password_hash = self.password_service.hash_password(new_password)
         await self.user_repo.update(user)
+        await self.jwt_service.revoke_all_user_tokens(str(user.id))
