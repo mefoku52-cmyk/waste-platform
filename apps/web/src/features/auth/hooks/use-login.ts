@@ -11,7 +11,11 @@ export const useLogin = () => {
       authApi.login({ email: data.email, password: data.password }),
     onSuccess: (response: any, variables) => {
       const remember = variables.remember !== false;
-      tokenStore.setToken(response.accessToken, remember);
+      tokenStore.setTokens(
+        response.accessToken,
+        response.refreshToken,
+        remember,
+      );
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
     },
   });

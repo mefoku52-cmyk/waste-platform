@@ -1,18 +1,28 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginInput } from '../schemas';
 import { useLogin } from '../hooks/use-login';
+import { authApi } from '../api';
+import { tokenStore } from '../../../lib/auth/token-store';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
+
 export const LoginForm = () => {
   const { mutate: login, isPending, error } = useLogin();
   const router = useRouter();
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
 
   const {
     register,
@@ -29,6 +39,68 @@ export const LoginForm = () => {
       },
     });
   };
+
+  useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    if (!clientId || !googleButtonRef.current) return;
+
+    const initGoogle = () => {
+      if (!window.google || !googleButtonRef.current) return;
+
+      googleButtonRef.current.innerHTML = '';
+
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response: { credential?: string }) => {
+          try {
+            if (!response.credential) {
+              throw new Error('Google credential missing');
+            }
+
+            const result = await authApi.googleLogin(response.credential);
+            tokenStore.setTokens(
+              result.accessToken,
+              result.refreshToken,
+              true,
+            );
+            router.push('/dashboard');
+          } catch (e: any) {
+            alert(e?.message || 'Google prihlásenie zlyhalo');
+          }
+        },
+      });
+
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        width: 320,
+        text: 'signin_with',
+        shape: 'rectangular',
+      });
+    };
+
+    const existingScript = document.querySelector(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    ) as HTMLScriptElement | null;
+
+    if (existingScript) {
+      if (window.google) initGoogle();
+      else existingScript.addEventListener('load', initGoogle, { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = initGoogle;
+    document.head.appendChild(script);
+
+    return () => {
+      script.onload = null;
+    };
+  }, [router]);
 
   return (
     <form
@@ -67,7 +139,12 @@ export const LoginForm = () => {
       </FormField>
 
       <label className="flex items-center gap-2 text-sm text-slate-600">
-        <input type="checkbox" defaultChecked {...register('remember')} className="rounded border-slate-300" />
+        <input
+          type="checkbox"
+          defaultChecked
+          {...register('remember')}
+          className="rounded border-slate-300"
+        />
         Zapamätať prihlásenie
       </label>
 
@@ -83,14 +160,15 @@ export const LoginForm = () => {
         <Link href="/forgot-password" className="text-emerald-700 hover:underline">
           Zabudnuté heslo?
         </Link>
-        <button
-          type="button"
-          onClick={() => alert('Google login: treba GOOGLE_CLIENT_ID z Google Cloud Console. Dáme to hneď ako pošleš Client ID.')}
-          className="w-full rounded-xl border border-slate-200 bg-white py-2.5 text-sm font-medium text-slate-800 hover:bg-slate-50"
+
+        <div className="w-full flex justify-center py-1">
+          <div ref={googleButtonRef} />
+        </div>
+
+        <Link
+          href="/register"
+          className="font-medium text-slate-700 hover:text-emerald-700 hover:underline"
         >
-          Prihlásiť cez Google
-        </button>
-        <Link href="/register" className="font-medium text-slate-700 hover:text-emerald-700 hover:underline">
           Vytvoriť účet
         </Link>
       </div>

@@ -6,14 +6,18 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: () => authApi.logout(),
-    onSettled: () => {
-      tokenStore.clearToken();
-      queryClient.setQueryData(['auth-user'], null);
-      queryClient.clear();
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+    mutationFn: async () => {
+      const refreshToken = tokenStore.getRefreshToken();
+
+      if (refreshToken) {
+        await authApi.logout(refreshToken);
       }
+
+      return true;
+    },
+    onSettled: async () => {
+      tokenStore.clearToken();
+      await queryClient.invalidateQueries({ queryKey: ['auth-user'] });
     },
   });
 };
