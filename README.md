@@ -65,3 +65,4 @@ JWT_REFRESH_TOKEN_EXPIRES_DAYS=30
 JWT_ALGORITHM=HS256
 CORS_ALLOWED_ORIGINS=https://app.example.com
 NEXT_PUBLIC_API_BASE_URL=https://api.example.com/api/v1
+# waste-platform
