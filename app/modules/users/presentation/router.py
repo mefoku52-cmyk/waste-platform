@@ -21,11 +21,16 @@ from app.modules.users.presentation.schemas import (
 )
 from app.shared.application.passwords import PasswordService
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.error_schemas import error_responses
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("", response_model=PaginatedUsersResponse)
+@router.get(
+    "",
+    response_model=PaginatedUsersResponse,
+    responses=error_responses(401, 403, 422, 500),
+)
 async def list_users(
     page: int = Query(default=1, ge=1),
     pageSize: int = Query(default=25, ge=1, le=100),
@@ -42,7 +47,12 @@ async def list_users(
     )
 
 
-@router.post("", response_model=UserResponse, status_code=201)
+@router.post(
+    "",
+    response_model=UserResponse,
+    status_code=201,
+    responses=error_responses(409, 422, 500),
+)
 async def create_user(
     payload: UserCreateRequest,
     service=Depends(get_create_user_service),
@@ -62,7 +72,11 @@ async def create_user(
     return UserResponse(data=to_user_data(dto))
 
 
-@router.get("/{user_id}", response_model=UserResponse)
+@router.get(
+    "/{user_id}",
+    response_model=UserResponse,
+    responses=error_responses(401, 403, 404, 500),
+)
 async def get_user(
     user_id: UUID,
     current_user=Depends(require_current_user),
@@ -72,7 +86,11 @@ async def get_user(
     return UserResponse(data=to_user_data(dto))
 
 
-@router.patch("/{user_id}", response_model=UserResponse)
+@router.patch(
+    "/{user_id}",
+    response_model=UserResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
 async def update_user(
     user_id: UUID,
     payload: UserUpdateRequest,
@@ -92,7 +110,11 @@ async def update_user(
     return UserResponse(data=to_user_data(dto))
 
 
-@router.patch("/{user_id}/status", response_model=UserResponse)
+@router.patch(
+    "/{user_id}/status",
+    response_model=UserResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
 async def transition_user_status(
     user_id: UUID,
     payload: UserStatusTransitionRequest,

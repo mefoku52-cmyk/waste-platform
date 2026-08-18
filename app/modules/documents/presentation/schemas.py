@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
+from app.modules.documents.domain.enums import DocumentStatus
+
 
 class DocumentCreateRequest(BaseModel):
     title: str
@@ -20,7 +22,7 @@ class DocumentUpdateRequest(BaseModel):
     fileUrl: str | None = None
     companyId: UUID | None = None
     listingId: UUID | None = None
-    status: str | None = None
+    status: DocumentStatus | None = None
 
 
 class DocumentData(BaseModel):
@@ -30,7 +32,7 @@ class DocumentData(BaseModel):
     fileUrl: str
     companyId: UUID
     listingId: UUID | None
-    status: str
+    status: DocumentStatus
     createdAt: datetime
     updatedAt: datetime
 

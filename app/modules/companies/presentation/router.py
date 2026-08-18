@@ -1,9 +1,9 @@
-from app.shared.application.side_effects import write_audit
-from app.shared.infrastructure.db.session import get_db_session
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
+from app.shared.application.side_effects import write_audit
+from app.shared.infrastructure.db.session import get_db_session
 from app.modules.companies.presentation.dependencies import (
     get_create_company_service,
     get_get_company_service,
@@ -20,12 +20,17 @@ from app.modules.companies.presentation.schemas import (
     PaginationMeta,
     CompanyStatusTransitionRequest,
 )
-from app.shared.presentation.auth_dependencies import require_current_user, require_admin
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.error_schemas import error_responses
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
 
-@router.get("", response_model=PaginatedCompaniesResponse)
+@router.get(
+    "",
+    response_model=PaginatedCompaniesResponse,
+    responses=error_responses(401, 403, 422, 500),
+)
 async def list_companies(
     page: int = Query(default=1, ge=1),
     pageSize: int = Query(default=25, ge=1, le=100),
@@ -60,19 +65,21 @@ async def list_companies(
     )
 
 
-@router.post("", response_model=CompanyResponse, status_code=201)
+@router.post(
+    "",
+    response_model=CompanyResponse,
+    status_code=201,
+    responses=error_responses(401, 403, 409, 422, 500),
+)
 async def create_company(
     payload: CompanyCreateRequest,
     current_user=Depends(require_current_user),
     service=Depends(get_create_company_service),
 ):
-    
-    # Admin-only statusy (self-verify zakázaný)
     admin_only = {"verified", "rejected", "suspended", "inactive"}
-    target = str(payload.toStatus).lower()
+    target = str(getattr(payload, "toStatus", "") or "").lower()
     if target in admin_only:
         roles = list(getattr(current_user, "roleCodes", None) or [])
-        # fallback: memberships / user
         u = getattr(current_user, "user", None)
         email = (getattr(u, "email", None) if u is not None else None) or getattr(current_user, "email", None)
         is_admin = (
@@ -81,11 +88,8 @@ async def create_company(
             or (email and str(email).lower() == "admin@cmep-bootstrap.dev")
         )
         if not is_admin:
-            from fastapi import HTTPException, status as http_status
-            raise HTTPException(
-                status_code=http_status.HTTP_403_FORBIDDEN,
-                detail="Overenie firmy môže vykonať len administrátor.",
-            )
+            from app.shared.domain.exceptions import ForbiddenDomainError
+            raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor.")
 
     dto = await service.execute(
         legal_name=payload.legalName,
@@ -111,7 +115,11 @@ async def create_company(
     return CompanyResponse(data=to_company_data(dto))
 
 
-@router.get("/{company_id}", response_model=CompanyResponse)
+@router.get(
+    "/{company_id}",
+    response_model=CompanyResponse,
+    responses=error_responses(401, 403, 404, 500),
+)
 async def get_company(
     company_id: UUID,
     current_user=Depends(require_current_user),
@@ -121,7 +129,11 @@ async def get_company(
     return CompanyResponse(data=to_company_data(dto))
 
 
-@router.patch("/{company_id}", response_model=CompanyResponse)
+@router.patch(
+    "/{company_id}",
+    response_model=CompanyResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
 async def update_company(
     company_id: UUID,
     payload: CompanyUpdateRequest,
@@ -147,7 +159,11 @@ async def update_company(
     return CompanyResponse(data=to_company_data(dto))
 
 
-@router.patch("/{company_id}/status", response_model=CompanyResponse)
+@router.patch(
+    "/{company_id}/status",
+    response_model=CompanyResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
 async def transition_company_status(
     company_id: UUID,
     payload: CompanyStatusTransitionRequest,
@@ -155,9 +171,8 @@ async def transition_company_status(
     service=Depends(get_transition_company_status_service),
     session=Depends(get_db_session),
 ):
-    """draft→verification_submitted: majiteľ; verified/rejected/suspended: len admin."""
-    from fastapi import HTTPException, status as http_status
     from app.core.config import settings
+    from app.shared.domain.exceptions import ForbiddenDomainError
 
     target = str(getattr(payload, "toStatus", None) or getattr(payload, "to_status", "")).lower()
     admin_only = {"verified", "rejected", "suspended", "inactive"}
@@ -177,10 +192,7 @@ async def transition_company_status(
         admins = {x.strip().lower() for x in str(raw).split(",") if x.strip()}
         is_admin = email in admins or "admin" in codes or "platform_admin" in codes
         if not is_admin:
-            raise HTTPException(
-                status_code=http_status.HTTP_403_FORBIDDEN,
-                detail="Overenie firmy môže vykonať len administrátor platformy.",
-            )
+            raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor platformy.")
 
     dto = await service.execute(
         company_id=company_id,
@@ -200,5 +212,3 @@ async def transition_company_status(
     except Exception:
         pass
     return CompanyResponse(data=to_company_data(dto))
-
-

@@ -1,11 +1,15 @@
 from datetime import datetime
 from uuid import UUID
+
 from pydantic import BaseModel, HttpUrl
+
+from app.modules.companies.domain.enums import CompanyStatus, CompanyType
+
 
 class CompanyCreateRequest(BaseModel):
     legalName: str
     registrationNumber: str
-    companyType: str
+    companyType: CompanyType
     countryCode: str
     addressLine1: str
     city: str
@@ -22,6 +26,7 @@ class CompanyCreateRequest(BaseModel):
     latitude: float | None = None
     longitude: float | None = None
 
+
 class CompanyUpdateRequest(BaseModel):
     legalName: str | None = None
     tradingName: str | None = None
@@ -36,14 +41,15 @@ class CompanyUpdateRequest(BaseModel):
     latitude: float | None = None
     longitude: float | None = None
 
+
 class CompanyData(BaseModel):
     id: UUID
-    status: str
+    status: CompanyStatus
     legalName: str
     tradingName: str | None
     registrationNumber: str
     taxIdentifier: str | None
-    companyType: str
+    companyType: CompanyType
     email: str | None
     phone: str | None
     websiteUrl: str | None
@@ -69,17 +75,21 @@ class CompanyData(BaseModel):
     updatedAt: datetime
     updatedByUserId: UUID | None
 
+
 class CompanyResponse(BaseModel):
     data: CompanyData
+
 
 class PaginationMeta(BaseModel):
     page: int
     pageSize: int
     total: int
 
+
 class PaginatedCompaniesResponse(BaseModel):
     items: list[CompanyData]
     meta: PaginationMeta
 
+
 class CompanyStatusTransitionRequest(BaseModel):
-    toStatus: str
+    toStatus: CompanyStatus

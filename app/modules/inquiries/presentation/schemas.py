@@ -3,14 +3,16 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
+
+from app.modules.inquiries.domain.enums import InquiryStatus
 
 
 class InquiryCreateRequest(BaseModel):
     listingId: UUID
     companyId: UUID
     message: str
-    contactEmail: str
+    contactEmail: EmailStr
     contactPhone: str | None = None
 
 
@@ -18,13 +20,13 @@ class InquiryUpdateRequest(BaseModel):
     listingId: UUID | None = None
     companyId: UUID | None = None
     message: str | None = None
-    contactEmail: str | None = None
+    contactEmail: EmailStr | None = None
     contactPhone: str | None = None
-    status: str | None = None
+    status: InquiryStatus | None = None
 
 
 class InquiryStatusUpdateRequest(BaseModel):
-    status: str  # open | answered | closed
+    status: InquiryStatus
 
 
 class InquiryData(BaseModel):
@@ -32,9 +34,9 @@ class InquiryData(BaseModel):
     listingId: UUID
     companyId: UUID
     message: str
-    contactEmail: str
+    contactEmail: EmailStr
     contactPhone: str | None
-    status: str
+    status: InquiryStatus
     createdAt: datetime
     updatedAt: datetime
     listingTitle: str | None = None

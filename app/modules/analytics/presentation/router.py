@@ -33,14 +33,31 @@ def _to_data(entity: AnalyticsEventEntity) -> AnalyticsEventData:
     )
 
 
-@router.get("", response_model=PaginatedAnalyticsEventsResponse)
-async def list_analytics(page: int = 1, limit: int = 20, service: AnalyticsEventService = Depends(get_analytics_service)):
+@router.get(
+    "",
+    response_model=PaginatedAnalyticsEventsResponse,
+    summary="List analytics events",
+    operation_id="listAnalyticsEvents",
+)
+async def list_analytics(
+    page: int = 1,
+    limit: int = 20,
+    service: AnalyticsEventService = Depends(get_analytics_service),
+):
     items = await service.list_all(page, limit)
     total = await service.count_all()
-    return PaginatedAnalyticsEventsResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+    return PaginatedAnalyticsEventsResponse(
+        items=[_to_data(e) for e in items],
+        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    )
 
 
-@router.get("/{id}", response_model=AnalyticsEventResponse)
+@router.get(
+    "/{id}",
+    response_model=AnalyticsEventResponse,
+    summary="Get analytics event by ID",
+    operation_id="getAnalyticsEventById",
+)
 async def get_analytic(id: str, service: AnalyticsEventService = Depends(get_analytics_service)):
     entity = await service.get_by_id(id)
     if entity is None:
@@ -48,8 +65,17 @@ async def get_analytic(id: str, service: AnalyticsEventService = Depends(get_ana
     return AnalyticsEventResponse(data=_to_data(entity))
 
 
-@router.post("", response_model=AnalyticsEventResponse, status_code=http_status.HTTP_201_CREATED)
-async def create_analytic(request: AnalyticsEventCreateRequest, service: AnalyticsEventService = Depends(get_analytics_service)):
+@router.post(
+    "",
+    response_model=AnalyticsEventResponse,
+    status_code=http_status.HTTP_201_CREATED,
+    summary="Create analytics event",
+    operation_id="createAnalyticsEvent",
+)
+async def create_analytic(
+    request: AnalyticsEventCreateRequest,
+    service: AnalyticsEventService = Depends(get_analytics_service),
+):
     entity = AnalyticsEventEntity(
         event_type=request.eventType,
         entity_type=request.entityType,
@@ -65,8 +91,17 @@ async def create_analytic(request: AnalyticsEventCreateRequest, service: Analyti
     return AnalyticsEventResponse(data=_to_data(created))
 
 
-@router.put("/{id}", response_model=AnalyticsEventResponse)
-async def update_analytic(id: str, request: AnalyticsEventUpdateRequest, service: AnalyticsEventService = Depends(get_analytics_service)):
+@router.patch(
+    "/{id}",
+    response_model=AnalyticsEventResponse,
+    summary="Update analytics event",
+    operation_id="updateAnalyticsEvent",
+)
+async def update_analytic(
+    id: str,
+    request: AnalyticsEventUpdateRequest,
+    service: AnalyticsEventService = Depends(get_analytics_service),
+):
     existing = await service.get_by_id(id)
     if existing is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="AnalyticsEvent not found")
@@ -87,7 +122,12 @@ async def update_analytic(id: str, request: AnalyticsEventUpdateRequest, service
     return AnalyticsEventResponse(data=_to_data(result))
 
 
-@router.delete("/{id}", status_code=http_status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{id}",
+    status_code=http_status.HTTP_204_NO_CONTENT,
+    summary="Delete analytics event",
+    operation_id="deleteAnalyticsEvent",
+)
 async def delete_analytic(id: str, service: AnalyticsEventService = Depends(get_analytics_service)):
     try:
         await service.delete(id)

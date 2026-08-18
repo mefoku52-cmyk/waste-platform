@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.modules.listings.domain.enums import ListingsStatus
+
 
 class ListingCreateRequest(BaseModel):
     title: str
@@ -29,7 +31,7 @@ class ListingUpdateRequest(BaseModel):
     currency: str | None = None
     condition: str | None = None
     location: str | None = None
-    status: str | None = None
+    status: ListingsStatus | None = None
     description: str | None = None
     imageUrl: str | None = None
 
@@ -44,7 +46,7 @@ class ListingData(BaseModel):
     currency: str
     condition: str
     location: str
-    status: str
+    status: ListingsStatus
     companyId: UUID | None
     description: str | None
     imageUrl: str | None = None

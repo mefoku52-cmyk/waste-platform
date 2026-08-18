@@ -4,22 +4,20 @@ from app.shared.presentation.auth_dependencies import require_current_user
 
 from fastapi import APIRouter, Depends, HTTPException, status as http_status
 
-from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+from app.shared.domain.exceptions import ValidationDomainError
 
 from ..application.services import AdminAuditEntryService
 from ..domain.entities import AdminAuditEntryEntity
-from ..domain.enums import AdminAuditEntryStatus
 from .dependencies import get_admin_service
 from .schemas import (
     AdminAuditEntryCreateRequest,
     AdminAuditEntryData,
     AdminAuditEntryResponse,
-    AdminAuditEntryUpdateRequest,
     PaginatedAdminAuditEntriesResponse,
     PaginationMeta,
 )
 
-router = APIRouter(prefix="/admin", tags=["admin"])
+router = APIRouter(prefix="/admin", tags=["admin-audit"])
 
 
 def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
@@ -36,7 +34,12 @@ def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
     )
 
 
-@router.get("", response_model=PaginatedAdminAuditEntriesResponse)
+@router.get(
+    "",
+    response_model=PaginatedAdminAuditEntriesResponse,
+    summary="List current user's audit entries",
+    operation_id="listCurrentUserAuditEntries",
+)
 async def list_admin(
     page: int = 1,
     limit: int = 20,
@@ -46,12 +49,18 @@ async def list_admin(
     uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
     items = await service.list_by_actor(uid, page, limit)
     total = await service.count_by_actor(uid)
-    return PaginatedAdminAuditEntriesResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+    return PaginatedAdminAuditEntriesResponse(
+        items=[_to_data(e) for e in items],
+        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    )
 
 
-
-
-@router.get("/all", response_model=PaginatedAdminAuditEntriesResponse)
+@router.get(
+    "/all",
+    response_model=PaginatedAdminAuditEntriesResponse,
+    summary="List all audit entries",
+    operation_id="listAllAuditEntries",
+)
 async def list_all_admin(
     page: int = 1,
     limit: int = 20,
@@ -65,7 +74,13 @@ async def list_all_admin(
         meta=PaginationMeta(page=page, pageSize=limit, total=total),
     )
 
-@router.get("/{id}", response_model=AdminAuditEntryResponse)
+
+@router.get(
+    "/{id}",
+    response_model=AdminAuditEntryResponse,
+    summary="Get audit entry by ID",
+    operation_id="getAuditEntryById",
+)
 async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin_service)):
     entity = await service.get_by_id(id)
     if entity is None:
@@ -73,8 +88,17 @@ async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin
     return AdminAuditEntryResponse(data=_to_data(entity))
 
 
-@router.post("", response_model=AdminAuditEntryResponse, status_code=http_status.HTTP_201_CREATED)
-async def create_admin(request: AdminAuditEntryCreateRequest, service: AdminAuditEntryService = Depends(get_admin_service)):
+@router.post(
+    "",
+    response_model=AdminAuditEntryResponse,
+    status_code=http_status.HTTP_201_CREATED,
+    summary="Create audit entry",
+    operation_id="createAuditEntry",
+)
+async def create_admin(
+    request: AdminAuditEntryCreateRequest,
+    service: AdminAuditEntryService = Depends(get_admin_service),
+):
     entity = AdminAuditEntryEntity(
         actor_user_id=request.actorUserId,
         action=request.action,
@@ -87,6 +111,3 @@ async def create_admin(request: AdminAuditEntryCreateRequest, service: AdminAudi
     except ValidationDomainError as exc:
         raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
     return AdminAuditEntryResponse(data=_to_data(created))
-
-
-

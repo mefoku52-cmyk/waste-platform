@@ -35,7 +35,12 @@ def _to_data(entity: ComplianceRecordEntity) -> ComplianceRecordData:
     )
 
 
-@router.get("", response_model=PaginatedComplianceRecordsResponse)
+@router.get(
+    "",
+    response_model=PaginatedComplianceRecordsResponse,
+    summary="List compliance records",
+    operation_id="listComplianceRecords",
+)
 async def list_compliance(
     page: int = 1,
     limit: int = 20,
@@ -49,10 +54,18 @@ async def list_compliance(
             company_ids.append(cid)
     items = await service.list_by_company_ids(company_ids, page, limit)
     total = await service.count_by_company_ids(company_ids)
-    return PaginatedComplianceRecordsResponse(items=[_to_data(e) for e in items], meta=PaginationMeta(page=page, pageSize=limit, total=total))
+    return PaginatedComplianceRecordsResponse(
+        items=[_to_data(e) for e in items],
+        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    )
 
 
-@router.get("/{id}", response_model=ComplianceRecordResponse)
+@router.get(
+    "/{id}",
+    response_model=ComplianceRecordResponse,
+    summary="Get compliance record by ID",
+    operation_id="getComplianceRecordById",
+)
 async def get_compliance(id: str, service: ComplianceRecordService = Depends(get_compliance_service)):
     entity = await service.get_by_id(id)
     if entity is None:
@@ -60,8 +73,18 @@ async def get_compliance(id: str, service: ComplianceRecordService = Depends(get
     return ComplianceRecordResponse(data=_to_data(entity))
 
 
-@router.post("", response_model=ComplianceRecordResponse, status_code=http_status.HTTP_201_CREATED)
-async def create_compliance(request: ComplianceRecordCreateRequest, current_user=Depends(require_current_user), service: ComplianceRecordService = Depends(get_compliance_service)):
+@router.post(
+    "",
+    response_model=ComplianceRecordResponse,
+    status_code=http_status.HTTP_201_CREATED,
+    summary="Create compliance record",
+    operation_id="createComplianceRecord",
+)
+async def create_compliance(
+    request: ComplianceRecordCreateRequest,
+    current_user=Depends(require_current_user),
+    service: ComplianceRecordService = Depends(get_compliance_service),
+):
     entity = ComplianceRecordEntity(
         company_id=request.companyId,
         regulation_type=request.regulationType,
@@ -76,8 +99,17 @@ async def create_compliance(request: ComplianceRecordCreateRequest, current_user
     return ComplianceRecordResponse(data=_to_data(created))
 
 
-@router.put("/{id}", response_model=ComplianceRecordResponse)
-async def update_compliance(id: str, request: ComplianceRecordUpdateRequest, service: ComplianceRecordService = Depends(get_compliance_service)):
+@router.patch(
+    "/{id}",
+    response_model=ComplianceRecordResponse,
+    summary="Update compliance record",
+    operation_id="updateComplianceRecord",
+)
+async def update_compliance(
+    id: str,
+    request: ComplianceRecordUpdateRequest,
+    service: ComplianceRecordService = Depends(get_compliance_service),
+):
     existing = await service.get_by_id(id)
     if existing is None:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="ComplianceRecord not found")
@@ -98,7 +130,12 @@ async def update_compliance(id: str, request: ComplianceRecordUpdateRequest, ser
     return ComplianceRecordResponse(data=_to_data(result))
 
 
-@router.delete("/{id}", status_code=http_status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{id}",
+    status_code=http_status.HTTP_204_NO_CONTENT,
+    summary="Delete compliance record",
+    operation_id="deleteComplianceRecord",
+)
 async def delete_compliance(id: str, service: ComplianceRecordService = Depends(get_compliance_service)):
     try:
         await service.delete(id)

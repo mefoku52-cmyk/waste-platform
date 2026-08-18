@@ -1,6 +1,10 @@
 from datetime import datetime
 from uuid import UUID
+
 from pydantic import BaseModel, EmailStr, Field
+
+from app.modules.users.domain.enums import UserStatus
+
 
 class UserCreateRequest(BaseModel):
     email: EmailStr
@@ -12,6 +16,7 @@ class UserCreateRequest(BaseModel):
     locale: str | None = None
     timezone: str | None = None
 
+
 class UserUpdateRequest(BaseModel):
     firstName: str | None = None
     lastName: str | None = None
@@ -20,12 +25,14 @@ class UserUpdateRequest(BaseModel):
     locale: str | None = None
     timezone: str | None = None
 
+
 class UserStatusTransitionRequest(BaseModel):
-    toStatus: str
+    toStatus: UserStatus
+
 
 class UserData(BaseModel):
     id: UUID
-    status: str
+    status: UserStatus
     email: EmailStr
     firstName: str
     lastName: str
@@ -39,13 +46,16 @@ class UserData(BaseModel):
     updatedAt: datetime
     updatedByUserId: UUID | None
 
+
 class UserResponse(BaseModel):
     data: UserData
+
 
 class PaginationMeta(BaseModel):
     page: int
     pageSize: int
     total: int
+
 
 class PaginatedUsersResponse(BaseModel):
     items: list[UserData]

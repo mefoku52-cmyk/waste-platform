@@ -33,15 +33,19 @@ class NotificationService:
         entity.validate()
         return await self.repository.create(entity)
 
-    async def update(self, id: str, entity: NotificationEntity) -> NotificationEntity:
+    async def mark_read(self, id: str) -> NotificationEntity:
         existing = await self.repository.get_by_id(id)
         if existing is None:
             raise NotFoundDomainError(f"Notification {id} not found")
-        entity.id = existing.id
-        entity.created_at = existing.created_at
-        entity.created_by_user_id = existing.created_by_user_id
-        entity.validate()
-        return await self.repository.update(entity)
+        existing.is_read = True
+        return await self.repository.update(existing)
+
+    async def mark_unread(self, id: str) -> NotificationEntity:
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"Notification {id} not found")
+        existing.is_read = False
+        return await self.repository.update(existing)
 
     async def delete(self, id: str) -> None:
         existing = await self.repository.get_by_id(id)

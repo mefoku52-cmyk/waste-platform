@@ -1,15 +1,15 @@
-from app.shared.application.side_effects import write_audit
-from app.shared.infrastructure.db.session import get_db_session
 """listings API router."""
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from app.shared.presentation.auth_dependencies import require_current_user
+from fastapi import APIRouter, Depends, Query, status
 
-from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+from app.shared.application.side_effects import write_audit
+from app.shared.domain.exceptions import ConflictDomainError, NotFoundDomainError
+from app.shared.infrastructure.db.session import get_db_session
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.error_schemas import error_responses
 
 from ..application.services import ListingsService
 from ..domain.entities import ListingsEntity
-from ..domain.enums import ListingsStatus
 from .dependencies import get_listings_service
 from .schemas import (
     ListingCreateRequest,
@@ -34,7 +34,7 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
         currency=entity.currency,
         condition=entity.condition,
         location=entity.location,
-        status=entity.status.value,
+        status=entity.status,
         companyId=entity.company_id,
         description=entity.description,
         imageUrl=getattr(entity, "image_url", None),
@@ -43,83 +43,104 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
     )
 
 
-@router.get("", response_model=PaginatedListingsResponse)
-async def list_listings(
-    page: int = 1,
-    limit: int = 20,
-    current_user=Depends(require_current_user),
-    service: ListingsService = Depends(get_listings_service),
-):
+def _membership_company_ids(current_user) -> list:
     company_ids = [
         (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
         for m in (current_user.memberships or [])
     ]
-    company_ids = [cid for cid in company_ids if cid is not None]
-    items = await service.list_all(page, limit, company_ids=company_ids)
+    return [cid for cid in company_ids if cid is not None]
+
+
+@router.get(
+    "",
+    response_model=PaginatedListingsResponse,
+    responses=error_responses(401, 403, 422, 500),
+)
+async def list_listings(
+    page: int = Query(default=1, ge=1),
+    pageSize: int = Query(default=20, ge=1, le=100),
+    limit: int | None = Query(default=None, ge=1, le=100, include_in_schema=False),
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    effective_page_size = limit or pageSize
+    company_ids = _membership_company_ids(current_user)
+    items = await service.list_all(page, effective_page_size, company_ids=company_ids)
     total = await service.count_all(company_ids=company_ids)
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in items],
-        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+        meta=PaginationMeta(page=page, pageSize=effective_page_size, total=total),
     )
 
 
-@router.get("/marketplace", response_model=PaginatedListingsResponse)
+@router.get(
+    "/marketplace",
+    response_model=PaginatedListingsResponse,
+    responses=error_responses(401, 403, 422, 500),
+)
 async def list_marketplace(
-    page: int = 1,
-    limit: int = 20,
+    page: int = Query(default=1, ge=1),
+    pageSize: int = Query(default=20, ge=1, le=100),
+    limit: int | None = Query(default=None, ge=1, le=100, include_in_schema=False),
     current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
 ):
-    company_ids = [
-        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
-        for m in (current_user.memberships or [])
-    ]
-    company_ids = [cid for cid in company_ids if cid is not None]
-    items = await service.list_marketplace(page, limit, exclude_company_ids=company_ids)
+    effective_page_size = limit or pageSize
+    company_ids = _membership_company_ids(current_user)
+    items = await service.list_marketplace(page, effective_page_size, exclude_company_ids=company_ids)
     total = await service.count_marketplace(exclude_company_ids=company_ids)
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in items],
-        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+        meta=PaginationMeta(page=page, pageSize=effective_page_size, total=total),
     )
 
 
-@router.get("/matches", response_model=PaginatedListingsResponse)
+@router.get(
+    "/matches",
+    response_model=PaginatedListingsResponse,
+    responses=error_responses(401, 403, 422, 500),
+)
 async def list_matches(
     materialType: str,
-    page: int = 1,
-    limit: int = 20,
+    page: int = Query(default=1, ge=1),
+    pageSize: int = Query(default=20, ge=1, le=100),
+    limit: int | None = Query(default=None, ge=1, le=100, include_in_schema=False),
     current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
 ):
-    """Rule-based match: published listings with same materialType, not own companies."""
-    company_ids = []
-    for m in (current_user.memberships or []):
-        cid = m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None)
-        if cid is not None:
-            company_ids.append(cid)
+    effective_page_size = limit or pageSize
+    company_ids = _membership_company_ids(current_user)
     items = await service.find_matches(
         material_type=materialType,
         exclude_company_ids=company_ids,
-        limit=limit,
+        limit=effective_page_size * page,
     )
-    # page slice simple
-    start = (page - 1) * limit
-    slice_items = items[start:start + limit]
+    start = (page - 1) * effective_page_size
+    slice_items = items[start:start + effective_page_size]
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in slice_items],
-        meta=PaginationMeta(page=page, pageSize=limit, total=len(items)),
+        meta=PaginationMeta(page=page, pageSize=effective_page_size, total=len(items)),
     )
 
 
-@router.get("/{id}", response_model=ListingResponse)
+@router.get(
+    "/{id}",
+    response_model=ListingResponse,
+    responses=error_responses(404, 500),
+)
 async def get_listing(id: str, service: ListingsService = Depends(get_listings_service)):
     entity = await service.get_by_id(id)
     if entity is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Listing not found")
+        raise NotFoundDomainError(f"Listing {id} not found")
     return ListingResponse(data=_to_listing_data(entity))
 
 
-@router.post("", response_model=ListingResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=ListingResponse,
+    status_code=status.HTTP_201_CREATED,
+    responses=error_responses(409, 422, 500),
+)
 async def create_listing(
     request: ListingCreateRequest,
     service: ListingsService = Depends(get_listings_service),
@@ -137,14 +158,15 @@ async def create_listing(
         description=request.description,
         image_url=getattr(request, "imageUrl", None),
     )
-    try:
-        created = await service.create(entity)
-    except ValidationDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+    created = await service.create(entity)
     return ListingResponse(data=_to_listing_data(created))
 
 
-@router.put("/{id}", response_model=ListingResponse)
+@router.patch(
+    "/{id}",
+    response_model=ListingResponse,
+    responses=error_responses(404, 409, 422, 500),
+)
 async def update_listing(
     id: str,
     request: ListingUpdateRequest,
@@ -152,13 +174,13 @@ async def update_listing(
 ):
     existing = await service.get_by_id(id)
     if existing is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Listing not found")
+        raise NotFoundDomainError(f"Listing {id} not found")
 
-    if request.status is not None and str(request.status).lower() == "published":
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Na publikáciu použi POST /listings/{id}/publish (vyžaduje verified firmu).",
+    if request.status is not None and request.status.value == "published":
+        raise ConflictDomainError(
+            "Listing publication must use POST /api/v1/listings/{id}/publish"
         )
+
     updated_entity = ListingsEntity(
         title=request.title if request.title is not None else existing.title,
         material_type=request.materialType if request.materialType is not None else existing.material_type,
@@ -168,35 +190,36 @@ async def update_listing(
         currency=request.currency if request.currency is not None else existing.currency,
         condition=request.condition if request.condition is not None else existing.condition,
         location=request.location if request.location is not None else existing.location,
-        status=ListingsStatus(request.status) if request.status is not None else existing.status,
+        status=request.status if request.status is not None else existing.status,
         company_id=existing.company_id,
         description=request.description if request.description is not None else existing.description,
         image_url=request.imageUrl if getattr(request, "imageUrl", None) is not None else getattr(existing, "image_url", None),
     )
-    try:
-        result = await service.update(id, updated_entity)
-    except NotFoundDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
-    except ValidationDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+    result = await service.update(id, updated_entity)
     return ListingResponse(data=_to_listing_data(result))
 
 
-
-@router.post("/{id}/publish", response_model=ListingResponse)
+@router.post(
+    "/{id}/publish",
+    response_model=ListingResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
 async def publish_listing(
     id: str,
     current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
     session=Depends(get_db_session),
 ):
-    """Publikovať smie len overená (verified) firma vlastníca ponuky."""
     try:
         result = await service.publish(id)
-    except ValidationDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=exc.message) from exc
-    except NotFoundDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+    except NotFoundDomainError:
+        raise
+    except Exception as exc:
+        msg = str(exc)
+        if "verified" in msg.lower() or "publikovať" in msg.lower():
+            raise ConflictDomainError(msg) from exc
+        raise
+
     try:
         u = getattr(current_user, "user", None)
         actor = getattr(u, "id", None) if u is not None else getattr(current_user, "id", None)
@@ -210,13 +233,14 @@ async def publish_listing(
         )
     except Exception:
         pass
+
     return ListingResponse(data=_to_listing_data(result))
 
 
-
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete(
+    "/{id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=error_responses(404, 500),
+)
 async def delete_listing(id: str, service: ListingsService = Depends(get_listings_service)):
-    try:
-        await service.delete(id)
-    except NotFoundDomainError as exc:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+    await service.delete(id)
