@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Request, Response, HTTPException, status
+import os
+
+from fastapi import APIRouter, HTTPException, Request, Response, status
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
 router = APIRouter(tags=["metrics"])
@@ -27,11 +29,23 @@ RATE_LIMIT_EXCEEDED_TOTAL = Counter(
     ["route"],
 )
 
+def _allowed_hosts() -> set[str]:
+    raw = os.getenv("METRICS_ALLOWED_IPS", "127.0.0.1,::1,localhost")
+    return {item.strip() for item in raw.split(",") if item.strip()}
 
-@router.get("/metrics")
+def _is_internal_metrics_request(request: Request) -> bool:
+    client_host = request.client.host if request.client else ""
+    forwarded_for = request.headers.get("x-forwarded-for", "")
+    forwarded_host = forwarded_for.split(",")[0].strip() if forwarded_for else ""
+    candidates = {client_host, forwarded_host}
+    candidates.discard("")
+    return any(host in _allowed_hosts() for host in candidates)
+
+@router.get("/metrics", include_in_schema=False)
 async def metrics(request: Request) -> Response:
-    # DEV: len localhost. PROD: docs už vypnuté; metrics tiež nie z internetu.
-    client = request.client.host if request.client else ""
-    if client not in ("127.0.0.1", "::1", "localhost"):
+    enabled = os.getenv("ENABLE_METRICS", "false").strip().lower() in {"1", "true", "yes", "on"}
+    if not enabled:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+    if not _is_internal_metrics_request(request):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Metrics are internal only")
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

@@ -140,3 +140,7 @@ scripts/grok-audit/bg_install_*.txt
 *.bak-*
 var/uploads/*
 !var/uploads/.gitkeep
+
+# --- Additional env backups ---
+.env.*
+*.env.bak
