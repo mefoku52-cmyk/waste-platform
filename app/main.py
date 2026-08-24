@@ -1,87 +1,92 @@
-import logging
+from __future__ import annotations
+
 from contextlib import asynccontextmanager
+import importlib
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
-from app.shared.infrastructure.db.base import Base
-from app.shared.infrastructure.db import register_models  # noqa: F401
-from app.shared.infrastructure.db.session import engine
-from app.shared.presentation.api_router import api_router
-from app.shared.presentation.exception_handlers import register_exception_handlers
-from app.shared.presentation.health_router import router as health_router
-from app.shared.presentation.metrics_router import router as metrics_router
+from app.core.http_exception_handlers import register_http_exception_handlers
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logging.info("Starting up...")
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     yield
-    logging.info("Shutting down...")
 
 
-logging.basicConfig(
-    level=getattr(logging, settings.log_level.upper(), logging.INFO),
-    format="%(asctime)s %(levelname)s %(name)s %(message)s",
-)
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        description=settings.app_description,
+        version=settings.app_version,
+        docs_url="/docs" if settings.ENABLE_PUBLIC_DOCS else None,
+        redoc_url="/redoc" if settings.ENABLE_PUBLIC_DOCS else None,
+        openapi_url="/openapi.json" if settings.ENABLE_PUBLIC_DOCS else None,
+        root_path=settings.ROOT_PATH or "",
+        lifespan=lifespan,
+    )
 
-is_production = bool(getattr(settings, "is_production", False))
-root_path = getattr(settings, "root_path", "") or ""
+    register_http_exception_handlers(app)
 
-servers = []
-if not is_production:
-    servers.append({"url": "/", "description": "Local development"})
-if root_path:
-    servers.append({"url": root_path, "description": "Reverse proxy root path"})
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else ["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
-app = FastAPI(
-    title="Circular Materials Exchange Platform API",
-    version="0.1.0",
-    description="CMEP - Platform for circular materials exchange",
-    lifespan=lifespan,
-    root_path=root_path,
-    docs_url=None if is_production else "/docs",
-    redoc_url=None if is_production else "/redoc",
-    openapi_url=None if is_production else "/openapi.json",
-    servers=servers or None,
-)
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "service": settings.app_name,
+            "version": settings.app_version,
+        }
 
-cors_origins = [item.strip() for item in settings.cors.allowed_origins if item.strip()]
+    mounted = []
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-API-Key"],
-)
+    try:
+        from app.shared.presentation.api_router import api_router
 
-@app.middleware("http")
-async def security_headers(request, call_next):
-    response = await call_next(request)
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-    if is_production:
-        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-    return response
+        pref = getattr(api_router, "prefix", "") or ""
+        if pref.startswith("/api"):
+            app.include_router(api_router)
+        else:
+            app.include_router(api_router, prefix="/api/v1")
+        mounted.append("shared.api_router")
+    except Exception as e:
+        print(f"[main] shared.api_router skip: {e}")
 
-register_exception_handlers(app)
+        module_routers = [
+            "app.modules.auth.presentation.router",
+            "app.modules.users.presentation.router",
+            "app.modules.companies.presentation.router",
+            "app.modules.company_memberships.presentation.router",
+            "app.modules.listings.presentation.router",
+            "app.modules.inquiries.presentation.router",
+            "app.modules.documents.presentation.router",
+            "app.modules.compliance.presentation.router",
+            "app.modules.notifications.presentation.router",
+            "app.modules.analytics.presentation.router",
+            "app.modules.admin.presentation.router",
+            "app.modules.uploads.presentation.router",
+        ]
 
-app.include_router(health_router)
-app.include_router(metrics_router)
-app.include_router(api_router, prefix="/api/v1")
+        for mod_path in module_routers:
+            tag = mod_path.split(".")[2]
+            try:
+                mod = importlib.import_module(mod_path)
+                router = getattr(mod, "router", None)
+                if router is not None:
+                    app.include_router(router, prefix="/api/v1")
+                    mounted.append(tag)
+            except Exception as ex:
+                print(f"[main] module {tag} skip: {ex}")
 
-@app.get("/", include_in_schema=False)
-async def root():
-    return {
-        "name": "CMEP API",
-        "version": "0.1.0",
-        "status": "operational",
-        "docs": None if is_production else (f"{root_path}/docs" if root_path else "/docs"),
-        "openapi": None if is_production else (f"{root_path}/openapi.json" if root_path else "/openapi.json"),
-        "health": f"{root_path}/health" if root_path else "/health",
-    }
+    app.state.mounted_routers = mounted
+    return app
+
+
+app = create_app()

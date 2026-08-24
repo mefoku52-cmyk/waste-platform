@@ -144,3 +144,25 @@ var/uploads/*
 # --- Additional env backups ---
 .env.*
 *.env.bak
+
+# local / termux noise
+.env
+.env.*
+!.env.example
+*.bak
+*.bak.*
+app/main.py.bak*
+app/core/config.py.bak
+.fix-backup-*/
+.schema-authority-backup-*/
+app.backup.*/
+apps/web.backup.*/
+FINAL-*.txt
+FINAL-*.sh
+CONSOLIDATE-*.sh
+STEP-09-*.txt
+*.sql
+logs/
+var/
+__pycache__/
+.pytest_cache/
