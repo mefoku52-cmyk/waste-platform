@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+"""
+Legacy compatibility router for documents module.
 
-router = APIRouter(
-    prefix="/documents",
-    tags=["documents-legacy"],
-    deprecated=True,
-)
+Authoritative router lives in app.modules.documents.presentation.router.
+This file exists only to preserve older import paths.
+"""
+
+from app.modules.documents.presentation.router import router
+
+__all__ = ["router"]

@@ -1,33 +1,38 @@
+"""
+Legacy compatibility service for documents module.
+"""
+
+import warnings
 from typing import List, Optional
-from .models import DocumentsModel
+
 
 class DocumentsService:
     def __init__(self):
-        self._items = []
-    
+        warnings.warn(
+            "DocumentsService is a legacy compatibility shim; migrate to presentation layer.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._items: List[dict] = []
+
     def get_all(self) -> List[dict]:
         return self._items
-    
+
     def get_by_id(self, id: int) -> Optional[dict]:
-        for item in self._items:
-            if item.get("id") == id:
-                return item
-        return None
-    
+        return next((i for i in self._items if i.get("id") == id), None)
+
     def create(self, data: dict) -> dict:
-        new_id = len(self._items) + 1
-        item = {"id": new_id, **data}
+        item = {"id": len(self._items) + 1, **data}
         self._items.append(item)
         return item
-    
+
     def update(self, id: int, data: dict) -> Optional[dict]:
         for i, item in enumerate(self._items):
             if item.get("id") == id:
-                updated = {**item, **data}
-                self._items[i] = updated
-                return updated
+                self._items[i] = {**item, **data}
+                return self._items[i]
         return None
-    
+
     def delete(self, id: int) -> bool:
         for i, item in enumerate(self._items):
             if item.get("id") == id:

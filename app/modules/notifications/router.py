@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+"""
+Legacy compatibility router for notifications module.
 
-router = APIRouter(
-    prefix="/notifications",
-    tags=["notifications-legacy"],
-    deprecated=True,
-)
+Authoritative router lives in app.modules.notifications.presentation.router.
+This file exists only to preserve older import paths.
+"""
+
+from app.modules.notifications.presentation.router import router
+
+__all__ = ["router"]

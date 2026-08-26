@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+"""
+Legacy compatibility router for compliance module.
 
-router = APIRouter(
-    prefix="/compliance",
-    tags=["compliance-legacy"],
-    deprecated=True,
-)
+Authoritative router lives in app.modules.compliance.presentation.router.
+This file exists only to preserve older import paths.
+"""
+
+from app.modules.compliance.presentation.router import router
+
+__all__ = ["router"]

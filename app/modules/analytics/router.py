@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+"""
+Legacy compatibility router for analytics module.
 
-router = APIRouter(
-    prefix="/analytics",
-    tags=["analytics-legacy"],
-    deprecated=True,
-)
+Authoritative router lives in app.modules.analytics.presentation.router.
+This file exists only to preserve older import paths.
+"""
+
+from app.modules.analytics.presentation.router import router
+
+__all__ = ["router"]
