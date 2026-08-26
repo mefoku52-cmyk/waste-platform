@@ -5,7 +5,7 @@ export async function uploadFile(file: File): Promise<{ url: string }> {
   const form = new FormData();
   form.append('file', file);
   const token = tokenStore.getToken();
-  const res = await fetch(`${config.apiBaseUrl}/api/v1/uploads`, {
+  const res = await fetch(`${config.apiBaseUrl}/uploads`, {
     method: 'POST',
     headers: token ? { Authorization: `Bearer ${token}` } : {},
     body: form,

@@ -12,9 +12,9 @@ type AdminUsersResponse = {
 };
 
 export const adminApi = {
-  getStats: async () => http.get<AdminStatsResponse>('/api/v1/admin/stats'),
-  getUsers: async (_params?: Record<string, any>) => http.get<AdminUsersResponse>('/api/v1/admin/users'),
+  getStats: async () => http.get<AdminStatsResponse>('/admin/stats'),
+  getUsers: async (_params?: Record<string, any>) => http.get<AdminUsersResponse>('/admin/users'),
 
   listAudit: (params?: Record<string, any>) =>
-    http.get<{ items: any[]; meta: any }>('/api/v1/admin', { ...params }),
+    http.get<{ items: any[]; meta: any }>('/admin', { ...params }),
 };

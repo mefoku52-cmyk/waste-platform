@@ -10,14 +10,14 @@ export type InquiryCreateInput = {
 
 export const inquiriesApi = {
   create: (data: InquiryCreateInput) =>
-    http.post<{ data: any }>('/api/v1/inquiries', data),
+    http.post<{ data: any }>('/inquiries', data),
 
   getReceived: (params?: Record<string, any>) =>
-    http.get<{ items: any[]; meta: any }>('/api/v1/inquiries/received', { ...params }),
+    http.get<{ items: any[]; meta: any }>('/inquiries/received', { ...params }),
 
   getSent: (params?: Record<string, any>) =>
-    http.get<{ items: any[]; meta: any }>('/api/v1/inquiries/sent', { ...params }),
+    http.get<{ items: any[]; meta: any }>('/inquiries/sent', { ...params }),
 
   updateStatus: (id: string, status: 'open' | 'answered' | 'closed') =>
-    http.patch<{ data: any }>(`/api/v1/inquiries/${id}/status`, { status }),
+    http.patch<{ data: any }>(`/inquiries/${id}/status`, { status }),
 };

@@ -5,17 +5,17 @@ import { CompanyInput } from './schemas';
 
 export const companiesApi = {
   getCompanies: (params?: Record<string, any>) =>
-    http.get<PaginatedResponse<Company>>('/api/v1/companies', { ...params }),
+    http.get<PaginatedResponse<Company>>('/companies', { ...params }),
 
   getCompany: (id: string) =>
-    http.get<Company>(`/api/v1/companies/${id}`),
+    http.get<Company>(`/companies/${id}`),
 
   createCompany: (data: CompanyInput) =>
-    http.post<Company>('/api/v1/companies', data),
+    http.post<Company>('/companies', data),
 
   updateCompany: (id: string, data: Partial<CompanyInput>) =>
-    http.patch<Company>(`/api/v1/companies/${id}`, data),
+    http.patch<Company>(`/companies/${id}`, data),
 
   transitionStatus: (id: string, toStatus: string) =>
-    http.patch<Company>(`/api/v1/companies/${id}/status`, { toStatus }),
+    http.patch<Company>(`/companies/${id}/status`, { toStatus }),
 };

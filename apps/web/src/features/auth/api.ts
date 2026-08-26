@@ -4,26 +4,26 @@ import { LoginInput } from './schemas';
 
 export const authApi = {
   login: (data: LoginInput) =>
-    http.post<AuthResponse>('/api/v1/auth/login', data),
+    http.post<AuthResponse>('/auth/login', data),
 
   googleLogin: (credential: string) =>
-    http.post<AuthResponse>('/api/v1/auth/google', { credential }),
+    http.post<AuthResponse>('/auth/google', { credential }),
 
   logout: (refreshToken: string) =>
-    http.post('/api/v1/auth/logout', { refreshToken }),
+    http.post('/auth/logout', { refreshToken }),
 
   getMe: () =>
-    http.get<MeResponse>('/api/v1/auth/me'),
+    http.get<MeResponse>('/auth/me'),
 
   forgotPassword: (email: string) =>
     http.post<{ ok: boolean; message: string; resetToken?: string }>(
-      '/api/v1/auth/forgot-password',
+      '/auth/forgot-password',
       { email }
     ),
 
   resetPassword: (token: string, newPassword: string) =>
     http.post<{ ok: boolean; message: string }>(
-      '/api/v1/auth/reset-password',
+      '/auth/reset-password',
       { token, newPassword }
     ),
 };
