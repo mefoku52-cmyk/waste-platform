@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import json
 from typing import List, Union
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
 
 
 class JWTSettings(BaseModel):
@@ -28,11 +32,49 @@ class RedisSettings(BaseModel):
 
 
 class RateLimitSettings(BaseModel):
-    enabled: bool = False  # Termux: vypnuté
+    enabled: bool = False
     limit: int = 10
     period: int = 60
     requests: int = 100
     window_seconds: int = 60
+
+
+class DatabaseSettings(BaseModel):
+    url: str = SQLITE_DEFAULT
+    async_url: str = SQLITE_DEFAULT
+    echo: bool = False
+    pool_size: int = 5
+    pool_pre_ping: bool = True
+
+    def model_post_init(self, __context) -> None:
+        if not self.async_url:
+            object.__setattr__(self, "async_url", self.url)
+
+
+def _is_placeholder_db_value(raw: str | None) -> bool:
+    value = str(raw or "").strip()
+    return (
+        not value
+        or "{" in value
+        or "}" in value
+        or "POSTGRES_" in value
+        or value.lower() in {"none", "null", "undefined"}
+    )
+
+
+def _normalize_database_url(raw: str) -> str:
+    value = raw.strip()
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("sqlite:///"):
+        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    return value
 
 
 class Settings(BaseSettings):
@@ -41,13 +83,14 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
         case_sensitive=False,
+        populate_by_name=True,
     )
 
-    app_name: str = "Circular Materials Exchange Platform API"
+    app_name: str = "CMEP Platform"
     app_version: str = "0.1.0"
     app_description: str = "CMEP - Platform for circular materials exchange"
 
-    APP_ENV: str = "development"
+    app_env: str = Field(default="development", alias="APP_ENV")
     DEBUG: bool = True
     ENABLE_PUBLIC_DOCS: bool = True
     ROOT_PATH: str = ""
@@ -64,7 +107,7 @@ class Settings(BaseSettings):
         ]
     )
 
-    DATABASE_URL: str = "sqlite+aiosqlite:///./var/cmep.db"
+    DATABASE_URL: str = SQLITE_DEFAULT
 
     JWT_SECRET_KEY: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
     JWT_ALGORITHM: str = "HS256"
@@ -74,28 +117,53 @@ class Settings(BaseSettings):
     jwt: JWTSettings | None = None
     redis: RedisSettings = Field(default_factory=RedisSettings)
     rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
+    database: DatabaseSettings | None = None
 
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
     GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
-
     NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
 
+    @property
+    def is_development(self) -> bool:
+        return self.app_env.lower() in {"development", "dev", "local", "test"}
+
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
-    def parse_cors(cls, v):
-        if v is None or v == "":
+    def parse_cors(cls, value):
+        if value is None or value == "":
             return ["http://127.0.0.1:3001", "http://localhost:3001"]
-        if isinstance(v, list):
-            return v
-        s = str(v).strip()
-        if s.startswith("["):
-            import json
-            return json.loads(s)
-        return [p.strip() for p in s.split(",") if p.strip()]
+        if isinstance(value, list):
+            return value
+
+        text = str(value).strip()
+        if text.startswith("["):
+            return json.loads(text)
+
+        return [item.strip() for item in text.split(",") if item.strip()]
 
     def model_post_init(self, __context) -> None:
+        raw_db = str(self.DATABASE_URL or "").strip()
+
+        if _is_placeholder_db_value(raw_db):
+            if self.is_development:
+                database_url = SQLITE_DEFAULT
+            else:
+                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+        else:
+            database_url = _normalize_database_url(raw_db)
+
+        object.__setattr__(self, "DATABASE_URL", database_url)
+        object.__setattr__(
+            self,
+            "database",
+            DatabaseSettings(
+                url=database_url,
+                async_url=database_url,
+            ),
+        )
+
         if self.jwt is None:
             object.__setattr__(
                 self,

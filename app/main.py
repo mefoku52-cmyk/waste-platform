@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
 import importlib
+import logging
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,10 +10,27 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.http_exception_handlers import register_http_exception_handlers
 
+logger = logging.getLogger("cmep.main")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    logger.info(
+        "Starting CMEP app env=%s docs=%s db=%s",
+        settings.app_env,
+        settings.ENABLE_PUBLIC_DOCS,
+        settings.DATABASE_URL,
+    )
     yield
+    logger.info("Stopping CMEP app")
+
+
+def _cors_origins() -> list[str]:
+    if isinstance(settings.CORS_ORIGINS, list):
+        return settings.CORS_ORIGINS
+    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
+        return [settings.CORS_ORIGINS.strip()]
+    return ["http://127.0.0.1:3001", "http://localhost:3001"]
 
 
 def create_app() -> FastAPI:
@@ -31,11 +49,14 @@ def create_app() -> FastAPI:
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else ["*"],
+        allow_origins=_cors_origins(),
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    mounted: list[str] = []
+    skipped: list[dict[str, str]] = []
 
     @app.get("/health")
     async def health():
@@ -43,9 +64,11 @@ def create_app() -> FastAPI:
             "status": "ok",
             "service": settings.app_name,
             "version": settings.app_version,
+            "env": settings.app_env,
+            "database_url": settings.DATABASE_URL,
+            "mounted_routers": mounted,
+            "skipped_routers": skipped,
         }
-
-    mounted = []
 
     try:
         from app.shared.presentation.api_router import api_router
@@ -57,35 +80,45 @@ def create_app() -> FastAPI:
             app.include_router(api_router, prefix="/api/v1")
         mounted.append("shared.api_router")
     except Exception as e:
-        print(f"[main] shared.api_router skip: {e}")
+        logger.exception("Failed to include shared.api_router")
+        skipped.append({"module": "shared.api_router", "error": str(e)})
 
-        module_routers = [
-            "app.modules.auth.presentation.router",
-            "app.modules.users.presentation.router",
-            "app.modules.companies.presentation.router",
-            "app.modules.company_memberships.presentation.router",
-            "app.modules.listings.presentation.router",
-            "app.modules.inquiries.presentation.router",
-            "app.modules.documents.presentation.router",
-            "app.modules.compliance.presentation.router",
-            "app.modules.notifications.presentation.router",
-            "app.modules.analytics.presentation.router",
-            "app.modules.admin.presentation.router",
-            "app.modules.uploads.presentation.router",
-        ]
+    module_routers = [
+        "app.modules.auth.presentation.router",
+        "app.modules.users.presentation.router",
+        "app.modules.companies.presentation.router",
+        "app.modules.company_memberships.presentation.router",
+        "app.modules.listings.presentation.router",
+        "app.modules.inquiries.presentation.router",
+        "app.modules.documents.presentation.router",
+        "app.modules.compliance.presentation.router",
+        "app.modules.notifications.presentation.router",
+        "app.modules.analytics.presentation.router",
+        "app.modules.admin.presentation.router",
+        "app.modules.uploads.presentation.router",
+    ]
 
-        for mod_path in module_routers:
-            tag = mod_path.split(".")[2]
-            try:
-                mod = importlib.import_module(mod_path)
-                router = getattr(mod, "router", None)
-                if router is not None:
-                    app.include_router(router, prefix="/api/v1")
-                    mounted.append(tag)
-            except Exception as ex:
-                print(f"[main] module {tag} skip: {ex}")
+    for mod_path in module_routers:
+        tag = mod_path.split(".")[2]
+        try:
+            mod = importlib.import_module(mod_path)
+            router = getattr(mod, "router", None)
+            if router is None:
+                skipped.append({"module": tag, "error": "router attribute missing"})
+                logger.warning("Router missing for module=%s", tag)
+                continue
+
+            app.include_router(router, prefix="/api/v1")
+            mounted.append(tag)
+        except Exception as ex:
+            logger.exception("Failed to include router module=%s", tag)
+            skipped.append({"module": tag, "error": str(ex)})
 
     app.state.mounted_routers = mounted
+    app.state.skipped_routers = skipped
+
+    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+
     return app
 
 
