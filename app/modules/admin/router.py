@@ -1,7 +1,10 @@
-from fastapi import APIRouter
+"""
+Legacy compatibility router for admin module.
 
-router = APIRouter(
-    prefix="/admin",
-    tags=["admin-legacy"],
-    deprecated=True,
-)
+Authoritative router lives in app.modules.admin.presentation.router.
+This file exists only to preserve older import paths.
+"""
+
+from app.modules.admin.presentation.router import router
+
+__all__ = ["router"]
