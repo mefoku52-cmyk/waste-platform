@@ -1,8 +1,8 @@
 'use client';
 
-import { useAuthRequired } from "@/features/auth/hooks/use-auth-required";
-import { useAdminStats } from "@/features/admin/hooks/use-admin-stats";
-import { AdminUsersTable } from "@/features/admin/components/admin-users-table";
+import { useAuthRequired } from "@/features/auth";
+import { useAdminStats } from "@/features/admin";
+import { AdminUsersTable } from "@/features/admin";
 import { redirect } from "next/navigation";
 
 export default function AdminPage() {

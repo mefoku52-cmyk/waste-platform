@@ -2,19 +2,19 @@
 
 import { Logo } from "@/components/brand/logo";
 
-import { MatchesPanel } from "@/features/listings/components/matches-panel";
-import { ComplianceTable } from "@/features/compliance/components/compliance-table";
-import { AuditTable } from "@/features/admin/components/audit-table";
-import { DocumentsTable } from "@/features/documents/components/documents-table";
-import { useAuthRequired } from "@/features/auth/hooks/use-auth-required";
-import { useLogout } from "@/features/auth/hooks/use-logout";
+import { MatchesPanel } from "@/features/listings";
+import { ComplianceTable } from "@/features/compliance";
+import { AuditTable } from "@/features/admin";
+import { DocumentsTable } from "@/features/documents";
+import { useAuthRequired } from "@/features/auth";
+import { useLogout } from "@/features/auth";
 import { Button } from "@/components/ui/button";
-import { ListingsTable } from "@/features/listings/components/listings-table";
-import { NotificationsPanel } from "@/features/notifications/components/notifications-panel";
-import { MarketplaceTable } from "@/features/listings/components/marketplace-table";
-import { InquiriesTable } from "@/features/inquiries/components/inquiries-table";
-import { OpenInquiriesBadge } from "@/features/inquiries/components/open-inquiries-badge";
-import { CompaniesTable } from "@/features/companies/components/companies-table";
+import { ListingsTable } from "@/features/listings";
+import { NotificationsPanel } from "@/features/notifications";
+import { MarketplaceTable } from "@/features/listings";
+import { InquiriesTable } from "@/features/inquiries";
+import { OpenInquiriesBadge } from "@/features/inquiries";
+import { CompaniesTable } from "@/features/companies";
 import { useRouter } from "next/navigation";
 
 const nav = [

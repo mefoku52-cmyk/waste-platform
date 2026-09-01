@@ -105,7 +105,7 @@ export const ListingForm = () => {
             if (!f) return;
             try {
               const res = await uploadFile(f);
-              const base = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001/api/v1';
+              const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1';
               const full = res.url.startsWith('http') ? res.url : base + res.url;
               setValue('imageUrl', full as any, { shouldValidate: true });
             } catch (err: any) {

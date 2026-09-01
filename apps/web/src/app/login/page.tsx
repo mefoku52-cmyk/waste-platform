@@ -1,4 +1,4 @@
-import { LoginForm } from "@/features/auth/components/login-form";
+import { LoginForm } from "@/features/auth";
 import { BrandLogo } from "@/components/brand/logo";
 
 export default function LoginPage() {

@@ -3,9 +3,9 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listingsApi } from '@/features/listings/api';
-import { inquiriesApi } from '@/features/inquiries/api';
-import { useAuthRequired } from '@/features/auth/hooks/use-auth-required';
+import { listingsApi } from '@/features/listings';
+import { inquiriesApi } from '@/features/inquiries';
+import { useAuthRequired } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 
 export default function ListingDetailPage() {

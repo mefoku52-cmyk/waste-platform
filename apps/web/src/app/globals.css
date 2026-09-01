@@ -56,3 +56,9 @@ body {
   background-attachment: fixed;
   color: #e2e8f0;
 }
+
+/* CMEP dark overlay */
+html, body {
+  background: #121410 !important;
+  color: #e8eee6 !important;
+}

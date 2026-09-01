@@ -20,7 +20,7 @@ declare global {
 }
 
 export const LoginForm = () => {
-  const { mutate: login, isPending, error } = useLogin();
+  const { mutateAsync: login, isPending, error } = useLogin();
   const router = useRouter();
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
 
@@ -32,12 +32,23 @@ export const LoginForm = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginInput) => {
-    login(data, {
-      onSuccess: () => {
-        router.push('/dashboard');
-      },
-    });
+  const onSubmit = async (data: LoginInput) => {
+    try {
+      await login(data);
+
+      alert(
+        JSON.stringify({
+          accessToken: tokenStore.getToken(),
+          refreshToken: tokenStore.getRefreshToken(),
+          rememberMe: localStorage.getItem('rememberMe'),
+        })
+      );
+
+      router.refresh();
+      router.push('/dashboard');
+    } catch (e: any) {
+      alert(e?.message || 'Prihlásenie zlyhalo');
+    }
   };
 
   useEffect(() => {
@@ -64,6 +75,17 @@ export const LoginForm = () => {
               result.refreshToken,
               true,
             );
+
+            alert(
+              JSON.stringify({
+                accessToken: tokenStore.getToken(),
+                refreshToken: tokenStore.getRefreshToken(),
+                rememberMe: localStorage.getItem('rememberMe'),
+                provider: 'google',
+              })
+            );
+
+            router.refresh();
             router.push('/dashboard');
           } catch (e: any) {
             alert(e?.message || 'Google prihlásenie zlyhalo');
@@ -138,40 +160,37 @@ export const LoginForm = () => {
         />
       </FormField>
 
-      <label className="flex items-center gap-2 text-sm text-slate-600">
-        <input
-          type="checkbox"
-          defaultChecked
-          {...register('remember')}
-          className="rounded border-slate-300"
-        />
-        Zapamätať prihlásenie
-      </label>
+      <div className="flex items-center justify-between text-sm">
+        <label className="inline-flex items-center gap-2 text-slate-600">
+          <input type="checkbox" {...register('remember')} className="rounded border-slate-300" />
+          Zapamätať si ma
+        </label>
+        <Link href="/forgot-password" className="text-emerald-700 hover:text-emerald-800">
+          Zabudnuté heslo?
+        </Link>
+      </div>
 
-      <Button
-        type="submit"
-        className="w-full rounded-xl bg-emerald-600 py-2.5 font-semibold hover:bg-emerald-700"
-        disabled={isPending}
-      >
+      <Button type="submit" className="w-full rounded-xl" disabled={isPending}>
         {isPending ? 'Prihlasujem...' : 'Prihlásiť sa'}
       </Button>
 
-      <div className="flex flex-col items-center gap-2 pt-1 text-center text-sm">
-        <Link href="/forgot-password" className="text-emerald-700 hover:underline">
-          Zabudnuté heslo?
-        </Link>
-
-        <div className="w-full flex justify-center py-1">
-          <div ref={googleButtonRef} />
+      <div className="relative py-2">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-slate-200" />
         </div>
-
-        <Link
-          href="/register"
-          className="font-medium text-slate-700 hover:text-emerald-700 hover:underline"
-        >
-          Vytvoriť účet
-        </Link>
+        <div className="relative flex justify-center text-xs uppercase tracking-[0.2em] text-slate-400">
+          <span className="bg-white px-3">alebo</span>
+        </div>
       </div>
+
+      <div ref={googleButtonRef} className="flex justify-center" />
+
+      <p className="text-center text-sm text-slate-500">
+        Nemáte účet?{' '}
+        <Link href="/register" className="font-medium text-emerald-700 hover:text-emerald-800">
+          Zaregistrujte sa
+        </Link>
+      </p>
     </form>
   );
 };

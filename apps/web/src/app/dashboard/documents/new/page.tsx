@@ -1,4 +1,4 @@
-import { DocumentForm } from "@/features/documents/components/document-form";
+import { DocumentForm } from "@/features/documents";
 
 export default function NewDocumentPage() {
   return (

@@ -1,4 +1,4 @@
-import { CompanyForm } from "@/features/companies/components/company-form";
+import { CompanyForm } from "@/features/companies";
 
 export default function NewCompanyPage() {
   return (
