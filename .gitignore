@@ -166,3 +166,16 @@ logs/
 var/
 __pycache__/
 .pytest_cache/
+
+# --- local forensic and generated artifact ignores ---
+*.bak
+*.bak.*
+*.err
+*.zip
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+reports/repo-hygiene/
+# --- end local forensic and generated artifact ignores ---
