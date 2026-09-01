@@ -1,8 +1,0 @@
-# ============================================
-node_modules
-.next
-coverage
-dist
-.env
-.env.*
-npm-debug.log
