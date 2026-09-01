@@ -1,0 +1,26 @@
+:root {
+  --bg: #121410;
+  --card: #1a1c18;
+  --fg: #e8eee6;
+  --muted: #9aa394;
+  --line: #2a2e28;
+  --cta: #1b6b4a;
+  --cta-fg: #f4fff9;
+}
+html, body {
+  background: var(--bg) !important;
+  color: var(--fg) !important;
+}
+a { color: #8fbfa4; }
+button, [type="submit"] {
+  background: var(--cta) !important;
+  color: var(--cta-fg) !important;
+  border: 0 !important;
+  border-radius: 12px !important;
+}
+input, select, textarea {
+  background: #0e100d !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 10px !important;
+}
