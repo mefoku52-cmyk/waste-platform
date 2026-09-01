@@ -1,0 +1,178 @@
+
+> @cmep/web@0.1.0 lint
+> eslint .
+
+
+/data/data/com.termux/files/home/waste-platform/apps/web/eslint.config.mjs
+  4:1  warning  Assign array to a variable before exporting as module default  import/no-anonymous-default-export
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/app/dashboard/listings/[id]/page.tsx
+  20:18  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  32:32  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  34:26  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  34:50  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  39:11  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  62:17  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  93:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/app/forgot-password/page.tsx
+  21:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/app/reset-password/page.tsx
+  25:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/api.ts
+  11:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/components/admin-users-table.tsx
+  12:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/components/audit-table.tsx
+   7:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/hooks/use-admin-users.ts
+  4:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/api.ts
+  2:36  warning  'User' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/components/auth-bootstrap.tsx
+  14:3  warning  Unused eslint-disable directive (no problems were reported from 'react-hooks/set-state-in-effect')
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/components/login-form.tsx
+  42:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/components/register-form.tsx
+  39:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/hooks/use-current-user.ts
+  14:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:16  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/hooks/use-login.ts
+  7:9  warning  'queryClient' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/hooks/use-logout.ts
+  15:9  warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/companies/api.ts
+  7:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/companies/components/companies-table.tsx
+  21:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  48:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/companies/components/company-form.tsx
+  39:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/companies/hooks/use-companies.ts
+  4:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/compliance/api.ts
+   4:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/compliance/components/compliance-table.tsx
+   7:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/documents/api.ts
+   4:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/documents/components/document-form.tsx
+   17:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   62:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/documents/components/documents-table.tsx
+   7:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/inquiries/api.ts
+  13:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  15:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:24  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/inquiries/components/inquiries-table.tsx
+  32:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/inquiries/components/open-inquiries-badge.tsx
+  7:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  8:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/api.ts
+   7:41  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/listing-form.tsx
+   24:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   43:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:22  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   92:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  110:44  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/listings-table.tsx
+  19:39  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/marketplace-table.tsx
+  14:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/matches-panel.tsx
+  14:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:37  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/hooks/use-listings.ts
+  4:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/hooks/use-marketplace.ts
+  4:56  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/notifications/api.ts
+  4:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  5:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  5:36  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/notifications/components/notifications-panel.tsx
+   7:26  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  32:25  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/data/data/com.termux/files/home/waste-platform/apps/web/src/lib/api/http.ts
+  29:9   warning  Do not use `window.location.href` to navigate to internal Next.js pages. Use `redirect()` in the render phase, or `useRouter().push()` in Client Components' event handlers instead. See: https://nextjs.org/docs/messages/no-location-assign-relative-destination  @next/next/no-location-assign-relative-destination
+  50:33  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  52:32  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  54:34  warning  Unexpected any. Specify a different type                                                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+
+✖ 96 problems (0 errors, 96 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

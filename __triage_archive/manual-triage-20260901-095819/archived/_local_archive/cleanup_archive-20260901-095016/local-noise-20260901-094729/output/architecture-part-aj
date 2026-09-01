@@ -1,0 +1,700 @@
+
+    const existingScript = document.querySelector(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    ) as HTMLScriptElement | null;
+
+    if (existingScript) {
+      if (window.google) initGoogle();
+      else existingScript.addEventListener('load', initGoogle, { once: true });
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = initGoogle;
+    document.head.appendChild(script);
+
+    return () => {
+      script.onload = null;
+    };
+  }, [router]);
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full max-w-sm space-y-4 rounded-2xl border border-white/60 bg-white/90 p-6 shadow-xl shadow-slate-900/5 backdrop-blur-md sm:p-8"
+    >
+      <div className="mb-2 text-center">
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">Prihlásenie</h2>
+        <p className="mt-1 text-xs text-slate-500">Vstup do firemného účtu</p>
+      </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+          {(error as any).message || 'Nesprávne meno alebo heslo'}
+        </div>
+      )}
+
+      <FormField label="E-mail" error={errors.email?.message}>
+        <Input
+          type="email"
+          placeholder="vas@email.sk"
+          {...register('email')}
+          disabled={isPending}
+          className="rounded-xl"
+        />
+      </FormField>
+
+      <FormField label="Heslo" error={errors.password?.message}>
+        <Input
+          type="password"
+          placeholder="******"
+          {...register('password')}
+          disabled={isPending}
+          className="rounded-xl"
+        />
+      </FormField>
+
+      <label className="flex items-center gap-2 text-sm text-slate-600">
+        <input
+          type="checkbox"
+          defaultChecked
+          {...register('remember')}
+          className="rounded border-slate-300"
+        />
+        Zapamätať prihlásenie
+      </label>
+
+      <Button
+        type="submit"
+        className="w-full rounded-xl bg-emerald-600 py-2.5 font-semibold hover:bg-emerald-700"
+        disabled={isPending}
+      >
+        {isPending ? 'Prihlasujem...' : 'Prihlásiť sa'}
+      </Button>
+
+      <div className="flex flex-col items-center gap-2 pt-1 text-center text-sm">
+        <Link href="/forgot-password" className="text-emerald-700 hover:underline">
+          Zabudnuté heslo?
+        </Link>
+
+        <div className="w-full flex justify-center py-1">
+          <div ref={googleButtonRef} />
+        </div>
+
+        <Link
+          href="/register"
+          className="font-medium text-slate-700 hover:text-emerald-700 hover:underline"
+        >
+          Vytvoriť účet
+        </Link>
+      </div>
+    </form>
+  );
+};
+
+--- apps/web/src/features/companies/api.ts ---
+import { http } from '../../lib/api/http';
+import { PaginatedResponse } from '../../lib/types/common';
+import { Company } from './types';
+import { CompanyInput } from './schemas';
+
+export const companiesApi = {
+  getCompanies: (params?: Record<string, any>) =>
+    http.get<PaginatedResponse<Company>>('/companies', { ...params }),
+
+  getCompany: (id: string) =>
+    http.get<Company>(`/companies/${id}`),
+
+  createCompany: (data: CompanyInput) =>
+    http.post<Company>('/companies', data),
+
+  updateCompany: (id: string, data: Partial<CompanyInput>) =>
+    http.patch<Company>(`/companies/${id}`, data),
+
+  transitionStatus: (id: string, toStatus: string) =>
+    http.patch<Company>(`/companies/${id}/status`, { toStatus }),
+};
+
+--- apps/web/src/features/compliance/api.ts ---
+import { http } from '../../lib/api/http';
+
+export const complianceApi = {
+  list: (params?: Record<string, any>) =>
+    http.get<{ items: any[]; meta: any }>('/compliance', { ...params }),
+
+  create: (data: {
+    companyId: string;
+    regulationType: string;
+    documentRef?: string | null;
+    notes?: string | null;
+  }) => http.post<{ data: any }>('/compliance', data),
+};
+
+--- apps/web/src/features/documents/api.ts ---
+import { http } from '../../lib/api/http';
+
+export const documentsApi = {
+  list: (params?: Record<string, any>) =>
+    http.get<{ items: any[]; meta: any }>('/documents', { ...params }),
+
+  create: (data: {
+    title: string;
+    documentType: string;
+    fileUrl: string;
+    companyId: string;
+    listingId?: string | null;
+  }) => http.post<{ data: any }>('/documents', data),
+};
+
+--- apps/web/src/features/inquiries/api.ts ---
+import { http } from '../../lib/api/http';
+
+export type InquiryCreateInput = {
+  listingId: string;
+  companyId: string;
+  message: string;
+  contactEmail: string;
+  contactPhone?: string;
+};
+
+export const inquiriesApi = {
+  create: (data: InquiryCreateInput) =>
+    http.post<{ data: any }>('/inquiries', data),
+
+  getReceived: (params?: Record<string, any>) =>
+    http.get<{ items: any[]; meta: any }>('/inquiries/received', { ...params }),
+
+  getSent: (params?: Record<string, any>) =>
+    http.get<{ items: any[]; meta: any }>('/inquiries/sent', { ...params }),
+
+  updateStatus: (id: string, status: 'open' | 'answered' | 'closed') =>
+    http.patch<{ data: any }>(`/inquiries/${id}/status`, { status }),
+};
+
+--- apps/web/src/features/listings/api.ts ---
+import { http } from '../../lib/api/http';
+import { PaginatedResponse } from '../../lib/types/common';
+import { Listing } from './types';
+import { ListingInput } from './schemas';
+
+export const listingsApi = {
+  getListings: (params?: Record<string, any>) =>
+    http.get<PaginatedResponse<Listing>>('/listings', { ...params }),
+
+  getMarketplace: (params?: Record<string, any>) =>
+    http.get<PaginatedResponse<Listing>>('/listings/marketplace', { ...params }),
+
+  getListing: (id: string) =>
+    http.get<Listing>(`/listings/${id}`),
+
+  createListing: (data: ListingInput) =>
+    http.post<Listing>('/listings', data),
+
+  updateListing: (id: string, data: Partial<ListingInput> & { status?: string }) =>
+    http.put<Listing>(`/listings/${id}`, data),
+
+  publishListing: (id: string) =>
+    http.post<{ data: any }>(`/listings/${id}/publish`, {}),
+
+  deleteListing: (id: string) =>
+    http.delete(`/listings/${id}`),
+
+  getMatches: (materialType: string, params?: Record<string, any>) =>
+    http.get<PaginatedResponse<Listing>>(`/listings/matches?materialType=${encodeURIComponent(materialType)}`, { ...params }),
+};
+
+--- apps/web/src/features/notifications/api.ts ---
+import { http } from '../../lib/api/http';
+
+export const notificationsApi = {
+  list: (params?: Record<string, any>) =>
+    http.get<{ items: any[]; meta: any }>('/notifications', { ...params }),
+};
+
+--- apps/web/src/features/uploads/api.ts ---
+import { config } from '../../lib/config';
+import { tokenStore } from '../../lib/auth/token-store';
+
+export async function uploadFile(file: File): Promise<{ url: string }> {
+  const form = new FormData();
+  form.append('file', file);
+  const token = tokenStore.getToken();
+  const res = await fetch(`${config.apiBaseUrl}/uploads`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+    body: form,
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || err.message || 'Upload failed');
+  }
+  return res.json();
+}
+
+===== 18 TEST FILE MAP =====
+app/tests/integration/test_auth_api.py
+app/tests/integration/test_companies_api.py
+app/tests/integration/test_users_api.py
+app/tests/unit/auth/test_auth_services.py
+app/tests/unit/auth/test_refresh_session_entity.py
+app/tests/unit/companies/test_company_entity.py
+app/tests/unit/companies/test_company_services.py
+app/tests/unit/test_auth.py
+app/tests/unit/test_companies.py
+app/tests/unit/test_documents.py
+app/tests/unit/test_inquiries.py
+app/tests/unit/test_listings.py
+app/tests/unit/test_uploads.py
+app/tests/unit/test_users.py
+app/tests/unit/users/test_user_entity.py
+app/tests/unit/users/test_user_services.py
+tests/test_auth_password_reset_revocation.py
+tests/test_health.py
+
+===== 19 TEST CONFIGURATION =====
+--- pytest.ini ---
+[pytest]
+testpaths = app/tests
+python_files = test_*.py
+pythonpath = .
+
+===== 20 RUN / BUILD / OPERATIONS SCRIPTS =====
+--- ./CONSOLIDATE-SCHEMA-AUTHORITY.sh ---
+#!/data/data/com.termux/files/usr/bin/bash
+
+set -Eeuo pipefail
+
+PROJECT="$HOME/waste-platform"
+cd "$PROJECT"
+
+STAMP="$(date +%Y%m%d-%H%M%S)"
+BACKUP="$PROJECT/.schema-authority-backup-$STAMP"
+
+echo "============================================================"
+echo " WASTE PLATFORM"
+echo " SCHEMA / API AUTHORITY CONSOLIDATION"
+echo "============================================================"
+echo
+echo "PROJECT:"
+echo "$PROJECT"
+echo
+echo "BACKUP:"
+echo "$BACKUP"
+echo
+
+mkdir -p "$BACKUP"
+
+###############################################################################
+# 1. PRE-FLIGHT
+###############################################################################
+
+echo "============================================================"
+echo " 1. PRE-FLIGHT"
+echo "============================================================"
+
+command -v python3 >/dev/null
+command -v git >/dev/null
+
+git status --short --branch | tee "$BACKUP/git-status-before.txt"
+
+###############################################################################
+# 2. BACKUP SOURCE FILES
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 2. SOURCE BACKUP"
+echo "============================================================"
+
+mkdir -p "$BACKUP/app"
+mkdir -p "$BACKUP/apps"
+
+cp -a app/main.py "$BACKUP/app/main.py" 2>/dev/null || true
+cp -a app/shared/infrastructure/db "$BACKUP/app/db" 2>/dev/null || true
+cp -a app/core/config.py "$BACKUP/app/config.py" 2>/dev/null || true
+cp -a apps/web/src/lib/config.ts "$BACKUP/config.ts" 2>/dev/null || true
+cp -a apps/web/.env.local "$BACKUP/web.env.local" 2>/dev/null || true
+
+###############################################################################
+# 3. REMOVE RUNTIME create_all()
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 3. REMOVE RUNTIME create_all()"
+echo "============================================================"
+
+python3 - <<'PY'
+from pathlib import Path
+
+files = [
+    Path("app/main.py"),
+]
+
+for path in files:
+    if not path.exists():
+        continue
+
+    text = path.read_text()
+
+    old = """    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+"""
+
+    if old in text:
+        text = text.replace(old, "")
+        path.write_text(text)
+        print(f"[FIXED] {path}: removed Base.metadata.create_all()")
+    else:
+        print(f"[OK]    {path}: create_all block not found")
+PY
+
+###############################################################################
+# 4. REMOVE CREATE_ALL FROM ACTIVE DEV FIX SCRIPT
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 4. DEV SCRIPT AUDIT"
+echo "============================================================"
+
+python3 - <<'PY'
+from pathlib import Path
+
+path = Path("scripts/dev/fix_imports.sh")
+
+if path.exists():
+    text = path.read_text()
+
+    old = """    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+"""
+
+    if old in text:
+        text = text.replace(old, "")
+        path.write_text(text)
+        print("[FIXED] scripts/dev/fix_imports.sh")
+    else:
+        print("[INFO] create_all block not found")
+else:
+    print("[INFO] scripts/dev/fix_imports.sh not present")
+PY
+
+###############################################################################
+# 5. DO NOT TOUCH LEGACY BACKUPS
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 5. LEGACY FILES"
+echo "============================================================"
+
+echo
+echo "Legacy create_all() references are intentionally NOT modified."
+echo "They are historical/dev artifacts and remain outside runtime authority."
+
+###############################################################################
+# 6. FRONTEND API AUTHORITY
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 6. FRONTEND API AUTHORITY"
+echo "============================================================"
+
+CONFIG="apps/web/src/lib/config.ts"
+
+if [ -f "$CONFIG" ]; then
+python3 - <<'PY'
+from pathlib import Path
+
+path = Path("apps/web/src/lib/config.ts")
+text = path.read_text()
+
+text = text.replace(
+    "process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001'",
+    "process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1'"
+)
+
+path.write_text(text)
+print("[FIXED] frontend default API base URL")
+PY
+fi
+
+###############################################################################
+# 7. FIX HARDCODED REGISTER ENDPOINT
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 7. FRONTEND REGISTER ENDPOINT"
+echo "============================================================"
+
+REGISTER="apps/web/src/features/auth/hooks/use-register.ts"
+
+if [ -f "$REGISTER" ]; then
+python3 - <<'PY'
+from pathlib import Path
+
+path = Path("apps/web/src/features/auth/hooks/use-register.ts")
+text = path.read_text()
+
+text = text.replace(
+    "fetch('http://localhost:8001/api/v1/users'",
+    "fetch(`${config.apiBaseUrl}/users`"
+)
+
+if "config.apiBaseUrl" in text and "import { config" not in text:
+    lines = text.splitlines()
+
+    # Try to add config import after existing imports.
+    insert_at = 0
+    for i, line in enumerate(lines):
+        if line.startswith("import "):
+            insert_at = i + 1
+
+    lines.insert(
+        insert_at,
+        "import { config } from '@/lib/config';"
+    )
+
+    text = "\n".join(lines) + "\n"
+
+path.write_text(text)
+print("[FIXED] register endpoint authority")
+PY
+else
+    echo "[INFO] register hook not found"
+fi
+
+###############################################################################
+# 8. ENSURE WEB ENV USES ONE AUTHORITY
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 8. FRONTEND ENV"
+echo "============================================================"
+
+cat > apps/web/.env.local <<'ENVEOF'
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+ENVEOF
+
+echo "[FIXED] apps/web/.env.local"
+
+###############################################################################
+# 9. REMOVE DUPLICATE BASEMODEL "MODEL" AMBIGUITY
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 9. DUPLICATE MODEL AUDIT"
+echo "============================================================"
+
+echo
+echo "These files are NOT deleted automatically:"
+find app/modules -maxdepth 2 -type f -name "models.py" -print | sort
+
+echo
+echo "Infrastructure SQLAlchemy models remain authoritative."
+echo "Pydantic models.py files are preserved until imports are audited."
+
+###############################################################################
+# 10. VERIFY REGISTER_MODELS
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 10. MODEL REGISTRY"
+echo "============================================================"
+
+REGISTRY="app/shared/infrastructure/db/register_models.py"
+
+if [ ! -f "$REGISTRY" ]; then
+    echo "[ERROR] Missing model registry:"
+    echo "$REGISTRY"
+    exit 1
+fi
+
+python3 - <<'PY'
+from pathlib import Path
+
+path = Path("app/shared/infrastructure/db/register_models.py")
+text = path.read_text()
+
+required = [
+    "AdminAuditEntryModel",
+    "AnalyticsEventModel",
+    "RefreshSessionModel",
+    "CompanyModel",
+    "CompanyMembershipModel",
+    "ComplianceRecordModel",
+    "DocumentModel",
+    "InquiryModel",
+    "ListingsModel",
+    "NotificationModel",
+    "UserModel",
+]
+
+missing = [name for name in required if name not in text]
+
+if missing:
+    print("[ERROR] Missing model registry entries:")
+    for item in missing:
+        print(" -", item)
+    raise SystemExit(1)
+
+print("[OK] all known SQLAlchemy models registered")
+PY
+
+###############################################################################
+# 11. CHECK IMPORT ORDER
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 11. MAIN IMPORT AUTHORITY"
+echo "============================================================"
+
+sed -n '1,80p' app/main.py
+
+###############################################################################
+# 12. UUID / VARCHAR REPORT
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 12. UUID / VARCHAR REPORT"
+echo "============================================================"
+
+REPORT="$BACKUP/uuid-varchar-report.txt"
+
+{
+    echo "UUID / VARCHAR STATIC REPORT"
+    echo "DATE: $(date)"
+    echo
+    echo "--- String(36) ---"
+    grep -RIn \
+        --include='*.py' \
+        'String(36)' \
+        app/modules \
+        2>/dev/null || true
+
+    echo
+    echo "--- UUID imports ---"
+    grep -RIn \
+        --include='*.py' \
+        'UUID' \
+        app/modules \
+        2>/dev/null || true
+} > "$REPORT"
+
+cat "$REPORT"
+
+###############################################################################
+# 13. ACTIVE create_all AUDIT
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 13. ACTIVE create_all AUDIT"
+echo "============================================================"
+
+grep -RIn \
+    --include='*.py' \
+    --include='*.sh' \
+    'Base.metadata.create_all' \
+    app scripts \
+    2>/dev/null || true
+
+###############################################################################
+# 14. API PORT AUDIT
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 14. API PROCESS AUDIT"
+echo "============================================================"
+
+ps -ef | grep -E '[u]vicorn|[p]ython.*app.main' || true
+
+echo
+echo "--- PORT 8000 ---"
+curl -sS -o /dev/null -w '%{http_code}\n' \
+    http://127.0.0.1:8000/health \
+    2>/dev/null || true
+
+echo
+echo "--- PORT 8001 ---"
+curl -sS -o /dev/null -w '%{http_code}\n' \
+    http://127.0.0.1:8001/health \
+    2>/dev/null || true
+
+###############################################################################
+# 15. OPENAPI CHECK
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 15. OPENAPI"
+echo "============================================================"
+
+for PORT in 8000 8001; do
+    echo
+    echo "--- $PORT ---"
+
+    curl -sS \
+        --max-time 5 \
+        "http://127.0.0.1:$PORT/openapi.json" \
+        -o "$BACKUP/openapi-$PORT.json" \
+        2>/dev/null || true
+
+    if [ -s "$BACKUP/openapi-$PORT.json" ]; then
+        python3 - "$BACKUP/openapi-$PORT.json" <<'PY'
+import json
+import sys
+
+path = sys.argv[1]
+
+try:
+    data = json.load(open(path))
+    print("OPENAPI:", data.get("openapi"))
+    print("TITLE:", data.get("info", {}).get("title"))
+    print("VERSION:", data.get("info", {}).get("version"))
+    print("PATHS:", len(data.get("paths", {})))
+except Exception as exc:
+    print("OPENAPI PARSE ERROR:", exc)
+PY
+    else
+        echo "OPENAPI unavailable"
+    fi
+done
+
+###############################################################################
+# 16. PYTHON COMPILE CHECK
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 16. PYTHON COMPILE CHECK"
+echo "============================================================"
+
+python3 -m compileall -q app
+echo "[OK] Python compilation"
+
+###############################################################################
+# 17. FRONTEND STATIC API AUDIT
+###############################################################################
+
+echo
+echo "============================================================"
+echo " 17. FRONTEND API REFERENCES"
+echo "============================================================"
+
+grep -RIn \
+    --exclude-dir=node_modules \

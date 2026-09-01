@@ -1,0 +1,3 @@
+apps/web/eslint
+apps/web/fix-now.sh
+apps/web/fix_cryptography.sh

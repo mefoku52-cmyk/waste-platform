@@ -1,0 +1,250 @@
+    op.create_table('inquiries',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('listing_id', sa.UUID(), nullable=False),
+    sa.Column('company_id', sa.UUID(), nullable=False),
+    sa.Column('message', sa.Text(), nullable=False),
+    sa.Column('contact_email', sa.String(length=255), nullable=False),
+    sa.Column('contact_phone', sa.String(length=64), nullable=True),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('listings',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('material_type', sa.String(length=120), nullable=False),
+    sa.Column('quantity', sa.Float(), nullable=False),
+    sa.Column('unit', sa.String(length=32), nullable=False),
+    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('currency', sa.String(length=8), nullable=False),
+    sa.Column('condition', sa.String(length=120), nullable=False),
+    sa.Column('location', sa.String(length=255), nullable=False),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('company_id', sa.UUID(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('image_url', sa.String(length=512), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('notifications',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('type', sa.String(length=64), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('message', sa.Text(), nullable=False),
+    sa.Column('is_read', sa.Boolean(), nullable=False),
+    sa.Column('related_entity_id', sa.UUID(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('refresh_sessions',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('token_family_id', sa.String(length=64), nullable=False),
+    sa.Column('refresh_token_jti', sa.String(length=64), nullable=False),
+    sa.Column('refresh_token_hash', sa.String(length=128), nullable=False),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('revoked_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('replaced_by_jti', sa.String(length=64), nullable=True),
+    sa.Column('reuse_detected_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_by_user_id', sa.String(length=36), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_refresh_sessions_refresh_token_jti'), 'refresh_sessions', ['refresh_token_jti'], unique=True)
+    op.create_index(op.f('ix_refresh_sessions_token_family_id'), 'refresh_sessions', ['token_family_id'], unique=False)
+    op.create_index(op.f('ix_refresh_sessions_user_id'), 'refresh_sessions', ['user_id'], unique=False)
+    op.create_table('users',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
+    sa.Column('first_name', sa.String(length=120), nullable=False),
+    sa.Column('last_name', sa.String(length=120), nullable=False),
+    sa.Column('display_name', sa.String(length=255), nullable=True),
+    sa.Column('phone', sa.String(length=64), nullable=True),
+    sa.Column('locale', sa.String(length=32), nullable=True),
+    sa.Column('timezone', sa.String(length=64), nullable=True),
+    sa.Column('last_login_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_by_user_id', sa.String(length=36), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+    # ### end Alembic commands ###
+
+
+def downgrade() -> None:
+    """Downgrade schema."""
+    # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f('ix_users_email'), table_name='users')
+    op.drop_table('users')
+    op.drop_index(op.f('ix_refresh_sessions_user_id'), table_name='refresh_sessions')
+    op.drop_index(op.f('ix_refresh_sessions_token_family_id'), table_name='refresh_sessions')
+    op.drop_index(op.f('ix_refresh_sessions_refresh_token_jti'), table_name='refresh_sessions')
+    op.drop_table('refresh_sessions')
+    op.drop_table('notifications')
+    op.drop_table('listings')
+    op.drop_table('inquiries')
+    op.drop_table('documents')
+    op.drop_table('compliance_records')
+    op.drop_index(op.f('ix_company_memberships_user_id'), table_name='company_memberships')
+    op.drop_index(op.f('ix_company_memberships_status'), table_name='company_memberships')
+    op.drop_index(op.f('ix_company_memberships_company_id'), table_name='company_memberships')
+    op.drop_table('company_memberships')
+    op.drop_index(op.f('ix_companies_status'), table_name='companies')
+    op.drop_index(op.f('ix_companies_registration_number'), table_name='companies')
+    op.drop_table('companies')
+    op.drop_table('analytics_events')
+    op.drop_table('admin_audit_entries')
+    # ### end Alembic commands ###
+
+===== app/main.py =====
+from __future__ import annotations
+
+import importlib
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.core.http_exception_handlers import register_http_exception_handlers
+
+logger = logging.getLogger("cmep.main")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(
+        "Starting CMEP app env=%s docs=%s db=%s",
+        settings.app_env,
+        settings.ENABLE_PUBLIC_DOCS,
+        settings.DATABASE_URL,
+    )
+    yield
+    logger.info("Stopping CMEP app")
+
+
+def _cors_origins() -> list[str]:
+    if isinstance(settings.CORS_ORIGINS, list):
+        return settings.CORS_ORIGINS
+    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
+        return [settings.CORS_ORIGINS.strip()]
+    return ["http://127.0.0.1:3001", "http://localhost:3001"]
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        description=settings.app_description,
+        version=settings.app_version,
+        docs_url="/docs" if settings.ENABLE_PUBLIC_DOCS else None,
+        redoc_url="/redoc" if settings.ENABLE_PUBLIC_DOCS else None,
+        openapi_url="/openapi.json" if settings.ENABLE_PUBLIC_DOCS else None,
+        root_path=settings.ROOT_PATH or "",
+        lifespan=lifespan,
+    )
+
+    register_http_exception_handlers(app)
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    mounted: list[str] = []
+    skipped: list[dict[str, str]] = []
+
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "service": settings.app_name,
+            "version": settings.app_version,
+            "env": settings.app_env,
+            "database_url": settings.DATABASE_URL,
+            "mounted_routers": mounted,
+            "skipped_routers": skipped,
+        }
+
+    try:
+        from app.shared.presentation.api_router import api_router
+
+        pref = getattr(api_router, "prefix", "") or ""
+        if pref.startswith("/api"):
+            app.include_router(api_router)
+        else:
+            app.include_router(api_router, prefix="/api/v1")
+        mounted.append("shared.api_router")
+    except Exception as e:
+        logger.exception("Failed to include shared.api_router")
+        skipped.append({"module": "shared.api_router", "error": str(e)})
+
+    module_routers = [
+        "app.modules.auth.presentation.router",
+        "app.modules.users.presentation.router",
+        "app.modules.companies.presentation.router",
+        "app.modules.company_memberships.presentation.router",
+        "app.modules.listings.presentation.router",
+        "app.modules.inquiries.presentation.router",
+        "app.modules.documents.presentation.router",
+        "app.modules.compliance.presentation.router",
+        "app.modules.notifications.presentation.router",
+        "app.modules.analytics.presentation.router",
+        "app.modules.admin.presentation.router",
+        "app.modules.uploads.presentation.router",
+    ]
+
+    for mod_path in module_routers:
+        tag = mod_path.split(".")[2]
+        try:
+            mod = importlib.import_module(mod_path)
+            router = getattr(mod, "router", None)
+            if router is None:
+                skipped.append({"module": tag, "error": "router attribute missing"})
+                logger.warning("Router missing for module=%s", tag)
+                continue
+
+            app.include_router(router, prefix="/api/v1")
+            mounted.append(tag)
+        except Exception as ex:
+            logger.exception("Failed to include router module=%s", tag)
+            skipped.append({"module": tag, "error": str(ex)})
+
+    app.state.mounted_routers = mounted
+    app.state.skipped_routers = skipped
+
+    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+
+    return app
+
+
+app = create_app()
+
+===== app/core/config.py =====
+from __future__ import annotations
+
+import json
+from typing import List, Union
+
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+

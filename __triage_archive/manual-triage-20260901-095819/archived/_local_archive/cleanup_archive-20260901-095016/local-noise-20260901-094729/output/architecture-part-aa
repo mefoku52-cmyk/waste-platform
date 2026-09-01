@@ -1,0 +1,700 @@
+===== CMEP / WASTE-PLATFORM ARCHITECTURE DUMP =====
+Generated: 2026-09-01T05:13:53+02:00
+Project: /data/data/com.termux/files/home/waste-platform
+
+===== 01 SYSTEM / RUNTIME =====
+--- pwd ---
+/data/data/com.termux/files/home/waste-platform
+--- uname ---
+Linux localhost 6.12.38-android16-5-g1d46253471dd-ab15048002-4k #1 SMP PREEMPT Wed Mar 18 02:21:10 UTC 2026 aarch64 Android
+--- python ---
+Python 3.14.6
+--- node ---
+v26.4.0
+--- npm ---
+11.19.1
+--- git ---
+ M .dockerignore
+ M app/shared/infrastructure/db/session.py
+ M apps/web/eslint.config.mjs
+ M apps/web/package-lock.json
+ M apps/web/package.json
+ M apps/web/src/app/dashboard/admin/page.tsx
+ M apps/web/src/app/dashboard/companies/new/page.tsx
+ M apps/web/src/app/dashboard/documents/new/page.tsx
+ M apps/web/src/app/dashboard/listings/[id]/page.tsx
+ M apps/web/src/app/dashboard/listings/new/page.tsx
+ M apps/web/src/app/dashboard/page.tsx
+ M apps/web/src/app/forgot-password/page.tsx
+ M apps/web/src/app/globals.css
+ M apps/web/src/app/layout.tsx
+ M apps/web/src/app/login/page.tsx
+ M apps/web/src/app/register/page.tsx
+ M apps/web/src/app/reset-password/page.tsx
+ M apps/web/src/components/providers/app-providers.tsx
+ M apps/web/src/lib/api/http.ts
+ M apps/web/src/lib/auth/token-store.ts
+ D docker-compose-app-variant.yml
+ D docker-compose-original-check.yml
+ D docker-compose.monitoring.yml
+ D docker-compose.production.yml
+ M docker-compose.yml
+ D generate_modules.py
+?? CMEP-refresh-rotation-forensic-20260824-191333.txt
+?? app/fix_and_start.sh
+?? app/fix_app.sh
+?? app/fix_main.sh
+?? app/start_app.sh
+?? apps/web/chyby.err
+?? apps/web/debug.txt
+?? apps/web/eslint
+?? apps/web/fix-imports-and-eslint.sh
+?? apps/web/fix-now.sh
+?? apps/web/fix_cryptography.sh
+?? apps/web/fix_everything.sh
+?? apps/web/refactor-cmep-fix.sh
+?? apps/web/refactor-cmep.sh
+?? apps/web/rewrite-imports-node.mjs
+?? apps/web/rewrite-imports-sed.sh
+?? apps/web/src/cmep-dark.css
+?? apps/web/src/features/admin/index.ts
+?? apps/web/src/features/auth/index.ts
+?? apps/web/src/features/companies/index.ts
+?? apps/web/src/features/compliance/index.ts
+?? apps/web/src/features/documents/index.ts
+?? apps/web/src/features/inquiries/index.ts
+?? apps/web/src/features/listings/index.ts
+?? apps/web/src/features/notifications/index.ts
+?? apps/web/src/features/uploads/index.ts
+?? apps/web/wifi_scan_20260901_050722.json
+?? check-live-auth-status.sh
+?? check-postgres-reachability.sh
+?? classify_git_env_secrets.sh
+?? cleanup_archive/
+?? create-recyclehub-db.sh
+?? crypto_abi_diagnose.sh
+?? crypto_deep_diag.sh
+?? dependency-forensic-report.json
+?? dependency_forensic_audit.py
+?? dependency_forensic_deep.py
+?? dependency_import_repair_plan.py
+?? dependency_import_runtime_audit.py
+?? diagnose_waste_platform.sh
+?? docker-compose.override.yml.disabled.20260826-203621
+?? fix_auth_complete.sh
+?? init-postgres-termux.sh
+?? move_audit_to_phone.sh
+?? next
+?? output/
+?? rebuild-sqlite-initial-migration.sh
+?? remove-empty-alembic-revision.sh
+?? reset-initial-migration-sqlite.sh
+?? run-check.sh
+?? scripts/archive/
+?? scripts/fixes/backend/
+?? scripts/forensic-audit-report-20260824-022021.txt
+?? seed_database.py
+?? start-postgres-safe.sh
+?? step1_remove_backups.sh
+?? step2_remove_duplicate_models.sh
+?? step3_archive_temp_scripts.sh
+?? step4_clean_env_variants.sh
+?? step5_fix_frontend_auth.sh
+?? test-next-prod-vs-dev.sh
+?? verify-db-and-login.sh
+?? waste_platform_diagnosis_20260825-134220.txt
+?? waste_platform_python_audit.sh
+?? yshwss.zip
+c18910f test: add backend unit test coverage
+
+===== 02 TOP-LEVEL PROJECT TREE =====
+.
+./.backup
+./.backup/pre-admin-user-type.diff
+./.backup/pre-change.diff
+./.backup/pre-next-ts-fixes.diff
+./.coverage
+./.dockerignore
+./.env
+./.env.backup.20260824-092956
+./.env.before-newline-fix.20260817-120730
+./.env.compose
+./.env.dedup.20260817-120833
+./.env.example
+./.env.finalbak.20260817-131129
+./.env.fixbak.20260817-115715
+./.env.production
+./.fix-backup-20260821-161259
+./.fix-backup-20260821-161259/.env
+./.fix-backup-20260821-161259/config.py
+./.fix-backup-20260821-161259/main.py
+./.fix-backup-20260821-161720
+./.fix-backup-20260821-161720/.env
+./.fix-backup-20260821-161720/config.py
+./.fix-backup-20260821-161720/main.py
+./.fix-backup-20260821-162333
+./.fix-backup-20260821-162333/.env
+./.fix-backup-20260821-162333/config.py
+./.fix-backup-20260821-162333/main.py
+./.fix-backup-20260823-235334
+./.fix-backup-20260823-235334/.env
+./.fix-backup-20260823-235334/config.py
+./.fix-backup-20260823-235334/main.py
+./.fix-backup-20260824-085054
+./.fix-backup-20260824-085054/.env
+./.fix-backup-20260824-085054/config.py
+./.fix-backup-20260824-085054/main.py
+./.git
+./.github
+./.github/workflows
+./.gitignore
+./.pytest_cache
+./.ruff_cache
+./.ruff_cache/.gitignore
+./.ruff_cache/0.16.4
+./.ruff_cache/CACHEDIR.TAG
+./.schema-authority-backup-20260824-011051
+./.schema-authority-backup-20260824-011051/app
+./.schema-authority-backup-20260824-011051/config.ts
+./.schema-authority-backup-20260824-011051/git-status-before.txt
+./.schema-authority-backup-20260824-011051/openapi-8000.json
+./.schema-authority-backup-20260824-011051/openapi-8001.json
+./.schema-authority-backup-20260824-011051/uuid-varchar-report.txt
+./.schema-authority-backup-20260824-011051/web.env.local
+./.schema-authority-backup-20260824-012856
+./.schema-authority-backup-20260824-012856/app
+./.schema-authority-backup-20260824-012856/config.ts
+./.schema-authority-backup-20260824-012856/git-status-before.txt
+./.schema-authority-backup-20260824-012856/uuid-varchar-report.txt
+./.schema-authority-backup-20260824-012856/web.env.local
+./.venv
+./.venv/.gitignore
+./.venv/bin
+./.venv/include
+./.venv/lib
+./.venv/lib64
+./.venv/pyvenv.cfg
+./CMEP-refresh-rotation-forensic-20260824-191333.txt
+./CONSOLIDATE-SCHEMA-AUTHORITY.sh
+./FINAL-AUTHORITY-AUDIT-20260824-010845.txt
+./FINAL-AUTHORITY-AUDIT-20260824-012955.txt
+./FINAL-AUTHORITY-AUDIT.sh
+./FINAL-SCHEMA-AUTHORITY-DIFF-20260824-010307.txt
+./FINAL-SCHEMA-AUTHORITY-DIFF-20260824-080000.txt
+./FINAL-SCHEMA-AUTHORITY-DIFF.sh
+./Makefile
+./README.md
+./STEP-09-SCHEMA-PROVENANCE-AUDIT-20260824-011409.txt
+./alembic
+./alembic.ini
+./alembic/env.py
+./alembic/script.py.mako
+./alembic/versions
+./app
+./app/.dockerignore
+./app/Dockerfile
+./app/__init__.py
+./app/__pycache__
+./app/core
+./app/fix_and_start.sh
+./app/fix_app.sh
+./app/fix_main.sh
+./app/main.py
+./app/modules
+./app/requirements.txt
+./app/shared
+./app/start_app.sh
+./app/tests
+./app/worker
+./apps
+./apps/web
+./audit_report.json
+./auto_fix_audit.py
+./check-live-auth-status.sh
+./check-postgres-reachability.sh
+./classify_git_env_secrets.sh
+./cleanup_archive
+./cleanup_archive/backups
+./cleanup_archive/databases
+./cleanup_archive/docker_variants
+./cleanup_archive/misc
+./cleanup_archive/old_scripts
+./create-recyclehub-db.sh
+./crypto_abi_diagnose.sh
+./crypto_deep_diag.sh
+./dependency-forensic-report.json
+./dependency_forensic_audit.py
+./dependency_forensic_deep.py
+./dependency_import_repair_plan.py
+./dependency_import_runtime_audit.py
+./diagnose_waste_platform.sh
+./docker
+./docker-compose.override.yml.disabled.20260826-203621
+./docker-compose.yml
+./docker-compose.yml.backend-frontend-variant-20260808-011656
+./docker-compose.yml.bak.20260826-202603
+./docker-compose.yml.bak.20260826-203145
+./docker-compose.yml.bak.20260826-203430
+./docker/backend
+./docker/frontend
+./docker/nginx
+./docs
+./docs/DEPLOYMENT.md
+./docs/PRODUCTION-CHECKLIST.md
+./docs/SUMMARY.md
+./docs/api-contracts.md
+./docs/architecture-overview.md
+./docs/backend-modules.md
+./docs/decision-log
+./docs/deployment.md
+./docs/finalization.md
+./docs/fix-load-testing.md
+./docs/frontend-modules.md
+./docs/infra.md
+./docs/load-testing.md
+./docs/monitoring.md
+./docs/product-specification.md
+./docs/production-readiness.md
+./docs/reports
+./docs/tests.md
+./docs/troubleshooting.md
+./fix_auth_complete.sh
+./fix_report.txt
+./infra
+./infra/alertmanager
+./infra/docker-compose.load.yml
+./infra/grafana
+./infra/loki
+./infra/prometheus
+./init-postgres-termux.sh
+./logs
+./logs/backend.log
+./logs/frontend.log
+./migrations
+./migrations/20260817_scale_indexes.sql
+./migrations/README
+./migrations/__pycache__
+./migrations/env.py
+./migrations/script.py.mako
+./migrations/versions
+./move_audit_to_phone.sh
+./next
+./output
+./pyproject.toml
+./pytest.ini
+./rebuild-sqlite-initial-migration.sh
+./remove-empty-alembic-revision.sh
+./requirements.txt
+./reset-initial-migration-sqlite.sh
+./run-check.sh
+./scripts
+./scripts/archive
+./scripts/backup
+./scripts/backup.sh
+./scripts/bootstrap-letsencrypt.sh
+./scripts/deploy.sh
+./scripts/dev
+./scripts/fixes
+./scripts/forensic-audit-report-20260824-022021.txt
+./scripts/forensic-audit.sh
+./scripts/health-check.sh
+./scripts/legacy
+./scripts/load-test.sh
+./scripts/logs.sh
+./scripts/restore.sh
+./scripts/security
+./scripts/validate-project.sh
+./seed_database.py
+./setup_postgres.sh
+./src
+./src/utils
+./start-platform.sh
+./start-postgres-safe.sh
+./step1_remove_backups.sh
+./step2_remove_duplicate_models.sh
+./step3_archive_temp_scripts.sh
+./step4_clean_env_variants.sh
+./step5_fix_frontend_auth.sh
+./test-next-prod-vs-dev.sh
+./tests
+./tests/load
+./tests/test_auth_password_reset_revocation.py
+./tests/test_health.py
+./var
+./var/cmep.db
+./var/oa.json
+./var/state
+./var/uploads
+./var/waste_platform.db
+./verify-db-and-login.sh
+./waste.db
+./waste_platform_diagnosis_20260825-134220.txt
+./waste_platform_python_audit.sh
+./yshwss.zip
+
+===== 03 CONFIGURATION FILE NAMES =====
+./.env
+./.env.backup.20260824-092956
+./.env.before-newline-fix.20260817-120730
+./.env.compose
+./.env.dedup.20260817-120833
+./.env.example
+./.env.finalbak.20260817-131129
+./.env.fixbak.20260817-115715
+./.env.production
+./.fix-backup-20260821-161259/.env
+./.fix-backup-20260821-161720/.env
+./.fix-backup-20260821-162333/.env
+./.fix-backup-20260823-235334/.env
+./.fix-backup-20260824-085054/.env
+./.pytest_cache/README.md
+./Makefile
+./README.md
+./alembic.ini
+./app/Dockerfile
+./app/requirements.txt
+./app/worker/Dockerfile
+./apps/web/.env.local
+./apps/web/Dockerfile
+./apps/web/next.config.js
+./apps/web/next.config.mjs
+./apps/web/package-lock.json
+./apps/web/package.json
+./apps/web/tailwind.config.js
+./apps/web/tsconfig.json
+./cleanup_archive/backups/app.backup.20260824-092934/Dockerfile
+./cleanup_archive/backups/app.backup.20260824-092934/requirements.txt
+./cleanup_archive/backups/web.backup.20260824-092935/.env.local
+./cleanup_archive/backups/web.backup.20260824-092935/Dockerfile
+./cleanup_archive/backups/web.backup.20260824-092935/next.config.js
+./cleanup_archive/backups/web.backup.20260824-092935/package-lock.json
+./cleanup_archive/backups/web.backup.20260824-092935/package.json
+./cleanup_archive/backups/web.backup.20260824-092935/tailwind.config.js
+./cleanup_archive/backups/web.backup.20260824-092935/tsconfig.json
+./cleanup_archive/docker_variants/docker-compose-app-variant.yml
+./cleanup_archive/docker_variants/docker-compose-original-check.yml
+./cleanup_archive/docker_variants/docker-compose.monitoring.yml
+./cleanup_archive/docker_variants/docker-compose.production.yml
+./docker-compose.yml
+./docker/backend/Dockerfile
+./docker/frontend/Dockerfile
+./docker/nginx/Dockerfile
+./infra/docker-compose.load.yml
+./pyproject.toml
+./requirements.txt
+./scripts/dev/.env
+
+===== 04 SAFE ENVIRONMENT KEYS (VALUES REDACTED) =====
+--- .env ---
+DATABASE_URL=<REDACTED>
+JWT_SECRET_KEY=<REDACTED>
+JWT_ALGORITHM=<REDACTED>
+ACCESS_TOKEN_EXPIRE_MINUTES=<REDACTED>
+REFRESH_TOKEN_EXPIRE_DAYS=<REDACTED>
+NEXT_PUBLIC_API_URL=<REDACTED>
+--- .env.compose ---
+POSTGRES_DB=<REDACTED>
+POSTGRES_USER=<REDACTED>
+POSTGRES_PASSWORD=<REDACTED>
+JWT_REFRESH_SECRET_KEY=<REDACTED>
+JWT_SECRET_KEY=<REDACTED>
+NEXT_PUBLIC_API_BASE_URL=<REDACTED>
+CORS_ALLOWED_ORIGINS=<REDACTED>
+--- .env.production ---
+APP_ENV=<REDACTED>
+APP_NAME=<REDACTED>
+APP_DOMAIN=<REDACTED>
+API_DOMAIN=<REDACTED>
+LETSENCRYPT_EMAIL=<REDACTED>
+APP_HOST=<REDACTED>
+APP_PORT=<REDACTED>
+APP_DEBUG=<REDACTED>
+APP_LOG_LEVEL=<REDACTED>
+POSTGRES_DB=<REDACTED>
+POSTGRES_USER=<REDACTED>
+POSTGRES_PASSWORD=<REDACTED>
+POSTGRES_HOST=<REDACTED>
+POSTGRES_PORT=<REDACTED>
+DATABASE_HOST=<REDACTED>
+DATABASE_PORT=<REDACTED>
+DATABASE_NAME=<REDACTED>
+DATABASE_USER=<REDACTED>
+DATABASE_PASSWORD=<REDACTED>
+DATABASE_URL=<REDACTED>
+REDIS_HOST=<REDACTED>
+REDIS_PORT=<REDACTED>
+REDIS_URL=<REDACTED>
+MINIO_ROOT_USER=<REDACTED>
+MINIO_ROOT_PASSWORD=<REDACTED>
+S3_ENDPOINT_URL=<REDACTED>
+S3_PUBLIC_ENDPOINT_URL=<REDACTED>
+S3_REGION=<REDACTED>
+S3_ACCESS_KEY=<REDACTED>
+S3_SECRET_KEY=<REDACTED>
+S3_BUCKET_DOCUMENTS=<REDACTED>
+S3_BUCKET_MEDIA=<REDACTED>
+S3_USE_SSL=<REDACTED>
+S3_FORCE_PATH_STYLE=<REDACTED>
+JWT_ISSUER=<REDACTED>
+JWT_AUDIENCE=<REDACTED>
+JWT_SECRET_KEY=<REDACTED>
+JWT_REFRESH_SECRET_KEY=<REDACTED>
+JWT_ACCESS_TOKEN_EXPIRES_MINUTES=<REDACTED>
+JWT_REFRESH_TOKEN_EXPIRES_DAYS=<REDACTED>
+JWT_ALGORITHM=<REDACTED>
+PASSWORD_BCRYPT_ROUNDS=<REDACTED>
+CORS_ALLOWED_ORIGINS=<REDACTED>
+NEXT_PUBLIC_API_BASE_URL=<REDACTED>
+EMAIL_PROVIDER=<REDACTED>
+EMAIL_FROM=<REDACTED>
+SMTP_HOST=<REDACTED>
+SMTP_PORT=<REDACTED>
+SMTP_USERNAME=<REDACTED>
+SMTP_PASSWORD=<REDACTED>
+SMTP_USE_TLS=<REDACTED>
+QUEUE_DRIVER=<REDACTED>
+WORKER_CONCURRENCY=<REDACTED>
+DEFAULT_PAGE_SIZE=<REDACTED>
+MAX_PAGE_SIZE=<REDACTED>
+OTEL_ENABLED=<REDACTED>
+SENTRY_DSN=<REDACTED>
+REQUEST_ID_HEADER=<REDACTED>
+--- .env.example ---
+APP_ENV=<REDACTED>
+APP_NAME=<REDACTED>
+DEBUG=<REDACTED>
+LOG_LEVEL=<REDACTED>
+LOG_FORMAT=<REDACTED>
+POSTGRES_HOST=<REDACTED>
+POSTGRES_PORT=<REDACTED>
+POSTGRES_DB=<REDACTED>
+POSTGRES_USER=<REDACTED>
+POSTGRES_PASSWORD=<REDACTED>
+DATABASE_URL=<REDACTED>
+REDIS_HOST=<REDACTED>
+REDIS_PORT=<REDACTED>
+REDIS_URL=<REDACTED>
+CELERY_BROKER_URL=<REDACTED>
+CELERY_RESULT_BACKEND=<REDACTED>
+JWT_SECRET_KEY=<REDACTED>
+JWT_REFRESH_SECRET_KEY=<REDACTED>
+JWT_ALGORITHM=<REDACTED>
+JWT_ACCESS_TOKEN_EXPIRE_MINUTES=<REDACTED>
+JWT_REFRESH_TOKEN_EXPIRE_DAYS=<REDACTED>
+CORS_ALLOWED_ORIGINS=<REDACTED>
+ALLOWED_HOSTS=<REDACTED>
+MINIO_ROOT_USER=<REDACTED>
+MINIO_ROOT_PASSWORD=<REDACTED>
+MINIO_ENDPOINT=<REDACTED>
+MINIO_SECURE=<REDACTED>
+S3_BUCKET_NAME=<REDACTED>
+S3_ENDPOINT_URL=<REDACTED>
+EMAIL_SMTP_HOST=<REDACTED>
+EMAIL_SMTP_PORT=<REDACTED>
+EMAIL_SMTP_USER=<REDACTED>
+EMAIL_SMTP_PASSWORD=<REDACTED>
+EMAIL_FROM=<REDACTED>
+EMAIL_TLS=<REDACTED>
+RATE_LIMIT_ENABLED=<REDACTED>
+RATE_LIMIT_REQUESTS=<REDACTED>
+RATE_LIMIT_PERIOD=<REDACTED>
+PROMETHEUS_MULTIPROC_DIR=<REDACTED>
+GRAFANA_USER=<REDACTED>
+GRAFANA_PASSWORD=<REDACTED>
+STRIPE_SECRET_KEY=<REDACTED>
+STRIPE_WEBHOOK_SECRET=<REDACTED>
+GDPR_ENABLED=<REDACTED>
+GDPR_COOKIE_CONSENT=<REDACTED>
+
+===== 05 BACKEND PACKAGE / DEPENDENCIES =====
+--- pyproject.toml ---
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cmep-platform"
+version = "1.0.0"
+description = "CMEP — Circular Economy Marketplace Platform (Waste-to-Resource B2B)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [
+    {name = "CMEP Team", email = "dev@cmep.local"}
+]
+keywords = ["fastapi", "marketplace", "circular-economy", "waste-management", "b2b"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.4.0",
+    "pydantic-settings>=2.0.3",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "asyncpg>=0.29.0",
+    "psycopg2-binary>=2.9.9",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.0.1",
+    "python-multipart>=0.0.6",
+    "email-validator>=2.0.0",
+    "httpx>=0.25.0",
+    "redis>=5.0.1",
+    "celery>=5.3.4",
+    "prometheus-client>=0.19.0",
+    "PyYAML>=6.0.1",
+    "Jinja2>=3.1.2",
+    "python-dateutil>=2.8.2",
+    "pytz>=2023.3",
+    "typing-extensions>=4.8.0",
+    "python-slugify>=8.0.1",
+    "Pillow>=10.1.0",
+    "python-json-logger>=2.0.7",
+    "gunicorn>=21.2.0",
+    "uvloop>=0.19.0",
+    "httptools>=0.6.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.1",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.1",
+    "pre-commit>=3.5.0",
+]
+test = [
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/cmep/platform"
+Documentation = "https://docs.cmep.local"
+Repository = "https://github.com/cmep/platform.git"
+Issues = "https://github.com/cmep/platform/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+exclude = ["tests*", "scripts*", "docs*", "infra*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | alembic
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=app --cov-report=term-missing"
+testpaths = ["app/tests"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "*/alembic/*",
+    "*/tests/*",
+    "*/scripts/*",
+    "*/infra/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@abstractmethod",
+]
+--- requirements.txt ---
+# Core
+fastapi==0.141.1
+pydantic==2.13.4
+pydantic-settings==2.0.3
+uvicorn[standard]>=0.24.0
+python-dotenv>=1.0.0
+
+# Database
+sqlalchemy==2.0.51
+alembic>=1.12.0
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.9
+
+# Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.0.1
+email-validator>=2.0.0
+python-multipart>=0.0.6
+
+# HTTP & Utils
+httpx>=0.25.0
+redis>=5.0.1
+prometheus-client>=0.19.0
+
+--- pytest.ini ---
+[pytest]
+testpaths = app/tests
+python_files = test_*.py
+pythonpath = .
+
+--- alembic.ini ---

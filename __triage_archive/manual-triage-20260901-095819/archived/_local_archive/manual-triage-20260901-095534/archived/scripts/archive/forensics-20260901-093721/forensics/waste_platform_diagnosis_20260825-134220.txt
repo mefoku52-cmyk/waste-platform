@@ -1,0 +1,943 @@
+============================================================
+ WASTE PLATFORM - DEEP DIAGNOSTIC
+============================================================
+Project: /data/data/com.termux/files/home/waste-platform
+Date:    Tue Aug 25 13:42:20 CEST 2026
+
+============================================================
+1. PYTHON
+============================================================
+Python 3.14.6
+pip 26.2.1 from /data/data/com.termux/files/usr/lib/python3.14/site-packages/pip (python 3.14)
+/data/data/com.termux/files/usr/bin/python
+/data/data/com.termux/files/usr/bin/pip
+
+Python executable: /data/data/com.termux/files/usr/bin/python
+Python version: 3.14.6 (main, Jul  5 2026, 10:35:55) [Clang 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f0
+sys.path:
+  
+  /data/data/com.termux/files/usr/lib/python314.zip
+  /data/data/com.termux/files/usr/lib/python3.14
+  /data/data/com.termux/files/usr/lib/python3.14/lib-dynload
+  /data/data/com.termux/files/home/.local/lib/python3.14/site-packages
+  /data/data/com.termux/files/usr/lib/python3.14/site-packages
+
+============================================================
+2. PROJECT STRUCTURE
+============================================================
+.
+./.backup
+./.backup-eslint
+./.pytest_cache
+./.pytest_cache/v
+./_duplicates_and_tools
+./_duplicates_and_tools/20260821
+./alembic
+./alembic/versions
+./app
+./app/__pycache__
+./app/core
+./app/modules
+./app/schemas
+./app/shared
+./app/tests
+./app/worker
+./apps
+./apps/web
+./apps/web.backup.20260824-092935
+./backups
+./docker
+./docker/backend
+./docker/frontend
+./docker/grafana
+./docker/nginx
+./docker/postgres
+./docker/prometheus
+./docker/redis
+./docs
+./docs/decision-log
+./docs/reports
+./infra
+./infra/alertmanager
+./infra/grafana
+./infra/loki
+./infra/prometheus
+./logs
+./logs/audits
+./logs/backups
+./logs/install
+./migrations
+./migrations/__pycache__
+./migrations/versions
+./output
+./scripts
+./scripts/backup
+./scripts/dev
+./scripts/fixes
+./scripts/legacy
+./scripts/security
+./src
+./src/utils
+./tests
+./tests/__pycache__
+./tests/load
+./var
+./var/run
+./var/state
+./var/uploads
+
+============================================================
+3. DEPENDENCY FILES
+============================================================
+
+----- requirements.txt -----
+# Core
+fastapi==0.141.1
+pydantic==2.13.4
+pydantic-settings==2.0.3
+uvicorn[standard]>=0.24.0
+python-dotenv>=1.0.0
+
+# Database
+sqlalchemy==2.0.51
+alembic>=1.12.0
+asyncpg>=0.29.0
+psycopg2-binary>=2.9.9
+
+# Security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.0.1
+email-validator>=2.0.0
+python-multipart>=0.0.6
+
+# HTTP & Utils
+httpx>=0.25.0
+redis>=5.0.1
+prometheus-client>=0.19.0
+
+----- app/requirements.txt -----
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+psycopg2-binary
+pydantic
+pydantic-settings
+PyJWT
+passlib
+bcrypt
+prometheus-client
+email-validator
+aiosqlite>=0.20
+
+----- pyproject.toml -----
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cmep-platform"
+version = "1.0.0"
+description = "CMEP — Circular Economy Marketplace Platform (Waste-to-Resource B2B)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+authors = [
+    {name = "CMEP Team", email = "dev@cmep.local"}
+]
+keywords = ["fastapi", "marketplace", "circular-economy", "waste-management", "b2b"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP :: HTTP Servers",
+    "Framework :: FastAPI",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.4.0",
+    "pydantic-settings>=2.0.3",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.12.0",
+    "asyncpg>=0.29.0",
+    "psycopg2-binary>=2.9.9",
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.0.1",
+    "python-multipart>=0.0.6",
+    "email-validator>=2.0.0",
+    "httpx>=0.25.0",
+    "redis>=5.0.1",
+    "celery>=5.3.4",
+    "prometheus-client>=0.19.0",
+    "PyYAML>=6.0.1",
+    "Jinja2>=3.1.2",
+    "python-dateutil>=2.8.2",
+    "pytz>=2023.3",
+    "typing-extensions>=4.8.0",
+    "python-slugify>=8.0.1",
+    "Pillow>=10.1.0",
+    "python-json-logger>=2.0.7",
+    "gunicorn>=21.2.0",
+    "uvloop>=0.19.0",
+    "httptools>=0.6.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "pytest-mock>=3.11.1",
+    "black>=23.11.0",
+    "isort>=5.12.0",
+    "flake8>=6.1.0",
+    "mypy>=1.6.1",
+    "pre-commit>=3.5.0",
+]
+test = [
+    "pytest>=7.4.2",
+    "pytest-asyncio>=0.21.1",
+    "pytest-cov>=4.1.0",
+    "httpx>=0.25.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/cmep/platform"
+Documentation = "https://docs.cmep.local"
+Repository = "https://github.com/cmep/platform.git"
+Issues = "https://github.com/cmep/platform/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+exclude = ["tests*", "scripts*", "docs*", "infra*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | alembic
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers --cov=app --cov-report=term-missing"
+testpaths = ["app/tests"]
+asyncio_mode = "auto"
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow tests",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "*/alembic/*",
+    "*/tests/*",
+    "*/scripts/*",
+    "*/infra/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@abstractmethod",
+]
+----- pytest.ini -----
+[pytest]
+testpaths = app/tests
+python_files = test_*.py
+pythonpath = .
+
+----- alembic.ini -----
+[alembic]
+script_location = migrations
+prepend_sys_path = .
+version_path_separator = os
+sqlalchemy.url = sqlite+aiosqlite:///./var/cmep.db
+
+[loggers]
+keys = root,sqlalchemy,alembic
+
+[handlers]
+keys = 
+
+[formatters]
+keys = 
+
+[logger_root]
+level = WARN
+handlers = 
+qualname =
+
+[logger_sqlalchemy]
+level = WARN
+handlers = 
+qualname = sqlalchemy.engine
+
+[logger_alembic]
+level = INFO
+handlers = 
+qualname = alembic
+
+============================================================
+4. ACTIVE PYTHON FILES
+============================================================
+app/__init__.py
+app/core/__init__.py
+app/core/config.py
+app/core/http_exception_handlers.py
+app/main.py
+app/modules/__init__.py
+app/modules/admin/__init__.py
+app/modules/admin/application/__init__.py
+app/modules/admin/application/dto.py
+app/modules/admin/application/services.py
+app/modules/admin/domain/__init__.py
+app/modules/admin/domain/entities.py
+app/modules/admin/domain/enums.py
+app/modules/admin/domain/repositories.py
+app/modules/admin/infrastructure/__init__.py
+app/modules/admin/infrastructure/mappers.py
+app/modules/admin/infrastructure/models.py
+app/modules/admin/infrastructure/repositories.py
+app/modules/admin/models.py
+app/modules/admin/presentation/__init__.py
+app/modules/admin/presentation/dependencies.py
+app/modules/admin/presentation/mappers.py
+app/modules/admin/presentation/router.py
+app/modules/admin/presentation/schemas.py
+app/modules/admin/router.py
+app/modules/admin/schemas.py
+app/modules/admin/service.py
+app/modules/analytics/__init__.py
+app/modules/analytics/application/__init__.py
+app/modules/analytics/application/dto.py
+app/modules/analytics/application/services.py
+app/modules/analytics/domain/__init__.py
+app/modules/analytics/domain/entities.py
+app/modules/analytics/domain/enums.py
+app/modules/analytics/domain/repositories.py
+app/modules/analytics/infrastructure/__init__.py
+app/modules/analytics/infrastructure/mappers.py
+app/modules/analytics/infrastructure/models.py
+app/modules/analytics/infrastructure/repositories.py
+app/modules/analytics/models.py
+app/modules/analytics/presentation/__init__.py
+app/modules/analytics/presentation/dependencies.py
+app/modules/analytics/presentation/mappers.py
+app/modules/analytics/presentation/router.py
+app/modules/analytics/presentation/schemas.py
+app/modules/analytics/router.py
+app/modules/analytics/schemas.py
+app/modules/analytics/service.py
+app/modules/auth/__init__.py
+app/modules/auth/application/__init__.py
+app/modules/auth/application/dto.py
+app/modules/auth/application/password_reset.py
+app/modules/auth/application/services.py
+app/modules/auth/domain/__init__.py
+app/modules/auth/domain/entities.py
+app/modules/auth/domain/repositories.py
+app/modules/auth/infrastructure/__init__.py
+app/modules/auth/infrastructure/mappers.py
+app/modules/auth/infrastructure/models.py
+app/modules/auth/infrastructure/repositories.py
+app/modules/auth/presentation/__init__.py
+app/modules/auth/presentation/dependencies.py
+app/modules/auth/presentation/router.py
+app/modules/auth/presentation/schemas.py
+app/modules/companies/__init__.py
+app/modules/companies/application/__init__.py
+app/modules/companies/application/dto.py
+app/modules/companies/application/mappers.py
+app/modules/companies/application/services.py
+app/modules/companies/domain/__init__.py
+app/modules/companies/domain/entities.py
+app/modules/companies/domain/enums.py
+app/modules/companies/domain/repositories.py
+app/modules/companies/infrastructure/__init__.py
+app/modules/companies/infrastructure/mappers.py
+app/modules/companies/infrastructure/models.py
+app/modules/companies/infrastructure/repositories.py
+app/modules/companies/presentation/__init__.py
+app/modules/companies/presentation/dependencies.py
+app/modules/companies/presentation/mappers.py
+app/modules/companies/presentation/router.py
+app/modules/companies/presentation/schemas.py
+app/modules/company_memberships/__init__.py
+app/modules/company_memberships/application/__init__.py
+app/modules/company_memberships/application/dto.py
+app/modules/company_memberships/application/mappers.py
+app/modules/company_memberships/application/services.py
+app/modules/company_memberships/domain/__init__.py
+app/modules/company_memberships/domain/entities.py
+app/modules/company_memberships/domain/enums.py
+app/modules/company_memberships/domain/repositories.py
+app/modules/company_memberships/infrastructure/__init__.py
+app/modules/company_memberships/infrastructure/mappers.py
+app/modules/company_memberships/infrastructure/models.py
+app/modules/company_memberships/infrastructure/repositories.py
+app/modules/company_memberships/presentation/__init__.py
+app/modules/company_memberships/presentation/dependencies.py
+app/modules/company_memberships/presentation/mappers.py
+app/modules/company_memberships/presentation/router.py
+app/modules/company_memberships/presentation/schemas.py
+app/modules/compliance/__init__.py
+app/modules/compliance/application/__init__.py
+app/modules/compliance/application/dto.py
+app/modules/compliance/application/services.py
+app/modules/compliance/domain/__init__.py
+app/modules/compliance/domain/entities.py
+app/modules/compliance/domain/enums.py
+app/modules/compliance/domain/repositories.py
+app/modules/compliance/infrastructure/__init__.py
+app/modules/compliance/infrastructure/mappers.py
+app/modules/compliance/infrastructure/models.py
+app/modules/compliance/infrastructure/repositories.py
+app/modules/compliance/models.py
+app/modules/compliance/presentation/__init__.py
+app/modules/compliance/presentation/dependencies.py
+app/modules/compliance/presentation/mappers.py
+app/modules/compliance/presentation/router.py
+app/modules/compliance/presentation/schemas.py
+app/modules/compliance/router.py
+app/modules/compliance/schemas.py
+app/modules/compliance/service.py
+app/modules/documents/__init__.py
+app/modules/documents/application/__init__.py
+app/modules/documents/application/dto.py
+app/modules/documents/application/services.py
+app/modules/documents/domain/__init__.py
+app/modules/documents/domain/entities.py
+app/modules/documents/domain/enums.py
+app/modules/documents/domain/repositories.py
+app/modules/documents/infrastructure/__init__.py
+app/modules/documents/infrastructure/mappers.py
+app/modules/documents/infrastructure/models.py
+app/modules/documents/infrastructure/repositories.py
+app/modules/documents/models.py
+app/modules/documents/presentation/__init__.py
+app/modules/documents/presentation/dependencies.py
+app/modules/documents/presentation/mappers.py
+app/modules/documents/presentation/router.py
+app/modules/documents/presentation/schemas.py
+app/modules/documents/router.py
+app/modules/documents/schemas.py
+app/modules/documents/service.py
+app/modules/inquiries/__init__.py
+app/modules/inquiries/application/__init__.py
+app/modules/inquiries/application/dto.py
+app/modules/inquiries/application/services.py
+app/modules/inquiries/domain/__init__.py
+app/modules/inquiries/domain/entities.py
+app/modules/inquiries/domain/enums.py
+app/modules/inquiries/domain/repositories.py
+app/modules/inquiries/infrastructure/__init__.py
+app/modules/inquiries/infrastructure/mappers.py
+app/modules/inquiries/infrastructure/models.py
+app/modules/inquiries/infrastructure/repositories.py
+app/modules/inquiries/models.py
+app/modules/inquiries/presentation/__init__.py
+app/modules/inquiries/presentation/dependencies.py
+app/modules/inquiries/presentation/mappers.py
+app/modules/inquiries/presentation/router.py
+app/modules/inquiries/presentation/schemas.py
+app/modules/inquiries/router.py
+app/modules/inquiries/schemas.py
+app/modules/inquiries/service.py
+app/modules/listings/__init__.py
+app/modules/listings/application/__init__.py
+app/modules/listings/application/dto.py
+app/modules/listings/application/services.py
+app/modules/listings/domain/__init__.py
+app/modules/listings/domain/entities.py
+app/modules/listings/domain/enums.py
+app/modules/listings/domain/repositories.py
+app/modules/listings/infrastructure/__init__.py
+app/modules/listings/infrastructure/mappers.py
+app/modules/listings/infrastructure/models.py
+app/modules/listings/infrastructure/repositories.py
+app/modules/listings/presentation/__init__.py
+app/modules/listings/presentation/dependencies.py
+app/modules/listings/presentation/mappers.py
+app/modules/listings/presentation/router.py
+app/modules/listings/presentation/schemas.py
+app/modules/notifications/__init__.py
+app/modules/notifications/application/__init__.py
+app/modules/notifications/application/dto.py
+app/modules/notifications/application/services.py
+app/modules/notifications/domain/__init__.py
+app/modules/notifications/domain/entities.py
+app/modules/notifications/domain/enums.py
+app/modules/notifications/domain/repositories.py
+app/modules/notifications/infrastructure/__init__.py
+app/modules/notifications/infrastructure/mappers.py
+app/modules/notifications/infrastructure/models.py
+app/modules/notifications/infrastructure/repositories.py
+app/modules/notifications/models.py
+app/modules/notifications/presentation/__init__.py
+app/modules/notifications/presentation/dependencies.py
+app/modules/notifications/presentation/mappers.py
+app/modules/notifications/presentation/router.py
+app/modules/notifications/presentation/schemas.py
+app/modules/notifications/router.py
+app/modules/notifications/schemas.py
+app/modules/notifications/service.py
+app/modules/uploads/__init__.py
+app/modules/uploads/presentation/__init__.py
+app/modules/uploads/presentation/router.py
+app/modules/uploads/presentation/schemas.py
+app/modules/users/__init__.py
+app/modules/users/application/__init__.py
+app/modules/users/application/dto.py
+app/modules/users/application/mappers.py
+app/modules/users/application/services.py
+app/modules/users/domain/__init__.py
+app/modules/users/domain/entities.py
+app/modules/users/domain/enums.py
+app/modules/users/domain/repositories.py
+app/modules/users/infrastructure/__init__.py
+app/modules/users/infrastructure/mappers.py
+app/modules/users/infrastructure/models.py
+app/modules/users/infrastructure/repositories.py
+app/modules/users/presentation/__init__.py
+app/modules/users/presentation/dependencies.py
+app/modules/users/presentation/mappers.py
+app/modules/users/presentation/router.py
+app/modules/users/presentation/schemas.py
+app/shared/__init__.py
+app/shared/application/__init__.py
+app/shared/application/clock.py
+app/shared/application/interfaces.py
+app/shared/application/passwords.py
+app/shared/application/side_effects.py
+app/shared/application/uuid_generator.py
+app/shared/domain/__init__.py
+app/shared/domain/base.py
+app/shared/domain/exceptions.py
+app/shared/domain/ports/__init__.py
+app/shared/domain/ports/clock.py
+app/shared/domain/status_transition.py
+app/shared/infrastructure/__init__.py
+app/shared/infrastructure/database.py
+app/shared/infrastructure/db/__init__.py
+app/shared/infrastructure/db/base.py
+app/shared/infrastructure/db/register_models.py
+app/shared/infrastructure/db/session.py
+app/shared/infrastructure/email/sender.py
+app/shared/infrastructure/rate_limit.py
+app/shared/infrastructure/rate_limiter.py
+app/shared/infrastructure/security/__init__.py
+app/shared/infrastructure/security/jwt_exceptions.py
+app/shared/infrastructure/security/jwt_revocation_store.py
+app/shared/infrastructure/security/jwt_service.py
+app/shared/presentation/__init__.py
+app/shared/presentation/api_router.py
+app/shared/presentation/auth_dependencies.py
+app/shared/presentation/error_schemas.py
+app/shared/presentation/exception_handlers.py
+app/shared/presentation/health_router.py
+app/shared/presentation/metrics_router.py
+app/shared/presentation/schemas.py
+app/tests/__init__.py
+app/tests/conftest.py
+app/tests/integration/__init__.py
+app/tests/integration/test_auth_api.py
+app/tests/integration/test_companies_api.py
+app/tests/integration/test_users_api.py
+app/tests/unit/__init__.py
+app/tests/unit/auth/__init__.py
+app/tests/unit/auth/test_auth_services.py
+app/tests/unit/auth/test_refresh_session_entity.py
+app/tests/unit/companies/__init__.py
+app/tests/unit/companies/test_company_entity.py
+app/tests/unit/companies/test_company_services.py
+app/tests/unit/test_auth.py
+app/tests/unit/test_companies.py
+app/tests/unit/test_documents.py
+app/tests/unit/test_inquiries.py
+app/tests/unit/test_listings.py
+app/tests/unit/test_uploads.py
+app/tests/unit/test_users.py
+app/tests/unit/users/__init__.py
+app/tests/unit/users/test_user_entity.py
+app/tests/unit/users/test_user_services.py
+app/worker/__init__.py
+
+============================================================
+5. ACTIVE IMPORTS - app ONLY
+============================================================
+IMPORT                         COUNT
+---------------------------------------------
+app                            307
+sqlalchemy                     66
+datetime                       59
+typing                         58
+uuid                           57
+domain                         44
+fastapi                        43
+pydantic                       26
+dataclasses                    23
+schemas                        21
+models                         14
+application                    14
+abc                            12
+enum                           10
+__future__                     9
+entities                       8
+pytest                         7
+router                         7
+mappers                        7
+dependencies                   7
+infrastructure                 7
+service                        6
+logging                        4
+redis                          3
+os                             3
+pathlib                        2
+repositories                   2
+time                           2
+collections                    2
+contextlib                     1
+importlib                      1
+json                           1
+pydantic_settings              1
+mimetypes                      1
+enums                          1
+dto                            1
+services                       1
+hashlib                        1
+secrets                        1
+prometheus_client              1
+passlib                        1
+math                           1
+session                        1
+jwt                            1
+smtplib                        1
+email                          1
+
+============================================================
+6. PYTHON SYNTAX CHECK
+============================================================
+
+Python files: 281
+Syntax errors: 0
+
+============================================================
+7. APP IMPORT
+============================================================
+[OK]   app /data/data/com.termux/files/home/waste-platform/app/__init__.py
+[OK]   app.main /data/data/com.termux/files/home/waste-platform/app/main.py
+
+============================================================
+8. MAIN / FASTAPI ENTRYPOINTS
+============================================================
+
+----- app/main.py -----
+6:from fastapi import FastAPI
+14:async def lifespan(app: FastAPI):
+18:def create_app() -> FastAPI:
+19:    app = FastAPI(
+55:            app.include_router(api_router)
+57:            app.include_router(api_router, prefix="/api/v1")
+83:                    app.include_router(router, prefix="/api/v1")
+92:app = create_app()
+
+----- app/shared/presentation/exception_handlers.py -----
+1:from fastapi import FastAPI, Request
+33:def register_exception_handlers(app: FastAPI) -> None:
+
+============================================================
+9. DATABASE CONFIGURATION
+============================================================
+app/shared/infrastructure/db/session.py:10:    create_async_engine,
+app/shared/infrastructure/db/session.py:16:def _database_url() -> str:
+app/shared/infrastructure/db/session.py:22:        url = getattr(settings, "DATABASE_URL", None)
+app/shared/infrastructure/db/session.py:26:    if not url or "{" in url or "}" in url or "POSTGRES_" in url:
+app/shared/infrastructure/db/session.py:27:        url = "sqlite+aiosqlite:///./var/cmep.db"
+app/shared/infrastructure/db/session.py:29:    if url.startswith("postgresql://"):
+app/shared/infrastructure/db/session.py:30:        url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+app/shared/infrastructure/db/session.py:32:    if url.startswith("postgres://"):
+app/shared/infrastructure/db/session.py:33:        url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+app/shared/infrastructure/db/session.py:35:    if url.startswith("sqlite:///") and not url.startswith("sqlite+aiosqlite:///"):
+app/shared/infrastructure/db/session.py:36:        url = url.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+app/shared/infrastructure/db/session.py:41:DATABASE_URL = _database_url()
+app/shared/infrastructure/db/session.py:43:if DATABASE_URL.startswith("sqlite"):
+app/shared/infrastructure/db/session.py:45:    engine: AsyncEngine = create_async_engine(
+app/shared/infrastructure/db/session.py:46:        DATABASE_URL,
+app/shared/infrastructure/db/session.py:51:    engine = create_async_engine(
+app/shared/infrastructure/db/session.py:52:        DATABASE_URL,
+app/shared/infrastructure/db/__init__.py:3:    DATABASE_URL,
+app/shared/infrastructure/db/__init__.py:14:    "DATABASE_URL",
+app/modules/listings/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/modules/inquiries/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/modules/documents/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/modules/compliance/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/modules/notifications/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/modules/analytics/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/modules/admin/infrastructure/models.py:7:from sqlalchemy.dialects.postgresql import UUID
+app/core/config.py:40:    url: str = "sqlite+aiosqlite:///./var/cmep.db"
+app/core/config.py:41:    async_url: str = "sqlite+aiosqlite:///./var/cmep.db"
+app/core/config.py:54:    if not value or "{" in value or "}" in value or "POSTGRES_" in value:
+app/core/config.py:55:        return "sqlite+aiosqlite:///./var/cmep.db"
+app/core/config.py:57:    if value.startswith("postgresql://"):
+app/core/config.py:58:        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+app/core/config.py:60:    if value.startswith("postgres://"):
+app/core/config.py:61:        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+app/core/config.py:63:    if value.startswith("sqlite:///"):
+app/core/config.py:64:        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+app/core/config.py:102:    DATABASE_URL: str = "sqlite+aiosqlite:///./var/cmep.db"
+app/core/config.py:135:        database_url = _safe_db_url(self.DATABASE_URL)
+app/core/config.py:136:        object.__setattr__(self, "DATABASE_URL", database_url)
+app/core/config.py:141:                url=database_url,
+app/core/config.py:142:                async_url=database_url,
+
+============================================================
+10. ALEMBIC
+============================================================
+1577dceccd9e (head)
+
+1577dceccd9e (head)
+
+Rev: 1577dceccd9e (head)
+Parent: <base>
+Path: /data/data/com.termux/files/home/waste-platform/migrations/versions/1577dceccd9e_initial_schema.py
+
+    initial_schema
+    
+    Revision ID: 1577dceccd9e
+    Revises: 
+    Create Date: 2026-08-25 07:17:06.083126
+
+
+============================================================
+11. PYTEST DISCOVERY
+============================================================
+app/tests/unit/test_auth.py::test_auth_placeholder
+app/tests/unit/test_companies.py::test_companies_placeholder
+app/tests/unit/test_documents.py::test_documents_placeholder
+app/tests/unit/test_inquiries.py::test_inquiries_placeholder
+app/tests/unit/test_listings.py::test_listings_placeholder
+app/tests/unit/test_uploads.py::test_uploads_placeholder
+app/tests/unit/test_users.py::test_users_placeholder
+
+7 tests collected in 0.16s
+
+============================================================
+12. PIP CHECK
+============================================================
+fierce 1.6.0 has requirement dnspython==1.16.0, but you have dnspython 2.8.0.
+mistralai 2.7.1 has requirement opentelemetry-semantic-conventions<0.61,>=0.60b1, but you have opentelemetry-semantic-conventions 0.58b0.
+mcp 1.23.3 has requirement pydantic-settings>=2.5.2, but you have pydantic-settings 2.0.3.
+pyopenssl 26.3.0 has requirement cryptography<50,>=49.0.0, but you have cryptography 50.0.0.
+maigret 0.6.3 has requirement aiohttp<4.0.0,>=3.12.14, but you have aiohttp 3.12.13.
+maigret 0.6.3 has requirement reportlab<5.0.0,>=4.4.3, but you have reportlab 4.4.2.
+safety 3.8.1 has requirement typer<0.26.0,>=0.16.0, but you have typer 0.27.1.
+sherlock-project 0.16.0 has requirement pandas<3.0.0,>=2.2.1, but you have pandas 3.0.5.
+nala 0.16.0 has requirement typer<0.16.0,>=0.15.2, but you have typer 0.27.1.
+psutil 7.2.2 is not supported on this platform
+numpy 2.4.4 is not supported on this platform
+grpcio 1.83.0 is not supported on this platform
+opencv_contrib_python 4.13.0.93 is not supported on this platform
+pandas 3.0.5 is not supported on this platform
+opencv_python 4.13.0.93 is not supported on this platform
+python-apt 3.1.0 is not supported on this platform
+
+============================================================
+13. CRITICAL PACKAGE VERSIONS
+============================================================
+fastapi                   0.141.1
+starlette                 1.3.1
+pydantic                  2.13.4
+pydantic-settings         2.0.3
+sqlalchemy                2.0.51
+alembic                   1.19.0
+asyncpg                   0.31.0
+psycopg2-binary           2.9.12
+uvicorn                   0.52.0
+typer                     0.27.1
+click                     8.1.8
+httpx                     0.28.1
+aiohttp                   3.12.13
+cryptography              50.0.0
+pyOpenSSL                 26.3.0
+redis                     8.1.0
+pytest                    9.1.1
+
+============================================================
+14. GIT STATUS
+============================================================
+ M alembic.ini
+ M app/core/config.py
+ M app/modules/admin/__init__.py
+ M app/modules/admin/router.py
+ M app/modules/analytics/__init__.py
+ M app/modules/analytics/router.py
+ D app/modules/auth/domain/entities.py.bak
+ M app/modules/compliance/__init__.py
+ M app/modules/compliance/router.py
+ M app/modules/documents/__init__.py
+ M app/modules/documents/router.py
+ M app/modules/inquiries/__init__.py
+ M app/modules/inquiries/router.py
+ D app/modules/listings/domain/entities.py.bak2-20260808-063650
+ M app/modules/notifications/__init__.py
+ M app/modules/notifications/router.py
+ M app/shared/infrastructure/db/__init__.py
+ M app/shared/infrastructure/db/session.py
+ M apps/web/package.json
+ M apps/web/src/features/listings/components/listing-form.tsx
+ M apps/web/src/lib/config.ts
+ M migrations/env.py
+ D migrations/versions/001_initial.py
+?? CMEP-refresh-rotation-forensic-20260824-191333.txt
+?? alembic.ini.backup.20260824-092956
+?? app/core/http_exception_handlers.py
+?? app/fix_and_start.sh
+?? app/fix_app.sh
+?? app/fix_main.sh
+?? app/shared/infrastructure/database.py
+?? app/start_app.sh
+?? app/tests/unit/test_auth.py
+?? app/tests/unit/test_companies.py
+?? app/tests/unit/test_documents.py
+?? app/tests/unit/test_inquiries.py
+?? app/tests/unit/test_listings.py
+?? app/tests/unit/test_uploads.py
+?? app/tests/unit/test_users.py
+?? apps/web/fix_everything.sh
+?? apps/web/next.config.mjs
+?? audit-frontend-runtime-3001.sh
+?? check-live-auth-status.sh
+?? check-postgres-reachability.sh
+?? create-recyclehub-db.sh
+?? diagnose_imports.py
+?? diagnose_waste_platform.sh
+?? finalize-everything.sh
+?? fix-and-start-frontend-3001.sh
+?? fix-auth-exception-mapping-safe.sh
+?? fix-auth-exception-mapping.sh
+?? fix-main-py-handler-placement-no-python.sh
+?? fix-main-py-handler-placement.sh
+?? fix-next-tracing-termux.sh
+?? fix-sqlite-uuid-alembic-check.sh
+?? fix-waste-platform.sh
+?? fix_all.py
+?? fix_all.sh
+?? fix_database.sh
+?? init-postgres-termux.sh
+?? migrations/versions/1577dceccd9e_initial_schema.py
+?? move_audit_to_phone.sh
+?? pytest.ini
+?? rebuild-sqlite-initial-migration.sh
+?? remove-empty-alembic-revision.sh
+?? repair-main-py-completely.sh
+?? reset-initial-migration-sqlite.sh
+?? run-clean-backend-foreground.sh
+?? run-clean-backend.sh
+?? run-everything.sh
+?? scripts/fixes/backend/
+?? scripts/forensic-audit-report-20260824-022021.txt
+?? seed_database.py
+?? start-postgres-safe.sh
+?? start_app.sh
+?? test-next-prod-vs-dev.sh
+?? verify-db-and-login.sh
+?? waste_platform_diagnosis_20260825-134220.txt
+?? waste_platform_python_audit.sh
+
+============================================================
+15. CURRENT COMMIT
+============================================================
+018a693 fix(runtime): termux settings (jwt/redis/rate_limit), memory revocation, /api/v1 mount
+main
+
+============================================================
+16. POTENTIALLY DANGEROUS / DUPLICATE CONFIGS
+============================================================
+./.env
+./.env.backup.20260824-092956
+./.env.bak-20260821_1306
+./.env.bak-20260824_085929
+./.env.bak.20260817-115539
+./.env.bak.20260817-115628
+./.env.before-newline-fix.20260817-120730
+./.env.compose
+./.env.dedup.20260817-120833
+./.env.example
+./.env.finalbak.20260817-131129
+./.env.fixbak.20260817-115715
+./.env.local.template
+./.env.production
+./.env.production.example
+./app/core/config.py
+./app/main.py
+./apps/web.backup.20260824-092935/.env.local
+./apps/web/.env.local
+./apps/web/.env.local.bak
+./scripts/dev/.env
+./scripts/dev/backend_test_env/lib/python3.14/site-packages/pip/_internal/cli/main.py
+./scripts/dev/backend_test_env/lib/python3.14/site-packages/pip/_internal/commands/configuration.py
+./scripts/dev/backend_test_env/lib/python3.14/site-packages/pip/_internal/configuration.py
+./scripts/dev/backend_test_env/lib/python3.14/site-packages/pip/_internal/locations/_sysconfig.py
+./scripts/dev/backend_test_env/lib/python3.14/site-packages/pip/_internal/main.py
+
+============================================================
+17. RESULT
+============================================================
+Diagnosis saved to:
+/data/data/com.termux/files/home/waste-platform/waste_platform_diagnosis_20260825-134220.txt
+
+IMPORTANT:
+Nothing was installed.
+Nothing was removed.
+Nothing was modified.
+
+============================================================

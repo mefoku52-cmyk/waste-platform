@@ -1,0 +1,28 @@
+services:
+  api:
+    volumes:
+      - ./app:/app:ro
+    environment:
+      DEBUG: "true"
+      LOG_LEVEL: DEBUG
+      ENVIRONMENT: development
+    command:
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+      - --log-level
+      - debug
+
+  web:
+    volumes:
+      - ./apps/web:/app:ro
+    environment:
+      NODE_ENV: development
+    command:
+      - npm
+      - run
+      - dev

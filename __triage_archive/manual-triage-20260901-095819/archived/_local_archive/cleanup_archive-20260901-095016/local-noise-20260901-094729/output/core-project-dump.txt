@@ -1,0 +1,1131 @@
+===== .env =====
+DATABASE_URL=sqlite+aiosqlite:///./var/cmep.db
+JWT_SECRET_KEY=cmep-dev-change-me-to-at-least-32-chars-long-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+REFRESH_TOKEN_EXPIRE_DAYS=14
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8001
+
+===== README.md =====
+# Circular Materials Exchange Platform (CMEP)
+
+B2B platforma pre obchodovanie s odpadmi, vedľajšími produktmi a sekundárnymi surovinami.
+
+## Rýchly štart
+```bash
+cp .env.example .env
+docker compose up -d
+```
+
+Dokumentácia
+
+· SUMMARY.md
+· deployment.md
+· monitoring.md
+· load-testing.md
+
+Technológie
+
+· FastAPI + Python
+· Next.js + TypeScript
+· PostgreSQL, Redis, MinIO
+· Docker, Prometheus, Grafana
+  EOF
+  echo "  ✅ README.md"
+
+.env.production
+
+cat > .env.production << 'EOF'
+APP_ENV=production
+APP_NAME=Circular Materials Exchange Platform
+APP_DOMAIN=app.example.com
+API_DOMAIN=api.example.com
+LETSENCRYPT_EMAIL=admin@example.com
+APP_HOST=0.0.0.0
+APP_PORT=8000
+APP_DEBUG=false
+APP_LOG_LEVEL=INFO
+POSTGRES_DB=cmep
+POSTGRES_USER=cmep
+POSTGRES_PASSWORD=change-me-postgres-password
+DATABASE_HOST=postgres
+DATABASE_PORT=5432
+DATABASE_NAME=cmep
+DATABASE_USER=cmep
+DATABASE_PASSWORD=change-me-postgres-password
+DATABASE_URL=postgresql+asyncpg://cmep:change-me-postgres-password@postgres:5432/cmep
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_URL=redis://redis:6379/0
+MINIO_ROOT_USER=minio
+MINIO_ROOT_PASSWORD=change-me-minio-password
+S3_ENDPOINT_URL=http://minio:9000
+S3_REGION=eu-central-1
+S3_ACCESS_KEY=minio
+S3_SECRET_KEY=change-me-minio-password
+S3_BUCKET_DOCUMENTS=cmep-documents
+S3_BUCKET_MEDIA=cmep-media
+JWT_ISSUER=cmep-api
+JWT_AUDIENCE=cmep-web
+JWT_SECRET_KEY=change-me-jwt-secret
+JWT_REFRESH_SECRET_KEY=change-me-jwt-refresh-secret
+JWT_ACCESS_TOKEN_EXPIRES_MINUTES=15
+JWT_REFRESH_TOKEN_EXPIRES_DAYS=30
+JWT_ALGORITHM=HS256
+CORS_ALLOWED_ORIGINS=https://app.example.com
+NEXT_PUBLIC_API_BASE_URL=https://api.example.com/api/v1
+# waste-platform
+
+===== start-platform.sh =====
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+ROOT="$HOME/waste-platform"
+cd "$ROOT"
+
+echo "=== CMEP start ==="
+
+# Postgres
+if ! pg_isready -h localhost -p 5432 >/dev/null 2>&1; then
+  echo "[pg] starting..."
+  pg_ctl -D "$PREFIX/var/lib/postgresql" start || true
+  sleep 2
+fi
+pg_isready -h localhost -p 5432 && echo "[pg] ok" || echo "[pg] FAIL"
+
+# Redis
+if ! redis-cli ping 2>/dev/null | grep -q PONG; then
+  echo "[redis] starting..."
+  redis-server --daemonize yes || true
+  sleep 1
+fi
+redis-cli ping 2>/dev/null | grep -q PONG && echo "[redis] ok" || echo "[redis] FAIL"
+
+# stop old
+pkill -f "uvicorn app.main:app" 2>/dev/null || true
+pkill -f "next dev" 2>/dev/null || true
+sleep 1
+
+# backend
+echo "[backend] :8001"
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload \
+  > "$HOME/cmep-backend.log" 2>&1 &
+BACKEND_PID=$!
+echo "backend pid $BACKEND_PID"
+
+# frontend
+echo "[frontend] :3001"
+cd "$ROOT/apps/web"
+nohup npm run dev -- --port 3001 --hostname 0.0.0.0 \
+  > "$HOME/cmep-frontend.log" 2>&1 &
+FRONTEND_PID=$!
+echo "frontend pid $FRONTEND_PID"
+
+# Počkaj 5 sekúnd na naštartovanie
+sleep 5
+
+# Skontroluj backend (stačí raz)
+if curl -s -m 5 http://localhost:8001/health >/dev/null 2>&1; then
+  echo "✅ backend ready"
+else
+  echo "❌ backend not responding (check ~/cmep-backend.log)"
+fi
+
+# Skontroluj frontend – opakovane až 30 pokusov
+echo "Čakám na frontend..."
+for i in {1..30}; do
+  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 | grep -q "^2"; then
+    echo "✅ frontend ready (HTTP 200)"
+    break
+  fi
+  if [ $i -eq 30 ]; then
+    echo "❌ frontend not ready after 30s (check ~/cmep-frontend.log)"
+  fi
+  sleep 1
+done
+
+echo ""
+echo "API:  http://localhost:8001/docs"
+echo "WEB:  http://localhost:3001"
+echo "Logy: tail -f ~/cmep-backend.log ~/cmep-frontend.log"
+
+===== seed_database.py =====
+import asyncio
+from sqlalchemy import select
+from app.shared.infrastructure.db.session import engine, SessionLocal
+from app.shared.infrastructure.db.base import Base
+from app.shared.infrastructure.db.register_models import *
+from app.modules.users.infrastructure.models import UserModel
+from app.shared.application.passwords import PasswordService
+from datetime import datetime, timezone
+
+async def init():
+    print("   [DB] Vytváram tabuľky...")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("   [DB] Tabuľky hotové")
+
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(UserModel).where(UserModel.email == "admin@cmep.local")
+        )
+        if result.scalar_one_or_none():
+            print("   [DB] Admin už existuje")
+            return
+
+        ps = PasswordService()
+        admin = UserModel(
+            id="00000000-0000-0000-0000-000000000001",
+            status="active",
+            email="admin@cmep.local",
+            password_hash=ps.hash_password("Admin123!"),
+            first_name="System",
+            last_name="Admin",
+            display_name="Administrator",
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        session.add(admin)
+        await session.commit()
+        print("   [DB] Admin vytvorený: admin@cmep.local / Admin123!")
+
+if __name__ == "__main__":
+    asyncio.run(init())
+
+===== verify-db-and-login.sh =====
+#!/data/data/com.termux/files/usr/bin/bash
+set -u
+
+export PGPASSWORD='recyclehub'
+
+echo '===== DATABASE CONNECTION ====='
+psql \
+  -h 127.0.0.1 \
+  -p 5432 \
+  -U recyclehub \
+  -d recyclehub \
+  -c 'select current_database(), current_user, version();' || true
+echo
+
+echo '===== DATABASE TABLES ====='
+psql \
+  -h 127.0.0.1 \
+  -p 5432 \
+  -U recyclehub \
+  -d recyclehub \
+  -c 'dt' || true
+echo
+
+echo '===== API HEALTH ====='
+curl -i -m 10 http://localhost:8010/health || true
+echo
+
+echo '===== API LOGIN ====='
+curl -i -m 10 -X POST http://localhost:8010/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"nonexistent@example.com","password":"wrongpass"}' || true
+echo
+
+echo '===== CLEAN BACKEND LOG ====='
+tail -n 120 "$HOME/cmep-backend-clean.log" 2>/dev/null || true
+
+===== migrations/README =====
+Generic single-database configuration.
+===== migrations/env.py =====
+from __future__ import annotations
+
+import asyncio
+from logging.config import fileConfig
+
+from alembic import context
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
+
+from app.shared.infrastructure.db.base import Base
+import app.shared.infrastructure.db.register_models  # noqa: F401
+
+try:
+    from app.shared.config import settings
+except Exception:
+    from app.core.config import settings
+
+config = context.config
+
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+database_url = getattr(getattr(settings, "database", settings), "async_url", None)
+if not database_url:
+    raise RuntimeError("Cannot resolve runtime database async_url from application settings.")
+
+config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
+target_metadata = Base.metadata
+
+
+def _is_uuidish(type_obj) -> bool:
+    if type_obj is None:
+        return False
+    name = type(type_obj).__name__.lower()
+    text = str(type_obj).lower()
+    return "uuid" in name or "uuid" in text
+
+
+def _is_sqlite_numericish(type_obj) -> bool:
+    if type_obj is None:
+        return False
+    name = type(type_obj).__name__.lower()
+    text = str(type_obj).lower()
+    return "numeric" in name or "numeric" in text
+
+
+def custom_compare_type(context, inspected_column, metadata_column, inspected_type, metadata_type):
+    dialect_name = context.dialect.name
+
+    if dialect_name == "sqlite":
+        if _is_sqlite_numericish(inspected_type) and _is_uuidish(metadata_type):
+            return False
+
+    return None
+
+
+def run_migrations_offline() -> None:
+    url = config.get_main_option("sqlalchemy.url")
+    context.configure(
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
+        compare_type=custom_compare_type,
+        compare_server_default=True,
+    )
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def do_run_migrations(connection: Connection) -> None:
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=custom_compare_type,
+        compare_server_default=True,
+    )
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+async def run_async_migrations() -> None:
+    connectable = async_engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
+    await connectable.dispose()
+
+
+def run_migrations_online() -> None:
+    asyncio.run(run_async_migrations())
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
+
+===== migrations/script.py.mako =====
+"""${message}
+
+Revision ID: ${up_revision}
+Revises: ${down_revision | comma,n}
+Create Date: ${create_date}
+
+"""
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
+${imports if imports else ""}
+
+# revision identifiers, used by Alembic.
+revision: str = ${repr(up_revision)}
+down_revision: Union[str, Sequence[str], None] = ${repr(down_revision)}
+branch_labels: Union[str, Sequence[str], None] = ${repr(branch_labels)}
+depends_on: Union[str, Sequence[str], None] = ${repr(depends_on)}
+
+
+def upgrade() -> None:
+    """Upgrade schema."""
+    ${upgrades if upgrades else "pass"}
+
+
+def downgrade() -> None:
+    """Downgrade schema."""
+    ${downgrades if downgrades else "pass"}
+
+===== migrations/versions/1577dceccd9e_initial_schema.py =====
+"""initial_schema
+
+Revision ID: 1577dceccd9e
+Revises: 
+Create Date: 2026-08-25 07:17:06.083126
+
+"""
+from typing import Sequence, Union
+
+from alembic import op
+import sqlalchemy as sa
+
+
+# revision identifiers, used by Alembic.
+revision: str = '1577dceccd9e'
+down_revision: Union[str, Sequence[str], None] = None
+branch_labels: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = None
+
+
+def upgrade() -> None:
+    """Upgrade schema."""
+    # ### commands auto generated by Alembic - please adjust! ###
+    op.create_table('admin_audit_entries',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('actor_user_id', sa.UUID(), nullable=False),
+    sa.Column('action', sa.String(length=120), nullable=False),
+    sa.Column('target_type', sa.String(length=120), nullable=False),
+    sa.Column('target_id', sa.UUID(), nullable=True),
+    sa.Column('details', sa.Text(), nullable=True),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('analytics_events',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('event_type', sa.String(length=120), nullable=False),
+    sa.Column('entity_type', sa.String(length=120), nullable=False),
+    sa.Column('entity_id', sa.UUID(), nullable=True),
+    sa.Column('company_id', sa.UUID(), nullable=True),
+    sa.Column('event_metadata', sa.Text(), nullable=True),
+    sa.Column('recorded_at', sa.DateTime(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('companies',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('legal_name', sa.String(length=255), nullable=False),
+    sa.Column('trading_name', sa.String(length=255), nullable=True),
+    sa.Column('registration_number', sa.String(length=128), nullable=False),
+    sa.Column('tax_identifier', sa.String(length=128), nullable=True),
+    sa.Column('company_type', sa.String(length=32), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=True),
+    sa.Column('phone', sa.String(length=64), nullable=True),
+    sa.Column('website_url', sa.String(length=512), nullable=True),
+    sa.Column('country_code', sa.String(length=2), nullable=False),
+    sa.Column('address_line_1', sa.String(length=255), nullable=False),
+    sa.Column('address_line_2', sa.String(length=255), nullable=True),
+    sa.Column('city', sa.String(length=128), nullable=False),
+    sa.Column('postal_code', sa.String(length=64), nullable=False),
+    sa.Column('latitude', sa.Float(), nullable=True),
+    sa.Column('longitude', sa.Float(), nullable=True),
+    sa.Column('seller_capability', sa.Boolean(), nullable=False),
+    sa.Column('buyer_capability', sa.Boolean(), nullable=False),
+    sa.Column('logistics_capability', sa.Boolean(), nullable=False),
+    sa.Column('verification_submitted_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('verification_reviewed_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('verification_reviewed_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('verified_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('verified_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('rejected_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('rejected_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_by_user_id', sa.String(length=36), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_companies_registration_number'), 'companies', ['registration_number'], unique=True)
+    op.create_index(op.f('ix_companies_status'), 'companies', ['status'], unique=False)
+    op.create_table('company_memberships',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('company_id', sa.String(length=36), nullable=False),
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('membership_role', sa.String(length=64), nullable=False),
+    sa.Column('is_primary_contact', sa.Boolean(), nullable=False),
+    sa.Column('invited_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('joined_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('left_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_by_user_id', sa.String(length=36), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_company_memberships_company_id'), 'company_memberships', ['company_id'], unique=False)
+    op.create_index(op.f('ix_company_memberships_status'), 'company_memberships', ['status'], unique=False)
+    op.create_index(op.f('ix_company_memberships_user_id'), 'company_memberships', ['user_id'], unique=False)
+    op.create_table('compliance_records',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('company_id', sa.UUID(), nullable=False),
+    sa.Column('regulation_type', sa.String(length=120), nullable=False),
+    sa.Column('document_ref', sa.String(length=255), nullable=True),
+    sa.Column('valid_until', sa.DateTime(), nullable=True),
+    sa.Column('notes', sa.Text(), nullable=True),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('documents',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('document_type', sa.String(length=120), nullable=False),
+    sa.Column('file_url', sa.String(length=1024), nullable=False),
+    sa.Column('company_id', sa.UUID(), nullable=False),
+    sa.Column('listing_id', sa.UUID(), nullable=True),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('inquiries',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('listing_id', sa.UUID(), nullable=False),
+    sa.Column('company_id', sa.UUID(), nullable=False),
+    sa.Column('message', sa.Text(), nullable=False),
+    sa.Column('contact_email', sa.String(length=255), nullable=False),
+    sa.Column('contact_phone', sa.String(length=64), nullable=True),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('listings',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('material_type', sa.String(length=120), nullable=False),
+    sa.Column('quantity', sa.Float(), nullable=False),
+    sa.Column('unit', sa.String(length=32), nullable=False),
+    sa.Column('price', sa.Float(), nullable=True),
+    sa.Column('currency', sa.String(length=8), nullable=False),
+    sa.Column('condition', sa.String(length=120), nullable=False),
+    sa.Column('location', sa.String(length=255), nullable=False),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('company_id', sa.UUID(), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('image_url', sa.String(length=512), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('notifications',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=False),
+    sa.Column('type', sa.String(length=64), nullable=False),
+    sa.Column('title', sa.String(length=255), nullable=False),
+    sa.Column('message', sa.Text(), nullable=False),
+    sa.Column('is_read', sa.Boolean(), nullable=False),
+    sa.Column('related_entity_id', sa.UUID(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.Column('created_by_user_id', sa.UUID(), nullable=True),
+    sa.Column('updated_by_user_id', sa.UUID(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('refresh_sessions',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('user_id', sa.String(length=36), nullable=False),
+    sa.Column('token_family_id', sa.String(length=64), nullable=False),
+    sa.Column('refresh_token_jti', sa.String(length=64), nullable=False),
+    sa.Column('refresh_token_hash', sa.String(length=128), nullable=False),
+    sa.Column('expires_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('revoked_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('replaced_by_jti', sa.String(length=64), nullable=True),
+    sa.Column('reuse_detected_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_by_user_id', sa.String(length=36), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_refresh_sessions_refresh_token_jti'), 'refresh_sessions', ['refresh_token_jti'], unique=True)
+    op.create_index(op.f('ix_refresh_sessions_token_family_id'), 'refresh_sessions', ['token_family_id'], unique=False)
+    op.create_index(op.f('ix_refresh_sessions_user_id'), 'refresh_sessions', ['user_id'], unique=False)
+    op.create_table('users',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('status', sa.String(length=32), nullable=False),
+    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('password_hash', sa.String(length=255), nullable=False),
+    sa.Column('first_name', sa.String(length=120), nullable=False),
+    sa.Column('last_name', sa.String(length=120), nullable=False),
+    sa.Column('display_name', sa.String(length=255), nullable=True),
+    sa.Column('phone', sa.String(length=64), nullable=True),
+    sa.Column('locale', sa.String(length=32), nullable=True),
+    sa.Column('timezone', sa.String(length=64), nullable=True),
+    sa.Column('last_login_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('created_by_user_id', sa.String(length=36), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_by_user_id', sa.String(length=36), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+    # ### end Alembic commands ###
+
+
+def downgrade() -> None:
+    """Downgrade schema."""
+    # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f('ix_users_email'), table_name='users')
+    op.drop_table('users')
+    op.drop_index(op.f('ix_refresh_sessions_user_id'), table_name='refresh_sessions')
+    op.drop_index(op.f('ix_refresh_sessions_token_family_id'), table_name='refresh_sessions')
+    op.drop_index(op.f('ix_refresh_sessions_refresh_token_jti'), table_name='refresh_sessions')
+    op.drop_table('refresh_sessions')
+    op.drop_table('notifications')
+    op.drop_table('listings')
+    op.drop_table('inquiries')
+    op.drop_table('documents')
+    op.drop_table('compliance_records')
+    op.drop_index(op.f('ix_company_memberships_user_id'), table_name='company_memberships')
+    op.drop_index(op.f('ix_company_memberships_status'), table_name='company_memberships')
+    op.drop_index(op.f('ix_company_memberships_company_id'), table_name='company_memberships')
+    op.drop_table('company_memberships')
+    op.drop_index(op.f('ix_companies_status'), table_name='companies')
+    op.drop_index(op.f('ix_companies_registration_number'), table_name='companies')
+    op.drop_table('companies')
+    op.drop_table('analytics_events')
+    op.drop_table('admin_audit_entries')
+    # ### end Alembic commands ###
+
+===== app/main.py =====
+from __future__ import annotations
+
+import importlib
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.core.http_exception_handlers import register_http_exception_handlers
+
+logger = logging.getLogger("cmep.main")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(
+        "Starting CMEP app env=%s docs=%s db=%s",
+        settings.app_env,
+        settings.ENABLE_PUBLIC_DOCS,
+        settings.DATABASE_URL,
+    )
+    yield
+    logger.info("Stopping CMEP app")
+
+
+def _cors_origins() -> list[str]:
+    if isinstance(settings.CORS_ORIGINS, list):
+        return settings.CORS_ORIGINS
+    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
+        return [settings.CORS_ORIGINS.strip()]
+    return ["http://127.0.0.1:3001", "http://localhost:3001"]
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        description=settings.app_description,
+        version=settings.app_version,
+        docs_url="/docs" if settings.ENABLE_PUBLIC_DOCS else None,
+        redoc_url="/redoc" if settings.ENABLE_PUBLIC_DOCS else None,
+        openapi_url="/openapi.json" if settings.ENABLE_PUBLIC_DOCS else None,
+        root_path=settings.ROOT_PATH or "",
+        lifespan=lifespan,
+    )
+
+    register_http_exception_handlers(app)
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    mounted: list[str] = []
+    skipped: list[dict[str, str]] = []
+
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "service": settings.app_name,
+            "version": settings.app_version,
+            "env": settings.app_env,
+            "database_url": settings.DATABASE_URL,
+            "mounted_routers": mounted,
+            "skipped_routers": skipped,
+        }
+
+    try:
+        from app.shared.presentation.api_router import api_router
+
+        pref = getattr(api_router, "prefix", "") or ""
+        if pref.startswith("/api"):
+            app.include_router(api_router)
+        else:
+            app.include_router(api_router, prefix="/api/v1")
+        mounted.append("shared.api_router")
+    except Exception as e:
+        logger.exception("Failed to include shared.api_router")
+        skipped.append({"module": "shared.api_router", "error": str(e)})
+
+    module_routers = [
+        "app.modules.auth.presentation.router",
+        "app.modules.users.presentation.router",
+        "app.modules.companies.presentation.router",
+        "app.modules.company_memberships.presentation.router",
+        "app.modules.listings.presentation.router",
+        "app.modules.inquiries.presentation.router",
+        "app.modules.documents.presentation.router",
+        "app.modules.compliance.presentation.router",
+        "app.modules.notifications.presentation.router",
+        "app.modules.analytics.presentation.router",
+        "app.modules.admin.presentation.router",
+        "app.modules.uploads.presentation.router",
+    ]
+
+    for mod_path in module_routers:
+        tag = mod_path.split(".")[2]
+        try:
+            mod = importlib.import_module(mod_path)
+            router = getattr(mod, "router", None)
+            if router is None:
+                skipped.append({"module": tag, "error": "router attribute missing"})
+                logger.warning("Router missing for module=%s", tag)
+                continue
+
+            app.include_router(router, prefix="/api/v1")
+            mounted.append(tag)
+        except Exception as ex:
+            logger.exception("Failed to include router module=%s", tag)
+            skipped.append({"module": tag, "error": str(ex)})
+
+    app.state.mounted_routers = mounted
+    app.state.skipped_routers = skipped
+
+    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+
+    return app
+
+
+app = create_app()
+
+===== app/core/config.py =====
+from __future__ import annotations
+
+import json
+from typing import List, Union
+
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
+
+
+class JWTSettings(BaseModel):
+    secret_key: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 14
+    secret: str = ""
+    expire_minutes: int = 60
+
+    def model_post_init(self, __context) -> None:
+        if not self.secret:
+            object.__setattr__(self, "secret", self.secret_key)
+
+
+class RedisSettings(BaseModel):
+    url: str = "memory://"
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    enabled: bool = False
+
+
+class RateLimitSettings(BaseModel):
+    enabled: bool = False
+    limit: int = 10
+    period: int = 60
+    requests: int = 100
+    window_seconds: int = 60
+
+
+class DatabaseSettings(BaseModel):
+    url: str = SQLITE_DEFAULT
+    async_url: str = SQLITE_DEFAULT
+    echo: bool = False
+    pool_size: int = 5
+    pool_pre_ping: bool = True
+
+    def model_post_init(self, __context) -> None:
+        if not self.async_url:
+            object.__setattr__(self, "async_url", self.url)
+
+
+def _is_placeholder_db_value(raw: str | None) -> bool:
+    value = str(raw or "").strip()
+    return (
+        not value
+        or "{" in value
+        or "}" in value
+        or "POSTGRES_" in value
+        or value.lower() in {"none", "null", "undefined"}
+    )
+
+
+def _normalize_database_url(raw: str) -> str:
+    value = raw.strip()
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("sqlite:///"):
+        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    return value
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+        populate_by_name=True,
+    )
+
+    app_name: str = "CMEP Platform"
+    app_version: str = "0.1.0"
+    app_description: str = "CMEP - Platform for circular materials exchange"
+
+    app_env: str = Field(default="development", alias="APP_ENV")
+    DEBUG: bool = True
+    ENABLE_PUBLIC_DOCS: bool = True
+    ROOT_PATH: str = ""
+
+    HOST: str = "0.0.0.0"
+    PORT: int = 8001
+
+    CORS_ORIGINS: Union[List[str], str] = Field(
+        default_factory=lambda: [
+            "http://127.0.0.1:3001",
+            "http://localhost:3001",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    )
+
+    DATABASE_URL: str = SQLITE_DEFAULT
+
+    JWT_SECRET_KEY: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+
+    jwt: JWTSettings | None = None
+    redis: RedisSettings = Field(default_factory=RedisSettings)
+    rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
+    database: DatabaseSettings | None = None
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
+    NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    @property
+    def is_development(self) -> bool:
+        return self.app_env.lower() in {"development", "dev", "local", "test"}
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors(cls, value):
+        if value is None or value == "":
+            return ["http://127.0.0.1:3001", "http://localhost:3001"]
+        if isinstance(value, list):
+            return value
+
+        text = str(value).strip()
+        if text.startswith("["):
+            return json.loads(text)
+
+        return [item.strip() for item in text.split(",") if item.strip()]
+
+    def model_post_init(self, __context) -> None:
+        raw_db = str(self.DATABASE_URL or "").strip()
+
+        if _is_placeholder_db_value(raw_db):
+            if self.is_development:
+                database_url = SQLITE_DEFAULT
+            else:
+                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+        else:
+            database_url = _normalize_database_url(raw_db)
+
+        object.__setattr__(self, "DATABASE_URL", database_url)
+        object.__setattr__(
+            self,
+            "database",
+            DatabaseSettings(
+                url=database_url,
+                async_url=database_url,
+            ),
+        )
+
+        if self.jwt is None:
+            object.__setattr__(
+                self,
+                "jwt",
+                JWTSettings(
+                    secret_key=self.JWT_SECRET_KEY,
+                    secret=self.JWT_SECRET_KEY,
+                    algorithm=self.JWT_ALGORITHM,
+                    access_token_expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    refresh_token_expire_days=self.REFRESH_TOKEN_EXPIRE_DAYS,
+                ),
+            )
+
+
+settings = Settings()
+
+===== app/api/routes/auth.py =====
+
+===== app/services/auth_service.py =====
+
+===== app/models/user.py =====
+
+===== app/schemas/auth.py =====
+
+===== apps/web/package.json =====
+{
+  "name": "@cmep/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3001",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0 --port 3001",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@tanstack/react-query": "^5.59.0",
+    "@tanstack/react-query-devtools": "^5.59.0",
+    "clsx": "^2.1.1",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.53.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.1",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+  }
+}
+
+===== apps/web/src/lib/config.ts =====
+export const config = {
+  apiBaseUrl:
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    'http://localhost:8001/api/v1',
+  isServer: typeof window === 'undefined',
+};
+
+===== apps/web/src/lib/api/http.ts =====
+import { tokenStore } from '../auth/token-store';
+
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
+  const url = `${baseUrl}${path.startsWith('/') ? path : '/' + path}`;
+  const token = tokenStore.getToken();
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { ...options, headers });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      tokenStore.clearToken();
+      if (typeof window !== 'undefined') window.location.href = '/login';
+    }
+    const errorData = await response.json().catch(() => ({}));
+    throw {
+      message: errorData.detail || errorData.message || 'An unexpected error occurred',
+      status: response.status,
+      errors: errorData.errors,
+    };
+  }
+  if (response.status === 204) return {} as T;
+  return response.json();
+}
+
+export const http = {
+  get: <T>(path: string, options?: RequestInit) => request<T>(path, { ...options, method: 'GET' }),
+  post: <T>(path: string, body?: any, options?: RequestInit) => request<T>(path, { ...options, method: 'POST', body: body ? JSON.stringify(body) : undefined }),
+  put: <T>(path: string, body?: any, options?: RequestInit) => request<T>(path, { ...options, method: 'PUT', body: body ? JSON.stringify(body) : undefined }),
+  patch: <T>(path: string, body?: any, options?: RequestInit) => request<T>(path, { ...options, method: 'PATCH', body: body ? JSON.stringify(body) : undefined }),
+  delete: <T>(path: string, options?: RequestInit) => request<T>(path, { ...options, method: 'DELETE' }),
+};
+
+===== apps/web/src/features/auth/api.ts =====
+import { http } from '../../lib/api/http';
+import { AuthResponse, MeResponse } from './types';
+import { LoginInput } from './schemas';
+
+export const authApi = {
+  login: (data: LoginInput) =>
+    http.post<AuthResponse>('/auth/login', data),
+
+  googleLogin: (credential: string) =>
+    http.post<AuthResponse>('/auth/google', { credential }),
+
+  logout: (refreshToken: string) =>
+    http.post('/auth/logout', { refreshToken }),
+
+  getMe: () =>
+    http.get<MeResponse>('/auth/me'),
+
+  forgotPassword: (email: string) =>
+    http.post<{ ok: boolean; message: string; resetToken?: string }>(
+      '/auth/forgot-password',
+      { email }
+    ),
+
+  resetPassword: (token: string, newPassword: string) =>
+    http.post<{ ok: boolean; message: string }>(
+      '/auth/reset-password',
+      { token, newPassword }
+    ),
+};
+
+===== apps/web/src/features/auth/schemas.ts =====
+import { z } from 'zod';
+
+export const loginSchema = z.object({
+  email: z.string().email('Neplatný formát e-mailu'),
+  password: z.string().min(6, 'Heslo musí mať aspoň 6 znakov'),
+  remember: z.boolean().optional(),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+
+export const registerSchema = z.object({
+  email: z.string().email('Neplatný formát e-mailu'),
+  firstName: z.string().min(2, 'Meno musí mať aspoň 2 znaky'),
+  lastName: z.string().min(2, 'Priezvisko musí mať aspoň 2 znaky'),
+  password: z.string().min(8, 'Heslo musí mať aspoň 8 znakov'),
+});
+
+export type RegisterInput = z.infer<typeof registerSchema>;
+
+===== apps/web/src/features/auth/types.ts =====
+import { BaseEntity } from '../../lib/types/common';
+
+export interface User extends BaseEntity {
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  firstName?: string;
+  lastName?: string;
+  role?: string;
+  status?: string;
+  memberships?: Membership[];
+  roleCodes?: string[];
+}
+
+export interface Membership {
+  id: string;
+  companyId: string;
+  membershipRole?: string;
+  status?: string;
+  isPrimaryContact?: boolean;
+}
+
+export interface MeResponse {
+  user: User;
+  memberships: Membership[];
+  roleCodes?: string[];
+}
+
+export interface AuthResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+}
+
+===== apps/web/src/app/login/page.tsx =====
+import { LoginForm } from "@/features/auth/components/login-form";
+import { BrandLogo } from "@/components/brand/logo";
+
+export default function LoginPage() {
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-10">
+      <div className="mb-8 flex flex-col items-center gap-3 text-center">
+        <BrandLogo size="lg" />
+        <p className="max-w-xs text-sm text-slate-600">
+          Platforma pre obchod s odpadmi, vedľajšími produktmi a sekundárnymi surovinami
+        </p>
+      </div>
+      <LoginForm />
+      <p className="mt-8 text-center text-[11px] text-slate-400">
+        Circular Materials Exchange Platform
+      </p>
+    </div>
+  );
+}
+

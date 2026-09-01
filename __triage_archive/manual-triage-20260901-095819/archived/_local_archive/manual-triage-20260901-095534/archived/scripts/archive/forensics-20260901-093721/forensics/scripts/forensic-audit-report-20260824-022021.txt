@@ -1,0 +1,300 @@
+
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  [1mFORENZNÝ AUDIT PLATFORMY CMEP[0m
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+Dátum: 2026-08-24 02:20:21
+Používateľ: u0_a388
+Hostiteľ: localhost
+Platforma: Linux aarch64
+Adresár: /data/data/com.termux/files/home/waste-platform/scripts
+
+Verzia Docker: Docker version v24.0.6-ce, build 
+Verzia Docker Compose: Docker Compose version dev
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  1. ANALÝZA ŠTRUKTÚRY PROJEKTU
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 1.1 Adresárová štruktúra
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [0;32m✅ PASS[0m  Koreňový adresár existuje
+  Adresárová hierarchia:
+  📁 . (10 súborov)
+    📁 ./backup (2 súborov)
+    📁 ./legacy (4 súborov)
+    📁 ./dev (22 súborov)
+    📁 ./fixes (2 súborov)
+    📁 ./security (2 súborov)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 1.2 Kľúčové súbory
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Súbor chýba: docker-compose.yml
+  [1;33m⚠️  WARN[0m  Súbor chýba: docker-compose.monitoring.yml
+  [1;33m⚠️  WARN[0m  Súbor chýba: Makefile
+  [1;33m⚠️  WARN[0m  Súbor chýba: README.md
+  [1;33m⚠️  WARN[0m  Súbor chýba: .env
+  [1;33m⚠️  WARN[0m  Súbor chýba: .env.production
+  [1;33m⚠️  WARN[0m  Súbor chýba: requirements.txt
+  [1;33m⚠️  WARN[0m  Súbor chýba: package.json
+  [1;33m⚠️  WARN[0m  Súbor chýba: pyproject.toml
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  2. SYNTAX KONTROLA
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 2.1 Docker Compose súbory
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [0;31m❌ FAIL[0m  docker-compose.yml má syntaktické chyby
+     error while interpolating services.api.environment.DATABASE_URL: required variable POSTGRES_PASSWORD is missing a value: POSTGRES_PASSWORD musi byt nastaveny
+     error while interpolating services.api.environment.JWT_REFRESH_SECRET_KEY: required variable JWT_REFRESH_SECRET_KEY is missing a value: JWT_REFRESH_SECRET_KEY musi byt nastaveny
+     error while interpolating services.api.environment.JWT_SECRET_KEY: required variable JWT_SECRET_KEY is missing a value: JWT_SECRET_KEY musi byt nastaveny
+     error while interpolating services.postgres.environment.POSTGRES_PASSWORD: required variable POSTGRES_PASSWORD is missing a value: POSTGRES_PASSWORD musi byt nastaveny
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 2.2 YAML konfiguračné súbory
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Žiadne YAML súbory nenájdené
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 2.3 Python syntax kontrola
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [0;32m✅ PASS[0m  Python validný: ./fixes/check_imports.py
+  [0;32m✅ PASS[0m  Python validný: ./fixes/create_health_endpoint.py
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 2.4 Shell script syntax kontrola
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [0;32m✅ PASS[0m  Shell script validný: ./load-test.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./backup.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./restore.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./health-check.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./validate-project.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./bootstrap-letsencrypt.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./logs.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./backup/backup-db.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./deploy.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./legacy/stabilize.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./legacy/setup_alembic.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./legacy/create-missing-files.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./legacy/final-fix.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./forensic-audit.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./dev/platform_test.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./dev/backend_test.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./dev/phase0-stabilize.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./dev/phase0-stabilize-sqlite-light.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./dev/phase0-stabilize-termux.sh
+  [0;32m✅ PASS[0m  Shell script validný: ./dev/phase0-stabilize-termux-pure.sh
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  3. BEZPEČNOSTNÝ AUDIT
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 3.1 Sekrety a konfigurácia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 3.2 Docker bezpečnosť
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 3.3 CORS a autentifikácia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  4. FUNKCIONALITA A LOGIKA
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 4.1 FastAPI aplikácia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [0;31m❌ FAIL[0m  Adresár app/ neexistuje
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 4.2 Next.js aplikácia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Adresár apps/ neexistuje alebo je prázdny
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 4.3 Databáza a ORM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Databázové súbory neručné
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  5. PREPOJENIA A INTEGRÁCIE
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 5.1 Docker služby
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Kontrola docker-compose.yml služieb:
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 5.2 Environment premenné
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Env premenná chýba: DATABASE_URL
+  [1;33m⚠️  WARN[0m  Env premenná chýba: REDIS_URL
+  [1;33m⚠️  WARN[0m  Env premenná chýba: JWT_SECRET_KEY
+  [1;33m⚠️  WARN[0m  Env premenná chýba: APP_HOST
+  [1;33m⚠️  WARN[0m  Env premenná chýba: APP_PORT
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 5.3 MinIO / S3 konfigurácia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  MinIO konfigurácia chýba: MINIO_ROOT_USER
+  [1;33m⚠️  WARN[0m  MinIO konfigurácia chýba: MINIO_ROOT_PASSWORD
+  [1;33m⚠️  WARN[0m  MinIO konfigurácia chýba: S3_BUCKET
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  6. MONITORING A OBSERVABILITY
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 6.1 Prometheus konfigurácia
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Prometheus konfigurácia chýba
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 6.2 Alertmanager
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Alertmanager konfigurácia chýba
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 6.3 Loki log aggregation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Loki konfigurácia chýba
+  [1;33m⚠️  WARN[0m  Promtail konfigurácia chýba
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  7. CI/CD A DEPLOYMENT
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 7.1 Makefile
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Makefile chýba
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 7.2 Deployment skripty
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Skript chýba: scripts/deploy.sh
+  [1;33m⚠️  WARN[0m  Skript chýba: scripts/bootstrap-letsencrypt.sh
+  [1;33m⚠️  WARN[0m  Skript chýba: scripts/logs.sh
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  8. DOKUMENTÁCIA
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 8.1 Markdown dokumenty
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [1;33m⚠️  WARN[0m  Dokumentácia chýba: README.md
+  [1;33m⚠️  WARN[0m  Dokumentácia chýba: docs/monitoring.md
+  [1;33m⚠️  WARN[0m  Dokumentácia chýba: docs/architecture-overview.md
+  [1;33m⚠️  WARN[0m  Dokumentácia chýba: docs/troubleshooting.md
+  [1;33m⚠️  WARN[0m  Dokumentácia chýba: docs/production-readiness.md
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 8.2 OpenAPI / Swagger
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  [0;34mℹ️  INFO[0m  OpenAPI dokumentácia - nutná manuálna kontrola
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  9. VÝKON A OPTIMALIZÁCIA
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 9.1 Redis cachovanie
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📋 9.2 Worker a background jobs
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+╔════════════════════════════════════════════════════════════════════════════════════════╗
+║  10. SÚHRN AUDITU
+╚════════════════════════════════════════════════════════════════════════════════════════╝
+
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           VÝSLEDKY AUDITU                                   │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  [0;32m✅ PASS:[0m   23                                                           │
+│  [0;31m❌ FAIL:[0m   2                                                           │
+│  [1;33m⚠️  WARN:[0m  33                                                           │
+│  [0;34mℹ️  INFO:[0m  1                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  📊 ODPOČUTEĽNÉ ODPORÚČANIA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  KRITICKÉ (okamžite riešiť):
+  • Vymeň všetky 'change-me' sekrety v .env.production
+  • Skontroluj CORS nastavenia pre produkciu
+  • Over SSL/TLS certifikáty
+
+  VYSOKÉ (do 1 týždňa):
+  • Aktualizuj závislosti (npm audit, pip check)
+  • Implementuj rate limiting ak nie je prítomný
+  • Nastav automatické zálohovanie databázy
+
+  STREDNÉ (do 1 mesiaca):
+  • Dokumentuj všetky API endpoints
+  • Pridaj health checky pre všetky služby
+  • Implementuj log rotation
+
+  NÍZKÉ (dlhodobé):
+  • Optimalizuj Docker image sizes
+  • Pridaj end-to-end testy
+  • Nastav CI/CD pipeline
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🔧 KONTROLNÝ ZOZNAM pred produkciou
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ☐ Sekrety zmenené z default hodnôt
+  ☐ TLS certifikáty nainštalované a validné
+  ☐ Health endpoints aktívne a testované
+  ☐ Monitoring stack beží
+  ☐ Logy sa ukladajú centrálne
+  ☐ Databázové zálohovanie nastavené
+  ☐ Firewall pravidlá overené
+  ☐ Rate limiting povolené
+  ☐ CORS nakonfigurované pre produkčnú doménu
+
+══════════════════════════════════════════════════════════════════════════════════════════
+  AUDIT DOKONČENÝ
+  Report uložený: forensic-audit-report-20260824-022021.txt
+══════════════════════════════════════════════════════════════════════════════════════════
+
+  Celkové skóre: 38% (PASS rate)

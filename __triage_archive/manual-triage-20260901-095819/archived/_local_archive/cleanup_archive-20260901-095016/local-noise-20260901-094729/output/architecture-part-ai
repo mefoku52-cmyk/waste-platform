@@ -1,0 +1,700 @@
+
+export default function ListingDetailPage() {
+  const params = useParams();
+  const id = String(params?.id || '');
+  const router = useRouter();
+  const { user } = useAuthRequired();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['listing', id],
+    queryFn: async () => {
+      const res: any = await listingsApi.getListing(id);
+      return res?.data ?? res;
+    },
+    enabled: !!id,
+  });
+
+  const [message, setMessage] = useState('Mám záujem o túto ponuku.');
+  const [phone, setPhone] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [ok, setOk] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  const memberships = (user as any)?.memberships || [];
+  const myCompanyId = memberships[0]?.companyId || memberships[0]?.company_id || null;
+  const email = (user as any)?.email || (user as any)?.user?.email || '';
+
+  const isOwn =
+    data?.companyId &&
+    memberships.some(
+      (m: any) => String(m.companyId || m.company_id) === String(data.companyId)
+    );
+
+  const handleInquiry = async () => {
+    if (!myCompanyId) {
+      setErr('Najprv si vytvor firmu – dopyt ide v mene tvojej firmy.');
+      return;
+    }
+    if (!message.trim()) {
+      setErr('Správa je povinná.');
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      await inquiriesApi.create({
+        listingId: id,
+        companyId: String(myCompanyId),
+        message: message.trim(),
+        contactEmail: email || 'unknown@example.com',
+        contactPhone: phone || undefined,
+      });
+      setOk(true);
+    } catch (e: any) {
+      setErr(e?.message || 'Odoslanie dopytu zlyhalo');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (isLoading) return <div className="p-8 text-center">Načítavam detail...</div>;
+  if (error || !data) {
+    return (
+      <div className="p-8 text-center text-red-500">
+        Ponuku sa nepodarilo načítať.
+        <div className="mt-4">
+          <Button variant="outline" onClick={() => router.push('/dashboard')}>Späť</Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="mx-auto max-w-2xl space-y-6">
+        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard')}>
+          ← Späť na dashboard
+        </Button>
+
+        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+          <div className="mb-2 text-sm text-gray-500 uppercase tracking-wide">{data.status}</div>
+          <h1 className="text-2xl font-bold text-gray-900">{data.title}</h1>
+          {data.imageUrl ? (
+            <div className="mt-4 overflow-hidden rounded-lg border border-gray-200">
+              <img
+                src={data.imageUrl}
+                alt={data.title}
+                className="max-h-80 w-full object-cover"
+              />
+            </div>
+          ) : null}
+          <p className="mt-2 text-gray-600 whitespace-pre-wrap">{data.description || 'Bez popisu'}</p>
+
+          <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <dt className="text-gray-500">Materiál</dt>
+              <dd className="font-medium text-gray-900">{data.materialType}</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Množstvo</dt>
+              <dd className="font-medium text-gray-900">
+                {data.quantity} {data.unit}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Cena</dt>
+              <dd className="font-medium text-gray-900">
+                {data.price != null ? `${data.price} ${data.currency || 'EUR'}` : '—'}
+              </dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Stav materiálu</dt>
+              <dd className="font-medium text-gray-900">{data.condition || '—'}</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500">Lokalita</dt>
+              <dd className="font-medium text-gray-900">{data.location || '—'}</dd>
+            </div>
+          </dl>
+        </div>
+
+        {!isOwn && data.status === 'published' && (
+          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-900">Mám záujem</h2>
+            <p className="mt-1 text-sm text-gray-500">
+              Pošli dopyt predávajúcej firme. Uvidí správu, e-mail a telefón.
+            </p>
+
+            {ok ? (
+              <div className="mt-4 rounded bg-green-50 p-3 text-sm text-green-800">
+                Dopyt odoslaný. Predávajúci ho uvidí v zozname dopytov.
+              </div>
+            ) : (
+              <div className="mt-4 space-y-3">
+                <div>
+                  <label className="block text-sm text-gray-700">Správa</label>
+                  <textarea
+                    className="mt-1 w-full rounded border border-gray-300 p-2 text-sm"
+                    rows={3}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-700">Telefón (voliteľné)</label>
+                  <input
+                    className="mt-1 w-full rounded border border-gray-300 p-2 text-sm"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="09xx xxx xxx"
+                  />
+                </div>
+                {err && <div className="text-sm text-red-600">{err}</div>}
+                <Button onClick={handleInquiry} disabled={busy}>
+                  {busy ? 'Odosielam...' : 'Odoslať dopyt'}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {isOwn && (
+          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
+            Toto je tvoja ponuka – dopyt tu neodosielaš.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+--- apps/web/src/app/dashboard/listings/new/page.tsx ---
+import { ListingForm } from "@/features/listings";
+
+export default function NewListingPage() {
+  return (
+    <div className="p-8 flex justify-center">
+      <ListingForm />
+    </div>
+  );
+}
+
+--- apps/web/src/app/dashboard/page.tsx ---
+'use client';
+
+import { Logo } from "@/components/brand/logo";
+
+import { MatchesPanel } from "@/features/listings";
+import { ComplianceTable } from "@/features/compliance";
+import { AuditTable } from "@/features/admin";
+import { DocumentsTable } from "@/features/documents";
+import { useAuthRequired } from "@/features/auth";
+import { useLogout } from "@/features/auth";
+import { Button } from "@/components/ui/button";
+import { ListingsTable } from "@/features/listings";
+import { NotificationsPanel } from "@/features/notifications";
+import { MarketplaceTable } from "@/features/listings";
+import { InquiriesTable } from "@/features/inquiries";
+import { OpenInquiriesBadge } from "@/features/inquiries";
+import { CompaniesTable } from "@/features/companies";
+import { useRouter } from "next/navigation";
+
+const nav = [
+  { href: "#ponuky", label: "Ponuky" },
+  { href: "#trhovisko", label: "Trhovisko" },
+  { href: "#zhody", label: "Zhody" },
+  { href: "#prijate", label: "Prijaté" },
+  { href: "#odoslane", label: "Odoslané" },
+  { href: "#firmy", label: "Firmy" },
+  { href: "#dokumenty", label: "Dokumenty" },
+  { href: "#audit", label: "Audit" },
+  { href: "#compliance", label: "Compliance" },
+];
+
+function SectionCard({
+  id,
+  title,
+  action,
+  children,
+  subtitle,
+}: {
+  id: string;
+  title: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+  subtitle?: string;
+}) {
+  return (
+    <section id={id} className="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-emerald-50/40 px-4 py-3 sm:px-5">
+        <div>
+          <h2 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">{title}</h2>
+          {subtitle ? <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p> : null}
+        </div>
+        {action}
+      </div>
+      <div className="p-3 sm:p-4">{children}</div>
+    </section>
+  );
+}
+
+export default function DashboardPage() {
+  const { user, isLoading } = useAuthRequired();
+  const { mutate: logout, isPending: isLoggingOut } = useLogout();
+  const router = useRouter();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-100">
+        <div className="text-sm font-medium text-slate-500">Načítavam…</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-100 via-slate-50 to-emerald-50/30">
+      {/* sticky top */}
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-3 sm:px-6">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">CMEP</p>
+            <h1 className="truncate text-base font-bold text-slate-900 sm:text-xl">
+              Obehové materiály
+            </h1>
+            {user?.role === "admin" && (
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard/admin")}
+                className="text-[11px] font-medium text-emerald-700 hover:underline"
+              >
+                Admin panel →
+              </button>
+            )}
+          </div>
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+            <div className="hidden text-right xs:block sm:block">
+              <p className="max-w-[140px] truncate text-xs font-medium text-slate-800 sm:max-w-[200px] sm:text-sm">
+                {user?.email}
+              </p>
+              <p className="text-[10px] capitalize text-slate-500">{user?.role || "user"}</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-slate-200 text-slate-700"
+              onClick={() => logout()}
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? "…" : "Odhlásiť"}
+            </Button>
+          </div>
+        </div>
+
+        {/* mobile nav chips */}
+        <div className="border-t border-slate-100">
+          <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-3 py-2.5 scrollbar-none sm:px-6">
+            {nav.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="shrink-0 rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-800 active:scale-[0.98]"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-8">
+        <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
+          <div className="border-b border-emerald-50 bg-emerald-50/50 px-4 py-2.5">
+            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Notifikácie</p>
+          </div>
+          <div className="p-3 sm:p-4">
+            <NotificationsPanel />
+          </div>
+        </div>
+
+        <SectionCard
+          id="ponuky"
+          title="Aktuálne ponuky"
+          action={
+            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/dashboard/listings/new")}>
+              + Ponuka
+            </Button>
+          }
+        >
+          <ListingsTable />
+        </SectionCard>
+
+        <SectionCard id="trhovisko" title="Trhovisko" subtitle="Publikované ponuky od iných firiem">
+          <MarketplaceTable />
+        </SectionCard>
+
+        <SectionCard id="zhody" title="Odporúčané zhody" subtitle="Podľa typu materiálu tvojich ponúk">
+          <MatchesPanel />
+        </SectionCard>
+
+        <SectionCard
+          id="prijate"
+          title={
+            <span className="inline-flex items-center gap-2">
+              Prijaté dopyty <OpenInquiriesBadge />
+            </span>
+          }
+        >
+          <InquiriesTable mode="received" />
+        </SectionCard>
+
+        <SectionCard id="odoslane" title="Odoslané dopyty">
+          <InquiriesTable mode="sent" />
+        </SectionCard>
+
+        <SectionCard
+          id="firmy"
+          title="Registrované firmy"
+          action={
+            <Button size="sm" variant="secondary" onClick={() => router.push("/dashboard/companies/new")}>
+              + Firma
+            </Button>
+          }
+        >
+          <CompaniesTable />
+        </SectionCard>
+
+        <SectionCard
+          id="dokumenty"
+          title="Dokumenty"
+          action={
+            <Button size="sm" variant="secondary" onClick={() => router.push("/dashboard/documents/new")}>
+              + Dokument
+            </Button>
+          }
+        >
+          <DocumentsTable />
+        </SectionCard>
+
+        <SectionCard id="audit" title="Audit log">
+          <AuditTable />
+        </SectionCard>
+
+        <SectionCard id="compliance" title="Compliance">
+          <ComplianceTable />
+        </SectionCard>
+
+        <p className="pb-6 text-center text-[11px] text-slate-400">CMEP · lokálny vývoj</p>
+      </main>
+    </div>
+  );
+}
+
+--- apps/web/src/app/forgot-password/page.tsx ---
+'use client';
+
+import { useState } from 'react';
+import Link from 'next/link';
+import { authApi } from '@/features/auth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  const [devToken, setDevToken] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setMsg(null);
+    setDevToken(null);
+    try {
+      const res: any = await authApi.forgotPassword(email);
+      setMsg(res.message || 'Ak účet existuje, poslali sme inštrukcie.');
+      if (res.resetToken) setDevToken(res.resetToken);
+    } catch (err: any) {
+      setMsg(err?.message || 'Nepodarilo sa odoslať žiadosť.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 rounded-lg bg-white p-6 shadow-md">
+        <h1 className="text-xl font-bold text-center">Zabudnuté heslo</h1>
+        <p className="text-sm text-gray-500">Zadaj e-mail. Pošleme odkaz na obnovu (v DEV sa token zobrazí tu).</p>
+        <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vas@email.sk" />
+        {msg && <div className="rounded bg-blue-50 p-2 text-sm text-blue-800">{msg}</div>}
+        {devToken && (
+          <div className="rounded bg-amber-50 p-2 text-xs text-amber-900 break-all">
+            DEV token: {devToken}
+            <div className="mt-2">
+              <Link className="text-blue-600 underline" href={`/reset-password?token=${encodeURIComponent(devToken)}`}>
+                Pokračovať na nové heslo
+              </Link>
+            </div>
+          </div>
+        )}
+        <Button type="submit" className="w-full" disabled={busy}>{busy ? 'Odosielam...' : 'Odoslať'}</Button>
+        <p className="text-center text-sm"><Link href="/login" className="text-blue-600">Späť na prihlásenie</Link></p>
+      </form>
+    </div>
+  );
+}
+
+--- apps/web/src/app/layout.tsx ---
+import "@/cmep-dark.css";
+import "./globals.css";
+import { ReactNode } from "react";
+
+import { AppProviders } from "@/components/providers/app-providers";
+
+export const metadata = {
+  title: "CMEP · Obehové materiály",
+  description: "Circular Materials Exchange Platform frontend"
+};
+
+export default function RootLayout({ children }: { children: ReactNode }) {
+  return (
+    <html lang="sk">
+      <body>
+        <AppProviders>{children}</AppProviders>
+      </body>
+    </html>
+  );
+}
+
+--- apps/web/src/app/login/page.tsx ---
+import { LoginForm } from "@/features/auth";
+import { BrandLogo } from "@/components/brand/logo";
+
+export default function LoginPage() {
+  return (
+    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-10">
+      <div className="mb-8 flex flex-col items-center gap-3 text-center">
+        <BrandLogo size="lg" />
+        <p className="max-w-xs text-sm text-slate-600">
+          Platforma pre obchod s odpadmi, vedľajšími produktmi a sekundárnymi surovinami
+        </p>
+      </div>
+      <LoginForm />
+      <p className="mt-8 text-center text-[11px] text-slate-400">
+        Circular Materials Exchange Platform
+      </p>
+    </div>
+  );
+}
+
+--- apps/web/src/app/page.tsx ---
+import { redirect } from 'next/navigation';
+
+export default function RootPage() {
+  redirect('/dashboard');
+}
+
+--- apps/web/src/app/register/page.tsx ---
+import { RegisterForm } from "@/features/auth";
+
+export default function RegisterPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <RegisterForm />
+    </div>
+  );
+}
+
+--- apps/web/src/app/reset-password/page.tsx ---
+'use client';
+
+import { useState, Suspense } from 'react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { authApi } from '@/features/auth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+
+function ResetForm() {
+  const sp = useSearchParams();
+  const router = useRouter();
+  const [token, setToken] = useState(sp.get('token') || '');
+  const [password, setPassword] = useState('');
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setErr(null);
+    setMsg(null);
+    try {
+      const res: any = await authApi.resetPassword(token, password);
+      setMsg(res.message || 'Heslo zmenené.');
+      setTimeout(() => router.push('/login'), 1200);
+    } catch (e: any) {
+      setErr(e?.message || 'Obnova zlyhala.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 rounded-lg bg-white p-6 shadow-md">
+      <h1 className="text-xl font-bold text-center">Nové heslo</h1>
+      <Input placeholder="Token" value={token} onChange={(e) => setToken(e.target.value)} required />
+      <Input type="password" placeholder="Nové heslo (min. 8)" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
+      {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-800">{msg}</div>}
+      {err && <div className="rounded bg-red-50 p-2 text-sm text-red-700">{err}</div>}
+      <Button type="submit" className="w-full" disabled={busy}>{busy ? 'Ukladám...' : 'Zmeniť heslo'}</Button>
+      <p className="text-center text-sm"><Link href="/login" className="text-blue-600">Prihlásenie</Link></p>
+    </form>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+      <Suspense fallback={<div>Načítavam...</div>}>
+        <ResetForm />
+      </Suspense>
+    </div>
+  );
+}
+
+--- apps/web/src/features/admin/api.ts ---
+import { http } from '../../lib/api/http';
+
+type AdminStatsResponse = {
+  total_users?: number;
+  total_listings?: number;
+  total_companies?: number;
+  pending_verifications?: number;
+};
+
+type AdminUsersResponse = {
+  data?: any[];
+};
+
+export const adminApi = {
+  getStats: async () => http.get<AdminStatsResponse>('/admin/stats'),
+  getUsers: async (_params?: Record<string, any>) => http.get<AdminUsersResponse>('/admin/users'),
+
+  listAudit: (params?: Record<string, any>) =>
+    http.get<{ items: any[]; meta: any }>('/admin', { ...params }),
+};
+
+--- apps/web/src/features/auth/api.ts ---
+import { http } from '../../lib/api/http';
+import { AuthResponse, MeResponse } from './types';
+import { LoginInput } from './schemas';
+
+export const authApi = {
+  login: (data: LoginInput) =>
+    http.post<AuthResponse>('/auth/login', data),
+
+  googleLogin: (credential: string) =>
+    http.post<AuthResponse>('/auth/google', { credential }),
+
+  logout: (refreshToken: string) =>
+    http.post('/auth/logout', { refreshToken }),
+
+  getMe: () =>
+    http.get<MeResponse>('/auth/me'),
+
+  forgotPassword: (email: string) =>
+    http.post<{ ok: boolean; message: string; resetToken?: string }>(
+      '/auth/forgot-password',
+      { email }
+    ),
+
+  resetPassword: (token: string, newPassword: string) =>
+    http.post<{ ok: boolean; message: string }>(
+      '/auth/reset-password',
+      { token, newPassword }
+    ),
+};
+
+--- apps/web/src/features/auth/components/login-form.tsx ---
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, LoginInput } from '../schemas';
+import { useLogin } from '../hooks/use-login';
+import { authApi } from '../api';
+import { tokenStore } from '../../../lib/auth/token-store';
+import { Button } from '../../../components/ui/button';
+import { Input } from '../../../components/ui/input';
+import { FormField } from '../../../components/ui/form-field';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+
+declare global {
+  interface Window {
+    google?: any;
+  }
+}
+
+export const LoginForm = () => {
+  const { mutate: login, isPending, error } = useLogin();
+  const router = useRouter();
+  const googleButtonRef = useRef<HTMLDivElement | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginInput) => {
+    login(data, {
+      onSuccess: () => {
+        router.push('/dashboard');
+      },
+    });
+  };
+
+  useEffect(() => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+    if (!clientId || !googleButtonRef.current) return;
+
+    const initGoogle = () => {
+      if (!window.google || !googleButtonRef.current) return;
+
+      googleButtonRef.current.innerHTML = '';
+
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response: { credential?: string }) => {
+          try {
+            if (!response.credential) {
+              throw new Error('Google credential missing');
+            }
+
+            const result = await authApi.googleLogin(response.credential);
+            tokenStore.setTokens(
+              result.accessToken,
+              result.refreshToken,
+              true,
+            );
+            router.push('/dashboard');
+          } catch (e: any) {
+            alert(e?.message || 'Google prihlásenie zlyhalo');
+          }
+        },
+      });
+
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        width: 320,
+        text: 'signin_with',
+        shape: 'rectangular',
+      });
+    };

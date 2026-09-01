@@ -1,0 +1,250 @@
+
+SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
+
+
+class JWTSettings(BaseModel):
+    secret_key: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 14
+    secret: str = ""
+    expire_minutes: int = 60
+
+    def model_post_init(self, __context) -> None:
+        if not self.secret:
+            object.__setattr__(self, "secret", self.secret_key)
+
+
+class RedisSettings(BaseModel):
+    url: str = "memory://"
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    enabled: bool = False
+
+
+class RateLimitSettings(BaseModel):
+    enabled: bool = False
+    limit: int = 10
+    period: int = 60
+    requests: int = 100
+    window_seconds: int = 60
+
+
+class DatabaseSettings(BaseModel):
+    url: str = SQLITE_DEFAULT
+    async_url: str = SQLITE_DEFAULT
+    echo: bool = False
+    pool_size: int = 5
+    pool_pre_ping: bool = True
+
+    def model_post_init(self, __context) -> None:
+        if not self.async_url:
+            object.__setattr__(self, "async_url", self.url)
+
+
+def _is_placeholder_db_value(raw: str | None) -> bool:
+    value = str(raw or "").strip()
+    return (
+        not value
+        or "{" in value
+        or "}" in value
+        or "POSTGRES_" in value
+        or value.lower() in {"none", "null", "undefined"}
+    )
+
+
+def _normalize_database_url(raw: str) -> str:
+    value = raw.strip()
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("sqlite:///"):
+        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    return value
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+        populate_by_name=True,
+    )
+
+    app_name: str = "CMEP Platform"
+    app_version: str = "0.1.0"
+    app_description: str = "CMEP - Platform for circular materials exchange"
+
+    app_env: str = Field(default="development", alias="APP_ENV")
+    DEBUG: bool = True
+    ENABLE_PUBLIC_DOCS: bool = True
+    ROOT_PATH: str = ""
+
+    HOST: str = "0.0.0.0"
+    PORT: int = 8001
+
+    CORS_ORIGINS: Union[List[str], str] = Field(
+        default_factory=lambda: [
+            "http://127.0.0.1:3001",
+            "http://localhost:3001",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    )
+
+    DATABASE_URL: str = SQLITE_DEFAULT
+
+    JWT_SECRET_KEY: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+
+    jwt: JWTSettings | None = None
+    redis: RedisSettings = Field(default_factory=RedisSettings)
+    rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
+    database: DatabaseSettings | None = None
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
+    NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    @property
+    def is_development(self) -> bool:
+        return self.app_env.lower() in {"development", "dev", "local", "test"}
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors(cls, value):
+        if value is None or value == "":
+            return ["http://127.0.0.1:3001", "http://localhost:3001"]
+        if isinstance(value, list):
+            return value
+
+        text = str(value).strip()
+        if text.startswith("["):
+            return json.loads(text)
+
+        return [item.strip() for item in text.split(",") if item.strip()]
+
+    def model_post_init(self, __context) -> None:
+        raw_db = str(self.DATABASE_URL or "").strip()
+
+        if _is_placeholder_db_value(raw_db):
+            if self.is_development:
+                database_url = SQLITE_DEFAULT
+            else:
+                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+        else:
+            database_url = _normalize_database_url(raw_db)
+
+        object.__setattr__(self, "DATABASE_URL", database_url)
+        object.__setattr__(
+            self,
+            "database",
+            DatabaseSettings(
+                url=database_url,
+                async_url=database_url,
+            ),
+        )
+
+        if self.jwt is None:
+            object.__setattr__(
+                self,
+                "jwt",
+                JWTSettings(
+                    secret_key=self.JWT_SECRET_KEY,
+                    secret=self.JWT_SECRET_KEY,
+                    algorithm=self.JWT_ALGORITHM,
+                    access_token_expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    refresh_token_expire_days=self.REFRESH_TOKEN_EXPIRE_DAYS,
+                ),
+            )
+
+
+settings = Settings()
+
+===== app/api/routes/auth.py =====
+
+===== app/services/auth_service.py =====
+
+===== app/models/user.py =====
+
+===== app/schemas/auth.py =====
+
+===== apps/web/package.json =====
+{
+  "name": "@cmep/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3001",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0 --port 3001",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@tanstack/react-query": "^5.59.0",
+    "@tanstack/react-query-devtools": "^5.59.0",
+    "clsx": "^2.1.1",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.53.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.8.1",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.3.1",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3"
+  }
+}
+
+===== apps/web/src/lib/config.ts =====
+export const config = {
+  apiBaseUrl:
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    'http://localhost:8001/api/v1',
+  isServer: typeof window === 'undefined',
+};
+
+===== apps/web/src/lib/api/http.ts =====
+import { tokenStore } from '../auth/token-store';
+
+async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8001';
+  const url = `${baseUrl}${path.startsWith('/') ? path : '/' + path}`;
+  const token = tokenStore.getToken();
+
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, { ...options, headers });
+
+  if (!response.ok) {

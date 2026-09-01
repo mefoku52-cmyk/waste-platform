@@ -1,0 +1,250 @@
+===== .env =====
+DATABASE_URL=sqlite+aiosqlite:///./var/cmep.db
+JWT_SECRET_KEY=cmep-dev-change-me-to-at-least-32-chars-long-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+REFRESH_TOKEN_EXPIRE_DAYS=14
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8001
+
+===== README.md =====
+# Circular Materials Exchange Platform (CMEP)
+
+B2B platforma pre obchodovanie s odpadmi, vedľajšími produktmi a sekundárnymi surovinami.
+
+## Rýchly štart
+```bash
+cp .env.example .env
+docker compose up -d
+```
+
+Dokumentácia
+
+· SUMMARY.md
+· deployment.md
+· monitoring.md
+· load-testing.md
+
+Technológie
+
+· FastAPI + Python
+· Next.js + TypeScript
+· PostgreSQL, Redis, MinIO
+· Docker, Prometheus, Grafana
+  EOF
+  echo "  ✅ README.md"
+
+.env.production
+
+cat > .env.production << 'EOF'
+APP_ENV=production
+APP_NAME=Circular Materials Exchange Platform
+APP_DOMAIN=app.example.com
+API_DOMAIN=api.example.com
+LETSENCRYPT_EMAIL=admin@example.com
+APP_HOST=0.0.0.0
+APP_PORT=8000
+APP_DEBUG=false
+APP_LOG_LEVEL=INFO
+POSTGRES_DB=cmep
+POSTGRES_USER=cmep
+POSTGRES_PASSWORD=change-me-postgres-password
+DATABASE_HOST=postgres
+DATABASE_PORT=5432
+DATABASE_NAME=cmep
+DATABASE_USER=cmep
+DATABASE_PASSWORD=change-me-postgres-password
+DATABASE_URL=postgresql+asyncpg://cmep:change-me-postgres-password@postgres:5432/cmep
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_URL=redis://redis:6379/0
+MINIO_ROOT_USER=minio
+MINIO_ROOT_PASSWORD=change-me-minio-password
+S3_ENDPOINT_URL=http://minio:9000
+S3_REGION=eu-central-1
+S3_ACCESS_KEY=minio
+S3_SECRET_KEY=change-me-minio-password
+S3_BUCKET_DOCUMENTS=cmep-documents
+S3_BUCKET_MEDIA=cmep-media
+JWT_ISSUER=cmep-api
+JWT_AUDIENCE=cmep-web
+JWT_SECRET_KEY=change-me-jwt-secret
+JWT_REFRESH_SECRET_KEY=change-me-jwt-refresh-secret
+JWT_ACCESS_TOKEN_EXPIRES_MINUTES=15
+JWT_REFRESH_TOKEN_EXPIRES_DAYS=30
+JWT_ALGORITHM=HS256
+CORS_ALLOWED_ORIGINS=https://app.example.com
+NEXT_PUBLIC_API_BASE_URL=https://api.example.com/api/v1
+# waste-platform
+
+===== start-platform.sh =====
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+ROOT="$HOME/waste-platform"
+cd "$ROOT"
+
+echo "=== CMEP start ==="
+
+# Postgres
+if ! pg_isready -h localhost -p 5432 >/dev/null 2>&1; then
+  echo "[pg] starting..."
+  pg_ctl -D "$PREFIX/var/lib/postgresql" start || true
+  sleep 2
+fi
+pg_isready -h localhost -p 5432 && echo "[pg] ok" || echo "[pg] FAIL"
+
+# Redis
+if ! redis-cli ping 2>/dev/null | grep -q PONG; then
+  echo "[redis] starting..."
+  redis-server --daemonize yes || true
+  sleep 1
+fi
+redis-cli ping 2>/dev/null | grep -q PONG && echo "[redis] ok" || echo "[redis] FAIL"
+
+# stop old
+pkill -f "uvicorn app.main:app" 2>/dev/null || true
+pkill -f "next dev" 2>/dev/null || true
+sleep 1
+
+# backend
+echo "[backend] :8001"
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload \
+  > "$HOME/cmep-backend.log" 2>&1 &
+BACKEND_PID=$!
+echo "backend pid $BACKEND_PID"
+
+# frontend
+echo "[frontend] :3001"
+cd "$ROOT/apps/web"
+nohup npm run dev -- --port 3001 --hostname 0.0.0.0 \
+  > "$HOME/cmep-frontend.log" 2>&1 &
+FRONTEND_PID=$!
+echo "frontend pid $FRONTEND_PID"
+
+# Počkaj 5 sekúnd na naštartovanie
+sleep 5
+
+# Skontroluj backend (stačí raz)
+if curl -s -m 5 http://localhost:8001/health >/dev/null 2>&1; then
+  echo "✅ backend ready"
+else
+  echo "❌ backend not responding (check ~/cmep-backend.log)"
+fi
+
+# Skontroluj frontend – opakovane až 30 pokusov
+echo "Čakám na frontend..."
+for i in {1..30}; do
+  if curl -s -o /dev/null -w "%{http_code}" http://localhost:3001 | grep -q "^2"; then
+    echo "✅ frontend ready (HTTP 200)"
+    break
+  fi
+  if [ $i -eq 30 ]; then
+    echo "❌ frontend not ready after 30s (check ~/cmep-frontend.log)"
+  fi
+  sleep 1
+done
+
+echo ""
+echo "API:  http://localhost:8001/docs"
+echo "WEB:  http://localhost:3001"
+echo "Logy: tail -f ~/cmep-backend.log ~/cmep-frontend.log"
+
+===== seed_database.py =====
+import asyncio
+from sqlalchemy import select
+from app.shared.infrastructure.db.session import engine, SessionLocal
+from app.shared.infrastructure.db.base import Base
+from app.shared.infrastructure.db.register_models import *
+from app.modules.users.infrastructure.models import UserModel
+from app.shared.application.passwords import PasswordService
+from datetime import datetime, timezone
+
+async def init():
+    print("   [DB] Vytváram tabuľky...")
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    print("   [DB] Tabuľky hotové")
+
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(UserModel).where(UserModel.email == "admin@cmep.local")
+        )
+        if result.scalar_one_or_none():
+            print("   [DB] Admin už existuje")
+            return
+
+        ps = PasswordService()
+        admin = UserModel(
+            id="00000000-0000-0000-0000-000000000001",
+            status="active",
+            email="admin@cmep.local",
+            password_hash=ps.hash_password("Admin123!"),
+            first_name="System",
+            last_name="Admin",
+            display_name="Administrator",
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        session.add(admin)
+        await session.commit()
+        print("   [DB] Admin vytvorený: admin@cmep.local / Admin123!")
+
+if __name__ == "__main__":
+    asyncio.run(init())
+
+===== verify-db-and-login.sh =====
+#!/data/data/com.termux/files/usr/bin/bash
+set -u
+
+export PGPASSWORD='recyclehub'
+
+echo '===== DATABASE CONNECTION ====='
+psql \
+  -h 127.0.0.1 \
+  -p 5432 \
+  -U recyclehub \
+  -d recyclehub \
+  -c 'select current_database(), current_user, version();' || true
+echo
+
+echo '===== DATABASE TABLES ====='
+psql \
+  -h 127.0.0.1 \
+  -p 5432 \
+  -U recyclehub \
+  -d recyclehub \
+  -c 'dt' || true
+echo
+
+echo '===== API HEALTH ====='
+curl -i -m 10 http://localhost:8010/health || true
+echo
+
+echo '===== API LOGIN ====='
+curl -i -m 10 -X POST http://localhost:8010/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"nonexistent@example.com","password":"wrongpass"}' || true
+echo
+
+echo '===== CLEAN BACKEND LOG ====='
+tail -n 120 "$HOME/cmep-backend-clean.log" 2>/dev/null || true
+
+===== migrations/README =====
+Generic single-database configuration.
+===== migrations/env.py =====
+from __future__ import annotations
+
+import asyncio
+from logging.config import fileConfig
+
+from alembic import context
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
+from sqlalchemy.ext.asyncio import async_engine_from_config
+
+from app.shared.infrastructure.db.base import Base
+import app.shared.infrastructure.db.register_models  # noqa: F401
+
+try:
+    from app.shared.config import settings
+except Exception:
+    from app.core.config import settings

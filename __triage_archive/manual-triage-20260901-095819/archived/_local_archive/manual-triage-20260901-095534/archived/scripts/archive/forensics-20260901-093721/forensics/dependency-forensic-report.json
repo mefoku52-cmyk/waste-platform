@@ -1,0 +1,2282 @@
+{
+  "root": "/data/data/com.termux/files/home/waste-platform",
+  "python": "3.14.6 (main, Jul  5 2026, 10:35:55) [Clang 21.0.0 (https://android.googlesource.com/toolchain/llvm-project 5e96669f0",
+  "requirements": {
+    "requirements.txt": [
+      "fastapi==0.141.1",
+      "pydantic==2.13.4",
+      "pydantic-settings==2.0.3",
+      "uvicorn[standard]>=0.24.0",
+      "python-dotenv>=1.0.0",
+      "sqlalchemy==2.0.51",
+      "alembic>=1.12.0",
+      "asyncpg>=0.29.0",
+      "psycopg2-binary>=2.9.9",
+      "python-jose[cryptography]>=3.3.0",
+      "passlib[bcrypt]>=1.7.4",
+      "bcrypt>=4.0.1",
+      "email-validator>=2.0.0",
+      "python-multipart>=0.0.6",
+      "httpx>=0.25.0",
+      "redis>=5.0.1",
+      "prometheus-client>=0.19.0"
+    ],
+    "app/requirements.txt": [
+      "fastapi",
+      "uvicorn",
+      "sqlalchemy",
+      "asyncpg",
+      "psycopg2-binary",
+      "pydantic",
+      "pydantic-settings",
+      "PyJWT",
+      "passlib",
+      "bcrypt",
+      "prometheus-client",
+      "email-validator",
+      "aiosqlite>=0.20"
+    ]
+  },
+  "production_imports": {
+    "__future__": [
+      "app/main.py",
+      "app/core/config.py",
+      "app/modules/uploads/presentation/router.py",
+      "app/modules/auth/application/password_reset.py",
+      "app/shared/application/side_effects.py",
+      "app/shared/infrastructure/rate_limit.py",
+      "app/shared/infrastructure/db/session.py",
+      "app/shared/infrastructure/security/jwt_revocation_store.py",
+      "app/shared/infrastructure/email/sender.py"
+    ],
+    "importlib": [
+      "app/main.py"
+    ],
+    "app": [
+      "app/main.py",
+      "app/core/http_exception_handlers.py",
+      "app/modules/uploads/presentation/router.py",
+      "app/modules/admin/domain/entities.py",
+      "app/modules/admin/application/services.py",
+      "app/modules/admin/infrastructure/models.py",
+      "app/modules/admin/infrastructure/mappers.py",
+      "app/modules/admin/presentation/router.py",
+      "app/modules/admin/presentation/dependencies.py",
+      "app/modules/analytics/domain/entities.py",
+      "app/modules/analytics/application/services.py",
+      "app/modules/analytics/infrastructure/models.py",
+      "app/modules/analytics/infrastructure/mappers.py",
+      "app/modules/analytics/presentation/router.py",
+      "app/modules/analytics/presentation/dependencies.py",
+      "app/modules/notifications/domain/entities.py",
+      "app/modules/notifications/application/services.py",
+      "app/modules/notifications/infrastructure/models.py",
+      "app/modules/notifications/infrastructure/mappers.py",
+      "app/modules/notifications/presentation/router.py",
+      "app/modules/notifications/presentation/dependencies.py",
+      "app/modules/compliance/domain/entities.py",
+      "app/modules/compliance/application/services.py",
+      "app/modules/compliance/infrastructure/models.py",
+      "app/modules/compliance/infrastructure/mappers.py",
+      "app/modules/compliance/presentation/router.py",
+      "app/modules/compliance/presentation/dependencies.py",
+      "app/modules/documents/domain/entities.py",
+      "app/modules/documents/application/services.py",
+      "app/modules/documents/infrastructure/models.py",
+      "app/modules/documents/infrastructure/mappers.py",
+      "app/modules/documents/presentation/router.py",
+      "app/modules/documents/presentation/schemas.py",
+      "app/modules/documents/presentation/dependencies.py",
+      "app/modules/inquiries/domain/entities.py",
+      "app/modules/inquiries/application/services.py",
+      "app/modules/inquiries/infrastructure/models.py",
+      "app/modules/inquiries/infrastructure/repositories.py",
+      "app/modules/inquiries/infrastructure/mappers.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/schemas.py",
+      "app/modules/inquiries/presentation/dependencies.py",
+      "app/modules/listings/domain/entities.py",
+      "app/modules/listings/application/services.py",
+      "app/modules/listings/infrastructure/models.py",
+      "app/modules/listings/infrastructure/mappers.py",
+      "app/modules/listings/presentation/router.py",
+      "app/modules/listings/presentation/schemas.py",
+      "app/modules/listings/presentation/dependencies.py",
+      "app/modules/company_memberships/domain/entities.py",
+      "app/modules/company_memberships/domain/repositories.py",
+      "app/modules/company_memberships/application/mappers.py",
+      "app/modules/company_memberships/application/services.py",
+      "app/modules/company_memberships/infrastructure/models.py",
+      "app/modules/company_memberships/infrastructure/mappers.py",
+      "app/modules/company_memberships/infrastructure/repositories.py",
+      "app/modules/company_memberships/presentation/schemas.py",
+      "app/modules/company_memberships/presentation/mappers.py",
+      "app/modules/company_memberships/presentation/dependencies.py",
+      "app/modules/company_memberships/presentation/router.py",
+      "app/modules/companies/domain/entities.py",
+      "app/modules/companies/domain/repositories.py",
+      "app/modules/companies/application/mappers.py",
+      "app/modules/companies/application/services.py",
+      "app/modules/companies/infrastructure/models.py",
+      "app/modules/companies/infrastructure/mappers.py",
+      "app/modules/companies/infrastructure/repositories.py",
+      "app/modules/companies/presentation/schemas.py",
+      "app/modules/companies/presentation/mappers.py",
+      "app/modules/companies/presentation/dependencies.py",
+      "app/modules/companies/presentation/router.py",
+      "app/modules/auth/domain/repositories.py",
+      "app/modules/auth/application/dto.py",
+      "app/modules/auth/application/services.py",
+      "app/modules/auth/application/password_reset.py",
+      "app/modules/auth/infrastructure/models.py",
+      "app/modules/auth/infrastructure/mappers.py",
+      "app/modules/auth/infrastructure/repositories.py",
+      "app/modules/auth/presentation/schemas.py",
+      "app/modules/auth/presentation/dependencies.py",
+      "app/modules/auth/presentation/router.py",
+      "app/modules/users/domain/entities.py",
+      "app/modules/users/domain/repositories.py",
+      "app/modules/users/application/mappers.py",
+      "app/modules/users/application/services.py",
+      "app/modules/users/infrastructure/models.py",
+      "app/modules/users/infrastructure/mappers.py",
+      "app/modules/users/infrastructure/repositories.py",
+      "app/modules/users/presentation/schemas.py",
+      "app/modules/users/presentation/mappers.py",
+      "app/modules/users/presentation/dependencies.py",
+      "app/modules/users/presentation/router.py",
+      "app/shared/presentation/api_router.py",
+      "app/shared/presentation/schemas.py",
+      "app/shared/presentation/exception_handlers.py",
+      "app/shared/presentation/auth_dependencies.py",
+      "app/shared/domain/status_transition.py",
+      "app/shared/application/side_effects.py",
+      "app/shared/infrastructure/rate_limiter.py",
+      "app/shared/infrastructure/rate_limit.py",
+      "app/shared/infrastructure/db/session.py",
+      "app/shared/infrastructure/db/register_models.py",
+      "app/shared/infrastructure/security/jwt_service.py",
+      "app/shared/infrastructure/security/jwt_revocation_store.py",
+      "app/shared/infrastructure/email/sender.py"
+    ],
+    "fastapi": [
+      "app/main.py",
+      "app/core/http_exception_handlers.py",
+      "app/modules/inquiries/router.py",
+      "app/modules/documents/router.py",
+      "app/modules/compliance/router.py",
+      "app/modules/notifications/router.py",
+      "app/modules/analytics/router.py",
+      "app/modules/admin/router.py",
+      "app/modules/uploads/presentation/router.py",
+      "app/modules/admin/presentation/router.py",
+      "app/modules/admin/presentation/dependencies.py",
+      "app/modules/analytics/presentation/router.py",
+      "app/modules/analytics/presentation/dependencies.py",
+      "app/modules/notifications/presentation/router.py",
+      "app/modules/notifications/presentation/dependencies.py",
+      "app/modules/compliance/presentation/router.py",
+      "app/modules/compliance/presentation/dependencies.py",
+      "app/modules/documents/presentation/router.py",
+      "app/modules/documents/presentation/dependencies.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/dependencies.py",
+      "app/modules/listings/presentation/router.py",
+      "app/modules/listings/presentation/dependencies.py",
+      "app/modules/company_memberships/presentation/dependencies.py",
+      "app/modules/company_memberships/presentation/router.py",
+      "app/modules/companies/presentation/dependencies.py",
+      "app/modules/companies/presentation/router.py",
+      "app/modules/auth/presentation/dependencies.py",
+      "app/modules/auth/presentation/router.py",
+      "app/modules/users/presentation/dependencies.py",
+      "app/modules/users/presentation/router.py",
+      "app/shared/presentation/api_router.py",
+      "app/shared/presentation/exception_handlers.py",
+      "app/shared/presentation/auth_dependencies.py",
+      "app/shared/presentation/metrics_router.py",
+      "app/shared/presentation/health_router.py",
+      "app/shared/infrastructure/rate_limiter.py",
+      "app/shared/infrastructure/rate_limit.py"
+    ],
+    "contextlib": [
+      "app/main.py"
+    ],
+    "json": [
+      "app/core/config.py"
+    ],
+    "pydantic": [
+      "app/core/config.py",
+      "app/modules/inquiries/models.py",
+      "app/modules/inquiries/schemas.py",
+      "app/modules/documents/models.py",
+      "app/modules/documents/schemas.py",
+      "app/modules/compliance/models.py",
+      "app/modules/compliance/schemas.py",
+      "app/modules/notifications/models.py",
+      "app/modules/notifications/schemas.py",
+      "app/modules/analytics/models.py",
+      "app/modules/analytics/schemas.py",
+      "app/modules/admin/models.py",
+      "app/modules/admin/schemas.py",
+      "app/modules/uploads/presentation/schemas.py",
+      "app/modules/admin/presentation/schemas.py",
+      "app/modules/analytics/presentation/schemas.py",
+      "app/modules/notifications/presentation/schemas.py",
+      "app/modules/compliance/presentation/schemas.py",
+      "app/modules/documents/presentation/schemas.py",
+      "app/modules/inquiries/presentation/schemas.py",
+      "app/modules/listings/presentation/schemas.py",
+      "app/modules/company_memberships/presentation/schemas.py",
+      "app/modules/companies/presentation/schemas.py",
+      "app/modules/auth/presentation/schemas.py",
+      "app/modules/users/presentation/schemas.py",
+      "app/shared/presentation/error_schemas.py"
+    ],
+    "pydantic_settings": [
+      "app/core/config.py"
+    ],
+    "typing": [
+      "app/core/config.py",
+      "app/modules/inquiries/models.py",
+      "app/modules/inquiries/router.py",
+      "app/modules/inquiries/schemas.py",
+      "app/modules/inquiries/service.py",
+      "app/modules/documents/models.py",
+      "app/modules/documents/router.py",
+      "app/modules/documents/schemas.py",
+      "app/modules/documents/service.py",
+      "app/modules/compliance/models.py",
+      "app/modules/compliance/router.py",
+      "app/modules/compliance/schemas.py",
+      "app/modules/compliance/service.py",
+      "app/modules/notifications/models.py",
+      "app/modules/notifications/router.py",
+      "app/modules/notifications/schemas.py",
+      "app/modules/notifications/service.py",
+      "app/modules/analytics/models.py",
+      "app/modules/analytics/router.py",
+      "app/modules/analytics/schemas.py",
+      "app/modules/analytics/service.py",
+      "app/modules/admin/models.py",
+      "app/modules/admin/router.py",
+      "app/modules/admin/schemas.py",
+      "app/modules/admin/service.py",
+      "app/modules/admin/domain/repositories.py",
+      "app/modules/admin/application/dto.py",
+      "app/modules/admin/application/services.py",
+      "app/modules/admin/infrastructure/repositories.py",
+      "app/modules/analytics/domain/repositories.py",
+      "app/modules/analytics/application/dto.py",
+      "app/modules/analytics/application/services.py",
+      "app/modules/analytics/infrastructure/repositories.py",
+      "app/modules/notifications/domain/repositories.py",
+      "app/modules/notifications/application/dto.py",
+      "app/modules/notifications/application/services.py",
+      "app/modules/notifications/infrastructure/repositories.py",
+      "app/modules/compliance/domain/repositories.py",
+      "app/modules/compliance/application/dto.py",
+      "app/modules/compliance/application/services.py",
+      "app/modules/compliance/infrastructure/repositories.py",
+      "app/modules/documents/domain/repositories.py",
+      "app/modules/documents/application/dto.py",
+      "app/modules/documents/application/services.py",
+      "app/modules/documents/infrastructure/repositories.py",
+      "app/modules/inquiries/domain/repositories.py",
+      "app/modules/inquiries/application/dto.py",
+      "app/modules/inquiries/application/services.py",
+      "app/modules/inquiries/infrastructure/repositories.py",
+      "app/modules/listings/domain/repositories.py",
+      "app/modules/listings/application/services.py",
+      "app/modules/listings/infrastructure/repositories.py",
+      "app/modules/auth/presentation/dependencies.py",
+      "app/shared/presentation/error_schemas.py",
+      "app/shared/infrastructure/rate_limit.py",
+      "app/shared/infrastructure/security/jwt_service.py",
+      "app/shared/infrastructure/security/jwt_exceptions.py",
+      "app/shared/infrastructure/security/jwt_revocation_store.py"
+    ],
+    "pytest": [
+      "app/tests/unit/test_auth.py",
+      "app/tests/unit/test_users.py",
+      "app/tests/unit/test_companies.py",
+      "app/tests/unit/test_listings.py",
+      "app/tests/unit/test_inquiries.py",
+      "app/tests/unit/test_documents.py",
+      "app/tests/unit/test_uploads.py"
+    ],
+    "router": [
+      "app/modules/inquiries/__init__.py",
+      "app/modules/documents/__init__.py",
+      "app/modules/compliance/__init__.py",
+      "app/modules/notifications/__init__.py",
+      "app/modules/analytics/__init__.py",
+      "app/modules/admin/__init__.py",
+      "app/modules/listings/presentation/__init__.py"
+    ],
+    "datetime": [
+      "app/modules/inquiries/models.py",
+      "app/modules/inquiries/schemas.py",
+      "app/modules/documents/models.py",
+      "app/modules/documents/schemas.py",
+      "app/modules/compliance/models.py",
+      "app/modules/compliance/schemas.py",
+      "app/modules/notifications/models.py",
+      "app/modules/notifications/schemas.py",
+      "app/modules/analytics/models.py",
+      "app/modules/analytics/schemas.py",
+      "app/modules/admin/models.py",
+      "app/modules/admin/schemas.py",
+      "app/modules/admin/domain/entities.py",
+      "app/modules/admin/application/dto.py",
+      "app/modules/admin/infrastructure/models.py",
+      "app/modules/admin/presentation/schemas.py",
+      "app/modules/analytics/domain/entities.py",
+      "app/modules/analytics/application/dto.py",
+      "app/modules/analytics/infrastructure/models.py",
+      "app/modules/analytics/presentation/schemas.py",
+      "app/modules/notifications/domain/entities.py",
+      "app/modules/notifications/application/dto.py",
+      "app/modules/notifications/infrastructure/models.py",
+      "app/modules/notifications/presentation/schemas.py",
+      "app/modules/compliance/domain/entities.py",
+      "app/modules/compliance/application/dto.py",
+      "app/modules/compliance/infrastructure/models.py",
+      "app/modules/compliance/presentation/schemas.py",
+      "app/modules/documents/domain/entities.py",
+      "app/modules/documents/application/dto.py",
+      "app/modules/documents/infrastructure/models.py",
+      "app/modules/documents/presentation/schemas.py",
+      "app/modules/inquiries/domain/entities.py",
+      "app/modules/inquiries/application/dto.py",
+      "app/modules/inquiries/application/services.py",
+      "app/modules/inquiries/infrastructure/models.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/schemas.py",
+      "app/modules/listings/application/services.py",
+      "app/modules/listings/infrastructure/models.py",
+      "app/modules/listings/presentation/schemas.py",
+      "app/modules/company_memberships/domain/entities.py",
+      "app/modules/company_memberships/application/dto.py",
+      "app/modules/company_memberships/presentation/schemas.py",
+      "app/modules/companies/domain/entities.py",
+      "app/modules/companies/application/dto.py",
+      "app/modules/companies/presentation/schemas.py",
+      "app/modules/auth/domain/entities.py",
+      "app/modules/auth/application/services.py",
+      "app/modules/auth/presentation/schemas.py",
+      "app/modules/users/domain/entities.py",
+      "app/modules/users/application/dto.py",
+      "app/modules/users/presentation/schemas.py",
+      "app/shared/domain/base.py",
+      "app/shared/application/clock.py",
+      "app/shared/application/side_effects.py",
+      "app/shared/infrastructure/security/jwt_service.py",
+      "app/shared/infrastructure/security/jwt_revocation_store.py",
+      "app/shared/domain/ports/clock.py"
+    ],
+    "service": [
+      "app/modules/inquiries/router.py",
+      "app/modules/documents/router.py",
+      "app/modules/compliance/router.py",
+      "app/modules/notifications/router.py",
+      "app/modules/analytics/router.py",
+      "app/modules/admin/router.py"
+    ],
+    "schemas": [
+      "app/modules/inquiries/router.py",
+      "app/modules/documents/router.py",
+      "app/modules/compliance/router.py",
+      "app/modules/notifications/router.py",
+      "app/modules/analytics/router.py",
+      "app/modules/admin/router.py",
+      "app/modules/uploads/presentation/router.py",
+      "app/modules/admin/presentation/router.py",
+      "app/modules/admin/presentation/mappers.py",
+      "app/modules/analytics/presentation/router.py",
+      "app/modules/analytics/presentation/mappers.py",
+      "app/modules/notifications/presentation/router.py",
+      "app/modules/notifications/presentation/mappers.py",
+      "app/modules/compliance/presentation/router.py",
+      "app/modules/compliance/presentation/mappers.py",
+      "app/modules/documents/presentation/router.py",
+      "app/modules/documents/presentation/mappers.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/mappers.py",
+      "app/modules/listings/presentation/router.py",
+      "app/modules/listings/presentation/mappers.py"
+    ],
+    "models": [
+      "app/modules/inquiries/service.py",
+      "app/modules/documents/service.py",
+      "app/modules/compliance/service.py",
+      "app/modules/notifications/service.py",
+      "app/modules/analytics/service.py",
+      "app/modules/admin/service.py",
+      "app/modules/admin/infrastructure/repositories.py",
+      "app/modules/analytics/infrastructure/repositories.py",
+      "app/modules/notifications/infrastructure/repositories.py",
+      "app/modules/compliance/infrastructure/repositories.py",
+      "app/modules/documents/infrastructure/repositories.py",
+      "app/modules/inquiries/infrastructure/repositories.py",
+      "app/modules/listings/infrastructure/__init__.py",
+      "app/modules/listings/infrastructure/repositories.py"
+    ],
+    "pathlib": [
+      "app/modules/uploads/presentation/router.py",
+      "app/shared/infrastructure/db/session.py"
+    ],
+    "uuid": [
+      "app/modules/uploads/presentation/router.py",
+      "app/modules/admin/domain/entities.py",
+      "app/modules/admin/infrastructure/models.py",
+      "app/modules/admin/presentation/schemas.py",
+      "app/modules/analytics/domain/entities.py",
+      "app/modules/analytics/infrastructure/models.py",
+      "app/modules/analytics/presentation/schemas.py",
+      "app/modules/notifications/domain/entities.py",
+      "app/modules/notifications/infrastructure/models.py",
+      "app/modules/notifications/presentation/schemas.py",
+      "app/modules/compliance/domain/entities.py",
+      "app/modules/compliance/infrastructure/models.py",
+      "app/modules/compliance/presentation/schemas.py",
+      "app/modules/documents/domain/entities.py",
+      "app/modules/documents/infrastructure/models.py",
+      "app/modules/documents/presentation/schemas.py",
+      "app/modules/inquiries/domain/entities.py",
+      "app/modules/inquiries/infrastructure/models.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/schemas.py",
+      "app/modules/listings/infrastructure/models.py",
+      "app/modules/listings/presentation/schemas.py",
+      "app/modules/company_memberships/domain/entities.py",
+      "app/modules/company_memberships/domain/repositories.py",
+      "app/modules/company_memberships/application/dto.py",
+      "app/modules/company_memberships/application/services.py",
+      "app/modules/company_memberships/infrastructure/mappers.py",
+      "app/modules/company_memberships/infrastructure/repositories.py",
+      "app/modules/company_memberships/presentation/schemas.py",
+      "app/modules/company_memberships/presentation/router.py",
+      "app/modules/companies/domain/entities.py",
+      "app/modules/companies/domain/repositories.py",
+      "app/modules/companies/application/dto.py",
+      "app/modules/companies/application/services.py",
+      "app/modules/companies/infrastructure/mappers.py",
+      "app/modules/companies/presentation/schemas.py",
+      "app/modules/companies/presentation/router.py",
+      "app/modules/auth/domain/entities.py",
+      "app/modules/auth/domain/repositories.py",
+      "app/modules/auth/application/services.py",
+      "app/modules/auth/application/password_reset.py",
+      "app/modules/auth/infrastructure/mappers.py",
+      "app/modules/auth/infrastructure/repositories.py",
+      "app/modules/auth/presentation/schemas.py",
+      "app/modules/users/domain/entities.py",
+      "app/modules/users/domain/repositories.py",
+      "app/modules/users/application/dto.py",
+      "app/modules/users/application/services.py",
+      "app/modules/users/infrastructure/mappers.py",
+      "app/modules/users/infrastructure/repositories.py",
+      "app/modules/users/presentation/schemas.py",
+      "app/modules/users/presentation/router.py",
+      "app/shared/domain/base.py",
+      "app/shared/application/uuid_generator.py",
+      "app/shared/application/side_effects.py",
+      "app/shared/infrastructure/security/jwt_service.py"
+    ],
+    "mimetypes": [
+      "app/modules/uploads/presentation/router.py"
+    ],
+    "dataclasses": [
+      "app/modules/admin/domain/entities.py",
+      "app/modules/admin/application/dto.py",
+      "app/modules/analytics/domain/entities.py",
+      "app/modules/analytics/application/dto.py",
+      "app/modules/notifications/domain/entities.py",
+      "app/modules/notifications/application/dto.py",
+      "app/modules/compliance/domain/entities.py",
+      "app/modules/compliance/application/dto.py",
+      "app/modules/documents/domain/entities.py",
+      "app/modules/documents/application/dto.py",
+      "app/modules/inquiries/domain/entities.py",
+      "app/modules/inquiries/application/dto.py",
+      "app/modules/listings/domain/entities.py",
+      "app/modules/listings/application/dto.py",
+      "app/modules/company_memberships/domain/entities.py",
+      "app/modules/company_memberships/application/dto.py",
+      "app/modules/companies/domain/entities.py",
+      "app/modules/companies/application/dto.py",
+      "app/modules/auth/domain/entities.py",
+      "app/modules/auth/application/dto.py",
+      "app/modules/users/domain/entities.py",
+      "app/modules/users/application/dto.py",
+      "app/shared/domain/base.py"
+    ],
+    "enum": [
+      "app/modules/admin/domain/enums.py",
+      "app/modules/analytics/domain/enums.py",
+      "app/modules/notifications/domain/enums.py",
+      "app/modules/compliance/domain/enums.py",
+      "app/modules/documents/domain/enums.py",
+      "app/modules/inquiries/domain/enums.py",
+      "app/modules/listings/domain/enums.py",
+      "app/modules/company_memberships/domain/enums.py",
+      "app/modules/companies/domain/enums.py",
+      "app/modules/users/domain/enums.py"
+    ],
+    "abc": [
+      "app/modules/admin/domain/repositories.py",
+      "app/modules/analytics/domain/repositories.py",
+      "app/modules/notifications/domain/repositories.py",
+      "app/modules/compliance/domain/repositories.py",
+      "app/modules/documents/domain/repositories.py",
+      "app/modules/inquiries/domain/repositories.py",
+      "app/modules/listings/domain/repositories.py",
+      "app/modules/company_memberships/domain/repositories.py",
+      "app/modules/companies/domain/repositories.py",
+      "app/modules/auth/domain/repositories.py",
+      "app/modules/users/domain/repositories.py",
+      "app/shared/domain/ports/clock.py"
+    ],
+    "entities": [
+      "app/modules/admin/domain/repositories.py",
+      "app/modules/analytics/domain/repositories.py",
+      "app/modules/notifications/domain/repositories.py",
+      "app/modules/compliance/domain/repositories.py",
+      "app/modules/documents/domain/repositories.py",
+      "app/modules/inquiries/domain/repositories.py",
+      "app/modules/listings/domain/repositories.py",
+      "app/modules/listings/domain/__init__.py"
+    ],
+    "domain": [
+      "app/modules/admin/application/services.py",
+      "app/modules/admin/infrastructure/repositories.py",
+      "app/modules/admin/presentation/router.py",
+      "app/modules/admin/presentation/mappers.py",
+      "app/modules/analytics/application/services.py",
+      "app/modules/analytics/infrastructure/repositories.py",
+      "app/modules/analytics/presentation/router.py",
+      "app/modules/analytics/presentation/mappers.py",
+      "app/modules/notifications/application/services.py",
+      "app/modules/notifications/infrastructure/repositories.py",
+      "app/modules/notifications/presentation/router.py",
+      "app/modules/notifications/presentation/mappers.py",
+      "app/modules/compliance/application/services.py",
+      "app/modules/compliance/infrastructure/repositories.py",
+      "app/modules/compliance/presentation/router.py",
+      "app/modules/compliance/presentation/mappers.py",
+      "app/modules/documents/application/services.py",
+      "app/modules/documents/infrastructure/repositories.py",
+      "app/modules/documents/presentation/router.py",
+      "app/modules/documents/presentation/mappers.py",
+      "app/modules/inquiries/application/services.py",
+      "app/modules/inquiries/infrastructure/repositories.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/mappers.py",
+      "app/modules/listings/application/services.py",
+      "app/modules/listings/infrastructure/repositories.py",
+      "app/modules/listings/presentation/router.py",
+      "app/modules/listings/presentation/mappers.py"
+    ],
+    "sqlalchemy": [
+      "app/modules/admin/infrastructure/models.py",
+      "app/modules/admin/infrastructure/repositories.py",
+      "app/modules/admin/presentation/dependencies.py",
+      "app/modules/analytics/infrastructure/models.py",
+      "app/modules/analytics/infrastructure/repositories.py",
+      "app/modules/analytics/presentation/dependencies.py",
+      "app/modules/notifications/infrastructure/models.py",
+      "app/modules/notifications/infrastructure/repositories.py",
+      "app/modules/notifications/presentation/dependencies.py",
+      "app/modules/compliance/infrastructure/models.py",
+      "app/modules/compliance/infrastructure/repositories.py",
+      "app/modules/compliance/presentation/dependencies.py",
+      "app/modules/documents/infrastructure/models.py",
+      "app/modules/documents/infrastructure/repositories.py",
+      "app/modules/documents/presentation/dependencies.py",
+      "app/modules/inquiries/infrastructure/models.py",
+      "app/modules/inquiries/infrastructure/repositories.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/dependencies.py",
+      "app/modules/listings/infrastructure/models.py",
+      "app/modules/listings/infrastructure/repositories.py",
+      "app/modules/listings/presentation/dependencies.py",
+      "app/modules/company_memberships/infrastructure/models.py",
+      "app/modules/company_memberships/infrastructure/repositories.py",
+      "app/modules/company_memberships/presentation/dependencies.py",
+      "app/modules/companies/infrastructure/models.py",
+      "app/modules/companies/infrastructure/repositories.py",
+      "app/modules/companies/presentation/dependencies.py",
+      "app/modules/auth/infrastructure/models.py",
+      "app/modules/auth/infrastructure/repositories.py",
+      "app/modules/auth/presentation/dependencies.py",
+      "app/modules/users/infrastructure/models.py",
+      "app/modules/users/infrastructure/repositories.py",
+      "app/modules/users/presentation/dependencies.py",
+      "app/shared/infrastructure/db/base.py",
+      "app/shared/infrastructure/db/session.py"
+    ],
+    "mappers": [
+      "app/modules/admin/infrastructure/repositories.py",
+      "app/modules/analytics/infrastructure/repositories.py",
+      "app/modules/notifications/infrastructure/repositories.py",
+      "app/modules/compliance/infrastructure/repositories.py",
+      "app/modules/documents/infrastructure/repositories.py",
+      "app/modules/inquiries/infrastructure/repositories.py",
+      "app/modules/listings/infrastructure/repositories.py"
+    ],
+    "application": [
+      "app/modules/admin/presentation/router.py",
+      "app/modules/admin/presentation/dependencies.py",
+      "app/modules/analytics/presentation/router.py",
+      "app/modules/analytics/presentation/dependencies.py",
+      "app/modules/notifications/presentation/router.py",
+      "app/modules/notifications/presentation/dependencies.py",
+      "app/modules/compliance/presentation/router.py",
+      "app/modules/compliance/presentation/dependencies.py",
+      "app/modules/documents/presentation/router.py",
+      "app/modules/documents/presentation/dependencies.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/inquiries/presentation/dependencies.py",
+      "app/modules/listings/presentation/router.py",
+      "app/modules/listings/presentation/dependencies.py"
+    ],
+    "dependencies": [
+      "app/modules/admin/presentation/router.py",
+      "app/modules/analytics/presentation/router.py",
+      "app/modules/notifications/presentation/router.py",
+      "app/modules/compliance/presentation/router.py",
+      "app/modules/documents/presentation/router.py",
+      "app/modules/inquiries/presentation/router.py",
+      "app/modules/listings/presentation/router.py"
+    ],
+    "infrastructure": [
+      "app/modules/admin/presentation/dependencies.py",
+      "app/modules/analytics/presentation/dependencies.py",
+      "app/modules/notifications/presentation/dependencies.py",
+      "app/modules/compliance/presentation/dependencies.py",
+      "app/modules/documents/presentation/dependencies.py",
+      "app/modules/inquiries/presentation/dependencies.py",
+      "app/modules/listings/presentation/dependencies.py"
+    ],
+    "enums": [
+      "app/modules/listings/domain/__init__.py"
+    ],
+    "repositories": [
+      "app/modules/listings/domain/__init__.py",
+      "app/modules/listings/infrastructure/__init__.py"
+    ],
+    "dto": [
+      "app/modules/listings/application/__init__.py"
+    ],
+    "services": [
+      "app/modules/listings/application/__init__.py"
+    ],
+    "logging": [
+      "app/modules/auth/application/services.py",
+      "app/modules/auth/application/password_reset.py",
+      "app/shared/application/side_effects.py",
+      "app/shared/infrastructure/email/sender.py"
+    ],
+    "hashlib": [
+      "app/modules/auth/application/password_reset.py"
+    ],
+    "redis": [
+      "app/modules/auth/application/password_reset.py",
+      "app/shared/infrastructure/rate_limit.py",
+      "app/shared/infrastructure/security/jwt_revocation_store.py"
+    ],
+    "secrets": [
+      "app/modules/auth/application/password_reset.py"
+    ],
+    "os": [
+      "app/shared/presentation/auth_dependencies.py",
+      "app/shared/presentation/metrics_router.py",
+      "app/shared/infrastructure/security/jwt_service.py"
+    ],
+    "prometheus_client": [
+      "app/shared/presentation/metrics_router.py"
+    ],
+    "passlib": [
+      "app/shared/application/passwords.py"
+    ],
+    "math": [
+      "app/shared/infrastructure/rate_limiter.py"
+    ],
+    "time": [
+      "app/shared/infrastructure/rate_limiter.py",
+      "app/shared/infrastructure/rate_limit.py"
+    ],
+    "collections": [
+      "app/shared/infrastructure/rate_limiter.py",
+      "app/shared/infrastructure/db/session.py"
+    ],
+    "session": [
+      "app/shared/infrastructure/db/__init__.py"
+    ],
+    "jwt": [
+      "app/shared/infrastructure/security/jwt_service.py"
+    ],
+    "smtplib": [
+      "app/shared/infrastructure/email/sender.py"
+    ],
+    "email": [
+      "app/shared/infrastructure/email/sender.py"
+    ]
+  },
+  "installed_distributions": {
+    "pytokens": {
+      "name": "pytokens",
+      "version": "0.4.1"
+    },
+    "platformdirs": {
+      "name": "platformdirs",
+      "version": "4.10.1"
+    },
+    "pathspec": {
+      "name": "pathspec",
+      "version": "1.1.1"
+    },
+    "mypy_extensions": {
+      "name": "mypy_extensions",
+      "version": "1.1.0"
+    },
+    "black": {
+      "name": "black",
+      "version": "26.5.1"
+    },
+    "pyflakes": {
+      "name": "pyflakes",
+      "version": "3.4.0"
+    },
+    "pycodestyle": {
+      "name": "pycodestyle",
+      "version": "2.14.0"
+    },
+    "mccabe": {
+      "name": "mccabe",
+      "version": "0.7.0"
+    },
+    "flake8": {
+      "name": "flake8",
+      "version": "7.3.0"
+    },
+    "distlib": {
+      "name": "distlib",
+      "version": "0.4.3"
+    },
+    "filelock": {
+      "name": "filelock",
+      "version": "3.31.0"
+    },
+    "spiderfoot": {
+      "name": "spiderfoot",
+      "version": "0.0.1"
+    },
+    "instaloader": {
+      "name": "instaloader",
+      "version": "4.15.3"
+    },
+    "backoff": {
+      "name": "backoff",
+      "version": "2.2.1"
+    },
+    "argcomplete": {
+      "name": "argcomplete",
+      "version": "3.7.2"
+    },
+    "censys": {
+      "name": "censys",
+      "version": "2.2.19"
+    },
+    "vt_py": {
+      "name": "vt-py",
+      "version": "0.22.0"
+    },
+    "fierce": {
+      "name": "fierce",
+      "version": "1.6.0"
+    },
+    "dnstwist": {
+      "name": "dnstwist",
+      "version": "20250130"
+    },
+    "zc.lockfile": {
+      "name": "zc.lockfile",
+      "version": "4.0"
+    },
+    "more_itertools": {
+      "name": "more-itertools",
+      "version": "11.1.0"
+    },
+    "jaraco.context": {
+      "name": "jaraco.context",
+      "version": "6.1.2"
+    },
+    "jaraco.functools": {
+      "name": "jaraco.functools",
+      "version": "4.6.0"
+    },
+    "cheroot": {
+      "name": "cheroot",
+      "version": "11.1.2"
+    },
+    "typer_slim": {
+      "name": "typer-slim",
+      "version": "0.24.0"
+    },
+    "jaraco.text": {
+      "name": "jaraco.text",
+      "version": "4.3.0"
+    },
+    "jaraco.collections": {
+      "name": "jaraco.collections",
+      "version": "5.2.1"
+    },
+    "tempora": {
+      "name": "tempora",
+      "version": "5.12.0"
+    },
+    "portend": {
+      "name": "portend",
+      "version": "3.2.1"
+    },
+    "cherrypy": {
+      "name": "CherryPy",
+      "version": "18.10.0"
+    },
+    "publicsuffixlist": {
+      "name": "publicsuffixlist",
+      "version": "1.0.2.20260819"
+    },
+    "shellingham": {
+      "name": "shellingham",
+      "version": "1.5.4"
+    },
+    "annotated_doc": {
+      "name": "annotated-doc",
+      "version": "0.0.5"
+    },
+    "pygments": {
+      "name": "Pygments",
+      "version": "2.19.2"
+    },
+    "mdurl": {
+      "name": "mdurl",
+      "version": "0.1.2"
+    },
+    "markdown_it_py": {
+      "name": "markdown-it-py",
+      "version": "3.0.0"
+    },
+    "httpagentparser": {
+      "name": "httpagentparser",
+      "version": "1.9.9"
+    },
+    "cherrypy_cors": {
+      "name": "cherrypy-cors",
+      "version": "1.7.0"
+    },
+    "phonenumbers": {
+      "name": "phonenumbers",
+      "version": "9.0.37"
+    },
+    "psutil": {
+      "name": "psutil",
+      "version": "7.2.2"
+    },
+    "netaddr": {
+      "name": "netaddr",
+      "version": "1.3.0"
+    },
+    "typing_extensions": {
+      "name": "typing_extensions",
+      "version": "4.16.0"
+    },
+    "idna": {
+      "name": "idna",
+      "version": "3.10"
+    },
+    "h11": {
+      "name": "h11",
+      "version": "0.16.0"
+    },
+    "chardet": {
+      "name": "chardet",
+      "version": "5.2.0"
+    },
+    "certifi": {
+      "name": "certifi",
+      "version": "2026.7.22"
+    },
+    "requests": {
+      "name": "requests",
+      "version": "2.32.4"
+    },
+    "anyio": {
+      "name": "anyio",
+      "version": "4.14.1"
+    },
+    "sqlalchemy": {
+      "name": "SQLAlchemy",
+      "version": "2.0.51"
+    },
+    "scapy": {
+      "name": "scapy",
+      "version": "2.7.0"
+    },
+    "markupsafe": {
+      "name": "MarkupSafe",
+      "version": "3.0.3"
+    },
+    "itsdangerous": {
+      "name": "itsdangerous",
+      "version": "2.2.0"
+    },
+    "blinker": {
+      "name": "blinker",
+      "version": "1.9.0"
+    },
+    "werkzeug": {
+      "name": "Werkzeug",
+      "version": "3.1.8"
+    },
+    "jinja2": {
+      "name": "Jinja2",
+      "version": "3.1.6"
+    },
+    "google_genai": {
+      "name": "google-genai",
+      "version": "2.11.0"
+    },
+    "numpy": {
+      "name": "numpy",
+      "version": "2.4.4"
+    },
+    "pluggy": {
+      "name": "pluggy",
+      "version": "1.6.0"
+    },
+    "iniconfig": {
+      "name": "iniconfig",
+      "version": "2.3.0"
+    },
+    "pytest": {
+      "name": "pytest",
+      "version": "9.1.1"
+    },
+    "pillow": {
+      "name": "pillow",
+      "version": "12.3.0"
+    },
+    "tqdm": {
+      "name": "tqdm",
+      "version": "4.68.4"
+    },
+    "python_dotenv": {
+      "name": "python-dotenv",
+      "version": "1.1.1"
+    },
+    "imageio_ffmpeg": {
+      "name": "imageio-ffmpeg",
+      "version": "0.6.0"
+    },
+    "proglog": {
+      "name": "proglog",
+      "version": "0.1.12"
+    },
+    "imageio": {
+      "name": "ImageIO",
+      "version": "2.37.3"
+    },
+    "moviepy": {
+      "name": "moviepy",
+      "version": "2.2.1"
+    },
+    "decorator": {
+      "name": "decorator",
+      "version": "5.3.1"
+    },
+    "sherlock": {
+      "name": "sherlock",
+      "version": "0.4.1"
+    },
+    "pycparser": {
+      "name": "pycparser",
+      "version": "3.0"
+    },
+    "cffi": {
+      "name": "cffi",
+      "version": "2.1.0"
+    },
+    "uritemplate": {
+      "name": "uritemplate",
+      "version": "4.2.0"
+    },
+    "pyparsing": {
+      "name": "pyparsing",
+      "version": "3.3.2"
+    },
+    "pyasn1": {
+      "name": "pyasn1",
+      "version": "0.6.4"
+    },
+    "protobuf": {
+      "name": "protobuf",
+      "version": "5.29.6"
+    },
+    "httpcore": {
+      "name": "httpcore",
+      "version": "1.0.9"
+    },
+    "pyasn1_modules": {
+      "name": "pyasn1_modules",
+      "version": "0.4.2"
+    },
+    "proto_plus": {
+      "name": "proto-plus",
+      "version": "1.28.1"
+    },
+    "httpx": {
+      "name": "httpx",
+      "version": "0.28.1"
+    },
+    "httplib2": {
+      "name": "httplib2",
+      "version": "0.32.0"
+    },
+    "googleapis_common_protos": {
+      "name": "googleapis-common-protos",
+      "version": "1.75.0"
+    },
+    "python_telegram_bot": {
+      "name": "python-telegram-bot",
+      "version": "22.8"
+    },
+    "grpcio_status": {
+      "name": "grpcio-status",
+      "version": "1.71.2"
+    },
+    "google_auth": {
+      "name": "google-auth",
+      "version": "2.56.0"
+    },
+    "google_auth_httplib2": {
+      "name": "google-auth-httplib2",
+      "version": "0.4.0"
+    },
+    "google_api_core": {
+      "name": "google-api-core",
+      "version": "2.25.2"
+    },
+    "google_api_python_client": {
+      "name": "google-api-python-client",
+      "version": "2.198.0"
+    },
+    "google_ai_generativelanguage": {
+      "name": "google-ai-generativelanguage",
+      "version": "0.6.15"
+    },
+    "google_generativeai": {
+      "name": "google-generativeai",
+      "version": "0.8.6"
+    },
+    "typing_inspection": {
+      "name": "typing-inspection",
+      "version": "0.4.2"
+    },
+    "tenacity": {
+      "name": "tenacity",
+      "version": "9.1.4"
+    },
+    "sniffio": {
+      "name": "sniffio",
+      "version": "1.3.1"
+    },
+    "packaging": {
+      "name": "packaging",
+      "version": "25.0"
+    },
+    "multidict": {
+      "name": "multidict",
+      "version": "6.6.2"
+    },
+    "aiohappyeyeballs": {
+      "name": "aiohappyeyeballs",
+      "version": "2.6.1"
+    },
+    "yarl": {
+      "name": "yarl",
+      "version": "1.20.1"
+    },
+    "aiogram": {
+      "name": "aiogram",
+      "version": "3.29.1"
+    },
+    "pyyaml": {
+      "name": "PyYAML",
+      "version": "6.0.3"
+    },
+    "frozenlist": {
+      "name": "frozenlist",
+      "version": "1.7.0"
+    },
+    "bandit": {
+      "name": "bandit",
+      "version": "1.9.4"
+    },
+    "six": {
+      "name": "six",
+      "version": "1.17.0"
+    },
+    "mando": {
+      "name": "mando",
+      "version": "0.7.1"
+    },
+    "colored": {
+      "name": "colored",
+      "version": "2.3.2"
+    },
+    "peewee": {
+      "name": "peewee",
+      "version": "3.19.0"
+    },
+    "wrapt": {
+      "name": "wrapt",
+      "version": "1.17.3"
+    },
+    "tomli": {
+      "name": "tomli",
+      "version": "2.4.1"
+    },
+    "semantic_version": {
+      "name": "semantic-version",
+      "version": "2.10.0"
+    },
+    "ruamel.yaml.clib": {
+      "name": "ruamel.yaml.clib",
+      "version": "0.2.15"
+    },
+    "opentelemetry_util_http": {
+      "name": "opentelemetry-util-http",
+      "version": "0.58b0"
+    },
+    "httpx_sse": {
+      "name": "httpx-sse",
+      "version": "0.4.3"
+    },
+    "face": {
+      "name": "face",
+      "version": "26.0.1"
+    },
+    "referencing": {
+      "name": "referencing",
+      "version": "0.37.0"
+    },
+    "starlette": {
+      "name": "starlette",
+      "version": "1.3.1"
+    },
+    "opentelemetry_exporter_otlp_proto_common": {
+      "name": "opentelemetry-exporter-otlp-proto-common",
+      "version": "1.37.0"
+    },
+    "importlib_metadata": {
+      "name": "importlib_metadata",
+      "version": "8.7.1"
+    },
+    "opentelemetry_api": {
+      "name": "opentelemetry-api",
+      "version": "1.37.0"
+    },
+    "mistralai": {
+      "name": "mistralai",
+      "version": "2.7.1"
+    },
+    "opentelemetry_instrumentation": {
+      "name": "opentelemetry-instrumentation",
+      "version": "0.58b0"
+    },
+    "opentelemetry_instrumentation_requests": {
+      "name": "opentelemetry-instrumentation-requests",
+      "version": "0.58b0"
+    },
+    "tabulate": {
+      "name": "tabulate",
+      "version": "0.10.0"
+    },
+    "edge_tts": {
+      "name": "edge-tts",
+      "version": "7.2.8"
+    },
+    "groq": {
+      "name": "groq",
+      "version": "1.5.0"
+    },
+    "types_pyyaml": {
+      "name": "types-PyYAML",
+      "version": "6.0.12.20260518"
+    },
+    "docstring_parser": {
+      "name": "docstring_parser",
+      "version": "0.18.0"
+    },
+    "types_tqdm": {
+      "name": "types-tqdm",
+      "version": "4.69.0.20260720"
+    },
+    "rich_rst": {
+      "name": "rich-rst",
+      "version": "2.1.0"
+    },
+    "cyclopts": {
+      "name": "cyclopts",
+      "version": "4.22.1"
+    },
+    "yt_dlp": {
+      "name": "yt-dlp",
+      "version": "2026.7.4"
+    },
+    "gtts": {
+      "name": "gTTS",
+      "version": "2.5.4"
+    },
+    "fonttools": {
+      "name": "fonttools",
+      "version": "4.63.0"
+    },
+    "defusedxml": {
+      "name": "defusedxml",
+      "version": "0.7.1"
+    },
+    "rsa": {
+      "name": "rsa",
+      "version": "4.9.1"
+    },
+    "autopep8": {
+      "name": "autopep8",
+      "version": "2.3.2"
+    },
+    "lxml": {
+      "name": "lxml",
+      "version": "6.1.1"
+    },
+    "python_docx": {
+      "name": "python-docx",
+      "version": "1.2.0"
+    },
+    "python_dateutil": {
+      "name": "python-dateutil",
+      "version": "2.9.0.post0"
+    },
+    "jsonpath_python": {
+      "name": "jsonpath-python",
+      "version": "1.1.6"
+    },
+    "eval_type_backport": {
+      "name": "eval_type_backport",
+      "version": "0.4.0"
+    },
+    "docopt": {
+      "name": "docopt",
+      "version": "0.6.2"
+    },
+    "tsu": {
+      "name": "tsu",
+      "version": "3.5.8"
+    },
+    "seven": {
+      "name": "seven",
+      "version": "1.0.0"
+    },
+    "class": {
+      "name": "class",
+      "version": "1.0.0"
+    },
+    "netifaces": {
+      "name": "netifaces",
+      "version": "0.11.0"
+    },
+    "tld": {
+      "name": "tld",
+      "version": "0.13.2"
+    },
+    "soupsieve": {
+      "name": "soupsieve",
+      "version": "2.9.1"
+    },
+    "langdetect": {
+      "name": "langdetect",
+      "version": "1.0.9"
+    },
+    "grpcio": {
+      "name": "grpcio",
+      "version": "1.83.0"
+    },
+    "jiter": {
+      "name": "jiter",
+      "version": "0.16.0"
+    },
+    "sortedcontainers": {
+      "name": "sortedcontainers",
+      "version": "2.4.0"
+    },
+    "termcolor": {
+      "name": "termcolor",
+      "version": "3.3.0"
+    },
+    "trio": {
+      "name": "trio",
+      "version": "0.33.0"
+    },
+    "bs4": {
+      "name": "bs4",
+      "version": "0.0.2"
+    },
+    "pydub": {
+      "name": "pydub",
+      "version": "0.25.1"
+    },
+    "i2": {
+      "name": "i2",
+      "version": "0.1.64"
+    },
+    "pydantic_core": {
+      "name": "pydantic_core",
+      "version": "2.46.4"
+    },
+    "distro": {
+      "name": "distro",
+      "version": "1.9.0"
+    },
+    "annotated_types": {
+      "name": "annotated-types",
+      "version": "0.7.0"
+    },
+    "propcache": {
+      "name": "propcache",
+      "version": "0.3.2"
+    },
+    "magic_filter": {
+      "name": "magic-filter",
+      "version": "1.0.12"
+    },
+    "attrs": {
+      "name": "attrs",
+      "version": "25.3.0"
+    },
+    "aiofiles": {
+      "name": "aiofiles",
+      "version": "25.1.0"
+    },
+    "trio_websocket": {
+      "name": "trio-websocket",
+      "version": "0.12.2"
+    },
+    "urllib3": {
+      "name": "urllib3",
+      "version": "2.7.0"
+    },
+    "stevedore": {
+      "name": "stevedore",
+      "version": "5.9.0"
+    },
+    "reportlab": {
+      "name": "reportlab",
+      "version": "4.4.2"
+    },
+    "colorama": {
+      "name": "colorama",
+      "version": "0.4.6"
+    },
+    "radon": {
+      "name": "radon",
+      "version": "6.0.1"
+    },
+    "vulture": {
+      "name": "vulture",
+      "version": "2.16"
+    },
+    "cloc": {
+      "name": "cloc",
+      "version": "0.2.5"
+    },
+    "boltons": {
+      "name": "boltons",
+      "version": "21.0.0"
+    },
+    "zipp": {
+      "name": "zipp",
+      "version": "4.1.0"
+    },
+    "ruamel.yaml": {
+      "name": "ruamel.yaml",
+      "version": "0.19.1"
+    },
+    "rpds_py": {
+      "name": "rpds-py",
+      "version": "2026.6.3"
+    },
+    "python_multipart": {
+      "name": "python-multipart",
+      "version": "0.0.32"
+    },
+    "ordered_set": {
+      "name": "ordered-set",
+      "version": "4.1.0"
+    },
+    "opentelemetry_proto": {
+      "name": "opentelemetry-proto",
+      "version": "1.37.0"
+    },
+    "exceptiongroup": {
+      "name": "exceptiongroup",
+      "version": "1.2.2"
+    },
+    "bracex": {
+      "name": "bracex",
+      "version": "3.0.1"
+    },
+    "click": {
+      "name": "click",
+      "version": "8.1.8"
+    },
+    "wcmatch": {
+      "name": "wcmatch",
+      "version": "8.5.2"
+    },
+    "glom": {
+      "name": "glom",
+      "version": "25.12.0"
+    },
+    "click_option_group": {
+      "name": "click-option-group",
+      "version": "0.5.9"
+    },
+    "sse_starlette": {
+      "name": "sse-starlette",
+      "version": "3.4.6"
+    },
+    "jsonschema_specifications": {
+      "name": "jsonschema-specifications",
+      "version": "2025.9.1"
+    },
+    "jsonschema": {
+      "name": "jsonschema",
+      "version": "4.25.1"
+    },
+    "opentelemetry_sdk": {
+      "name": "opentelemetry-sdk",
+      "version": "1.37.0"
+    },
+    "mcp": {
+      "name": "mcp",
+      "version": "1.23.3"
+    },
+    "opentelemetry_instrumentation_threading": {
+      "name": "opentelemetry-instrumentation-threading",
+      "version": "0.58b0"
+    },
+    "opentelemetry_exporter_otlp_proto_http": {
+      "name": "opentelemetry-exporter-otlp-proto-http",
+      "version": "1.37.0"
+    },
+    "semgrep": {
+      "name": "semgrep",
+      "version": "1.170.1"
+    },
+    "types_tabulate": {
+      "name": "types-tabulate",
+      "version": "0.10.0.20260508"
+    },
+    "types_requests": {
+      "name": "types-requests",
+      "version": "2.33.0.20260712"
+    },
+    "detect_agent": {
+      "name": "detect_agent",
+      "version": "0.3.0"
+    },
+    "together": {
+      "name": "together",
+      "version": "2.24.1"
+    },
+    "libcst": {
+      "name": "libcst",
+      "version": "1.8.6"
+    },
+    "fpdf2": {
+      "name": "fpdf2",
+      "version": "2.8.7"
+    },
+    "pyaes": {
+      "name": "pyaes",
+      "version": "1.6.1"
+    },
+    "telethon": {
+      "name": "Telethon",
+      "version": "1.44.0"
+    },
+    "qrcode": {
+      "name": "qrcode",
+      "version": "8.2"
+    },
+    "pytesseract": {
+      "name": "pytesseract",
+      "version": "0.3.13"
+    },
+    "pypdf": {
+      "name": "pypdf",
+      "version": "6.14.2"
+    },
+    "bcrypt": {
+      "name": "bcrypt",
+      "version": "4.0.1"
+    },
+    "consolejs": {
+      "name": "consolejs",
+      "version": "1.0.9"
+    },
+    "dnspython": {
+      "name": "dnspython",
+      "version": "2.8.0"
+    },
+    "beautifulsoup4": {
+      "name": "beautifulsoup4",
+      "version": "4.15.0"
+    },
+    "pyopenssl": {
+      "name": "pyOpenSSL",
+      "version": "26.3.0"
+    },
+    "osint": {
+      "name": "osint",
+      "version": "0.5"
+    },
+    "ruff": {
+      "name": "ruff",
+      "version": "0.15.22"
+    },
+    "anthropic": {
+      "name": "anthropic",
+      "version": "0.119.0"
+    },
+    "openai": {
+      "name": "openai",
+      "version": "2.48.0"
+    },
+    "outcome": {
+      "name": "outcome",
+      "version": "1.3.0.post0"
+    },
+    "holehe": {
+      "name": "holehe",
+      "version": "1.61"
+    },
+    "clang": {
+      "name": "clang",
+      "version": "21.1.7"
+    },
+    "lib": {
+      "name": "lib",
+      "version": "4.0.0"
+    },
+    "exit": {
+      "name": "exit",
+      "version": "2020.12.3"
+    },
+    "su": {
+      "name": "su",
+      "version": "0.0.10"
+    },
+    "mutagen": {
+      "name": "mutagen",
+      "version": "1.48.1"
+    },
+    "ptyprocess": {
+      "name": "ptyprocess",
+      "version": "0.7.0"
+    },
+    "xmind": {
+      "name": "XMind",
+      "version": "1.2.0"
+    },
+    "pysocks": {
+      "name": "PySocks",
+      "version": "1.7.1"
+    },
+    "jsonpickle": {
+      "name": "jsonpickle",
+      "version": "4.1.2"
+    },
+    "asttokens": {
+      "name": "asttokens",
+      "version": "3.0.2"
+    },
+    "socid_extractor": {
+      "name": "socid-extractor",
+      "version": "0.1.1"
+    },
+    "pycares": {
+      "name": "pycares",
+      "version": "5.0.1"
+    },
+    "alive_progress": {
+      "name": "alive-progress",
+      "version": "3.3.0"
+    },
+    "aiohttp_socks": {
+      "name": "aiohttp_socks",
+      "version": "0.11.0"
+    },
+    "forensicsuite_sdk": {
+      "name": "forensicsuite-sdk",
+      "version": "1.1.0"
+    },
+    "pydantic": {
+      "name": "pydantic",
+      "version": "2.13.4"
+    },
+    "xai_sdk": {
+      "name": "xai-sdk",
+      "version": "1.17.0"
+    },
+    "wsproto": {
+      "name": "wsproto",
+      "version": "1.3.2"
+    },
+    "bidict": {
+      "name": "bidict",
+      "version": "0.23.1"
+    },
+    "eventlet": {
+      "name": "eventlet",
+      "version": "0.33.3"
+    },
+    "flask": {
+      "name": "Flask",
+      "version": "3.1.3"
+    },
+    "python_discovery": {
+      "name": "python-discovery",
+      "version": "1.5.0"
+    },
+    "flask_limiter": {
+      "name": "Flask-Limiter",
+      "version": "4.1.1"
+    },
+    "python_socketio": {
+      "name": "python-socketio",
+      "version": "5.16.3"
+    },
+    "asyncpg": {
+      "name": "asyncpg",
+      "version": "0.31.0"
+    },
+    "charset_normalizer": {
+      "name": "charset-normalizer",
+      "version": "3.4.2"
+    },
+    "selenium": {
+      "name": "selenium",
+      "version": "4.46.0"
+    },
+    "aiosignal": {
+      "name": "aiosignal",
+      "version": "1.3.2"
+    },
+    "aiohttp": {
+      "name": "aiohttp",
+      "version": "3.12.13"
+    },
+    "shodan": {
+      "name": "shodan",
+      "version": "1.31.0"
+    },
+    "tomlkit": {
+      "name": "tomlkit",
+      "version": "0.15.1"
+    },
+    "regex": {
+      "name": "regex",
+      "version": "2026.7.19"
+    },
+    "marshmallow": {
+      "name": "marshmallow",
+      "version": "4.3.0"
+    },
+    "librt": {
+      "name": "librt",
+      "version": "0.15.0"
+    },
+    "joserfc": {
+      "name": "joserfc",
+      "version": "1.7.4"
+    },
+    "prometheus_client": {
+      "name": "prometheus_client",
+      "version": "0.26.0"
+    },
+    "mako": {
+      "name": "Mako",
+      "version": "1.4.1"
+    },
+    "cinemagoer": {
+      "name": "cinemagoer",
+      "version": "2026.6.27"
+    },
+    "opencv_contrib_python": {
+      "name": "opencv_contrib_python",
+      "version": "4.13.0.93"
+    },
+    "python_json_logger": {
+      "name": "python-json-logger",
+      "version": "4.2.0"
+    },
+    "click_didyoumean": {
+      "name": "click-didyoumean",
+      "version": "0.3.1"
+    },
+    "amqp": {
+      "name": "amqp",
+      "version": "5.3.1"
+    },
+    "wheel": {
+      "name": "wheel",
+      "version": "0.48.0"
+    },
+    "setuptools": {
+      "name": "setuptools",
+      "version": "84.0.0"
+    },
+    "aiosqlite": {
+      "name": "aiosqlite",
+      "version": "0.22.1"
+    },
+    "rich": {
+      "name": "rich",
+      "version": "14.0.0"
+    },
+    "wcwidth": {
+      "name": "wcwidth",
+      "version": "0.8.2"
+    },
+    "traitlets": {
+      "name": "traitlets",
+      "version": "5.15.1"
+    },
+    "pexpect": {
+      "name": "pexpect",
+      "version": "4.9.0"
+    },
+    "graphemeu": {
+      "name": "graphemeu",
+      "version": "0.7.2"
+    },
+    "about_time": {
+      "name": "about-time",
+      "version": "4.2.1"
+    },
+    "jedi": {
+      "name": "jedi",
+      "version": "0.20.0"
+    },
+    "galeodes": {
+      "name": "galeodes",
+      "version": "0.7"
+    },
+    "maigret": {
+      "name": "maigret",
+      "version": "0.6.3"
+    },
+    "pyproject_hooks": {
+      "name": "pyproject_hooks",
+      "version": "1.2.0"
+    },
+    "simple_websocket": {
+      "name": "simple-websocket",
+      "version": "1.1.0"
+    },
+    "deprecated": {
+      "name": "Deprecated",
+      "version": "1.3.1"
+    },
+    "flask_cors": {
+      "name": "flask-cors",
+      "version": "6.0.5"
+    },
+    "uvicorn": {
+      "name": "uvicorn",
+      "version": "0.52.0"
+    },
+    "ecdsa": {
+      "name": "ecdsa",
+      "version": "0.19.2"
+    },
+    "python_jose": {
+      "name": "python-jose",
+      "version": "3.5.0"
+    },
+    "fastapi": {
+      "name": "fastapi",
+      "version": "0.141.1"
+    },
+    "redis": {
+      "name": "redis",
+      "version": "8.1.0"
+    },
+    "pip": {
+      "name": "pip",
+      "version": "26.2.1"
+    },
+    "social_analyzer": {
+      "name": "social-analyzer",
+      "version": "0.45"
+    },
+    "aiodns": {
+      "name": "aiodns",
+      "version": "4.0.4"
+    },
+    "phoneinfoga": {
+      "name": "phoneinfoga",
+      "version": "0.1"
+    },
+    "isort": {
+      "name": "isort",
+      "version": "8.0.1"
+    },
+    "nodeenv": {
+      "name": "nodeenv",
+      "version": "1.10.0"
+    },
+    "identify": {
+      "name": "identify",
+      "version": "2.6.19"
+    },
+    "ast_serialize": {
+      "name": "ast_serialize",
+      "version": "0.8.0"
+    },
+    "mypy": {
+      "name": "mypy",
+      "version": "2.3.0"
+    },
+    "authlib": {
+      "name": "Authlib",
+      "version": "1.7.2"
+    },
+    "stdlib_list": {
+      "name": "stdlib-list",
+      "version": "0.12.0"
+    },
+    "find_github_email": {
+      "name": "find-github-email",
+      "version": "1.2.6"
+    },
+    "pyjwt": {
+      "name": "PyJWT",
+      "version": "2.13.0"
+    },
+    "text_unidecode": {
+      "name": "text-unidecode",
+      "version": "1.3"
+    },
+    "tzdata": {
+      "name": "tzdata",
+      "version": "2026.3"
+    },
+    "python_slugify": {
+      "name": "python-slugify",
+      "version": "8.0.4"
+    },
+    "billiard": {
+      "name": "billiard",
+      "version": "4.2.4"
+    },
+    "style": {
+      "name": "style",
+      "version": "1.1.0"
+    },
+    "pydantic_settings": {
+      "name": "pydantic-settings",
+      "version": "2.0.3"
+    },
+    "pycairo": {
+      "name": "pycairo",
+      "version": "1.29.1"
+    },
+    "pygobject": {
+      "name": "PyGObject",
+      "version": "3.56.3"
+    },
+    "prompt_toolkit": {
+      "name": "prompt_toolkit",
+      "version": "3.0.53"
+    },
+    "typer": {
+      "name": "typer",
+      "version": "0.15.4"
+    },
+    "webencodings": {
+      "name": "webencodings",
+      "version": "0.5.1"
+    },
+    "pure_eval": {
+      "name": "pure_eval",
+      "version": "0.2.3"
+    },
+    "parso": {
+      "name": "parso",
+      "version": "0.8.7"
+    },
+    "ipython_pygments_lexers": {
+      "name": "ipython_pygments_lexers",
+      "version": "1.1.1"
+    },
+    "executing": {
+      "name": "executing",
+      "version": "2.2.1"
+    },
+    "ipython": {
+      "name": "ipython",
+      "version": "9.15.0"
+    },
+    "curl_cffi": {
+      "name": "curl_cffi",
+      "version": "0.15.0"
+    },
+    "limits": {
+      "name": "limits",
+      "version": "5.8.0"
+    },
+    "opentelemetry_semantic_conventions": {
+      "name": "opentelemetry-semantic-conventions",
+      "version": "0.58b0"
+    },
+    "greenlet": {
+      "name": "greenlet",
+      "version": "3.3.2"
+    },
+    "python_engineio": {
+      "name": "python-engineio",
+      "version": "4.13.3"
+    },
+    "argparse": {
+      "name": "argparse",
+      "version": "1.4.0"
+    },
+    "passlib": {
+      "name": "passlib",
+      "version": "1.7.4"
+    },
+    "stripe": {
+      "name": "stripe",
+      "version": "15.5.1"
+    },
+    "ignorant": {
+      "name": "ignorant",
+      "version": "1.2"
+    },
+    "pandas": {
+      "name": "pandas",
+      "version": "3.0.5"
+    },
+    "socialscan": {
+      "name": "socialscan",
+      "version": "2.0.1"
+    },
+    "git_filter_repo": {
+      "name": "git-filter-repo",
+      "version": "2.47.0"
+    },
+    "requests_futures": {
+      "name": "requests-futures",
+      "version": "1.0.2"
+    },
+    "requests_file": {
+      "name": "requests-file",
+      "version": "3.0.1"
+    },
+    "tldextract": {
+      "name": "tldextract",
+      "version": "5.3.1"
+    },
+    "sublist3r": {
+      "name": "Sublist3r",
+      "version": "1.0"
+    },
+    "coverage": {
+      "name": "coverage",
+      "version": "7.15.4"
+    },
+    "pytest_cov": {
+      "name": "pytest-cov",
+      "version": "7.1.0"
+    },
+    "astroid": {
+      "name": "astroid",
+      "version": "4.0.4"
+    },
+    "pylint": {
+      "name": "pylint",
+      "version": "4.0.6"
+    },
+    "dparse": {
+      "name": "dparse",
+      "version": "0.6.4"
+    },
+    "cfgv": {
+      "name": "cfgv",
+      "version": "3.5.0"
+    },
+    "pre_commit": {
+      "name": "pre_commit",
+      "version": "4.6.1"
+    },
+    "safety": {
+      "name": "safety",
+      "version": "3.8.1"
+    },
+    "pydeps": {
+      "name": "pydeps",
+      "version": "3.0.7"
+    },
+    "gunicorn": {
+      "name": "gunicorn",
+      "version": "26.0.0"
+    },
+    "alembic": {
+      "name": "alembic",
+      "version": "1.19.0"
+    },
+    "google_search_results": {
+      "name": "google_search_results",
+      "version": "2.4.2"
+    },
+    "opencv_python": {
+      "name": "opencv_python",
+      "version": "4.13.0.93"
+    },
+    "pytz": {
+      "name": "pytz",
+      "version": "2026.3.post1"
+    },
+    "vine": {
+      "name": "vine",
+      "version": "5.1.0"
+    },
+    "uvloop": {
+      "name": "uvloop",
+      "version": "0.22.1"
+    },
+    "click_repl": {
+      "name": "click-repl",
+      "version": "0.3.0"
+    },
+    "execnet": {
+      "name": "execnet",
+      "version": "2.1.2"
+    },
+    "et_xmlfile": {
+      "name": "et_xmlfile",
+      "version": "2.0.0"
+    },
+    "openpyxl": {
+      "name": "openpyxl",
+      "version": "3.1.5"
+    },
+    "websockets": {
+      "name": "websockets",
+      "version": "13.1"
+    },
+    "python_socks": {
+      "name": "python-socks",
+      "version": "2.8.2"
+    },
+    "pycountry": {
+      "name": "pycountry",
+      "version": "26.2.16"
+    },
+    "networkx": {
+      "name": "networkx",
+      "version": "2.8.8"
+    },
+    "html5lib": {
+      "name": "html5lib",
+      "version": "1.1"
+    },
+    "asgiref": {
+      "name": "asgiref",
+      "version": "3.12.1"
+    },
+    "stack_data": {
+      "name": "stack-data",
+      "version": "0.6.3"
+    },
+    "matplotlib_inline": {
+      "name": "matplotlib-inline",
+      "version": "0.2.2"
+    },
+    "pyvis": {
+      "name": "pyvis",
+      "version": "0.3.2"
+    },
+    "sherlock_project": {
+      "name": "sherlock-project",
+      "version": "0.16.0"
+    },
+    "build": {
+      "name": "build",
+      "version": "1.5.0"
+    },
+    "websocket_client": {
+      "name": "websocket-client",
+      "version": "1.9.0"
+    },
+    "virtualenv": {
+      "name": "virtualenv",
+      "version": "21.7.1"
+    },
+    "flask_socketio": {
+      "name": "Flask-SocketIO",
+      "version": "5.6.1"
+    },
+    "email_validator": {
+      "name": "email-validator",
+      "version": "2.3.0"
+    },
+    "cryptography": {
+      "name": "cryptography",
+      "version": "50.0.0"
+    },
+    "h8mail": {
+      "name": "h8mail",
+      "version": "2.5.6"
+    },
+    "xlsxwriter": {
+      "name": "xlsxwriter",
+      "version": "3.2.9"
+    },
+    "click_plugins": {
+      "name": "click-plugins",
+      "version": "1.1.1.2"
+    },
+    "pytest_asyncio": {
+      "name": "pytest-asyncio",
+      "version": "1.4.0"
+    },
+    "dill": {
+      "name": "dill",
+      "version": "0.4.1"
+    },
+    "truststore": {
+      "name": "truststore",
+      "version": "0.10.4"
+    },
+    "joblib": {
+      "name": "joblib",
+      "version": "1.5.3"
+    },
+    "nltk": {
+      "name": "nltk",
+      "version": "3.10.2"
+    },
+    "safety_schemas": {
+      "name": "safety-schemas",
+      "version": "0.0.16"
+    },
+    "psycopg2_binary": {
+      "name": "psycopg2-binary",
+      "version": "2.9.12"
+    },
+    "vininfo": {
+      "name": "vininfo",
+      "version": "1.11.0"
+    },
+    "tzlocal": {
+      "name": "tzlocal",
+      "version": "5.4.4"
+    },
+    "httptools": {
+      "name": "httptools",
+      "version": "0.8.0"
+    },
+    "watchfiles": {
+      "name": "watchfiles",
+      "version": "1.2.0"
+    },
+    "kombu": {
+      "name": "kombu",
+      "version": "5.6.2"
+    },
+    "celery": {
+      "name": "celery",
+      "version": "5.6.3"
+    },
+    "pytest_xdist": {
+      "name": "pytest-xdist",
+      "version": "3.8.0"
+    },
+    "stem": {
+      "name": "stem",
+      "version": "1.8.2"
+    },
+    "lolcat": {
+      "name": "lolcat",
+      "version": "1.4"
+    },
+    "proot_distro": {
+      "name": "proot-distro",
+      "version": "5.8.0"
+    },
+    "update": {
+      "name": "update",
+      "version": "0.0.1"
+    },
+    "minimal": {
+      "name": "minimal",
+      "version": "0.1.0"
+    },
+    "nala": {
+      "name": "nala",
+      "version": "0.16.0"
+    },
+    "python_debian": {
+      "name": "python-debian",
+      "version": "1.1.1"
+    },
+    "python_apt": {
+      "name": "python-apt",
+      "version": "3.1.0"
+    }
+  },
+  "matched_imports": [
+    "fastapi",
+    "passlib",
+    "prometheus_client",
+    "pydantic",
+    "pydantic_settings",
+    "pytest",
+    "redis",
+    "sqlalchemy"
+  ],
+  "unmatched_imports": [
+    "app",
+    "application",
+    "dependencies",
+    "domain",
+    "dto",
+    "entities",
+    "enums",
+    "infrastructure",
+    "jwt",
+    "mappers",
+    "models",
+    "repositories",
+    "router",
+    "schemas",
+    "service",
+    "services",
+    "session"
+  ]
+}

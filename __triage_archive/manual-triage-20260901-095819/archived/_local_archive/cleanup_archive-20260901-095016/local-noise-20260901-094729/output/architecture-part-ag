@@ -1,0 +1,700 @@
+)
+from app.modules.company_memberships.infrastructure.repositories import SqlAlchemyCompanyMembershipRepository
+from app.shared.application.clock import Clock
+from app.shared.application.uuid_generator import UuidGenerator
+from app.shared.infrastructure.db.session import get_db_session
+
+
+def get_membership_repo(session: AsyncSession = Depends(get_db_session)) -> SqlAlchemyCompanyMembershipRepository:
+    return SqlAlchemyCompanyMembershipRepository(session)
+
+
+def get_create_membership_service(repo: SqlAlchemyCompanyMembershipRepository = Depends(get_membership_repo)) -> CreateCompanyMembershipService:
+    return CreateCompanyMembershipService(repo=repo, uuid_generator=UuidGenerator(), clock=Clock())
+
+
+def get_list_memberships_service(repo: SqlAlchemyCompanyMembershipRepository = Depends(get_membership_repo)) -> ListCompanyMembershipsService:
+    return ListCompanyMembershipsService(repo=repo)
+
+
+def get_update_membership_service(repo: SqlAlchemyCompanyMembershipRepository = Depends(get_membership_repo)) -> UpdateCompanyMembershipService:
+    return UpdateCompanyMembershipService(repo=repo, clock=Clock())
+
+
+def get_transition_membership_status_service(repo: SqlAlchemyCompanyMembershipRepository = Depends(get_membership_repo)) -> TransitionCompanyMembershipStatusService:
+    return TransitionCompanyMembershipStatusService(repo=repo, clock=Clock())
+
+--- app/modules/company_memberships/presentation/mappers.py ---
+from app.modules.company_memberships.application.dto import CompanyMembershipDTO
+from app.modules.company_memberships.presentation.schemas import CompanyMembershipData
+
+
+def to_membership_data(dto: CompanyMembershipDTO) -> CompanyMembershipData:
+    return CompanyMembershipData(
+        id=dto.id,
+        status=dto.status,
+        companyId=dto.company_id,
+        userId=dto.user_id,
+        membershipRole=dto.membership_role,
+        isPrimaryContact=dto.is_primary_contact,
+        invitedAt=dto.invited_at,
+        joinedAt=dto.joined_at,
+        leftAt=dto.left_at,
+        createdAt=dto.created_at,
+        createdByUserId=dto.created_by_user_id,
+        updatedAt=dto.updated_at,
+        updatedByUserId=dto.updated_by_user_id,
+    )
+
+--- app/modules/company_memberships/presentation/router.py ---
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, Query
+
+from app.modules.company_memberships.presentation.dependencies import (
+    get_create_membership_service,
+    get_list_memberships_service,
+    get_transition_membership_status_service,
+    get_update_membership_service,
+)
+from app.modules.company_memberships.presentation.mappers import to_membership_data
+from app.modules.company_memberships.presentation.schemas import (
+    CompanyMembershipCreateRequest,
+    CompanyMembershipResponse,
+    CompanyMembershipStatusTransitionRequest,
+    CompanyMembershipUpdateRequest,
+    PaginatedCompanyMembershipsResponse,
+    PaginationMeta,
+)
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.error_schemas import error_responses
+
+router = APIRouter(tags=["company-memberships"])
+
+
+@router.get(
+    "/companies/{company_id}/memberships",
+    response_model=PaginatedCompanyMembershipsResponse,
+    responses=error_responses(401, 403, 422, 500),
+)
+async def list_company_memberships(
+    company_id: UUID,
+    status: str | None = None,
+    page: int = Query(default=1, ge=1),
+    pageSize: int = Query(default=100, ge=1, le=100),
+    current_user=Depends(require_current_user),
+    service=Depends(get_list_memberships_service),
+):
+    items = await service.execute(company_id=company_id, status=status)
+    start = (page - 1) * pageSize
+    slice_items = items[start:start + pageSize]
+    return PaginatedCompanyMembershipsResponse(
+        items=[to_membership_data(item) for item in slice_items],
+        meta=PaginationMeta(page=page, pageSize=pageSize, total=len(items)),
+    )
+
+
+@router.post(
+    "/companies/{company_id}/memberships",
+    response_model=CompanyMembershipResponse,
+    status_code=201,
+    responses=error_responses(401, 403, 409, 422, 500),
+)
+async def create_company_membership(
+    company_id: UUID,
+    payload: CompanyMembershipCreateRequest,
+    current_user=Depends(require_current_user),
+    service=Depends(get_create_membership_service),
+):
+    dto = await service.execute(
+        company_id=company_id,
+        user_id=payload.userId,
+        membership_role=payload.membershipRole,
+        is_primary_contact=payload.isPrimaryContact,
+        actor_user_id=current_user.user.id,
+    )
+    return CompanyMembershipResponse(data=to_membership_data(dto))
+
+
+@router.patch(
+    "/company-memberships/{membership_id}",
+    response_model=CompanyMembershipResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
+async def update_company_membership(
+    membership_id: UUID,
+    payload: CompanyMembershipUpdateRequest,
+    current_user=Depends(require_current_user),
+    service=Depends(get_update_membership_service),
+):
+    dto = await service.execute(
+        membership_id=membership_id,
+        membership_role=payload.membershipRole,
+        is_primary_contact=payload.isPrimaryContact,
+        actor_user_id=current_user.user.id,
+    )
+    return CompanyMembershipResponse(data=to_membership_data(dto))
+
+
+@router.patch(
+    "/company-memberships/{membership_id}/status",
+    response_model=CompanyMembershipResponse,
+    responses=error_responses(401, 403, 404, 409, 422, 500),
+)
+async def transition_company_membership_status(
+    membership_id: UUID,
+    payload: CompanyMembershipStatusTransitionRequest,
+    current_user=Depends(require_current_user),
+    service=Depends(get_transition_membership_status_service),
+):
+    dto = await service.execute(
+        membership_id=membership_id,
+        to_status=payload.toStatus,
+        actor_user_id=current_user.user.id,
+    )
+    return CompanyMembershipResponse(data=to_membership_data(dto))
+
+--- app/modules/company_memberships/presentation/schemas.py ---
+from datetime import datetime
+from uuid import UUID
+
+from pydantic import BaseModel
+
+from app.modules.company_memberships.domain.enums import (
+    CompanyMembershipRole,
+    CompanyMembershipStatus,
+)
+
+
+class CompanyMembershipCreateRequest(BaseModel):
+    userId: UUID
+    membershipRole: CompanyMembershipRole
+    isPrimaryContact: bool = False
+
+
+class CompanyMembershipUpdateRequest(BaseModel):
+    membershipRole: CompanyMembershipRole | None = None
+    isPrimaryContact: bool | None = None
+
+
+class CompanyMembershipStatusTransitionRequest(BaseModel):
+    toStatus: CompanyMembershipStatus
+
+
+class CompanyMembershipData(BaseModel):
+    id: UUID
+    status: CompanyMembershipStatus
+    companyId: UUID
+    userId: UUID
+    membershipRole: CompanyMembershipRole
+    isPrimaryContact: bool
+    invitedAt: datetime | None
+    joinedAt: datetime | None
+    leftAt: datetime | None
+    createdAt: datetime
+    createdByUserId: UUID | None
+    updatedAt: datetime
+    updatedByUserId: UUID | None
+
+
+class CompanyMembershipResponse(BaseModel):
+    data: CompanyMembershipData
+
+
+class PaginationMeta(BaseModel):
+    page: int
+    pageSize: int
+    total: int
+
+
+class PaginatedCompanyMembershipsResponse(BaseModel):
+    items: list[CompanyMembershipData]
+    meta: PaginationMeta
+
+--- app/modules/users/__init__.py ---
+
+--- app/modules/users/application/__init__.py ---
+
+--- app/modules/users/application/dto.py ---
+from dataclasses import dataclass
+from datetime import datetime
+from uuid import UUID
+
+
+@dataclass(slots=True)
+class UserDTO:
+    id: UUID
+    status: str
+    email: str
+    first_name: str
+    last_name: str
+    display_name: str | None
+    phone: str | None
+    locale: str | None
+    timezone: str | None
+    last_login_at: datetime | None
+    created_at: datetime
+    created_by_user_id: UUID | None
+    updated_at: datetime
+    updated_by_user_id: UUID | None
+
+--- app/modules/users/application/mappers.py ---
+from app.modules.users.application.dto import UserDTO
+from app.modules.users.domain.entities import User
+
+
+def to_user_dto(user: User) -> UserDTO:
+    return UserDTO(
+        id=user.id,
+        status=user.status.value,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+        display_name=user.display_name,
+        phone=user.phone,
+        locale=user.locale,
+        timezone=user.timezone,
+        last_login_at=user.last_login_at,
+        created_at=user.created_at,
+        created_by_user_id=user.created_by_user_id,
+        updated_at=user.updated_at,
+        updated_by_user_id=user.updated_by_user_id,
+    )
+
+--- app/modules/users/application/services.py ---
+from uuid import UUID
+
+from app.modules.users.application.dto import UserDTO
+from app.modules.users.application.mappers import to_user_dto
+from app.modules.users.domain.entities import User
+from app.modules.users.domain.enums import UserStatus
+from app.modules.users.domain.repositories import UserRepository
+from app.shared.application.clock import Clock
+from app.shared.application.uuid_generator import UuidGenerator
+from app.shared.domain.exceptions import ConflictDomainError, NotFoundDomainError
+
+
+class CreateUserService:
+    def __init__(self, repo: UserRepository, uuid_generator: UuidGenerator, clock: Clock):
+        self.repo = repo
+        self.uuid_generator = uuid_generator
+        self.clock = clock
+
+    async def execute(
+        self,
+        *,
+        email: str,
+        password_hash: str,
+        first_name: str,
+        last_name: str,
+        display_name: str | None,
+        phone: str | None,
+        locale: str | None,
+        timezone: str | None,
+        actor_user_id: UUID | None,
+    ) -> UserDTO:
+        existing = await self.repo.get_by_email(email)
+        if existing:
+            raise ConflictDomainError("User with this email already exists")
+        now = self.clock.now()
+        user = User(
+            id=self.uuid_generator.new(),
+            status=UserStatus.ACTIVE,
+            email=email.lower().strip(),
+            password_hash=password_hash,
+            first_name=first_name.strip(),
+            last_name=last_name.strip(),
+            display_name=display_name,
+            phone=phone,
+            locale=locale,
+            timezone=timezone,
+            last_login_at=None,
+            created_at=now,
+            created_by_user_id=actor_user_id,
+            updated_at=now,
+            updated_by_user_id=actor_user_id,
+        )
+        user.validate()
+        await self.repo.add(user)
+        return to_user_dto(user)
+
+
+class GetUserService:
+    def __init__(self, repo: UserRepository):
+        self.repo = repo
+
+    async def execute(self, user_id: UUID) -> UserDTO:
+        user = await self.repo.get_by_id(user_id)
+        if not user:
+            raise NotFoundDomainError("User not found")
+        return to_user_dto(user)
+
+
+class ListUsersService:
+    def __init__(self, repo: UserRepository):
+        self.repo = repo
+
+    async def execute(self, *, status: str | None, company_id: UUID | None, q: str | None, page: int, page_size: int) -> tuple[list[UserDTO], int]:
+        users, total = await self.repo.list(status=status, company_id=company_id, q=q, page=page, page_size=page_size)
+        return [to_user_dto(user) for user in users], total
+
+
+class UpdateUserService:
+    def __init__(self, repo: UserRepository, clock: Clock):
+        self.repo = repo
+        self.clock = clock
+
+    async def execute(
+        self,
+        *,
+        user_id: UUID,
+        first_name: str | None,
+        last_name: str | None,
+        display_name: str | None,
+        phone: str | None,
+        locale: str | None,
+        timezone: str | None,
+        actor_user_id: UUID | None,
+    ) -> UserDTO:
+        user = await self.repo.get_by_id(user_id)
+        if not user:
+            raise NotFoundDomainError("User not found")
+        if first_name is not None:
+            user.first_name = first_name
+        if last_name is not None:
+            user.last_name = last_name
+        if display_name is not None:
+            user.display_name = display_name
+        if phone is not None:
+            user.phone = phone
+        if locale is not None:
+            user.locale = locale
+        if timezone is not None:
+            user.timezone = timezone
+        user.updated_at = self.clock.now()
+        user.updated_by_user_id = actor_user_id
+        user.validate()
+        await self.repo.update(user)
+        return to_user_dto(user)
+
+
+class TransitionUserStatusService:
+    def __init__(self, repo: UserRepository, clock: Clock):
+        self.repo = repo
+        self.clock = clock
+
+    async def execute(self, *, user_id: UUID, to_status: str, actor_user_id: UUID | None) -> UserDTO:
+        user = await self.repo.get_by_id(user_id)
+        if not user:
+            raise NotFoundDomainError("User not found")
+        user.transition_status(UserStatus(to_status))
+        user.updated_at = self.clock.now()
+        user.updated_by_user_id = actor_user_id
+        await self.repo.update(user)
+        return to_user_dto(user)
+
+--- app/modules/users/domain/__init__.py ---
+
+--- app/modules/users/domain/entities.py ---
+from dataclasses import dataclass
+from datetime import datetime
+from uuid import UUID
+
+from app.modules.users.domain.enums import UserStatus
+from app.shared.domain.base import AuditFields
+from app.shared.domain.exceptions import ValidationDomainError
+from app.shared.domain.status_transition import ensure_transition
+
+
+@dataclass(slots=True)
+class User(AuditFields):
+    status: UserStatus
+    email: str
+    password_hash: str
+    first_name: str
+    last_name: str
+    display_name: str | None
+    phone: str | None
+    locale: str | None
+    timezone: str | None
+    last_login_at: datetime | None
+
+    def validate(self) -> None:
+        if not self.email or "@" not in self.email:
+            raise ValidationDomainError("User email must be valid")
+        if not self.first_name:
+            raise ValidationDomainError("User first_name is required")
+        if not self.last_name:
+            raise ValidationDomainError("User last_name is required")
+
+    def transition_status(self, to_status: UserStatus) -> None:
+        allowed = {
+            UserStatus.INVITED: {UserStatus.ACTIVE, UserStatus.DEACTIVATED},
+            UserStatus.ACTIVE: {UserStatus.SUSPENDED, UserStatus.DEACTIVATED},
+            UserStatus.SUSPENDED: {UserStatus.ACTIVE, UserStatus.DEACTIVATED},
+            UserStatus.DEACTIVATED: set(),
+        }
+        ensure_transition(self.status.value, to_status.value, {s.value for s in allowed[self.status]})
+        self.status = to_status
+
+--- app/modules/users/domain/enums.py ---
+from enum import StrEnum
+
+
+class UserStatus(StrEnum):
+    INVITED = "invited"
+    ACTIVE = "active"
+    SUSPENDED = "suspended"
+    DEACTIVATED = "deactivated"
+
+--- app/modules/users/domain/repositories.py ---
+from abc import ABC, abstractmethod
+from uuid import UUID
+
+from app.modules.users.domain.entities import User
+
+
+class UserRepository(ABC):
+    @abstractmethod
+    async def add(self, user: User) -> None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_by_id(self, user_id: UUID) -> User | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def get_by_email(self, email: str) -> User | None:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def list(self, *, status: str | None, company_id: UUID | None, q: str | None, page: int, page_size: int) -> tuple[list[User], int]:
+        raise NotImplementedError
+
+    @abstractmethod
+    async def update(self, user: User) -> None:
+        raise NotImplementedError
+
+--- app/modules/users/infrastructure/__init__.py ---
+
+--- app/modules/users/infrastructure/mappers.py ---
+from uuid import UUID
+
+from app.modules.users.domain.entities import User
+from app.modules.users.domain.enums import UserStatus
+from app.modules.users.infrastructure.models import UserModel
+
+
+def to_domain(model: UserModel) -> User:
+    return User(
+        id=UUID(model.id),
+        status=UserStatus(model.status),
+        email=model.email,
+        password_hash=model.password_hash,
+        first_name=model.first_name,
+        last_name=model.last_name,
+        display_name=model.display_name,
+        phone=model.phone,
+        locale=model.locale,
+        timezone=model.timezone,
+        last_login_at=model.last_login_at,
+        created_at=model.created_at,
+        created_by_user_id=UUID(model.created_by_user_id) if model.created_by_user_id else None,
+        updated_at=model.updated_at,
+        updated_by_user_id=UUID(model.updated_by_user_id) if model.updated_by_user_id else None,
+    )
+
+
+def to_model(entity: User) -> UserModel:
+    return UserModel(
+        id=str(entity.id),
+        status=entity.status.value,
+        email=entity.email,
+        password_hash=entity.password_hash,
+        first_name=entity.first_name,
+        last_name=entity.last_name,
+        display_name=entity.display_name,
+        phone=entity.phone,
+        locale=entity.locale,
+        timezone=entity.timezone,
+        last_login_at=entity.last_login_at,
+        created_at=entity.created_at,
+        created_by_user_id=str(entity.created_by_user_id) if entity.created_by_user_id else None,
+        updated_at=entity.updated_at,
+        updated_by_user_id=str(entity.updated_by_user_id) if entity.updated_by_user_id else None,
+    )
+
+--- app/modules/users/infrastructure/models.py ---
+from sqlalchemy import DateTime, String
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.shared.infrastructure.db.base import Base
+
+
+class UserModel(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    status: Mapped[str] = mapped_column(String(32), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    first_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    last_name: Mapped[str] = mapped_column(String(120), nullable=False)
+    display_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    phone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    locale: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    timezone: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    last_login_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=False)
+    created_by_user_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    updated_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), nullable=False)
+    updated_by_user_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+--- app/modules/users/infrastructure/repositories.py ---
+from uuid import UUID
+
+from sqlalchemy import func, or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.users.domain.entities import User
+from app.modules.users.domain.repositories import UserRepository
+from app.modules.users.infrastructure.mappers import to_domain
+from app.modules.users.infrastructure.models import UserModel
+
+
+class SqlAlchemyUserRepository(UserRepository):
+    def __init__(self, session: AsyncSession):
+        self.session = session
+
+    async def add(self, user: User) -> None:
+        from app.modules.users.infrastructure.mappers import to_model
+        self.session.add(to_model(user))
+        await self.session.commit()
+
+    async def get_by_id(self, user_id: UUID) -> User | None:
+        stmt = select(UserModel).where(UserModel.id == str(user_id))
+        result = await self.session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return to_domain(model) if model else None
+
+    async def get_by_email(self, email: str) -> User | None:
+        stmt = select(UserModel).where(UserModel.email == email.lower().strip())
+        result = await self.session.execute(stmt)
+        model = result.scalar_one_or_none()
+        return to_domain(model) if model else None
+
+    async def list(self, *, status: str | None, company_id: UUID | None, q: str | None, page: int, page_size: int) -> tuple[list[User], int]:
+        stmt = select(UserModel)
+        count_stmt = select(func.count()).select_from(UserModel)
+
+        if status:
+            stmt = stmt.where(UserModel.status == status)
+            count_stmt = count_stmt.where(UserModel.status == status)
+
+        if q:
+            pattern = f"%{q}%"
+            filter_expr = or_(
+                UserModel.email.ilike(pattern),
+                UserModel.first_name.ilike(pattern),
+                UserModel.last_name.ilike(pattern),
+            )
+            stmt = stmt.where(filter_expr)
+            count_stmt = count_stmt.where(filter_expr)
+
+        stmt = stmt.order_by(UserModel.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
+
+        rows = (await self.session.execute(stmt)).scalars().all()
+        total = (await self.session.execute(count_stmt)).scalar_one()
+
+        return [to_domain(row) for row in rows], int(total)
+
+    async def update(self, user: User) -> None:
+        model = await self.session.get(UserModel, str(user.id))
+        if model is None:
+            return
+        model.password_hash = user.password_hash
+        model.status = user.status.value
+        model.first_name = user.first_name
+        model.last_name = user.last_name
+        model.display_name = user.display_name
+        model.phone = user.phone
+        model.locale = user.locale
+        model.timezone = user.timezone
+        model.last_login_at = user.last_login_at
+        model.updated_at = user.updated_at
+        model.updated_by_user_id = str(user.updated_by_user_id) if user.updated_by_user_id else None
+        await self.session.commit()
+
+--- app/modules/users/presentation/__init__.py ---
+
+--- app/modules/users/presentation/dependencies.py ---
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.users.application.services import (
+    CreateUserService,
+    GetUserService,
+    ListUsersService,
+    TransitionUserStatusService,
+    UpdateUserService,
+)
+from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
+from app.shared.application.clock import Clock
+from app.shared.application.passwords import PasswordService
+from app.shared.application.uuid_generator import UuidGenerator
+from app.shared.infrastructure.db.session import get_db_session
+
+
+def get_user_repo(session: AsyncSession = Depends(get_db_session)) -> SqlAlchemyUserRepository:
+    return SqlAlchemyUserRepository(session)
+
+
+def get_create_user_service(repo: SqlAlchemyUserRepository = Depends(get_user_repo)) -> CreateUserService:
+    return CreateUserService(repo=repo, uuid_generator=UuidGenerator(), clock=Clock())
+
+
+def get_get_user_service(repo: SqlAlchemyUserRepository = Depends(get_user_repo)) -> GetUserService:
+    return GetUserService(repo=repo)
+
+
+def get_list_users_service(repo: SqlAlchemyUserRepository = Depends(get_user_repo)) -> ListUsersService:
+    return ListUsersService(repo=repo)
+
+
+def get_update_user_service(repo: SqlAlchemyUserRepository = Depends(get_user_repo)) -> UpdateUserService:
+    return UpdateUserService(repo=repo, clock=Clock())
+
+
+def get_transition_user_status_service(repo: SqlAlchemyUserRepository = Depends(get_user_repo)) -> TransitionUserStatusService:
+    return TransitionUserStatusService(repo=repo, clock=Clock())
+
+
+def get_password_service() -> PasswordService:
+    return PasswordService()
+
+--- app/modules/users/presentation/mappers.py ---
+from app.modules.users.application.dto import UserDTO
+from app.modules.users.presentation.schemas import UserData
+
+
+def to_user_data(dto: UserDTO) -> UserData:
+    return UserData(
+        id=dto.id,
+        status=dto.status,
+        email=dto.email,
+        firstName=dto.first_name,
+        lastName=dto.last_name,
+        displayName=dto.display_name,
+        phone=dto.phone,
+        locale=dto.locale,
+        timezone=dto.timezone,
+        lastLoginAt=dto.last_login_at,
+        createdAt=dto.created_at,
+        createdByUserId=dto.created_by_user_id,
+        updatedAt=dto.updated_at,
+        updatedByUserId=dto.updated_by_user_id,
+    )
+
+--- app/modules/users/presentation/router.py ---
+from uuid import UUID
+

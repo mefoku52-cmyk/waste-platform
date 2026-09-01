@@ -1,0 +1,700 @@
+app/modules/notifications/application/dto.py
+app/modules/notifications/application/services.py
+app/modules/notifications/domain/__init__.py
+app/modules/notifications/domain/entities.py
+app/modules/notifications/domain/enums.py
+app/modules/notifications/domain/repositories.py
+app/modules/notifications/infrastructure/__init__.py
+app/modules/notifications/infrastructure/mappers.py
+app/modules/notifications/infrastructure/models.py
+app/modules/notifications/infrastructure/repositories.py
+app/modules/notifications/presentation/__init__.py
+app/modules/notifications/presentation/dependencies.py
+app/modules/notifications/presentation/mappers.py
+app/modules/notifications/presentation/router.py
+app/modules/notifications/presentation/schemas.py
+app/modules/notifications/router.py
+app/modules/notifications/schemas.py
+app/modules/notifications/service.py
+app/modules/uploads/__init__.py
+app/modules/uploads/presentation/__init__.py
+app/modules/uploads/presentation/router.py
+app/modules/uploads/presentation/schemas.py
+app/modules/users/__init__.py
+app/modules/users/application/__init__.py
+app/modules/users/application/dto.py
+app/modules/users/application/mappers.py
+app/modules/users/application/services.py
+app/modules/users/domain/__init__.py
+app/modules/users/domain/entities.py
+app/modules/users/domain/enums.py
+app/modules/users/domain/repositories.py
+app/modules/users/infrastructure/__init__.py
+app/modules/users/infrastructure/mappers.py
+app/modules/users/infrastructure/models.py
+app/modules/users/infrastructure/repositories.py
+app/modules/users/presentation/__init__.py
+app/modules/users/presentation/dependencies.py
+app/modules/users/presentation/mappers.py
+app/modules/users/presentation/router.py
+app/modules/users/presentation/schemas.py
+app/shared/__init__.py
+app/shared/application/__init__.py
+app/shared/application/clock.py
+app/shared/application/interfaces.py
+app/shared/application/passwords.py
+app/shared/application/side_effects.py
+app/shared/application/uuid_generator.py
+app/shared/domain/__init__.py
+app/shared/domain/base.py
+app/shared/domain/exceptions.py
+app/shared/domain/ports/__init__.py
+app/shared/domain/ports/clock.py
+app/shared/domain/status_transition.py
+app/shared/infrastructure/__init__.py
+app/shared/infrastructure/database.py
+app/shared/infrastructure/db/__init__.py
+app/shared/infrastructure/db/base.py
+app/shared/infrastructure/db/register_models.py
+app/shared/infrastructure/db/session.py
+app/shared/infrastructure/email/sender.py
+app/shared/infrastructure/rate_limit.py
+app/shared/infrastructure/rate_limiter.py
+app/shared/infrastructure/security/__init__.py
+app/shared/infrastructure/security/jwt_exceptions.py
+app/shared/infrastructure/security/jwt_revocation_store.py
+app/shared/infrastructure/security/jwt_service.py
+app/shared/presentation/__init__.py
+app/shared/presentation/api_router.py
+app/shared/presentation/auth_dependencies.py
+app/shared/presentation/error_schemas.py
+app/shared/presentation/exception_handlers.py
+app/shared/presentation/health_router.py
+app/shared/presentation/metrics_router.py
+app/shared/presentation/schemas.py
+app/worker/__init__.py
+
+===== 09 API ROUTERS / ENDPOINT DECLARATIONS =====
+app/main.py:111:            app.include_router(router, prefix="/api/v1")
+app/main.py:78:            app.include_router(api_router)
+app/main.py:80:            app.include_router(api_router, prefix="/api/v1")
+app/modules/admin/presentation/router.py:20:router = APIRouter(prefix="/admin", tags=["admin-audit"])
+app/modules/admin/presentation/router.py:37:@router.get(
+app/modules/admin/presentation/router.py:58:@router.get(
+app/modules/admin/presentation/router.py:78:@router.get(
+app/modules/admin/presentation/router.py:91:@router.post(
+app/modules/analytics/presentation/router.py:125:@router.delete(
+app/modules/analytics/presentation/router.py:19:router = APIRouter(prefix="/analytics", tags=["analytics"])
+app/modules/analytics/presentation/router.py:36:@router.get(
+app/modules/analytics/presentation/router.py:55:@router.get(
+app/modules/analytics/presentation/router.py:68:@router.post(
+app/modules/analytics/presentation/router.py:94:@router.patch(
+app/modules/auth/presentation/router.py:114:@router.post(
+app/modules/auth/presentation/router.py:26:router = APIRouter(prefix="/auth", tags=["auth"])
+app/modules/auth/presentation/router.py:29:@router.post(
+app/modules/auth/presentation/router.py:48:@router.post(
+app/modules/auth/presentation/router.py:63:@router.post(
+app/modules/auth/presentation/router.py:73:@router.get(
+app/modules/auth/presentation/router.py:96:@router.post(
+app/modules/companies/presentation/router.py:118:@router.get(
+app/modules/companies/presentation/router.py:132:@router.patch(
+app/modules/companies/presentation/router.py:162:@router.patch(
+app/modules/companies/presentation/router.py:26:router = APIRouter(prefix="/companies", tags=["companies"])
+app/modules/companies/presentation/router.py:29:@router.get(
+app/modules/companies/presentation/router.py:68:@router.post(
+app/modules/company_memberships/presentation/router.py:23:router = APIRouter(tags=["company-memberships"])
+app/modules/company_memberships/presentation/router.py:26:@router.get(
+app/modules/company_memberships/presentation/router.py:48:@router.post(
+app/modules/company_memberships/presentation/router.py:70:@router.patch(
+app/modules/company_memberships/presentation/router.py:90:@router.patch(
+app/modules/compliance/presentation/router.py:102:@router.patch(
+app/modules/compliance/presentation/router.py:133:@router.delete(
+app/modules/compliance/presentation/router.py:21:router = APIRouter(prefix="/compliance", tags=["compliance"])
+app/modules/compliance/presentation/router.py:38:@router.get(
+app/modules/compliance/presentation/router.py:63:@router.get(
+app/modules/compliance/presentation/router.py:76:@router.post(
+app/modules/documents/presentation/router.py:121:@router.patch(
+app/modules/documents/presentation/router.py:155:@router.delete(
+app/modules/documents/presentation/router.py:21:router = APIRouter(prefix="/documents", tags=["documents"])
+app/modules/documents/presentation/router.py:55:@router.get(
+app/modules/documents/presentation/router.py:77:@router.get(
+app/modules/documents/presentation/router.py:94:@router.post(
+app/modules/inquiries/presentation/router.py:113:@router.get(
+app/modules/inquiries/presentation/router.py:129:@router.post(
+app/modules/inquiries/presentation/router.py:192:@router.patch(
+app/modules/inquiries/presentation/router.py:222:@router.patch(
+app/modules/inquiries/presentation/router.py:253:@router.delete(
+app/modules/inquiries/presentation/router.py:28:router = APIRouter(prefix="/inquiries", tags=["inquiries"])
+app/modules/inquiries/presentation/router.py:54:@router.get(
+app/modules/inquiries/presentation/router.py:73:@router.get(
+app/modules/inquiries/presentation/router.py:93:@router.get(
+app/modules/listings/presentation/router.py:126:@router.get(
+app/modules/listings/presentation/router.py:138:@router.post(
+app/modules/listings/presentation/router.py:165:@router.patch(
+app/modules/listings/presentation/router.py:202:@router.post(
+app/modules/listings/presentation/router.py:23:router = APIRouter(prefix="/listings", tags=["listings"])
+app/modules/listings/presentation/router.py:240:@router.delete(
+app/modules/listings/presentation/router.py:54:@router.get(
+app/modules/listings/presentation/router.py:76:@router.get(
+app/modules/listings/presentation/router.py:98:@router.get(
+app/modules/notifications/presentation/router.py:112:@router.post(
+app/modules/notifications/presentation/router.py:131:@router.post(
+app/modules/notifications/presentation/router.py:150:@router.delete(
+app/modules/notifications/presentation/router.py:20:router = APIRouter(prefix="/notifications", tags=["notifications"])
+app/modules/notifications/presentation/router.py:46:@router.get(
+app/modules/notifications/presentation/router.py:68:@router.get(
+app/modules/notifications/presentation/router.py:85:@router.post(
+app/modules/uploads/presentation/router.py:118:@router.get(
+app/modules/uploads/presentation/router.py:16:router = APIRouter(prefix="/uploads", tags=["uploads"])
+app/modules/uploads/presentation/router.py:45:@router.post(
+app/modules/uploads/presentation/router.py:91:@router.get(
+app/modules/users/presentation/router.py:113:@router.patch(
+app/modules/users/presentation/router.py:26:router = APIRouter(prefix="/users", tags=["users"])
+app/modules/users/presentation/router.py:29:@router.get(
+app/modules/users/presentation/router.py:50:@router.post(
+app/modules/users/presentation/router.py:75:@router.get(
+app/modules/users/presentation/router.py:89:@router.patch(
+app/shared/presentation/api_router.py:18:api_router = APIRouter()
+app/shared/presentation/api_router.py:21:api_router.include_router(auth_router)
+app/shared/presentation/api_router.py:22:api_router.include_router(users_router)
+app/shared/presentation/api_router.py:23:api_router.include_router(companies_router)
+app/shared/presentation/api_router.py:24:api_router.include_router(memberships_router)
+app/shared/presentation/api_router.py:26:api_router.include_router(admin_router)
+app/shared/presentation/api_router.py:27:api_router.include_router(analytics_router)
+app/shared/presentation/api_router.py:28:api_router.include_router(compliance_router)
+app/shared/presentation/api_router.py:29:api_router.include_router(documents_router)
+app/shared/presentation/api_router.py:30:api_router.include_router(inquiries_router)
+app/shared/presentation/api_router.py:31:api_router.include_router(listings_router)
+app/shared/presentation/api_router.py:32:api_router.include_router(notifications_router)
+app/shared/presentation/api_router.py:33:api_router.include_router(uploads_router)
+app/shared/presentation/health_router.py:3:router = APIRouter(tags=["health"])
+app/shared/presentation/health_router.py:5:@router.get("/health")
+app/shared/presentation/metrics_router.py:44:@router.get("/metrics", include_in_schema=False)
+app/shared/presentation/metrics_router.py:6:router = APIRouter(tags=["metrics"])
+
+===== 10 APPLICATION BOOTSTRAP =====
+--- app/main.py ---
+from __future__ import annotations
+
+import importlib
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.core.http_exception_handlers import register_http_exception_handlers
+
+logger = logging.getLogger("cmep.main")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(
+        "Starting CMEP app env=%s docs=%s db=%s",
+        settings.app_env,
+        settings.ENABLE_PUBLIC_DOCS,
+        settings.DATABASE_URL,
+    )
+    yield
+    logger.info("Stopping CMEP app")
+
+
+def _cors_origins() -> list[str]:
+    if isinstance(settings.CORS_ORIGINS, list):
+        return settings.CORS_ORIGINS
+    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
+        return [settings.CORS_ORIGINS.strip()]
+    return ["http://127.0.0.1:3001", "http://localhost:3001"]
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        description=settings.app_description,
+        version=settings.app_version,
+        docs_url="/docs" if settings.ENABLE_PUBLIC_DOCS else None,
+        redoc_url="/redoc" if settings.ENABLE_PUBLIC_DOCS else None,
+        openapi_url="/openapi.json" if settings.ENABLE_PUBLIC_DOCS else None,
+        root_path=settings.ROOT_PATH or "",
+        lifespan=lifespan,
+    )
+
+    register_http_exception_handlers(app)
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    mounted: list[str] = []
+    skipped: list[dict[str, str]] = []
+
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "service": settings.app_name,
+            "version": settings.app_version,
+            "env": settings.app_env,
+            "database_url": settings.DATABASE_URL,
+            "mounted_routers": mounted,
+            "skipped_routers": skipped,
+        }
+
+    try:
+        from app.shared.presentation.api_router import api_router
+
+        pref = getattr(api_router, "prefix", "") or ""
+        if pref.startswith("/api"):
+            app.include_router(api_router)
+        else:
+            app.include_router(api_router, prefix="/api/v1")
+        mounted.append("shared.api_router")
+    except Exception as e:
+        logger.exception("Failed to include shared.api_router")
+        skipped.append({"module": "shared.api_router", "error": str(e)})
+
+    module_routers = [
+        "app.modules.auth.presentation.router",
+        "app.modules.users.presentation.router",
+        "app.modules.companies.presentation.router",
+        "app.modules.company_memberships.presentation.router",
+        "app.modules.listings.presentation.router",
+        "app.modules.inquiries.presentation.router",
+        "app.modules.documents.presentation.router",
+        "app.modules.compliance.presentation.router",
+        "app.modules.notifications.presentation.router",
+        "app.modules.analytics.presentation.router",
+        "app.modules.admin.presentation.router",
+        "app.modules.uploads.presentation.router",
+    ]
+
+    for mod_path in module_routers:
+        tag = mod_path.split(".")[2]
+        try:
+            mod = importlib.import_module(mod_path)
+            router = getattr(mod, "router", None)
+            if router is None:
+                skipped.append({"module": tag, "error": "router attribute missing"})
+                logger.warning("Router missing for module=%s", tag)
+                continue
+
+            app.include_router(router, prefix="/api/v1")
+            mounted.append(tag)
+        except Exception as ex:
+            logger.exception("Failed to include router module=%s", tag)
+            skipped.append({"module": tag, "error": str(ex)})
+
+    app.state.mounted_routers = mounted
+    app.state.skipped_routers = skipped
+
+    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+
+    return app
+
+
+app = create_app()
+
+--- app/core/config.py ---
+from __future__ import annotations
+
+import json
+from typing import List, Union
+
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
+
+
+class JWTSettings(BaseModel):
+    secret_key: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 14
+    secret: str = ""
+    expire_minutes: int = 60
+
+    def model_post_init(self, __context) -> None:
+        if not self.secret:
+            object.__setattr__(self, "secret", self.secret_key)
+
+
+class RedisSettings(BaseModel):
+    url: str = "memory://"
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    enabled: bool = False
+
+
+class RateLimitSettings(BaseModel):
+    enabled: bool = False
+    limit: int = 10
+    period: int = 60
+    requests: int = 100
+    window_seconds: int = 60
+
+
+class DatabaseSettings(BaseModel):
+    url: str = SQLITE_DEFAULT
+    async_url: str = SQLITE_DEFAULT
+    echo: bool = False
+    pool_size: int = 5
+    pool_pre_ping: bool = True
+
+    def model_post_init(self, __context) -> None:
+        if not self.async_url:
+            object.__setattr__(self, "async_url", self.url)
+
+
+def _is_placeholder_db_value(raw: str | None) -> bool:
+    value = str(raw or "").strip()
+    return (
+        not value
+        or "{" in value
+        or "}" in value
+        or "POSTGRES_" in value
+        or value.lower() in {"none", "null", "undefined"}
+    )
+
+
+def _normalize_database_url(raw: str) -> str:
+    value = raw.strip()
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("sqlite:///"):
+        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    return value
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+        populate_by_name=True,
+    )
+
+    app_name: str = "CMEP Platform"
+    app_version: str = "0.1.0"
+    app_description: str = "CMEP - Platform for circular materials exchange"
+
+    app_env: str = Field(default="development", alias="APP_ENV")
+    DEBUG: bool = True
+    ENABLE_PUBLIC_DOCS: bool = True
+    ROOT_PATH: str = ""
+
+    HOST: str = "0.0.0.0"
+    PORT: int = 8001
+
+    CORS_ORIGINS: Union[List[str], str] = Field(
+        default_factory=lambda: [
+            "http://127.0.0.1:3001",
+            "http://localhost:3001",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    )
+
+    DATABASE_URL: str = SQLITE_DEFAULT
+
+    JWT_SECRET_KEY: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+
+    jwt: JWTSettings | None = None
+    redis: RedisSettings = Field(default_factory=RedisSettings)
+    rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
+    database: DatabaseSettings | None = None
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
+    NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    @property
+    def is_development(self) -> bool:
+        return self.app_env.lower() in {"development", "dev", "local", "test"}
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors(cls, value):
+        if value is None or value == "":
+            return ["http://127.0.0.1:3001", "http://localhost:3001"]
+        if isinstance(value, list):
+            return value
+
+        text = str(value).strip()
+        if text.startswith("["):
+            return json.loads(text)
+
+        return [item.strip() for item in text.split(",") if item.strip()]
+
+    def model_post_init(self, __context) -> None:
+        raw_db = str(self.DATABASE_URL or "").strip()
+
+        if _is_placeholder_db_value(raw_db):
+            if self.is_development:
+                database_url = SQLITE_DEFAULT
+            else:
+                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+        else:
+            database_url = _normalize_database_url(raw_db)
+
+        object.__setattr__(self, "DATABASE_URL", database_url)
+        object.__setattr__(
+            self,
+            "database",
+            DatabaseSettings(
+                url=database_url,
+                async_url=database_url,
+            ),
+        )
+
+        if self.jwt is None:
+            object.__setattr__(
+                self,
+                "jwt",
+                JWTSettings(
+                    secret_key=self.JWT_SECRET_KEY,
+                    secret=self.JWT_SECRET_KEY,
+                    algorithm=self.JWT_ALGORITHM,
+                    access_token_expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    refresh_token_expire_days=self.REFRESH_TOKEN_EXPIRE_DAYS,
+                ),
+            )
+
+
+settings = Settings()
+
+--- app/core/http_exception_handlers.py ---
+from fastapi import Request
+from fastapi.responses import JSONResponse
+
+from app.shared.domain.exceptions import (
+    NotFoundDomainError,
+    UnauthorizedDomainError,
+    ValidationDomainError,
+)
+
+
+def register_http_exception_handlers(app):
+    @app.exception_handler(UnauthorizedDomainError)
+    async def unauthorized_domain_handler(request: Request, exc: UnauthorizedDomainError):
+        return JSONResponse(
+            status_code=401,
+            content={"detail": str(exc) or "Unauthorized"},
+        )
+
+    @app.exception_handler(NotFoundDomainError)
+    async def not_found_domain_handler(request: Request, exc: NotFoundDomainError):
+        return JSONResponse(
+            status_code=404,
+            content={"detail": str(exc) or "Not found"},
+        )
+
+    @app.exception_handler(ValidationDomainError)
+    async def validation_domain_handler(request: Request, exc: ValidationDomainError):
+        return JSONResponse(
+            status_code=422,
+            content={"detail": str(exc) or "Validation error"},
+        )
+
+--- app/shared/presentation/api_router.py ---
+from fastapi import APIRouter
+
+from app.modules.auth.presentation.router import router as auth_router
+from app.modules.users.presentation.router import router as users_router
+from app.modules.companies.presentation.router import router as companies_router
+from app.modules.company_memberships.presentation.router import router as memberships_router
+
+from app.modules.admin.presentation.router import router as admin_router
+from app.modules.analytics.presentation.router import router as analytics_router
+from app.modules.compliance.presentation.router import router as compliance_router
+from app.modules.documents.presentation.router import router as documents_router
+from app.modules.inquiries.presentation.router import router as inquiries_router
+from app.modules.listings.presentation.router import router as listings_router
+from app.modules.notifications.presentation.router import router as notifications_router
+from app.modules.uploads.presentation.router import router as uploads_router
+
+
+api_router = APIRouter()
+
+
+api_router.include_router(auth_router)
+api_router.include_router(users_router)
+api_router.include_router(companies_router)
+api_router.include_router(memberships_router)
+
+api_router.include_router(admin_router)
+api_router.include_router(analytics_router)
+api_router.include_router(compliance_router)
+api_router.include_router(documents_router)
+api_router.include_router(inquiries_router)
+api_router.include_router(listings_router)
+api_router.include_router(notifications_router)
+api_router.include_router(uploads_router)
+
+--- app/shared/presentation/auth_dependencies.py ---
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from app.modules.auth.application.services import GetCurrentAuthContextService
+from app.modules.auth.presentation.dependencies import get_auth_service
+from app.modules.auth.presentation.schemas import CurrentUserResponse
+
+bearer_scheme = HTTPBearer(auto_error=False)
+
+
+async def require_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    service: GetCurrentAuthContextService = Depends(get_auth_service),
+) -> CurrentUserResponse:
+    if credentials is None:
+        from app.shared.domain.exceptions import UnauthorizedDomainError
+        raise UnauthorizedDomainError("Authentication required")
+    return await service.execute(credentials.credentials)
+
+
+def _user_email(current_user) -> str:
+    u = getattr(current_user, "user", None)
+    if u is not None:
+        return (getattr(u, "email", None) or "").lower().strip()
+    return (getattr(current_user, "email", None) or "").lower().strip()
+
+
+def _role_codes(current_user) -> list[str]:
+    codes = getattr(current_user, "roleCodes", None) or getattr(current_user, "role_codes", None) or []
+    return [str(c).lower() for c in codes]
+
+
+async def require_admin(current_user: CurrentUserResponse = Depends(require_current_user)) -> CurrentUserResponse:
+    """Platform admin: email in PLATFORM_ADMIN_EMAILS or role code admin."""
+    from app.core.config import settings
+    from app.shared.domain.exceptions import ForbiddenDomainError
+
+    email = _user_email(current_user)
+    raw = getattr(settings, "platform_admin_emails", None)
+    if raw is None:
+        import os
+        raw = os.getenv("PLATFORM_ADMIN_EMAILS", "admin@cmep-bootstrap.dev")
+    admins = {e.strip().lower() for e in str(raw).split(",") if e.strip()}
+    codes = _role_codes(current_user)
+    if email in admins or "admin" in codes or "platform_admin" in codes:
+        return current_user
+    raise ForbiddenDomainError("Admin access required")
+
+===== 11 AUTHENTICATION / SECURITY =====
+--- app/modules/auth/__init__.py ---
+
+--- app/modules/auth/application/__init__.py ---
+
+--- app/modules/auth/application/dto.py ---
+from dataclasses import dataclass
+
+from app.modules.users.application.dto import UserDTO
+
+
+@dataclass(slots=True)
+class AuthTokenPairDTO:
+    access_token: str
+    refresh_token: str
+    token_type: str
+    expires_in: int
+
+
+@dataclass(slots=True)
+class CurrentAuthContextDTO:
+    user: UserDTO
+    role_codes: list[str]
+    memberships: list[dict]
+
+--- app/modules/auth/application/password_reset.py ---
+"""Password reset via Redis token + optional SMTP."""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import secrets
+from uuid import UUID
+
+from app.core.config import settings
+from app.modules.users.domain.repositories import UserRepository
+from app.shared.application.passwords import PasswordService
+from app.shared.infrastructure.email.sender import send_email
+from app.shared.infrastructure.security.jwt_service import JwtService
+
+logger = logging.getLogger(__name__)
+
+RESET_PREFIX = "pwdreset:"
+RESET_TTL_SECONDS = 60 * 30
+
+
+def _token_digest(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+class PasswordResetService:
+    _mem: dict = {}
+
+    def __init__(
+        self,
+        user_repo: UserRepository,
+        password_service: PasswordService,
+        jwt_service: JwtService,
+        redis_client=None,
+    ):
+        self.user_repo = user_repo
+        self.password_service = password_service
+        self.jwt_service = jwt_service
+        self.redis = redis_client
+
+    def _get_redis(self):
+        if self.redis is not None:
+            return self.redis
+        try:
+            import redis
+
+            host = getattr(settings.redis, "host", "localhost")
+            port = getattr(settings.redis, "port", 6379)
+            url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
+            self.redis = redis.from_url(url, decode_responses=True)
+            self.redis.ping()
+            return self.redis
+        except Exception:
+            self.redis = None
+            return None
+
+    def _store_token(self, token: str, user_id: str) -> None:
+        from app.shared.domain.exceptions import ValidationDomainError
+
+        key = RESET_PREFIX + _token_digest(token)
+        r = self._get_redis()
+        if r is not None:
+            r.set(key, user_id, ex=RESET_TTL_SECONDS)
+            return
+
+        if settings.is_development:
+            logger.warning("Password reset using in-memory fallback storage")
+            PasswordResetService._mem[key] = user_id
+            return
+
+        logger.error("Password reset unavailable: Redis is not reachable")
