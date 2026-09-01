@@ -179,3 +179,15 @@ __pycache__/
 htmlcov/
 reports/repo-hygiene/
 # --- end local forensic and generated artifact ignores ---
+
+# Local operational archives and Termux-only helpers
+__triage_archive/
+
+# Local operational archives and Termux-only helpers
+_local_archive/
+
+# Local operational archives and Termux-only helpers
+final_untracked_triage*.sh
+
+# Local operational archives and Termux-only helpers
+audit_remaining_untracked_tools.sh
