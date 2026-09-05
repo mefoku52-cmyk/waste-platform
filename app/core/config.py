@@ -11,7 +11,7 @@ SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
 
 
 class JWTSettings(BaseModel):
-    secret_key: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 14
@@ -93,6 +93,9 @@ class Settings(BaseSettings):
     app_env: str = Field(default="development", alias="APP_ENV")
     DEBUG: bool = True
     ENABLE_PUBLIC_DOCS: bool = True
+    ENABLE_METRICS: bool = False
+    METRICS_ALLOWED_IPS: str = "127.0.0.1,::1,localhost"
+    PLATFORM_ADMIN_EMAILS: str = "admin@cmep-bootstrap.dev"
     ROOT_PATH: str = ""
 
     HOST: str = "0.0.0.0"
@@ -109,7 +112,7 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = SQLITE_DEFAULT
 
-    JWT_SECRET_KEY: str = "cmep-dev-change-me-to-at-least-32-chars-long-secret"
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 14
