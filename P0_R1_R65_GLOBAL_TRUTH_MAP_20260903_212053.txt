@@ -1,0 +1,1370 @@
+
+============================================================
+0. GLOBAL RECONSTRUCTION HEADER
+============================================================
+DATE=2026-09-03T21:20:53+0200
+PROJECT=/data/data/com.termux/files/home/waste-platform
+GIT_ROOT=/data/data/com.termux/files/home/waste-platform
+GIT_BRANCH=main
+GIT_HEAD=3baeef8
+
+============================================================
+1. EXISTING MASTER MAPS
+============================================================
+LATEST_DECISION_MAP=/data/data/com.termux/files/home/waste-platform/P0_R1_R65_DECISION_MAP_20260903_105724.txt
+LATEST_META_AUDIT=/data/data/com.termux/files/home/waste-platform/P0_R1_R65_META_AUDIT_20260903_105537.txt
+
+--- DECISION SIGNALS ---
+R1: PRESENT
+R2: PRESENT
+R3: PRESENT
+R4: PRESENT
+R5: PRESENT
+R6: PRESENT
+R7: PRESENT
+R8: PRESENT
+R9: PRESENT
+R10: PRESENT
+R11: PRESENT
+R12: PRESENT
+R13: PRESENT
+R14: PRESENT
+R15: PRESENT
+R16: PRESENT
+R17: PRESENT
+R18: PRESENT
+R19: PRESENT
+R20: PRESENT
+R21: PRESENT
+R22: PRESENT
+R23: PRESENT
+R24: PRESENT
+R25: PRESENT
+R26: PRESENT
+R27: PRESENT
+R28: PRESENT
+R29: PRESENT
+R30: PRESENT
+R31: PRESENT
+R32: PRESENT
+R33: PRESENT
+R34: PRESENT
+R35: PRESENT
+R36: PRESENT
+R37: PRESENT
+R38: PRESENT
+R39: PRESENT
+R40: PRESENT
+R41: PRESENT
+R42: PRESENT
+R43: PRESENT
+R44: PRESENT
+R45: PRESENT
+R46: PRESENT
+R47: PRESENT
+R48: PRESENT
+R49: PRESENT
+R50: PRESENT
+R51: PRESENT
+R52: PRESENT
+R53: PRESENT
+R54: PRESENT
+R55: PRESENT
+R56: PRESENT
+R57: NOT_FOUND
+R58: NOT_FOUND
+R59: NOT_FOUND
+R60: PRESENT
+R61: PRESENT
+R62: NOT_FOUND
+R63: NOT_FOUND
+R64: NOT_FOUND
+R65: PRESENT
+
+============================================================
+2. CURRENT R1-R65 ARTIFACT MATRIX
+============================================================
+R     FILES    REPORTS  SCRIPTS  LATEST_ARTIFACT
+R1    27       15       12       /data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+R2    17       7        10       /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt
+R3    61       8        53       /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt
+R4    13       7        6        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt
+R5    15       7        8        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt
+R6    12       7        5        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt
+R7    13       7        6        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt
+R8    14       7        7        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt
+R9    9        6        3        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt
+R10   9        6        3        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt
+R11   7        6        1        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt
+R12   3        2        1        /data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r12_files.txt
+R13   2        1        1        /data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+R14   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r14_secret_provenance_analyzer_consistency_closure.txt
+R15   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r15_secret_provenance_expected_count_closure.txt
+R16   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r16_secret_provenance_final_lineage_closure.txt
+R17   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r17_secret_provenance_false_positive_closure.txt
+R18   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r18_secret_provenance_stability_gate.txt
+R19   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r19_secret_provenance_parser_reconciliation.txt
+R20   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r20_secret_provenance_semantic_reconciliation.txt
+R21   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r21_secret_provenance_deterministic_parser_closure.txt
+R22   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r22_secret_provenance_semantic_parser_final_closure.txt
+R23   1        0        1        /data/data/com.termux/files/home/waste-platform/phase_p0_02_r23_secret_provenance_parser_probe.sh
+R24   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r24_secret_provenance_ground_truth_closure.txt
+R25   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r25_secret_provenance_ground_truth_deterministic.txt
+R26   13       4        8        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+R27   7        2        4        /data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+R28   2        1        1        /data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+R29   2        1        1        /data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh
+R30   4        2        2        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+R31   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+R32   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r32_secret_output_false_positive_locator_gate.txt
+R33   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r33_secret_provenance_final_classification_gate.txt
+R34   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r34_secret_provenance_scope_corrected_gate.txt
+R35   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r35_secret_provenance_final_integrity_gate.txt
+R36   2        1        1        /data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+R37   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r37_production_readiness_chain_discovery_gate.txt
+R38   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r38_production_readiness_normalized_ledger_gate.txt
+R39   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r39_production_readiness_supersession_ledger_gate.txt
+R40   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r40_production_readiness_deterministic_ledger_gate.txt
+R41   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r41_production_readiness_ledger_closure_gate.txt
+R42   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r42_real_production_readiness_gate.txt
+R43   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r43_production_gap_classification_gate.txt
+R44   2        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r44_unsafe_bind_blocker_locator_gate.txt
+R45   6        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r45_application_host_dataflow_locator_gate.txt
+R46   8        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt
+R47   7        1        1        /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r47_production_reload_dataflow_gate.txt
+R48   8        2        1        /data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt
+R49   2        1        1        /data/data/com.termux/files/home/waste-platform/p0_03_r49_ci_production_deployment_authority_gate.txt
+R50   2        1        1        /data/data/com.termux/files/home/waste-platform/p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+R51   2        1        1        /data/data/com.termux/files/home/waste-platform/p0_03_r51_production_deployment_safety_authority_gate.txt
+R52   2        1        1        /data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+R53   2        1        1        /data/data/com.termux/files/home/waste-platform/p0_03_r53_production_recovery_authority_implementation.txt
+R54   4        2        2        /data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+R55   1        1        0        /data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt
+R56   1        1        0        /data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt
+R57   0        0        0        NONE
+R58   0        0        0        NONE
+R59   0        0        0        NONE
+R60   3        0        1        /data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh
+R61   4        0        2        /data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/docker-compose.yml
+R62   0        0        0        NONE
+R63   0        0        0        NONE
+R64   0        0        0        NONE
+R65   14       8        6        /data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+
+============================================================
+3. EXECUTION / DECISION SIGNALS PER R
+============================================================
+
+R1  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:223:LATEST_STATUS=UNKNOWN
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:224:LATEST_RESULT=UNKNOWN
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:225:LATEST_EXIT_CODE=UNKNOWN
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:230:OPEN_REVIEW=YES
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:242:LATEST_STATUS=UNKNOWN
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:243:LATEST_RESULT=UNKNOWN
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:244:LATEST_EXIT_CODE=UNKNOWN
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt:249:OPEN_REVIEW=YES
+
+R2  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:363:P0_01_R2_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:364:RESULT=P0_01_R2_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:365:    echo "P0_01_R2_STATUS=REVIEW" | tee -a "$REPORT"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:366:    echo "RESULT=P0_01_R2_PRODUCTION_AUTHORITY_REVIEW_REQUIRED" | tee -a "$REPORT"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:367:    echo "RESULT=LEGACY_ENV_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:368:    echo "RESULT=FINAL_FIX_HEREDOC_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:369:    echo "RESULT=FINAL_FIX_HEREDOC_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r2_all_text.txt:370:    echo "RESULT=R3_11_R2_CI_DOCUMENTATION_REVIEW_REQUIRED"
+
+R3  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:419:    echo "RESULT=R3_11_R6_DOCUMENTATION_CANONICALIZATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:420:    echo "R7_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:421:    echo "RESULT=R3_11_R7_LEGACY_SCRIPT_WRITE_PATH_FINAL_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:422:    echo "R7_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:423:    echo "RESULT=R3_11_R7_LEGACY_SCRIPT_WRITE_PATH_RECHECK_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:424:    echo "R8_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:425:    echo "RESULT=R3_11_R8_FINAL_READ_ONLY_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r3_all_text.txt:426:    echo "PROJECT_STATUS=R3_11_CLOSURE_PENDING_REVIEW"
+
+R4  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:330:P0_01_R2_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:331:RESULT=P0_01_R2_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:332:    RESULT="VALUE_EQUALITY_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:333:    echo "RESULT=LEGACY_ENV_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:334:    echo "RESULT=R3_11_R4_PREFLIGHT_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:335:    echo "R5_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:336:    echo "R5_RESULT=R3_11_R5_CI_TEST_AUTHORITY_SEPARATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r4_all_text.txt:337:    echo "RESULT=R3_11_R5_CI_TEST_AUTHORITY_SEPARATION_REVIEW_REQUIRED"
+
+R5  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:322:echo "R5_OUTLIER_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:323:echo "RESULT=R3_11_R5_OUTLIER_CHECK_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:324:    echo "R5_REVIEW_STATUS=AUTHORITATIVE_OUTLIER_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:325:    echo "RESULT=R3_11_R5_REVIEW_AUTHORITATIVE_OUTLIER_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:326:    echo "R5_TARGETED_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:327:    echo "RESULT=R3_11_R5_TARGETED_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:328:echo "R5_TARGETED_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r5_all_text.txt:329:echo "RESULT=R3_11_R5_TARGETED_CLOSURE_REVIEW_REQUIRED"
+
+R6  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:311:CLASSIFICATION=p0_02:R5:SUPERSEDED|STATUS=REVIEW|REPORT=p0_02_r5_secret_wiring_semantic_closure.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:312:CLASSIFICATION=p0_03:R39:SUPERSEDED|STATUS=REVIEW|REPORT=p0_03_r39_production_readiness_supersession_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:313:P0_03_R40_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:314:RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:316:    RESULT="P0_02_R6_SECRET_WIRING_CONTEXT_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:317:    echo "RESULT=LEGACY_WRITE_PATH_PROVENANCE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:318:    echo "R6_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r6_all_text.txt:319:    echo "RESULT=R3_11_R6_DOCUMENTATION_CANONICALIZATION_REVIEW_REQUIRED"
+
+R7  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:321:    echo "FAIL=CANONICAL_REFRESH_REPLACEMENT_INCOMPLETE"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:322:    echo "RESULT=LEGACY_WRITE_PATH_CANONICAL_REMEDIATION_INCOMPLETE"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:323:    echo "RESULT=FINAL_FIX_HEREDOC_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:324:    echo "RESULT=FINAL_FIX_HEREDOC_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:325:    echo "R7_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:326:    echo "RESULT=R3_11_R7_LEGACY_SCRIPT_WRITE_PATH_FINAL_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:327:    echo "R7_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r7_all_text.txt:328:    echo "RESULT=R3_11_R7_LEGACY_SCRIPT_WRITE_PATH_RECHECK_REVIEW_REQUIRED"
+
+R8  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:417:echo "RESULT=P0_02_R1_SECRET_ASSIGNMENT_SEMANTIC_BOUNDARY_REVIEW_REQUIRED" | tee -a "$REPORT"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:418:    RESULT="P0_02_R8_COMPOSE_SECRET_CONTEXT_BOUNDARY_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:419:    echo "RESULT=FINAL_FIX_HEREDOC_FORENSIC_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:420:    echo "RESULT=FINAL_FIX_HEREDOC_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:421:    echo "RESULT=FINAL_FIX_HEREDOC_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:422:    echo "R8_STATUS=REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:423:    echo "RESULT=R3_11_R8_FINAL_READ_ONLY_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r8_all_text.txt:424:    echo "PROJECT_STATUS=R3_11_CLOSURE_PENDING_REVIEW"
+
+R9  | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:316:CLASSIFICATION=p0_02:R32:SUPERSEDED|STATUS=REVIEW|REPORT=p0_02_r32_secret_output_false_positive_locator_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:317:CLASSIFICATION=p0_02:R5:SUPERSEDED|STATUS=REVIEW|REPORT=p0_02_r5_secret_wiring_semantic_closure.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:318:CLASSIFICATION=p0_03:R39:SUPERSEDED|STATUS=REVIEW|REPORT=p0_03_r39_production_readiness_supersession_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:319:P0_03_R40_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:320:RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:322:    RESULT="P0_02_R9_RUNTIME_SECRET_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:323:    echo "RESULT=R3_10_R9_PRODUCTION_ENV_TTL_PREFLIGHT_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r9_all_text.txt:324:    echo "RESULT=R3_10_R9_PRODUCTION_ENV_TTL_PREFLIGHT_REVIEW_REQUIRED"
+
+R10 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:282:CLASSIFICATION=p0_03:R39:SUPERSEDED|STATUS=REVIEW|REPORT=p0_03_r39_production_readiness_supersession_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:283:P0_03_R40_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:284:RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:286:    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:287:    echo "RESULT=R3_10_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:289:    echo "RESULT=R3_10_R10_PRODUCTION_ENV_TTL_REMEDIATION_PRECONDITION_FAILED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:290:    echo "RESULT=R3_10_R10_PRODUCTION_ENV_TTL_CANONICAL_REMEDIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r10_all_text.txt:291:    echo "RESULT=R3_10_R10_V1_PRODUCTION_ENV_TTL_VERIFICATION_REVIEW_REQUIRED"
+
+R11 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:281:CLASSIFICATION=p0_02:R31:SUPERSEDED|STATUS=REVIEW|REPORT=p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:282:CLASSIFICATION=p0_02:R32:SUPERSEDED|STATUS=REVIEW|REPORT=p0_02_r32_secret_output_false_positive_locator_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:283:CLASSIFICATION=p0_02:R5:SUPERSEDED|STATUS=REVIEW|REPORT=p0_02_r5_secret_wiring_semantic_closure.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:284:CLASSIFICATION=p0_03:R39:SUPERSEDED|STATUS=REVIEW|REPORT=p0_03_r39_production_readiness_supersession_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:285:P0_03_R40_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:286:RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:288:    RESULT="P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/.closure_truth_20260903_120225/r11_all_text.txt:290:    RESULT="P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_REVIEW_REQUIRED"
+
+R12 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:441:    RESULT="P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:442:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:444:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:445:    RESULT="P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:446:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:449:echo "P0_02_R12_STATUS=$STATUS" | tee -a "$REPORT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:450:echo "RESULT=$RESULT" | tee -a "$REPORT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh:451:echo "EXIT_CODE=$EXIT_CODE" | tee -a "$REPORT"
+
+R13 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:219:    RESULT="P0_02_R13_COMPOSE_SECRET_PROVENANCE_SEMANTIC_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:220:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:222:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:223:    RESULT="P0_02_R13_COMPOSE_SECRET_PROVENANCE_SEMANTIC_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:224:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:227:echo "P0_02_R13_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:228:echo "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh:229:echo "EXIT_CODE=$EXIT_CODE"
+
+R14 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:477:    RESULT="P0_02_R14_SECRET_PROVENANCE_ANALYZER_CONSISTENCY_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:478:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:480:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:481:    RESULT="P0_02_R14_SECRET_PROVENANCE_ANALYZER_CONSISTENCY_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:482:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:485:log "P0_02_R14_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:486:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh:487:log "EXIT_CODE=$EXIT_CODE"
+
+R15 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:383:    RESULT="P0_02_R15_SECRET_PROVENANCE_EXPECTED_COUNT_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:384:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:386:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:387:    RESULT="P0_02_R15_SECRET_PROVENANCE_EXPECTED_COUNT_CLOSURE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:388:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:391:log "P0_02_R15_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:392:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh:393:log "EXIT_CODE=$EXIT_CODE"
+
+R16 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:341:    RESULT="P0_02_R16_SECRET_PROVENANCE_FINAL_LINEAGE_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:342:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:344:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:345:    RESULT="P0_02_R16_SECRET_PROVENANCE_FINAL_LINEAGE_CLOSURE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:346:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:349:log "P0_02_R16_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:350:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh:351:log "EXIT_CODE=$EXIT_CODE"
+
+R17 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:399:    RESULT="P0_02_R17_SECRET_PROVENANCE_FALSE_POSITIVE_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:400:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:402:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:403:    RESULT="P0_02_R17_SECRET_PROVENANCE_FALSE_POSITIVE_CLOSURE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:404:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:407:log "P0_02_R17_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:408:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh:409:log "EXIT_CODE=$EXIT_CODE"
+
+R18 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:425:    RESULT="P0_02_R18_SECRET_PROVENANCE_STABILITY_GATE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:426:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:428:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:429:    RESULT="P0_02_R18_SECRET_PROVENANCE_STABILITY_GATE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:430:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:433:log "P0_02_R18_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:434:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh:435:log "EXIT_CODE=$EXIT_CODE"
+
+R19 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:510:    RESULT="P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:511:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:513:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:514:    RESULT="P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:515:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:518:log "P0_02_R19_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:519:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh:520:log "EXIT_CODE=$EXIT_CODE"
+
+R20 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:503:    RESULT="P0_02_R20_SECRET_PROVENANCE_SEMANTIC_RECONCILIATION_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:504:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:506:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:507:    RESULT="P0_02_R20_SECRET_PROVENANCE_SEMANTIC_RECONCILIATION_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:508:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:511:log "P0_02_R20_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:512:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh:513:log "EXIT_CODE=$EXIT_CODE"
+
+R21 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:560:    RESULT="P0_02_R21_SECRET_PROVENANCE_DETERMINISTIC_PARSER_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:561:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:563:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:564:    RESULT="P0_02_R21_SECRET_PROVENANCE_DETERMINISTIC_PARSER_CLOSURE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:565:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:568:log "P0_02_R21_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:569:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh:570:log "EXIT_CODE=$EXIT_CODE"
+
+R22 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:456:    RESULT="P0_02_R22_SECRET_PROVENANCE_SEMANTIC_PARSER_FINAL_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:457:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:459:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:460:    RESULT="P0_02_R22_SECRET_PROVENANCE_SEMANTIC_PARSER_FINAL_CLOSURE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:461:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:464:log "P0_02_R22_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:465:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh:466:log "EXIT_CODE=$EXIT_CODE"
+R23 | PRESENT | no explicit terminal signal found
+
+R24 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:684:    RESULT="P0_02_R24_SECRET_PROVENANCE_GROUND_TRUTH_CLOSURE_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:685:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:687:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:688:    RESULT="P0_02_R24_SECRET_PROVENANCE_GROUND_TRUTH_CLOSURE_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:689:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:692:log "P0_02_R24_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:693:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh:694:log "EXIT_CODE=$EXIT_CODE"
+
+R25 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:541:    RESULT="P0_02_R25_SECRET_PROVENANCE_GROUND_TRUTH_DETERMINISTIC_REVIEW_REQUIRED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:542:    EXIT_CODE=10
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:544:    STATUS="CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:545:    RESULT="P0_02_R25_SECRET_PROVENANCE_GROUND_TRUTH_DETERMINISTIC_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:546:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:549:log "P0_02_R25_STATUS=$STATUS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:550:log "RESULT=$RESULT"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh:551:log "EXIT_CODE=$EXIT_CODE"
+
+R26 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:438:    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:439:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:441:    STATUS="FAIL"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:442:    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_FAIL"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:443:    EXIT_CODE=2
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:456:echo "P0_02_R31_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:457:echo "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:458:echo "EXIT_CODE=${EXIT_CODE}"
+
+R27 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:215:    RESULT="P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:216:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:218:    STATUS="REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:219:    RESULT="P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:220:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:228:echo "P0_02_R28_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:229:echo "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:230:echo "EXIT_CODE=${EXIT_CODE}"
+
+R28 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:215:    RESULT="P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:216:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:218:    STATUS="REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:219:    RESULT="P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:220:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:228:echo "P0_02_R28_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:229:echo "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh:230:echo "EXIT_CODE=${EXIT_CODE}"
+
+R29 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:192:    RESULT="P0_02_R29_SECRET_PROVENANCE_CROSS_FILE_CONSISTENCY_CLEAN"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:193:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:195:    STATUS="REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:196:    RESULT="P0_02_R29_SECRET_PROVENANCE_CROSS_FILE_CONSISTENCY_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:197:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:207:echo "P0_02_R29_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:208:echo "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh:209:echo "EXIT_CODE=${EXIT_CODE}"
+
+R30 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:438:    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:439:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:441:    STATUS="FAIL"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:442:    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_FAIL"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:443:    EXIT_CODE=2
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:456:echo "P0_02_R31_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:457:echo "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:458:echo "EXIT_CODE=${EXIT_CODE}"
+
+R31 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:438:    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:439:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:441:    STATUS="FAIL"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:442:    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_FAIL"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:443:    EXIT_CODE=2
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:456:echo "P0_02_R31_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:457:echo "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh:458:echo "EXIT_CODE=${EXIT_CODE}"
+
+R32 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:353:    RESULT="P0_02_R32_SECRET_OUTPUT_FALSE_POSITIVE_LOCATOR_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:354:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:357:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:358:    RESULT="P0_02_R32_SECRET_OUTPUT_FALSE_POSITIVE_LOCATOR_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:359:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:372:log "P0_02_R32_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:373:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh:374:log "EXIT_CODE=${EXIT_CODE}"
+
+R33 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:529:    RESULT="P0_02_R33_SECRET_PROVENANCE_FINAL_CLASSIFICATION_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:530:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:533:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:534:    RESULT="P0_02_R33_SECRET_PROVENANCE_FINAL_CLASSIFICATION_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:535:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:554:log "P0_02_R33_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:555:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh:556:log "EXIT_CODE=${EXIT_CODE}"
+
+R34 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:553:    RESULT="P0_02_R34_SECRET_PROVENANCE_SCOPE_CORRECTED_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:554:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:557:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:558:    RESULT="P0_02_R34_SECRET_PROVENANCE_SCOPE_CORRECTED_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:559:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:579:log "P0_02_R34_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:580:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh:581:log "EXIT_CODE=${EXIT_CODE}"
+
+R35 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:911:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:912:    RESULT="P0_02_R35_SECRET_PROVENANCE_FINAL_INTEGRITY_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:913:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:950:log "R34_STATUS=${R34_STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:951:log "R34_EXIT_CODE=${R34_EXIT_CODE}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:953:log "P0_02_R35_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:954:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh:955:log "EXIT_CODE=${EXIT_CODE}"
+
+R36 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:540:    RESULT="P0_02_R36_SECRET_PROVENANCE_CLOSURE_ATTESTATION_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:541:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:550:log "R35_STATUS=${R35_STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:551:log "R35_RESULT=${R35_RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:552:log "R35_EXIT_CODE=${R35_EXIT_CODE}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:579:log "P0_02_R36_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:580:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh:581:log "EXIT_CODE=${EXIT_CODE}"
+
+R37 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:647:    RESULT="P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:648:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:652:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:653:    RESULT="P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:654:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:687:log "P0_03_R37_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:688:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh:689:log "EXIT_CODE=${EXIT_CODE}"
+
+R38 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:707:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:708:    RESULT="P0_03_R38_PRODUCTION_READINESS_NORMALIZED_LEDGER_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:709:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:735:log "R35_PASS=${R35_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:736:log "R36_PASS=${R36_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:738:log "P0_03_R38_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:739:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh:740:log "EXIT_CODE=${EXIT_CODE}"
+
+R39 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:775:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:776:    RESULT="P0_03_R39_PRODUCTION_READINESS_SUPERSESSION_LEDGER_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:777:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:808:log "R35_PASS=${R35_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:809:log "R36_PASS=${R36_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:811:log "P0_03_R39_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:812:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh:813:log "EXIT_CODE=${EXIT_CODE}"
+
+R40 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:745:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:746:    RESULT="P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:747:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:778:log "R35_PASS=${R35_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:779:log "R36_PASS=${R36_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:781:log "P0_03_R40_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:782:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh:783:log "EXIT_CODE=${EXIT_CODE}"
+
+R41 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:328:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:337:log "R40_STATUS=${R40_STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:338:log "R40_EXIT_CODE=${R40_EXIT_CODE}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:343:log "R35_PASS=${R40_R35_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:344:log "R36_PASS=${R40_R36_PASS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:354:log "P0_03_R41_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:355:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh:356:log "EXIT_CODE=${EXIT_CODE}"
+
+R42 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:826:    RESULT="P0_03_R42_REAL_PRODUCTION_READINESS_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:827:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:829:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:830:    RESULT="P0_03_R42_REAL_PRODUCTION_READINESS_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:831:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:880:log "P0_03_R42_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:881:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh:882:log "EXIT_CODE=${EXIT_CODE}"
+
+R43 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:710:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:711:    RESULT="P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:712:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:723:log "R42_STATUS=${R42_STATUS:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:724:log "R42_EXIT_CODE=${R42_EXIT_CODE:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:763:log "P0_03_R43_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:764:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh:765:log "EXIT_CODE=${EXIT_CODE}"
+
+R44 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:361:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:362:    RESULT="P0_03_R44_UNSAFE_BIND_BLOCKER_LOCATOR_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:363:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:374:log "R43_STATUS=${R43_STATUS:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:375:log "R43_EXIT_CODE=${R43_EXIT_CODE:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:388:log "P0_03_R44_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:389:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh:390:log "EXIT_CODE=${EXIT_CODE}"
+
+R45 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:383:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:384:    RESULT="P0_03_R45_APPLICATION_HOST_DATAFLOW_LOCATOR_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:385:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:397:log "R44_STATUS=${R44_STATUS:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:408:log "PRODUCTION_BIND_REVIEW=${PRODUCTION_BIND_REVIEW}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:410:log "P0_03_R45_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:411:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh:412:log "EXIT_CODE=${EXIT_CODE}"
+
+R46 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:501:    STATUS="PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:502:    RESULT="P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_CLOSURE_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:503:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:514:log "R45_STATUS=${R45_STATUS:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:515:log "R45_EXIT_CODE=${R45_EXIT_CODE:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:532:log "P0_03_R46_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:533:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:534:log "EXIT_CODE=${EXIT_CODE}"
+
+R47 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:457:    RESULT="P0_03_R47_PRODUCTION_RELOAD_DATAFLOW_PASS"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:458:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:469:log "R46_STATUS=${R46_STATUS:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:470:log "R46_EXIT_CODE=${R46_EXIT_CODE:-UNKNOWN}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:488:log "PRODUCTION_RELOAD_REVIEW=${PRODUCTION_RELOAD_REVIEW}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:490:log "P0_03_R47_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:491:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh:492:log "EXIT_CODE=${EXIT_CODE}"
+
+R48 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r48_production_reload_authority_gate.sh:602:log "EXIT_CODE=${EXIT_CODE}"
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:18:PASS: FAIL_CLOSED=YES
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:26:R47_STATUS=0
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:27:R47_EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:99:PRODUCTION_RELOAD_REVIEW=0
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:103:P0_03_R48_STATUS=PASS
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:104:RESULT=P0_03_R48_PRODUCTION_RELOAD_AUTHORITY_CLOSED
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt:105:EXIT_CODE=0
+
+R49 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:550:    RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_CLOSED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:551:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:555:    STATUS="REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:556:    RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:557:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:560:log "P0_03_R49_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:561:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh:562:log "EXIT_CODE=${EXIT_CODE}"
+
+R50 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:674:    RESULT="P0_03_R50_PRODUCTION_DEPLOYMENT_AUTHORITY_PRESENT_CI_LINKAGE_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:675:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:679:    STATUS="REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:680:    RESULT="P0_03_R50_CI_PRODUCTION_DEPLOYMENT_ARCHITECTURE_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:681:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:684:log "P0_03_R50_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:685:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh:686:log "EXIT_CODE=${EXIT_CODE}"
+
+R51 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:758:    RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_CLOSED"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:759:    EXIT_CODE=0
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:763:    STATUS="REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:764:    RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_REVIEW"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:765:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:768:log "P0_03_R51_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:769:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh:770:log "EXIT_CODE=${EXIT_CODE}"
+
+R52 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:17:PASS: FAIL_CLOSED=YES
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:34:R50_STATUS=PASS
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:39:R51_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:114:R50_STATUS=PASS
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:118:R51_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:131:P0_03_R52_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:132:RESULT=P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt:133:EXIT_CODE=1
+
+R53 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh:559:    RESULT="P0_03_R53_RECOVERY_AUTHORITY_IMPLEMENTED_BUT_ARTIFACT_ROLLBACK_REQUIRES_VERSIONED_RELEASE_AUTHORITY"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh:560:    EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh:565:log "P0_03_R53_STATUS=${STATUS}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh:566:log "RESULT=${RESULT}"
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh:567:log "EXIT_CODE=${EXIT_CODE}"
+/data/data/com.termux/files/home/waste-platform/p0_03_r53_production_recovery_authority_implementation.txt:85:P0_03_R53_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r53_production_recovery_authority_implementation.txt:86:RESULT=P0_03_R53_RECOVERY_AUTHORITY_IMPLEMENTED_BUT_ARTIFACT_ROLLBACK_REQUIRES_VERSIONED_RELEASE_AUTHORITY
+/data/data/com.termux/files/home/waste-platform/p0_03_r53_production_recovery_authority_implementation.txt:87:EXIT_CODE=1
+
+R54 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:576:R49 |     RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_CLOSED"     EXIT_CODE=0     RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_REVIEW"     EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:577:R50 |     RESULT="P0_03_R50_PRODUCTION_DEPLOYMENT_AUTHORITY_PRESENT_CI_LINKAGE_REVIEW"     EXIT_CODE=1     RESULT="P0_03_R50_CI_PRODUCTION_DEPLOYMENT_ARCHITECTURE_REVIEW"     EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:578:R51 |     RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_CLOSED"     EXIT_CODE=0     RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_REVIEW"     EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:579:R52 |     EXIT_CODE=1 P0_03_R52_STATUS=REVIEW RESULT=P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_REVIEW EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:580:R53 |     EXIT_CODE=1 P0_03_R53_STATUS=REVIEW RESULT=P0_03_R53_RECOVERY_AUTHORITY_IMPLEMENTED_BUT_ARTIFACT_ROLLBACK_REQUIRES_VERSIONED_RELEASE_AUTHORITY EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:581:R54 |     EXIT_CODE=1 P0_03_R54_STATUS=REVIEW RESULT=P0_03_R54_RELEASE_IDENTITY_AUTHORITY_REQUIRES_IMPLEMENTATION EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:582:R55 | P0_03_R56_STATUS=REVIEW RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING EXIT_CODE=1 
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:583:R56 | P0_03_R56_STATUS=REVIEW RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING EXIT_CODE=1 
+
+R55 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:247:P0_03_R56_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:248:RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:249:EXIT_CODE=1
+
+R56 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:247:P0_03_R56_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:248:RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:249:EXIT_CODE=1
+R57 | NOT_FOUND | no matching artifact
+R58 | NOT_FOUND | no matching artifact
+R59 | NOT_FOUND | no matching artifact
+
+R60 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:205:    printf 'R60_TEST_STATUS=PASS\n'
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+R61 | PRESENT | no explicit terminal signal found
+R62 | NOT_FOUND | no matching artifact
+R63 | NOT_FOUND | no matching artifact
+R64 | NOT_FOUND | no matching artifact
+
+R65 | SIGNALS
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:690:/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:247:P0_03_R56_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:691:/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:248:RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:692:/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:249:EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:695:/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:247:P0_03_R56_STATUS=REVIEW
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:696:/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:248:RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:697:/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt:249:EXIT_CODE=1
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:703:/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:205:    printf 'R60_TEST_STATUS=PASS\n'
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:704:/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+
+============================================================
+4. REWORK / LOOP / RECONCILIATION DETECTION
+============================================================
+Files suggesting repair, parser churn, repeated verification, or supersession:
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r5_legacy_ttl_authority_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r7_semantic_execution_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r10_secret_cross_authority_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r11_secret_provenance_lineage_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r12_secret_provenance_analyzer_hardening.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r13_compose_secret_provenance_semantic_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r14_secret_provenance_analyzer_consistency_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r15_secret_provenance_expected_count_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r16_secret_provenance_final_lineage_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r17_secret_provenance_false_positive_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r18_secret_provenance_stability_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r19_secret_provenance_parser_reconciliation.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r1_secret_assignment_semantic_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r20_secret_provenance_semantic_reconciliation.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r21_secret_provenance_deterministic_parser_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r22_secret_provenance_semantic_parser_final_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r24_secret_provenance_ground_truth_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r25_secret_provenance_ground_truth_deterministic.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r27_secret_provenance_post_r26_integrity_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r28_secret_provenance_post_r27_regression_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r30_secret_provenance_regression_closure_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r33_secret_provenance_final_classification_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r34_secret_provenance_scope_corrected_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r35_secret_provenance_final_integrity_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r36_secret_provenance_closure_attestation_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r5_secret_wiring_semantic_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r6_secret_wiring_context_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r8_compose_secret_context_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r9_runtime_secret_authority_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r40_production_readiness_deterministic_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r41_production_readiness_ledger_closure_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt
+/data/data/com.termux/files/home/waste-platform/build_p0_r1_r65_closure_truth_map.sh
+/data/data/com.termux/files/home/waste-platform/p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r54_release_identity_authority_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r5_legacy_ttl_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r7_semantic_execution_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r10_secret_cross_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r11_secret_provenance_lineage_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r1_secret_assignment_semantic_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r23_secret_provenance_parser_probe.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_ground_truth_parser.broken.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r5_secret_wiring_semantic_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r6_secret_wiring_context_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r8_compose_secret_context_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r9_runtime_secret_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r52_rollback_recovery_authority_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r2_fix.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_closure_gate_v2.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_legacy_env_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r1_legacy_env_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r2_legacy_env_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r8_final_fix_heredoc_audit.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r8_r1_final_fix_heredoc_forensic.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r8_r2_final_fix_heredoc_remediation.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r8_r2_v1_final_fix_heredoc_verification.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_11_r5_ci_context_final.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_11_r5_targeted_closure.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_11_r7_legacy_script_write_path_final.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_11_r8_final_read_only_closure_gate.sh
+
+============================================================
+5. P0 PHASE RECONSTRUCTION
+============================================================
+P0.01:
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r4_legacy_ttl_targeted_review.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r5_legacy_ttl_authority_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r6_forensic_execution_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r7_semantic_execution_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_01_r8_token_aware_execution_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_production_readiness_20260903_074116/P0-01_production_source_boundary.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_production_readiness_20260903_074435/P0-01-R2_production_authority_resolver.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_production_readiness_20260903_074656/P0-01-R3_authority_discriminator.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_production_readiness_20260903_074724/P0-01-R3_authority_discriminator.txt
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_production_source_boundary.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r2_production_authority_resolver.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r3_authority_discriminator.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r4_legacy_ttl_targeted_review.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r5_legacy_ttl_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r6_forensic_execution_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r7_semantic_execution_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_01_r8_token_aware_execution_proof.sh
+
+P0.02:
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r10_secret_cross_authority_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r11_secret_provenance_lineage_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r12_secret_provenance_analyzer_hardening.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r13_compose_secret_provenance_semantic_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r14_secret_provenance_analyzer_consistency_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r15_secret_provenance_expected_count_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r16_secret_provenance_final_lineage_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r17_secret_provenance_false_positive_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r18_secret_provenance_stability_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r19_secret_provenance_parser_reconciliation.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r1_secret_assignment_semantic_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r20_secret_provenance_semantic_reconciliation.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r21_secret_provenance_deterministic_parser_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r22_secret_provenance_semantic_parser_final_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r24_secret_provenance_ground_truth_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r25_secret_provenance_ground_truth_deterministic.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r26_secret_provenance_baseline_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r26_secret_provenance_ground_truth_parser.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r27_secret_provenance_post_r26_integrity_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r28_secret_provenance_post_r27_regression_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r29_secret_provenance_cross_file_consistency_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r2_secret_value_token_aware_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r30_secret_provenance_regression_closure_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r32_secret_output_false_positive_locator_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r33_secret_provenance_final_classification_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r34_secret_provenance_scope_corrected_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r35_secret_provenance_final_integrity_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r36_secret_provenance_closure_attestation_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r3_secret_authority_boundary_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r4_secret_wiring_token_aware_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r5_secret_wiring_semantic_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r6_secret_wiring_context_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r7_compose_secret_token_proof.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r8_compose_secret_context_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r9_runtime_secret_authority_closure.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_02_safety_signed_production_remediation_preflight.txt
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r10_secret_cross_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r11_secret_provenance_lineage_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r1_secret_assignment_semantic_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r23_secret_provenance_parser_probe.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_baseline_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_ground_truth_parser.broken.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_ground_truth_parser.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r2_secret_value_token_aware_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r3_secret_authority_boundary_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r4_secret_wiring_token_aware_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r5_secret_wiring_semantic_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r6_secret_wiring_context_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r7_compose_secret_token_proof.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r8_compose_secret_context_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_r9_runtime_secret_authority_closure.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_02_safety_signed_production_remediation_preflight.sh
+
+P0.03:
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r37_production_readiness_chain_discovery_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r38_production_readiness_normalized_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r39_production_readiness_supersession_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r40_production_readiness_deterministic_ledger_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r41_production_readiness_ledger_closure_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r42_real_production_readiness_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r43_production_gap_classification_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r44_unsafe_bind_blocker_locator_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r45_application_host_dataflow_locator_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r47_production_reload_dataflow_gate.txt
+/data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r48_production_reload_authority_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r49_ci_production_deployment_authority_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r51_production_deployment_safety_authority_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r53_production_recovery_authority_implementation.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r54_release_identity_authority_reconciliation_gate.txt
+/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r48_production_reload_authority_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r52_rollback_recovery_authority_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh
+/data/data/com.termux/files/home/waste-platform/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+
+============================================================
+6. CHRONOLOGICAL LAST 120 RELEVANT ARTIFACTS
+============================================================
+2026-09-03 21:22:38 | /data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+2026-09-03 21:01:14 | /data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+2026-09-03 12:02:25 | /data/data/com.termux/files/home/waste-platform/build_p0_r1_r65_closure_truth_map.sh
+2026-09-03 12:01:03 | /data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+2026-09-03 11:46:02 | /data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+2026-09-03 11:21:17 | /data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+2026-09-03 10:57:47 | /data/data/com.termux/files/home/waste-platform/P0_R1_R65_DECISION_MAP_20260903_105724.txt
+2026-09-03 10:56:05 | /data/data/com.termux/files/home/waste-platform/P0_R1_R65_META_AUDIT_20260903_105537.txt
+2026-09-03 10:55:37 | /data/data/com.termux/files/home/waste-platform/collect_p0_r1_r65_meta_audit.sh
+2026-09-03 10:25:49 | /data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt
+2026-09-03 10:01:43 | /data/data/com.termux/files/home/waste-platform/p0_03_r54_release_identity_authority_reconciliation_gate.txt
+2026-09-03 10:01:40 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+2026-09-03 10:00:24 | /data/data/com.termux/files/home/waste-platform/p0_03_r53_production_recovery_authority_implementation.txt
+2026-09-03 10:00:23 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r53_production_recovery_authority_implementation.sh
+2026-09-03 09:58:36 | /data/data/com.termux/files/home/waste-platform/p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+2026-09-03 09:58:33 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r52_rollback_recovery_authority_reconciliation_gate.sh
+2026-09-03 09:57:05 | /data/data/com.termux/files/home/waste-platform/p0_03_r51_production_deployment_safety_authority_gate.txt
+2026-09-03 09:57:02 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r51_production_deployment_safety_authority_gate.sh
+2026-09-03 09:55:37 | /data/data/com.termux/files/home/waste-platform/p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+2026-09-03 09:55:34 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+2026-09-03 09:54:13 | /data/data/com.termux/files/home/waste-platform/p0_03_r49_ci_production_deployment_authority_gate.txt
+2026-09-03 09:54:10 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r49_ci_production_deployment_authority_gate.sh
+2026-09-03 09:52:14 | /data/data/com.termux/files/home/waste-platform/p0_03_r48_production_reload_authority_gate.txt
+2026-09-03 09:52:11 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r48_production_reload_authority_gate.sh
+2026-09-03 09:49:36 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r48_production_reload_authority_gate.txt
+2026-09-03 09:48:13 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r47_production_reload_dataflow_gate.txt
+2026-09-03 09:47:33 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r47_production_reload_dataflow_gate.sh
+2026-09-03 09:46:00 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt
+2026-09-03 09:45:47 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh
+2026-09-03 09:44:50 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r45_application_host_dataflow_locator_gate.txt
+2026-09-03 09:44:33 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh
+2026-09-03 09:43:47 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r44_unsafe_bind_blocker_locator_gate.txt
+2026-09-03 09:43:42 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh
+2026-09-03 09:42:44 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r43_production_gap_classification_gate.txt
+2026-09-03 09:42:34 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r43_production_gap_classification_gate.sh
+2026-09-03 09:41:31 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r42_real_production_readiness_gate.txt
+2026-09-03 09:41:09 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r42_real_production_readiness_gate.sh
+2026-09-03 09:39:10 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r41_production_readiness_ledger_closure_gate.txt
+2026-09-03 09:39:09 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+2026-09-03 09:38:20 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r40_production_readiness_deterministic_ledger_gate.txt
+2026-09-03 09:38:05 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh
+2026-09-03 09:35:39 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r39_production_readiness_supersession_ledger_gate.txt
+2026-09-03 09:35:31 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh
+2026-09-03 09:34:21 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r38_production_readiness_normalized_ledger_gate.txt
+2026-09-03 09:34:10 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh
+2026-09-03 09:33:04 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_03_r37_production_readiness_chain_discovery_gate.txt
+2026-09-03 09:32:48 | /data/data/com.termux/files/home/waste-platform/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh
+2026-09-03 09:28:52 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+2026-09-03 09:28:52 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r36_secret_provenance_closure_attestation_gate.txt
+2026-09-03 09:26:12 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r35_secret_provenance_final_integrity_gate.txt
+2026-09-03 09:26:03 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh
+2026-09-03 09:24:01 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r34_secret_provenance_scope_corrected_gate.txt
+2026-09-03 09:23:50 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh
+2026-09-03 09:23:03 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r33_secret_provenance_final_classification_gate.txt
+2026-09-03 09:22:47 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r33_secret_provenance_final_classification_gate.sh
+2026-09-03 09:21:51 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r32_secret_output_false_positive_locator_gate.txt
+2026-09-03 09:21:50 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh
+2026-09-03 09:21:02 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r31_r26_r30_forensic_reconciliation_gate.txt
+2026-09-03 09:21:01 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh
+2026-09-03 09:20:03 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+2026-09-03 09:20:03 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r30_secret_provenance_regression_closure_gate.txt
+2026-09-03 09:19:04 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh
+2026-09-03 09:19:04 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r29_secret_provenance_cross_file_consistency_gate.txt
+2026-09-03 09:18:21 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+2026-09-03 09:18:21 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r28_secret_provenance_post_r27_regression_gate.txt
+2026-09-03 09:17:13 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh
+2026-09-03 09:17:13 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r27_secret_provenance_post_r26_integrity_gate.txt
+2026-09-03 09:16:20 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_baseline_gate.sh
+2026-09-03 09:16:20 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r26_secret_provenance_baseline_gate.txt
+2026-09-03 09:03:39 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+2026-09-03 08:57:31 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r26_secret_provenance_ground_truth_parser.txt
+2026-09-03 08:56:41 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_ground_truth_parser.sh
+2026-09-03 08:49:00 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r26_secret_provenance_ground_truth_parser.broken.sh
+2026-09-03 08:44:45 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r25_secret_provenance_ground_truth_deterministic.txt
+2026-09-03 08:44:44 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh
+2026-09-03 08:43:33 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r24_secret_provenance_ground_truth_closure.txt
+2026-09-03 08:43:30 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh
+2026-09-03 08:40:56 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r23_secret_provenance_parser_probe.sh
+2026-09-03 08:37:37 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r22_secret_provenance_semantic_parser_final_closure.txt
+2026-09-03 08:37:08 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh
+2026-09-03 08:35:51 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r21_secret_provenance_deterministic_parser_closure.txt
+2026-09-03 08:35:49 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh
+2026-09-03 08:33:04 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r20_secret_provenance_semantic_reconciliation.txt
+2026-09-03 08:33:03 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh
+2026-09-03 08:31:53 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r19_secret_provenance_parser_reconciliation.txt
+2026-09-03 08:31:50 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+2026-09-03 08:30:55 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r18_secret_provenance_stability_gate.txt
+2026-09-03 08:30:53 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r18_secret_provenance_stability_gate.sh
+2026-09-03 08:28:59 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r17_secret_provenance_false_positive_closure.txt
+2026-09-03 08:28:58 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+2026-09-03 08:28:10 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r16_secret_provenance_final_lineage_closure.txt
+2026-09-03 08:28:09 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+2026-09-03 08:27:08 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r15_secret_provenance_expected_count_closure.txt
+2026-09-03 08:27:07 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+2026-09-03 08:25:57 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r14_secret_provenance_analyzer_consistency_closure.txt
+2026-09-03 08:25:54 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+2026-09-03 08:24:26 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+2026-09-03 08:24:26 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r13_compose_secret_provenance_semantic_proof.txt
+2026-09-03 08:21:35 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r12_secret_provenance_analyzer_hardening.txt
+2026-09-03 08:21:33 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh
+2026-09-03 08:19:38 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r11_secret_provenance_lineage_closure.txt
+2026-09-03 08:19:35 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r11_secret_provenance_lineage_closure.sh
+2026-09-03 08:18:53 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r10_secret_cross_authority_closure.txt
+2026-09-03 08:18:46 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r10_secret_cross_authority_closure.sh
+2026-09-03 08:17:38 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r9_runtime_secret_authority_closure.txt
+2026-09-03 08:17:36 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r9_runtime_secret_authority_closure.sh
+2026-09-03 08:15:35 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r8_compose_secret_context_closure.txt
+2026-09-03 08:15:33 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r8_compose_secret_context_closure.sh
+2026-09-03 08:14:36 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r7_compose_secret_token_proof.txt
+2026-09-03 08:14:34 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r7_compose_secret_token_proof.sh
+2026-09-03 08:13:29 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r6_secret_wiring_context_closure.txt
+2026-09-03 08:13:27 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r6_secret_wiring_context_closure.sh
+2026-09-03 08:12:13 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r5_secret_wiring_semantic_closure.txt
+2026-09-03 08:12:12 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r5_secret_wiring_semantic_closure.sh
+2026-09-03 08:11:21 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r4_secret_wiring_token_aware_proof.txt
+2026-09-03 08:11:18 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r4_secret_wiring_token_aware_proof.sh
+2026-09-03 08:08:52 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r3_secret_authority_boundary_proof.txt
+2026-09-03 08:08:49 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r3_secret_authority_boundary_proof.sh
+2026-09-03 08:07:01 | /data/data/com.termux/files/home/waste-platform/audit-output/p0_02_r2_secret_value_token_aware_proof.txt
+2026-09-03 08:06:57 | /data/data/com.termux/files/home/waste-platform/phase_p0_02_r2_secret_value_token_aware_proof.sh
+
+============================================================
+7. EXPLICIT R57-R65 GAP CHECK
+============================================================
+
+--- R57 ---
+
+--- R58 ---
+
+--- R59 ---
+
+--- R60 ---
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-backup/deploy.sh.20260903_103811.bak
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-backup/docker-compose.yml.20260903_103811.bak
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh
+
+--- R61 ---
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/ci.yml
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/deploy.sh
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/docker-compose.yml
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/production-recovery.sh
+
+--- R62 ---
+
+--- R63 ---
+
+--- R64 ---
+
+--- R65 ---
+/data/data/com.termux/files/home/waste-platform/GLOBAL_P0_R1_R65_STATE.sh
+/data/data/com.termux/files/home/waste-platform/GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_DECISION_MAP_20260903_105724.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_META_AUDIT_20260903_105537.txt
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+/data/data/com.termux/files/home/waste-platform/analyze_p0_r54_r65_frontier.sh
+/data/data/com.termux/files/home/waste-platform/build_p0_r1_r65_closure_truth_map.sh
+/data/data/com.termux/files/home/waste-platform/build_p0_r65_decision_map.sh
+/data/data/com.termux/files/home/waste-platform/collect_p0_r1_r65_meta_audit.sh
+/data/data/com.termux/files/home/waste-platform/reconstruct_p0_r65_global_truth_map.sh
+
+============================================================
+8. R62 REGISTRY AUTHORITY SHAPE, KEY PRESENCE ONLY
+============================================================
+
+FILE=/data/data/com.termux/files/home/waste-platform/docker-compose.yml
+3:    image: postgres:16-alpine
+21:    image: redis:7-alpine
+35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+
+FILE=/data/data/com.termux/files/home/waste-platform/.env.example
+
+FILE=/data/data/com.termux/files/home/waste-platform/.github/workflows/ci.yml
+19:        image: postgres:16
+33:        image: redis:7-alpine
+91:          docker build -t cmep-api:${{ github.sha }} -f Dockerfile .
+95:          docker build -t cmep-worker:${{ github.sha }} -f worker/Dockerfile .
+135:          docker build -t cmep-web:${{ github.sha }} -f Dockerfile .
+
+============================================================
+9. GIT STATE, WITHOUT CONTENT DUMP
+============================================================
+--- STATUS ---
+ D .backup/pre-admin-user-type.diff
+ D .backup/pre-change.diff
+ D .backup/pre-next-ts-fixes.diff
+ D .env.before-newline-fix.20260817-120730
+ D .env.dedup.20260817-120833
+ D .env.finalbak.20260817-131129
+ D .env.fixbak.20260817-115715
+ M README.md
+ M app/core/config.py
+ M app/shared/infrastructure/security/jwt_service.py
+ M app/shared/presentation/auth_dependencies.py
+ M app/shared/presentation/metrics_router.py
+ M apps/web/src/features/listings/components/listing-form.tsx
+ M apps/web/src/lib/api/http.ts
+ M apps/web/src/lib/config.ts
+ D audit_report.json
+ D auto_fix_audit.py
+ M docker-compose.yml
+ D docker-compose.yml.backend-frontend-variant-20260808-011656
+ D docs/DEPLOYMENT.md
+ M docs/deployment.md
+ M docs/infra.md
+ D fix_report.txt
+ M scripts/deploy.sh
+ M scripts/dev/complete_fix.sh
+ M scripts/legacy/create-missing-files.sh
+ M scripts/legacy/final-fix.sh
+?? .closure_truth_20260903_114557/
+?? .closure_truth_20260903_120101/
+?? .closure_truth_20260903_120225/
+?? .production-release/
+?? FINALIZATION_ROADMAP.md
+?? GLOBAL_P0_R1_R65_STATE.sh
+?? GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+?? P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+?? P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+?? P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+?? P0_R1_R65_DECISION_MAP_20260903_105724.txt
+?? P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+?? P0_R1_R65_META_AUDIT_20260903_105537.txt
+?? P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+?? all_projects_list.xml
+?? analyze_p0_r54_r65_frontier.sh
+?? build_p0_r1_r65_closure_truth_map.sh
+?? build_p0_r65_decision_map.sh
+?? client_state.xml
+?? client_state_prev.xml
+?? collect_p0_r1_r65_meta_audit.sh
+?? coproc_info.xml
+?? daily_xfer_history.xml
+?? fix_r26_extra_paren.sh
+?? fix_r26_quote.sh
+?? gui_rpc_auth.cfg
+?? list
+?? locate_r26_quote_break.sh
+?? locate_r27_compose_literals.sh
+?? locate_r27_literal_parser.sh
+?? lockfile
+?? lookup_website.html
+?? notices/
+?? p0_03_r48_production_reload_authority_gate.txt
+?? p0_03_r49_ci_production_deployment_authority_gate.txt
+?? p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+?? p0_03_r51_production_deployment_safety_authority_gate.txt
+?? p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+?? p0_03_r53_production_recovery_authority_implementation.txt
+?? p0_03_r54_release_identity_authority_reconciliation_gate.txt
+?? p0_03_r56_release_identity_post_r55_verification.txt
+?? phase_p0_01_production_source_boundary.sh
+?? phase_p0_01_r2_production_authority_resolver.sh
+?? phase_p0_01_r3_authority_discriminator.sh
+?? phase_p0_01_r4_legacy_ttl_targeted_review.sh
+?? phase_p0_01_r5_legacy_ttl_authority_closure.sh
+?? phase_p0_01_r6_forensic_execution_proof.sh
+?? phase_p0_01_r7_semantic_execution_proof.sh
+?? phase_p0_01_r8_token_aware_execution_proof.sh
+?? phase_p0_02_r10_secret_cross_authority_closure.sh
+?? phase_p0_02_r11_secret_provenance_lineage_closure.sh
+?? phase_p0_02_r12_secret_provenance_analyzer_hardening.sh
+?? phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+?? phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+?? phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+?? phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+?? phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+?? phase_p0_02_r18_secret_provenance_stability_gate.sh
+?? phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+?? phase_p0_02_r1_secret_assignment_semantic_proof.sh
+?? phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh
+?? phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh
+?? phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh
+?? phase_p0_02_r23_secret_provenance_parser_probe.sh
+?? phase_p0_02_r24_secret_provenance_ground_truth_closure.sh
+?? phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh
+?? phase_p0_02_r26_secret_provenance_baseline_gate.sh
+?? phase_p0_02_r26_secret_provenance_ground_truth_parser.broken.sh
+?? phase_p0_02_r26_secret_provenance_ground_truth_parser.sh
+?? phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh
+?? phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+?? phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+?? phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh
+
+--- RECENT COMMITS ---
+3baeef8 (HEAD -> main) chore: quarantine forensic clutter and stop tracking env secrets
+9ca7ba3 chore: remove local archive artifacts from version control
+d8c2730 fix: repair shell syntax in run-check helper
+69bbaa4 chore: add reusable development diagnostics
+02df337 checkpoint: priebezne zmeny pred dalsim krokom
+034826c feat(web): add frontend feature barrel exports and cmep styles
+9f7da29 refactor(web): consolidate tracked frontend application updates
+47aa0c3 refactor: reconcile backend docker and repository wiring
+6187795 chore: add reusable repository operations scripts
+c18910f test: add backend unit test coverage
+3682b0c refactor(web): normalize API client and auth configuration
+1fe6c46 refactor(admin): align admin module with layered structure
+88185cb refactor: consolidate backend config and database wiring
+7e331d0 chore: remove backups and obsolete temporary files
+5772689 Add legacy compatibility bridges for module routers and services
+018a693 fix(runtime): termux settings (jwt/redis/rate_limit), memory revocation, /api/v1 mount
+48031ef (origin/main) first commit
+6c823ec (origin/fix/web-build-admin-user-type, origin/HEAD) refactor(api-presentation): align routers, schemas, and responses
+336f090 refactor(api): deprecate legacy routers and tighten app wiring
+e13d820 refactor(auth-api): unify auth errors and token revocation handling
+
+--- BRANCHES ---
+  fix/dashboard-copy-validation
+* main
+  master
+  stabilize-api-surface-20260808
+  remotes/origin/HEAD -> origin/fix/web-build-admin-user-type
+  remotes/origin/fix/web-build-admin-user-type
+  remotes/origin/main
+
+============================================================
+10. STALE-MAP TEST
+============================================================
+Current relevant artifacts newer than latest decision map:
+
+============================================================
+11. PRELIMINARY MACHINE CLASSIFICATION
+============================================================
+R1  | OPEN_REVIEW
+R2  | OPEN_REVIEW
+R3  | OPEN_REVIEW
+R4  | OPEN_REVIEW
+R5  | OPEN_REVIEW
+R6  | OPEN_REVIEW
+R7  | OPEN_REVIEW
+R8  | OPEN_REVIEW
+R9  | OPEN_REVIEW
+R10 | OPEN_REVIEW
+R11 | OPEN_REVIEW
+R12 | OPEN_REVIEW
+R13 | OPEN_REVIEW
+R14 | OPEN_REVIEW
+R15 | OPEN_REVIEW
+R16 | OPEN_REVIEW
+R17 | OPEN_REVIEW
+R18 | OPEN_REVIEW
+R19 | OPEN_REVIEW
+R20 | OPEN_REVIEW
+R21 | OPEN_REVIEW
+R22 | OPEN_REVIEW
+R23 | PRESENT_UNPROVEN
+R24 | OPEN_REVIEW
+R25 | OPEN_REVIEW
+R26 | OPEN_REVIEW
+R27 | OPEN_REVIEW
+R28 | PRESENT_UNPROVEN
+R29 | PRESENT_UNPROVEN
+R30 | OPEN_REVIEW
+R31 | OPEN_REVIEW
+R32 | OPEN_REVIEW
+R33 | OPEN_REVIEW
+R34 | OPEN_REVIEW
+R35 | OPEN_REVIEW
+R36 | OPEN_REVIEW
+R37 | OPEN_REVIEW
+R38 | OPEN_REVIEW
+R39 | OPEN_REVIEW
+R40 | OPEN_REVIEW
+R41 | OPEN_REVIEW
+R42 | OPEN_REVIEW
+R43 | OPEN_REVIEW
+R44 | OPEN_REVIEW
+R45 | OPEN_REVIEW
+R46 | OPEN_REVIEW
+R47 | OPEN_REVIEW
+R48 | OPEN_REVIEW
+R49 | OPEN_REVIEW
+R50 | OPEN_REVIEW
+R51 | OPEN_REVIEW
+R52 | OPEN_REVIEW
+R53 | OPEN_REVIEW
+R54 | OPEN_REVIEW
+R55 | PRESENT_UNPROVEN
+R56 | PRESENT_UNPROVEN
+R57 | NOT_FOUND
+R58 | NOT_FOUND
+R59 | NOT_FOUND
+R60 | OPEN_REVIEW
+R61 | PRESENT_UNPROVEN
+R62 | NOT_FOUND
+R63 | NOT_FOUND
+R64 | NOT_FOUND
+R65 | OPEN_REVIEW
+
+============================================================
+12. FINAL RECONSTRUCTION RULE
+============================================================
+Toto nie je remediation.
+Toto nie je nový R-krok.
+Toto je read-only rekonštrukcia dôkazového reťazca.
+
+PRESENT != CLOSED
+FILE EXISTS != EXECUTION PROVED
+PASS != FINAL AUTHORITY
+LATEST FILE != LATEST VALID DECISION
+
+Definitívna klasifikácia sa vykoná až po analytickom prečítaní tohto snapshotu.
+
+OUTPUT=P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt

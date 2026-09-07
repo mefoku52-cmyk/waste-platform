@@ -1,7 +1,8 @@
+import { config } from '../config';
 import { tokenStore } from '../auth/token-store';
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8001';
+  const baseUrl = config.apiBaseUrl;
   const url = `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   const token = tokenStore.getToken();
 

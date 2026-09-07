@@ -1,0 +1,40 @@
+=== INCLUDED ROUTER ATTRIBUTES ===
+[6] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[7] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[8] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[9] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[10] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[11] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[12] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[13] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[14] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[15] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[16] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[17] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+
+[18] CLASS=_IncludedRouter
+ATTRS: _build_effective_context, _effective_candidates, _effective_candidates_version, _effective_low_priority_routes, _effective_low_priority_routes_version, _effective_routes_lock, _handle_selected, _match, effective_candidates, effective_low_priority_routes, effective_route_contexts, handle, include_context, matches, original_router, url_path_for
+

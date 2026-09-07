@@ -1,0 +1,627 @@
+============================================================
+R60 → R65 FORENSIC RECONCILIATION
+============================================================
+DATE=2026-09-04 20:39:14 +0200
+PROJECT=/data/data/com.termux/files/home/waste-platform
+MODE=READ_ONLY
+============================================================
+
+============================================================
+1. R60 → R65 ARTIFACT INVENTORY
+============================================================
+
+--- R60 ---
+1788547154.6765911800|/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+1788547154.3645911800|/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh
+1788424691.6390358180|/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh
+1787769270.0660243590|/data/data/com.termux/files/home/waste-platform/.production-release/r60-backup/docker-compose.yml.20260903_103811.bak
+1786049232.0000000000|/data/data/com.termux/files/home/waste-platform/.production-release/r60-backup/deploy.sh.20260903_103811.bak
+ARTIFACT_COUNT=5
+
+--- R61 ---
+1788424691.5550358180|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/deploy.sh
+1788424691.5110358180|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/docker-compose.yml
+1788423575.6150357520|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/production-recovery.sh
+1785524715.0000000000|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/ci.yml
+ARTIFACT_COUNT=4
+
+--- R62 ---
+ARTIFACTS=NOT_FOUND
+
+--- R63 ---
+ARTIFACTS=NOT_FOUND
+
+--- R64 ---
+ARTIFACTS=NOT_FOUND
+
+--- R65 ---
+1788547156.5405911810|/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+1788547154.3645911800|/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh
+1788517695.1222192070|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+1788463428.7902159720|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+1788463253.6382159620|/data/data/com.termux/files/home/waste-platform/reconstruct_p0_r65_global_truth_map.sh
+1788429745.2790361190|/data/data/com.termux/files/home/waste-platform/build_p0_r1_r65_closure_truth_map.sh
+1788429663.8110361150|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+1788428762.8030360610|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+1788427277.9470359720|/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+1788426270.8990359120|/data/data/com.termux/files/home/waste-platform/analyze_p0_r54_r65_frontier.sh
+1788426165.6790359060|/data/data/com.termux/files/home/waste-platform/GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+1788426129.0590359040|/data/data/com.termux/files/home/waste-platform/GLOBAL_P0_R1_R65_STATE.sh
+ARTIFACT_COUNT=16
+
+============================================================
+2. R60 DECISION EVIDENCE
+============================================================
+
+--- FILE: R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt ---
+2:R60 → R65 FORENSIC RECONCILIATION
+14:1788547154.6765911800|/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+15:1788547154.3645911800|/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh
+38:1788547156.5405911810|/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+39:1788547154.3645911800|/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh
+40:1788517695.1222192070|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+43:1788429745.2790361190|/data/data/com.termux/files/home/waste-platform/build_p0_r1_r65_closure_truth_map.sh
+44:1788429663.8110361150|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+45:1788428762.8030360610|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+56:--- FILE: R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt ---
+
+--- FILE: inspect_r60_r65_reconciliation.sh ---
+8:OUT="$ROOT/R60_R65_FORENSIC_RECONCILIATION_${TS}.txt"
+13:echo "R60 → R65 FORENSIC RECONCILIATION"
+68:              '(STATUS|RESULT|VERDICT|EXIT_CODE|PASS|FAIL|BLOCKED|BLOCKER|OPEN|CLOSED|CLOSURE|FINAL|AUTHORITY|GATE|REGRESSION|SUPERSED|RECONCIL|REMEDIAT|ERROR)' \
+94:              '(STATUS|RESULT|VERDICT|EXIT_CODE|PASS|FAIL|BLOCKED|BLOCKER|OPEN|CLOSED|CLOSURE|FINAL|AUTHORITY|GATE|REGRESSION|SUPERSED|RECONCIL|REMEDIAT|ERROR)' \
+109:section "4. SUPERSESSION / RECONCILIATION CHAIN"
+116:  '(R60|R61|R62|R63|R64|R65).*(supersed|replac|reconcil|fix|repair|correct|follow|continu|prior|previous|closure|authority)' \
+119:  'P0_R1_R65_MASTER_DECISION_GATE_|P0_R1_R65_GLOBAL_TRUTH_MAP_|P0_R1_R65_CLOSURE_TRUTH_MAP_|P0_R1_R65_DECISION_MAP_|P0_R1_R65_META_AUDIT_' |
+122:section "5. R60 BLOCKER REFERENCES"
+129:  '(R60|r60).*(BLOCKER|BLOCKED|FAIL|ERROR|OPEN)' \
+133:section "6. R62 REGISTRY AUTHORITY SHAPE"
+160:section "7. CURRENT MASTER GATE"
+163:    -name 'P0_R1_R65_MASTER_DECISION_GATE_*.txt' \
+194:    echo "--- STATUS (MAX 80) ---"
+195:    git status --short 2>/dev/null | head -80
+204:section "10. FINAL MACHINE SUMMARY"
+220:echo "END R60 → R65 FORENSIC RECONCILIATION"
+
+--- FILE: .production-release/r60-test/test-r60-release-aware-deploy.sh ---
+2:set -Eeuo pipefail
+8:FAILURES=0
+9:PASSES=0
+11:pass() {
+12:    PASSES=$((PASSES + 1))
+13:    printf 'PASS: %s\n' "$*"
+16:fail() {
+17:    FAILURES=$((FAILURES + 1))
+18:    printf 'FAIL: %s\n' "$*" >&2
+27:        pass "$label"
+29:        fail "$label"
+39:        fail "$label"
+41:        pass "$label"
+49:[ -f "$COMPOSE" ] || fail "COMPOSE_PRESENT"
+50:[ -f "$DEPLOY" ] || fail "DEPLOY_PRESENT"
+53:    pass "COMPOSE_PRESENT"
+57:    pass "DEPLOY_PRESENT"
+61:    pass "DEPLOY_BASH_SYNTAX"
+63:    fail "DEPLOY_BASH_SYNTAX"
+157:    pass "VALID_RELEASE_ID_ACCEPTED"
+159:    fail "VALID_RELEASE_ID_ACCEPTED"
+163:    pass "VALID_IMAGE_TAG_ACCEPTED"
+165:    fail "VALID_IMAGE_TAG_ACCEPTED"
+174:        pass "MUTABLE_IDENTITY_REJECTED_${BAD_ID}"
+176:        fail "MUTABLE_IDENTITY_REJECTED_${BAD_ID}"
+183:    'POSTGRES_PASSWORD=.*[A-Za-z0-9]|JWT_SECRET_KEY=.*[A-Za-z0-9]|JWT_REFRESH_SECRET_KEY=.*[A-Za-z0-9]' \
+185:    fail "DEPLOY_DOES_NOT_CONTAIN_SECRET_VALUES"
+187:    pass "DEPLOY_DOES_NOT_CONTAIN_SECRET_VALUES"
+193:    pass "COMPOSE_ENV_FILE_AUTHORITY_PRESERVED"
+195:    fail "COMPOSE_ENV_FILE_AUTHORITY_PRESERVED"
+199:printf 'R60 TEST RESULT\n'
+201:printf 'PASSES=%s\n' "$PASSES"
+202:printf 'FAILURES=%s\n' "$FAILURES"
+204:if [ "$FAILURES" -eq 0 ]; then
+205:    printf 'R60_TEST_STATUS=PASS\n'
+209:printf 'R60_TEST_STATUS=FAIL\n'
+
+--- FILE: .production-release/r60-backup/docker-compose.yml.20260903_103811.bak ---
+7:      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}
+40:      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-cmep}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}@postgres:5432/${POSTGRES_DB:-cmep}
+
+--- FILE: .production-release/r60-backup/deploy.sh.20260903_103811.bak ---
+2:set -Eeuo pipefail
+11:    echo "[ERROR] Missing ${PROJECT_DIR}/${ENV_FILE}" >&2
+16:    echo "[ERROR] Docker is not installed or not available in PATH" >&2
+21:    echo "[ERROR] Docker Compose plugin is not available" >&2
+
+============================================================
+3. R61 → R65 DECISION SIGNALS
+============================================================
+
+--- R61 SIGNALS ---
+
+FILE=.production-release/r61-backup-20260903_104708/deploy.sh
+2:set -Eeuo pipefail
+14:error() {
+15:    printf '[ERROR] %s\n' "$*" >&2
+20:    error "Missing ${PROJECT_DIR}/${ENV_FILE}"
+24:    error "Docker is not installed or not available in PATH"
+28:    error "Docker Compose plugin is not available"
+32:    error "Missing ${PROJECT_DIR}/${COMPOSE_FILE}"
+39:    error "RELEASE_ID is required"
+43:    error "IMAGE_TAG is required"
+48:        error "Mutable or non-production RELEASE_ID rejected"
+54:        error "Mutable or non-production IMAGE_TAG rejected"
+59:    error "RELEASE_ID must use sha-<hex> identity"
+63:    error "IMAGE_TAG must use release-<hex> identity"
+102:    ps --status running --services >/dev/null 2>&1; then
+103:    printf '[ERROR] Compose service status verification failed\n' >&2
+
+FILE=.production-release/r61-backup-20260903_104708/docker-compose.yml
+7:      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}
+41:      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-cmep}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}@postgres:5432/${POSTGRES_DB:-cmep}
+
+FILE=.production-release/r61-backup-20260903_104708/production-recovery.sh
+27:    command -v "$1" >/dev/null 2>&1 || fail "required command missing: $1"
+41:    [ -n "$RELEASE_ID" ] || fail "RELEASE_ID is required"
+42:    [ -n "$IMAGE_TAG" ] || fail "IMAGE_TAG is required"
+46:            fail "mutable RELEASE_ID forbidden"
+52:            fail "mutable IMAGE_TAG forbidden"
+102:    [ -f "$STATE_FILE" ] || fail "previous release state is unavailable"
+132:        fail "previous RELEASE_ID unavailable"
+135:        fail "previous image artifact unavailable"
+138:        fail "previous configuration identity unavailable"
+142:            fail "previous release identity is mutable"
+183:        log "DEPLOYMENT_HEALTH_FAILED"
+185:        fail "deployment failed and rollback path was required"
+203:        fail "previous release artifact is not locally available"
+212:        fail "rollback health verification failed"
+234:        fail "unsupported action: $ACTION"
+
+FILE=.production-release/r61-backup-20260903_104708/ci.yml
+23:          POSTGRES_PASSWORD: cmep
+50:      DATABASE_PASSWORD: cmep
+
+--- R62 SIGNALS ---
+SIGNAL=NOT_FOUND
+
+--- R63 SIGNALS ---
+SIGNAL=NOT_FOUND
+
+--- R64 SIGNALS ---
+SIGNAL=NOT_FOUND
+
+--- R65 SIGNALS ---
+
+FILE=R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+164:42:    [ -n "$IMAGE_TAG" ] || fail "IMAGE_TAG is required"
+165:46:            fail "mutable RELEASE_ID forbidden"
+166:52:            fail "mutable IMAGE_TAG forbidden"
+167:102:    [ -f "$STATE_FILE" ] || fail "previous release state is unavailable"
+168:132:        fail "previous RELEASE_ID unavailable"
+169:135:        fail "previous image artifact unavailable"
+170:138:        fail "previous configuration identity unavailable"
+171:142:            fail "previous release identity is mutable"
+172:183:        log "DEPLOYMENT_HEALTH_FAILED"
+173:185:        fail "deployment failed and rollback path was required"
+174:203:        fail "previous release artifact is not locally available"
+175:212:        fail "rollback health verification failed"
+176:234:        fail "unsupported action: $ACTION"
+179:23:          POSTGRES_PASSWORD: cmep
+180:50:      DATABASE_PASSWORD: cmep
+
+FILE=inspect_r60_r65_reconciliation.sh
+13:echo "R60 → R65 FORENSIC RECONCILIATION"
+68:              '(STATUS|RESULT|VERDICT|EXIT_CODE|PASS|FAIL|BLOCKED|BLOCKER|OPEN|CLOSED|CLOSURE|FINAL|AUTHORITY|GATE|REGRESSION|SUPERSED|RECONCIL|REMEDIAT|ERROR)' \
+94:              '(STATUS|RESULT|VERDICT|EXIT_CODE|PASS|FAIL|BLOCKED|BLOCKER|OPEN|CLOSED|CLOSURE|FINAL|AUTHORITY|GATE|REGRESSION|SUPERSED|RECONCIL|REMEDIAT|ERROR)' \
+109:section "4. SUPERSESSION / RECONCILIATION CHAIN"
+116:  '(R60|R61|R62|R63|R64|R65).*(supersed|replac|reconcil|fix|repair|correct|follow|continu|prior|previous|closure|authority)' \
+119:  'P0_R1_R65_MASTER_DECISION_GATE_|P0_R1_R65_GLOBAL_TRUTH_MAP_|P0_R1_R65_CLOSURE_TRUTH_MAP_|P0_R1_R65_DECISION_MAP_|P0_R1_R65_META_AUDIT_' |
+122:section "5. R60 BLOCKER REFERENCES"
+129:  '(R60|r60).*(BLOCKER|BLOCKED|FAIL|ERROR|OPEN)' \
+133:section "6. R62 REGISTRY AUTHORITY SHAPE"
+160:section "7. CURRENT MASTER GATE"
+163:    -name 'P0_R1_R65_MASTER_DECISION_GATE_*.txt' \
+194:    echo "--- STATUS (MAX 80) ---"
+195:    git status --short 2>/dev/null | head -80
+204:section "10. FINAL MACHINE SUMMARY"
+220:echo "END R60 → R65 FORENSIC RECONCILIATION"
+
+FILE=P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+534:OPEN_REVIEW=YES
+535:FINAL_AUTHORITY=EVIDENCE_PRESENT
+536:SUPERSEDES=R1,R65
+537:SUPERSEDED_BY=R1,R34,R35,R36,R37,R38,R39,R65
+539:STATE=OPEN_REVIEW
+544:LATEST_REPORT=/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+546:LATEST_STATUS=UNKNOWN
+547:LATEST_RESULT=UNKNOWN
+548:LATEST_EXIT_CODE=UNKNOWN
+549:FIRST_EXECUTION_INFERRED_FROM=phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+553:OPEN_REVIEW=YES
+554:FINAL_AUTHORITY=EVIDENCE_PRESENT
+555:SUPERSEDES=R1,R65
+556:SUPERSEDED_BY=R1,R34,R35,R36,R37,R38,R39,R65
+558:STATE=OPEN_REVIEW
+
+FILE=P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+1335:R46 | OPEN_REVIEW
+1336:R47 | OPEN_REVIEW
+1337:R48 | OPEN_REVIEW
+1338:R49 | OPEN_REVIEW
+1339:R50 | OPEN_REVIEW
+1340:R51 | OPEN_REVIEW
+1341:R52 | OPEN_REVIEW
+1342:R53 | OPEN_REVIEW
+1343:R54 | OPEN_REVIEW
+1349:R60 | OPEN_REVIEW
+1354:R65 | OPEN_REVIEW
+1357:12. FINAL RECONSTRUCTION RULE
+1359:Toto nie je remediation.
+1363:PRESENT != CLOSED
+1365:PASS != FINAL AUTHORITY
+
+FILE=reconstruct_p0_r65_global_truth_map.sh
+186:    '(^|/)(phase_p0|p0[_-].*r[0-9]+|.*r[0-9]+.*(gate|proof|closure|audit|reconciliation|authority|readiness)).*' |
+217:section "8. R62 REGISTRY AUTHORITY SHAPE, KEY PRESENCE ONLY"
+240:    printf '%s\n' '--- STATUS ---'
+241:    git status --short 2>/dev/null | head -100
+265:        '(^|/)(phase_p0|p0[_-].*r[0-9]+|.*r[0-9]+.*(gate|proof|closure|audit|reconciliation|authority|readiness))' |
+295:                '(^|[^A-Z])(STATUS|RESULT|VERDICT|OUTCOME|DECISION|CLOSED|OPEN_REVIEW|INCOMPLETE|PASS|FAIL|ERROR|BLOCKED|REVIEW|SUPERSEDED)[[:space:]]*=' \
+301:    if printf '%s\n' "$TEXT" | grep -qiE 'OPEN_REVIEW|INCOMPLETE|BLOCKED|ERROR|FAIL'; then
+302:        CLASS="OPEN_REVIEW"
+303:    elif printf '%s\n' "$TEXT" | grep -qiE 'SUPERSEDED'; then
+304:        CLASS="SUPERSEDED_REVIEW"
+305:    elif printf '%s\n' "$TEXT" | grep -qiE 'CLOSED|PASS|SUCCESS'; then
+314:section "12. FINAL RECONSTRUCTION RULE"
+317:Toto nie je remediation.
+321:PRESENT != CLOSED
+323:PASS != FINAL AUTHORITY
+
+FILE=build_p0_r1_r65_closure_truth_map.sh
+857:section "12. CLOSURE WARNINGS"
+859:if [ "$OPEN_COUNT" -gt 0 ]; then
+860:    echo "WARNING: OPEN_REVIEW gates exist."
+863:if [ "$ERROR_COUNT" -gt 0 ]; then
+864:    echo "WARNING: ERROR gates exist."
+868:    echo "WARNING: INCOMPLETE gates exist."
+872:    echo "WARNING: NOT_FOUND gates exist."
+877:    echo "CAUTION: All R gates classify as DONE, but this is NOT by itself proof"
+879:    echo "Cross-gate authority and dependency reconciliation still matter."
+884:echo "CLOSURE TRUTH MAP COMPLETE"
+892:# SMALL FINAL TERMINAL POINTER
+895:echo "FINAL TABLE IS ABOVE."
+897:echo "To inspect only the final state table later:"
+898:echo "sed -n '/FINAL CLOSURE TRUTH TABLE R1-R65/,/SECONDARY STATE TABLE/p' \"$OUT\""
+901:echo "sed -n '/MACHINE SUMMARY/,/CLOSURE WARNINGS/p' \"$OUT\""
+
+FILE=P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+3:P0 → R1-R65 CLOSURE TRUTH MAP
+8:OUTPUT=/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+26:GIT_STATUS_SUMMARY=135
+
+FILE=P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+3:P0 → R1-R65 CLOSURE TRUTH MAP
+8:OUTPUT=/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+26:GIT_STATUS_SUMMARY=133
+
+FILE=P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+812:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/app/db/session.py
+813:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/app/db/__init__.py
+814:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/app/db/register_models.py
+815:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/app/config.py
+816:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/config.ts
+817:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/web.env.local
+818:/data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/.schema-authority-backup-20260824-012856/uuid-varchar-report.txt
+829:/data/data/com.termux/files/home/waste-platform/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+836:/data/data/com.termux/files/home/waste-platform/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+837:/data/data/com.termux/files/home/waste-platform/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh
+838:/data/data/com.termux/files/home/waste-platform/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh
+839:/data/data/com.termux/files/home/waste-platform/phase_p0_03_r45_application_host_dataflow_locator_gate.sh
+840:/data/data/com.termux/files/home/waste-platform/phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+841:/data/data/com.termux/files/home/waste-platform/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh
+851:12. FINAL MACHINE SUMMARY
+
+FILE=analyze_p0_r54_r65_frontier.sh
+57:    printf '\n--- STATUS SUMMARY ---\n'
+58:    git status --short 2>/dev/null | head -80
+74:        printf 'STATUS=NOT_FOUND\n'
+79:    printf 'STATUS=PRESENT\n'
+156:                '(^|[^A-Z])(STATUS|RESULT|VERDICT|DECISION|EXIT_CODE|FAILURE_COUNT|BLOCKED|OPEN|CLOSED|PASS|FAIL|REVIEW|PENDING)([^A-Z]|$)' \
+182:                '^[[:space:]]*(P0_03_R[0-9]+_STATUS|RESULT|EXIT_CODE|VERDICT)=' \
+192:section "7. CURRENT AUTHORITY KEY SURFACE"
+257:    '(broken|\.pre_|fix_|repair|reconcile|regression|recheck|retry|probe|locator|hardening|corrected|supersed|backup)' |
+276:section "12. FINAL MACHINE SUMMARY"
+
+FILE=GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+408:./phase_p0_03_r45_application_host_dataflow_locator_gate.sh
+409:./phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+410:./phase_p0_02_r33_secret_provenance_final_classification_gate.sh
+411:./phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+412:./phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+413:./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh
+426:8. CURRENT REGISTRY / RELEASE AUTHORITY SHAPE
+437:28:    error "Docker Compose plugin is not available"
+441:39:    error "RELEASE_ID is required"
+443:43:    error "IMAGE_TAG is required"
+446:48:    error "REGISTRY_IMAGE_PREFIX is required"
+449:59:        error "Mutable or non-production RELEASE_ID rejected"
+451:65:        error "Mutable or non-production IMAGE_TAG rejected"
+453:70:    error "RELEASE_ID must use sha-<hex> identity"
+455:74:    error "IMAGE_TAG must use release-<hex> identity"
+
+FILE=GLOBAL_P0_R1_R65_STATE.sh
+65:    printf '\n-- STATUS --\n'
+66:    git status --short 2>/dev/null | head -60
+105:    grep -Ei '(p0[_-].*r[0-9]+|phase_p0.*r[0-9]+|r[0-9]+.*(gate|proof|closure|audit|verification|reconciliation))' |
+109:            '^[[:space:]]*(P0_[A-Z0-9_-]*STATUS|STATUS|RESULT|VERDICT|DECISION|EXIT_CODE|NEXT_STAGE|BLOCKER|CURRENT_BLOCKER|FAILURE_COUNT|REVIEW_REQUIRED)[[:space:]]*=' \
+134:    '(broken|fix|fixed|repair|remed|v[0-9]+|retry|recheck|reconcile|regression|post-r|final|closure|probe|locator|classifier)' |
+149:section "8. CURRENT REGISTRY / RELEASE AUTHORITY SHAPE"
+167:         s/(PASSWORD=).*/\1<REDACTED>/;
+
+FILE=P0_R1_R65_DECISION_MAP_20260903_105724.txt
+8476:1788417110.2350353660|2026-09-03 08:31:50.2350353660|phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+8477:1788417053.5510353630|2026-09-03 08:30:53.5510353630|phase_p0_02_r18_secret_provenance_stability_gate.sh
+8478:1788416938.0550353560|2026-09-03 08:28:58.0550353560|phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+8479:1788416889.1350353530|2026-09-03 08:28:09.1350353530|phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+8480:1788416827.7270353500|2026-09-03 08:27:07.7270353500|phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+8481:1788416754.4950353450|2026-09-03 08:25:54.4950353450|phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+8484:1788416375.3510353230|2026-09-03 08:19:35.3510353230|phase_p0_02_r11_secret_provenance_lineage_closure.sh
+8485:1788416326.9950353200|2026-09-03 08:18:46.9950353200|phase_p0_02_r10_secret_cross_authority_closure.sh
+8486:1788416256.6030353160|2026-09-03 08:17:36.6030353160|phase_p0_02_r9_runtime_secret_authority_closure.sh
+8487:1788416133.9710353080|2026-09-03 08:15:33.9710353080|phase_p0_02_r8_compose_secret_context_closure.sh
+8489:1788416007.6670353010|2026-09-03 08:13:27.6670353010|phase_p0_02_r6_secret_wiring_context_closure.sh
+8490:1788415932.1910352960|2026-09-03 08:12:12.1910352960|phase_p0_02_r5_secret_wiring_semantic_closure.sh
+8492:1788415729.2270352840|2026-09-03 08:08:49.2270352840|phase_p0_02_r3_secret_authority_boundary_proof.sh
+8495:1788415405.6190352650|2026-09-03 08:03:25.6190352650|phase_p0_02_safety_signed_production_remediation_preflight.sh
+8499:1788414750.2750352260|2026-09-03 07:52:30.2750352260|phase_p0_01_r5_legacy_ttl_authority_closure.sh
+
+FILE=build_p0_r65_decision_map.sh
+26:  'p0|r[0-9]{1,2}|phase.*(p0|r[0-9])|gate|provenance|reconcil|authority|stability|registry|secret' |
+31:echo "2. GATE TITLES ONLY"
+49:echo "3. STATUS / RESULT / VERDICT / EXIT"
+60:  '(STATUS|RESULT|VERDICT|EXIT_CODE|REPORT)[[:space:]]*=' \
+62:grep -Ei 'P0|R[0-9]{1,2}|gate|phase|audit|proof|provenance|authority|registry|secret' |
+67:echo "4. HUMAN VERDICT SIGNALS"
+78:  '\b(PASS|FAIL|FAILED|SUCCESS|ERROR|BLOCKED|SKIPPED|OPEN|CLOSED|INCONCLUSIVE|DRIFT|LOOP|REDUNDANT|MISSING|ABSENT|PRESENT)\b' \
+80:grep -Ei 'P0|R[0-9]{1,2}|gate|phase|audit|proof|provenance|authority|registry|secret' |
+119:echo "7. DUPLICATE / REPEATED GATE NAMES"
+183:grep -Ei 'p0|r[0-9]{1,2}|gate|audit|proof|provenance|authority|registry|secret|reconcil|stability' |
+215:echo "  grep -nE '^(R|P0|STATUS|RESULT|VERDICT|EXIT_CODE|PASS|FAIL|BLOCKED|OPEN|CLOSED)' $OUT | head -250"
+
+FILE=P0_R1_R65_META_AUDIT_20260903_105537.txt
+7208:1788368789.7190324860 2026-09-02 19:06:29.7190324860 ./apps/web/node_modules/es-abstract/2024/UTF16SurrogatePairToCodePoint.js
+7209:1788368789.7150324860 2026-09-02 19:06:29.7150324860 ./apps/web/node_modules/es-abstract/2023/UTF16SurrogatePairToCodePoint.js
+7210:1788368789.7150324860 2026-09-02 19:06:29.7150324860 ./apps/web/node_modules/es-abstract/2022/UTF16SurrogatePairToCodePoint.js
+7211:1788368789.7150324860 2026-09-02 19:06:29.7150324860 ./apps/web/node_modules/es-abstract/2021/UTF16SurrogatePairToCodePoint.js
+7212:1788368789.7030324860 2026-09-02 19:06:29.7030324860 ./apps/web/node_modules/es-abstract/2020/UTF16DecodeSurrogatePair.js
+7214:1788368787.8230324860 2026-09-02 19:06:27.8230324860 ./apps/web/node_modules/es-abstract/helpers/isTrailingSurrogate.js
+7215:1788368787.5990324860 2026-09-02 19:06:27.5990324860 ./apps/web/node_modules/next/dist/compiled/@babel/runtime/helpers/esm/asyncGeneratorDelegate.js
+7216:1788368787.5910324860 2026-09-02 19:06:27.5910324860 ./apps/web/node_modules/next/dist/compiled/@babel/runtime/helpers/asyncGeneratorDelegate.js
+7217:1788368787.5630324860 2026-09-02 19:06:27.5630324860 ./apps/web/node_modules/es-abstract/helpers/isLeadingSurrogate.js
+7218:1788368780.9350324860 2026-09-02 19:06:20.9350324860 ./apps/web/node_modules/eslint/lib/rules/no-negated-in-lhs.js
+7219:1788368780.9150324860 2026-09-02 19:06:20.9150324860 ./apps/web/node_modules/eslint/lib/rules/no-negated-condition.js
+7220:1788368779.4670324860 2026-09-02 19:06:19.4670324860 ./apps/web/node_modules/@swc/helpers/src/_async_generator_delegate.mjs
+7221:1788368778.5270324860 2026-09-02 19:06:18.5270324860 ./apps/web/node_modules/tailwindcss/src/util/negateValue.js
+7222:1788368778.4990324860 2026-09-02 19:06:18.4990324860 ./apps/web/node_modules/tailwindcss/lib/util/negateValue.js
+7225:1788368777.7030324860 2026-09-02 19:06:17.7030324860 ./apps/web/node_modules/eslint/lib/rules/utils/unicode/is-surrogate-pair.js
+
+FILE=collect_p0_r1_r65_meta_audit.sh
+94:    '(STATUS|RESULT|EXIT_CODE|REPORT|VERDICT|PASS|FAIL|FAILED|SUCCESS|ERROR|WARN|WARNING|BLOCKED|SKIPPED|OPEN|CLOSED|INCONCLUSIVE)[[:space:]]*=' \
+98:section "6. GATE SCRIPT INTERNAL IDENTIFIERS"
+123:        -iname '*result*' -o \
+124:        -iname '*status*' -o \
+125:        -iname '*verdict*' \
+138:    \( -iname '*.log' -o -iname '*report*' -o -iname '*result*' \) \
+159:        'p0|r[0-9]{1,2}|phase|gate|audit|provenance|registry|secret|reconcil|stability' \
+184:section "11. REFERENCES BETWEEN R-GATES"
+195:    'R[0-9]{1,2}[[:space:]]*(→|->|TO|AFTER|BEFORE|NEXT|PREVIOUS|FOLLOW|DEPENDS|DEPENDENCY|PREREQUISITE|BLOCKS|BLOCKED)' \
+214:section "13. GATE RESULT KEYWORDS"
+225:    '(PASS|FAIL|FAILED|SUCCESS|ERROR|BLOCKED|SKIPPED|OPEN|CLOSED|DRIFT|LOOP|REDUNDANT|INCONCLUSIVE|MISSING|ABSENT|PRESENT)' \
+227:    | grep -Ei 'R[0-9]{1,2}|P0|gate|verdict|status|result' \
+246:    | grep -Ei 'p0|r[0-9]{1,2}|gate|audit|provenance|registry|secret|reconcil|stability' \
+258:    | grep -Ei 'p0|r[0-9]{1,2}|gate|audit|provenance|registry|secret|reconcil|stability' \
+283:    \( -iname '*.log' -o -iname '*report*' -o -iname '*result*' \) \
+
+============================================================
+4. SUPERSESSION / RECONCILIATION CHAIN
+============================================================
+/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh:116:  '(R60|R61|R62|R63|R64|R65).*(supersed|replac|reconcil|fix|repair|correct|follow|continu|prior|previous|closure|authority)' \
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:74:116:  '(R60|R61|R62|R63|R64|R65).*(supersed|replac|reconcil|fix|repair|correct|follow|continu|prior|previous|closure|authority)' \
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:215:116:  '(R60|R61|R62|R63|R64|R65).*(supersed|replac|reconcil|fix|repair|correct|follow|continu|prior|previous|closure|authority)' \
+
+============================================================
+5. R60 BLOCKER REFERENCES
+============================================================
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_META_AUDIT_20260903_105537.txt:2304:./.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_DECISION_MAP_20260903_105724.txt:1733:./.production-release/r60-test/test-r60-release-aware-deploy.sh:209: printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh:122:section "5. R60 BLOCKER REFERENCES"
+/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh:129:  '(R60|r60).*(BLOCKER|BLOCKED|FAIL|ERROR|OPEN)' \
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:220:/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:224:/data/data/com.termux/files/home/waste-platform/P0_R1_R65_META_AUDIT_20260903_105537.txt:2304:./.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:229:/data/data/com.termux/files/home/waste-platform/P0_R1_R65_DECISION_MAP_20260903_105724.txt:1733:./.production-release/r60-test/test-r60-release-aware-deploy.sh:209: printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:430:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:704:/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:718:/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:704:/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:1349:R60 | OPEN_REVIEW
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:76:122:section "5. R60 BLOCKER REFERENCES"
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:77:129:  '(R60|r60).*(BLOCKER|BLOCKED|FAIL|ERROR|OPEN)' \
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:122:209:printf 'R60_TEST_STATUS=FAIL\n'
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:217:122:section "5. R60 BLOCKER REFERENCES"
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:218:129:  '(R60|r60).*(BLOCKER|BLOCKED|FAIL|ERROR|OPEN)' \
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:254:1349:R60 | OPEN_REVIEW
+/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:431:5. R60 BLOCKER REFERENCES
+
+============================================================
+6. R62 REGISTRY AUTHORITY SHAPE
+============================================================
+--- docker-compose.yml ---
+3:    image: postgres:16-alpine
+21:    image: redis:7-alpine
+35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+
+--- ENVIRONMENT KEY PRESENCE ONLY ---
+REGISTRY_IMAGE_PREFIX=ABSENT
+IMAGE_TAG=ABSENT
+RELEASE_ID=ABSENT
+
+============================================================
+7. CURRENT MASTER GATE
+============================================================
+MASTER=P0_R1_R65_MASTER_DECISION_GATE_20260904_201045.txt
+29:DECISION_MAP=NOT_FOUND
+30:META_AUDIT=NOT_FOUND
+1454:FACT_A_DECISION_MAP_PRESENT=
+1456:FACT_B_META_AUDIT_PRESENT=
+1458:FACT_C_R57_59_62_64_NOT_FOUND_IN_MAP=
+1477:DO NOT CONTINUE TO THE NEXT R AUTOMATICALLY.
+1479:AUTHORIZED_NEXT_STEP_CATEGORIES:
+1491:END P0 → R1-R65 MASTER DECISION GATE
+1493:OUTPUT_FILE=P0_R1_R65_MASTER_DECISION_GATE_20260904_201045.txt
+1494:OUTPUT_LINES=1493
+
+============================================================
+8. LATEST R60 → R65 FILE CHRONOLOGY
+============================================================
+1788547160.4925911810|2026-09-04 20:39:20.4925911810|/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+1788547154.3645911800|2026-09-04 20:39:14.3645911800|/data/data/com.termux/files/home/waste-platform/inspect_r60_r65_reconciliation.sh
+1788517695.1222192070|2026-09-04 12:28:15.1222192070|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+1788463428.7902159720|2026-09-03 21:23:48.7902159720|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+1788463253.6382159620|2026-09-03 21:20:53.6382159620|/data/data/com.termux/files/home/waste-platform/reconstruct_p0_r65_global_truth_map.sh
+1788429745.2790361190|2026-09-03 12:02:25.2790361190|/data/data/com.termux/files/home/waste-platform/build_p0_r1_r65_closure_truth_map.sh
+1788429663.8110361150|2026-09-03 12:01:03.8110361150|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+1788428762.8030360610|2026-09-03 11:46:02.8030360610|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+1788427277.9470359720|2026-09-03 11:21:17.9470359720|/data/data/com.termux/files/home/waste-platform/P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+1788426270.8990359120|2026-09-03 11:04:30.8990359120|/data/data/com.termux/files/home/waste-platform/analyze_p0_r54_r65_frontier.sh
+1788426165.6790359060|2026-09-03 11:02:45.6790359060|/data/data/com.termux/files/home/waste-platform/GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+1788426129.0590359040|2026-09-03 11:02:09.0590359040|/data/data/com.termux/files/home/waste-platform/GLOBAL_P0_R1_R65_STATE.sh
+1788425867.9230358880|2026-09-03 10:57:47.9230358880|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_DECISION_MAP_20260903_105724.txt
+1788425844.7550358870|2026-09-03 10:57:24.7550358870|/data/data/com.termux/files/home/waste-platform/build_p0_r65_decision_map.sh
+1788425765.8790358820|2026-09-03 10:56:05.8790358820|/data/data/com.termux/files/home/waste-platform/P0_R1_R65_META_AUDIT_20260903_105537.txt
+1788425737.0110358810|2026-09-03 10:55:37.0110358810|/data/data/com.termux/files/home/waste-platform/collect_p0_r1_r65_meta_audit.sh
+1788424691.6390358180|2026-09-03 10:38:11.6390358180|/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh
+1788424691.5550358180|2026-09-03 10:38:11.5550358180|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/deploy.sh
+1788424691.5110358180|2026-09-03 10:38:11.5110358180|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/docker-compose.yml
+1788423575.6150357520|2026-09-03 10:19:35.6150357520|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/production-recovery.sh
+1787769270.0660243590|2026-08-26 20:34:30.0660243590|/data/data/com.termux/files/home/waste-platform/.production-release/r60-backup/docker-compose.yml.20260903_103811.bak
+1786049232.0000000000|2026-08-06 22:47:12.0000000000|/data/data/com.termux/files/home/waste-platform/.production-release/r60-backup/deploy.sh.20260903_103811.bak
+1785524715.0000000000|2026-07-31 21:05:15.0000000000|/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/ci.yml
+
+============================================================
+9. GIT STATE
+============================================================
+--- BRANCH ---
+main
+
+--- STATUS (MAX 80) ---
+ D .backup/pre-admin-user-type.diff
+ D .backup/pre-change.diff
+ D .backup/pre-next-ts-fixes.diff
+ D .env.before-newline-fix.20260817-120730
+ D .env.dedup.20260817-120833
+ D .env.finalbak.20260817-131129
+ D .env.fixbak.20260817-115715
+ M README.md
+ M app/core/config.py
+ M app/shared/infrastructure/security/jwt_service.py
+ M app/shared/presentation/auth_dependencies.py
+ M app/shared/presentation/metrics_router.py
+ M apps/web/src/features/listings/components/listing-form.tsx
+ M apps/web/src/lib/api/http.ts
+ M apps/web/src/lib/config.ts
+ D audit_report.json
+ D auto_fix_audit.py
+ M docker-compose.yml
+ D docker-compose.yml.backend-frontend-variant-20260808-011656
+ D docs/DEPLOYMENT.md
+ M docs/deployment.md
+ M docs/infra.md
+ D fix_report.txt
+ M scripts/deploy.sh
+ M scripts/dev/complete_fix.sh
+ M scripts/legacy/create-missing-files.sh
+ M scripts/legacy/final-fix.sh
+?? .closure_truth_20260903_114557/
+?? .closure_truth_20260903_120101/
+?? .closure_truth_20260903_120225/
+?? .production-release/
+?? FINALIZATION_ROADMAP.md
+?? GLOBAL_P0_R1_R65_STATE.sh
+?? GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+?? P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+?? P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+?? P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+?? P0_R1_R65_DECISION_MAP_20260903_105724.txt
+?? P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+?? P0_R1_R65_META_AUDIT_20260903_105537.txt
+?? P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+?? R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+?? all_projects_list.xml
+?? analyze_p0_r54_r65_frontier.sh
+?? build_p0_r1_r65_closure_truth_map.sh
+?? build_p0_r65_decision_map.sh
+?? client_state.xml
+?? client_state_prev.xml
+?? collect_p0_r1_r65_meta_audit.sh
+?? coproc_info.xml
+?? daily_xfer_history.xml
+?? fix_r26_extra_paren.sh
+?? fix_r26_quote.sh
+?? gui_rpc_auth.cfg
+?? inspect_r60_r65_reconciliation.sh
+?? list
+?? locate_r26_quote_break.sh
+?? locate_r27_compose_literals.sh
+?? locate_r27_literal_parser.sh
+?? lockfile
+?? lookup_website.html
+?? notices/
+?? p0_03_r48_production_reload_authority_gate.txt
+?? p0_03_r49_ci_production_deployment_authority_gate.txt
+?? p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+?? p0_03_r51_production_deployment_safety_authority_gate.txt
+?? p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+?? p0_03_r53_production_recovery_authority_implementation.txt
+?? p0_03_r54_release_identity_authority_reconciliation_gate.txt
+?? p0_03_r56_release_identity_post_r55_verification.txt
+?? phase_p0_01_production_source_boundary.sh
+?? phase_p0_01_r2_production_authority_resolver.sh
+?? phase_p0_01_r3_authority_discriminator.sh
+?? phase_p0_01_r4_legacy_ttl_targeted_review.sh
+?? phase_p0_01_r5_legacy_ttl_authority_closure.sh
+?? phase_p0_01_r6_forensic_execution_proof.sh
+?? phase_p0_01_r7_semantic_execution_proof.sh
+?? phase_p0_01_r8_token_aware_execution_proof.sh
+?? phase_p0_02_r10_secret_cross_authority_closure.sh
+?? phase_p0_02_r11_secret_provenance_lineage_closure.sh
+
+--- RECENT COMMITS ---
+3baeef8 (HEAD -> main) chore: quarantine forensic clutter and stop tracking env secrets
+9ca7ba3 chore: remove local archive artifacts from version control
+d8c2730 fix: repair shell syntax in run-check helper
+69bbaa4 chore: add reusable development diagnostics
+02df337 checkpoint: priebezne zmeny pred dalsim krokom
+034826c feat(web): add frontend feature barrel exports and cmep styles
+9f7da29 refactor(web): consolidate tracked frontend application updates
+47aa0c3 refactor: reconcile backend docker and repository wiring
+6187795 chore: add reusable repository operations scripts
+c18910f test: add backend unit test coverage
+3682b0c refactor(web): normalize API client and auth configuration
+1fe6c46 refactor(admin): align admin module with layered structure
+
+============================================================
+10. FINAL MACHINE SUMMARY
+============================================================
+R60=PRESENT|COUNT=5|LATEST=R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+R61=PRESENT|COUNT=4|LATEST=.production-release/r61-backup-20260903_104708/deploy.sh
+R62=NOT_FOUND
+R63=NOT_FOUND
+R64=NOT_FOUND
+R65=PRESENT|COUNT=16|LATEST=R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+
+============================================================
+END R60 → R65 FORENSIC RECONCILIATION
+============================================================
+OUTPUT_FILE=/data/data/com.termux/files/home/waste-platform/R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+OUTPUT_LINES=624
+MODE=READ_ONLY
+============================================================

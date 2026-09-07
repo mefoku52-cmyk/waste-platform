@@ -1,0 +1,254 @@
+
+============================================================
+P0-03 R56 RELEASE IDENTITY POST-R55 VERIFICATION
+============================================================
+
+============================================================
+1. SAFETY CONTRACT
+============================================================
+PASS: PROJECT_ROOT_CONFIRMED
+PASS: READ_ONLY
+PASS: NO_RUNTIME_EXECUTION
+PASS: NO_BUILD
+PASS: NO_DEPLOYMENT
+PASS: NO_DATABASE_MODIFICATION
+PASS: NO_ENV_EXECUTION
+PASS: NO_SECRET_VALUES_PRINTED
+PASS: RELEASE_IDENTITY_VERIFICATION_ONLY
+
+============================================================
+2. R55 ARTIFACT PRESENCE
+============================================================
+PASS: PRESENT: /data/data/com.termux/files/home/waste-platform/.production-release
+PASS: PRESENT: /data/data/com.termux/files/home/waste-platform/.production-release/release.env.example
+PASS: PRESENT: /data/data/com.termux/files/home/waste-platform/.production-release/README.md
+PASS: PRESENT: /data/data/com.termux/files/home/waste-platform/.production-release/ci-release-identity.example.yml
+PASS: PRESENT: /data/data/com.termux/files/home/waste-platform/scripts/validate-release-identity.sh
+PASS: PRESENT: /data/data/com.termux/files/home/waste-platform/scripts/production-recovery.sh
+
+============================================================
+3. FILE METADATA
+============================================================
+RELEASE_FILE=README.md SIZE=4 KB
+RELEASE_FILE=ci-release-identity.example.yml SIZE=4 KB
+RELEASE_FILE=release.env.example SIZE=4 KB
+SCRIPT=validate-release-identity.sh MODE=755 BYTES=808
+SCRIPT=production-recovery.sh MODE=755 BYTES=5345
+
+============================================================
+4. RELEASE CONTRACT CONTENT
+============================================================
+--- release.env.example ---
+# Production release identity contract.
+#
+# This file is intentionally an EXAMPLE only.
+# Never place secrets here.
+#
+# Production automation must provide:
+#
+# RELEASE_ID
+# IMAGE_TAG
+#
+# Recommended:
+#
+# RELEASE_ID=<MASKED>
+# IMAGE_TAG=<MASKED>
+#
+# Example:
+#
+# RELEASE_ID=<MASKED>
+# IMAGE_TAG=<MASKED>
+#
+# Do not use:
+#
+# latest
+# dev
+# test
+# current
+#
+# A deployment must fail closed when RELEASE_ID or IMAGE_TAG
+# is missing or invalid.
+#
+RELEASE_ID=<MASKED>
+IMAGE_TAG=<MASKED>
+--- end release.env.example ---
+
+============================================================
+5. CI HANDOFF CONTRACT CONTENT
+============================================================
+--- ci-release-identity.example.yml ---
+# Example CI release identity handoff.
+#
+# This file is documentation/configuration guidance only.
+# It is intentionally NOT included automatically in the active workflow.
+#
+# The real CI pipeline should establish an immutable release identity
+# from the CI-provided source revision.
+#
+# Example conceptual flow:
+#
+# RELEASE_ID=<MASKED>
+# IMAGE_TAG=<MASKED>
+#
+# Build:
+#
+# docker build \
+#   --tag "registry.example/waste-platform:${IMAGE_TAG}" \
+#   ...
+#
+# Push:
+#
+# docker push "registry.example/waste-platform:${IMAGE_TAG}"
+#
+# Production deployment then receives:
+#
+# RELEASE_ID
+# IMAGE_TAG
+#
+# The production deployment MUST NOT derive release identity by executing
+# git inside deploy.sh.
+--- end ci-release-identity.example.yml ---
+
+============================================================
+6. RECOVERY AUTHORITY STATIC ANALYSIS
+============================================================
+RECOVERY_FAIL_FAST_COUNT=1
+RECOVERY_SOURCE_ENV_COUNT=0
+RECOVERY_RELOAD_COUNT=0
+RECOVERY_DOWNGRADE_COUNT=0
+RECOVERY_SECRET_REFERENCE_COUNT=0
+RECOVERY_RELEASE_ID_COUNT=20
+RECOVERY_IMAGE_TAG_COUNT=6
+RECOVERY_PREVIOUS_RELEASE_COUNT=17
+RECOVERY_ROLLBACK_COUNT=9
+RECOVERY_HEALTH_COUNT=8
+RECOVERY_DRY_RUN_COUNT=6
+PASS: RECOVERY_FAIL_FAST_PRESENT
+PASS: RECOVERY_DOES_NOT_SOURCE_ENV
+PASS: RECOVERY_HAS_NO_RELOAD
+PASS: RECOVERY_HAS_NO_DATABASE_DOWNGRADE
+PASS: RECOVERY_RELEASE_IDENTITY_SURFACE_PRESENT
+PASS: RECOVERY_PREVIOUS_RELEASE_STATE_PRESENT
+PASS: RECOVERY_ROLLBACK_AUTHORITY_PRESENT
+PASS: RECOVERY_HEALTH_VERIFICATION_PRESENT
+PASS: RECOVERY_DRY_RUN_CONTROL_PRESENT
+
+============================================================
+7. RELEASE VALIDATOR STATIC ANALYSIS
+============================================================
+VALIDATOR_RELEASE_ID_COUNT=8
+VALIDATOR_IMAGE_TAG_COUNT=7
+VALIDATOR_FORBIDDEN_MUTABLE_ID_COUNT=2
+VALIDATOR_FAIL_CLOSED_SIGNAL_COUNT=9
+PASS: VALIDATOR_CHECKS_RELEASE_ID_AND_IMAGE_TAG
+PASS: VALIDATOR_FORBIDS_MUTABLE_RELEASE_IDENTITIES
+PASS: VALIDATOR_FAIL_CLOSED_SIGNAL_PRESENT
+
+============================================================
+8. PRIMARY COMPOSE IMAGE / BUILD TOPOLOGY
+============================================================
+COMPOSE_IMAGE_COUNT=2
+COMPOSE_BUILD_COUNT=2
+COMPOSE_LATEST_COUNT=0
+COMPOSE_SHA_OR_DIGEST_COUNT=0
+COMPOSE_VARIABLE_IMAGE_COUNT=0
+PASS: COMPOSE_IMAGE_SURFACE_PRESENT
+PASS: COMPOSE_NO_LATEST_REFERENCE
+REVIEW: COMPOSE_STILL_USES_BUILD_CONTEXT
+REVIEW: COMPOSE_IMMUTABLE_SHA_OR_DIGEST_NOT_PRESENT
+
+--- IMAGE / BUILD LINES ---
+3:    image: postgres:16-alpine
+21:    image: redis:7-alpine
+35:    build:
+55:    build:
+--- END IMAGE / BUILD LINES ---
+
+============================================================
+9. PRIMARY DEPLOYMENT IDENTITY SURFACE
+============================================================
+DEPLOY_RELEASE_ID_COUNT=0
+DEPLOY_IMAGE_TAG_COUNT=0
+DEPLOY_LATEST_COUNT=0
+DEPLOY_RELOAD_COUNT=0
+DEPLOY_ENV_SOURCE_COUNT=0
+DEPLOY_COMPOSE_COUNT=5
+PASS: PRIMARY_DEPLOYMENT_HAS_NO_LATEST_REFERENCE
+PASS: PRIMARY_DEPLOYMENT_HAS_NO_RELOAD
+PASS: PRIMARY_DEPLOYMENT_DOES_NOT_SOURCE_ENV
+PASS: PRIMARY_DEPLOYMENT_USES_COMPOSE
+REVIEW: PRIMARY_DEPLOYMENT_RELEASE_IDENTITY_NOT_YET_WIRED
+
+============================================================
+10. CI RELEASE IDENTITY SURFACE
+============================================================
+CI_SHA_COUNT=0
+CI_RELEASE_ID_COUNT=0
+CI_IMAGE_TAG_COUNT=0
+CI_BUILD_COUNT=3
+CI_PUSH_COUNT=0
+CI_REGISTRY_COUNT=3
+CI_DEPLOY_SCRIPT_COUNT=0
+CI_PRODUCTION_COUNT=0
+REVIEW: CI_SOURCE_REVISION_SIGNAL_NOT_DETECTED
+REVIEW: CI_RELEASE_ID_SIGNAL_NOT_YET_WIRED
+REVIEW: CI_IMAGE_TAG_SIGNAL_NOT_YET_WIRED
+PASS: CI_BUILD_PATH_PRESENT
+REVIEW: CI_ARTIFACT_PUSH_SIGNAL_NOT_DETECTED
+PASS: CI_REGISTRY_SIGNAL_PRESENT
+REVIEW: CI_DOES_NOT_REFERENCE_PRODUCTION_AUTHORITY
+
+--- CI RELEASE-RELATED LINES, VALUES MASKED ---
+91:          docker build -t cmep-api:${{ github.sha }} -f Dockerfile .
+95:          docker build -t cmep-worker:${{ github.sha }} -f worker/Dockerfile .
+135:          docker build -t cmep-web:${{ github.sha }} -f Dockerfile .
+--- END CI RELEASE LINES ---
+
+============================================================
+11. RECOVERY STATE SAFETY
+============================================================
+PASS: RECOVERY_STATE_DIRECTORY_PRESENT
+REVIEW: PREVIOUS_RELEASE_STATE_FILE_NOT_CREATED_YET
+
+============================================================
+12. RELEASE-ID CONSISTENCY MODEL
+============================================================
+CONTRACT_RELEASE_ID_PRESENT=1
+CONTRACT_IMAGE_TAG_PRESENT=1
+RECOVERY_RELEASE_ID_SURFACE=20
+RECOVERY_IMAGE_TAG_SURFACE=6
+CI_RELEASE_SURFACE=0
+PASS: RELEASE_CONTRACT_HAS_REQUIRED_IDENTIFIERS
+PASS: RECOVERY_CONSUMES_RELEASE_IDENTIFIERS
+REVIEW: CI_RELEASE_IDENTITY_HANDOFF_STILL_MISSING
+
+============================================================
+13. R55 CONTRACT INTEGRITY DECISION
+============================================================
+PASS: R55_IMPLEMENTATION_HAS_NO_STATIC_SAFETY_FAILURES
+PASS: RECOVERY_SAFETY_CONTRACT_INTACT
+
+============================================================
+14. CURRENT ARCHITECTURAL STATE
+============================================================
+R55_CONTRACT_LAYER=1
+RECOVERY_AUTHORITY_PRESENT=1
+CI_RELEASE_IDENTITY_HANDOFF=0
+PRODUCTION_DEPLOY_RELEASE_IDENTITY=0
+IMMUTABLE_COMPOSE_REFERENCE=0
+BUILD_CONTEXT_REMAINS=1
+
+============================================================
+15. FINAL R56 DECISION
+============================================================
+FAILURE_COUNT=0
+REVIEW_COUNT=10
+
+P0_03_R56_STATUS=REVIEW
+RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+EXIT_CODE=1
+REPORT=/data/data/com.termux/files/home/waste-platform/p0_03_r56_release_identity_post_r55_verification.txt
+
+============================================================
+R56 COMPLETE
+============================================================

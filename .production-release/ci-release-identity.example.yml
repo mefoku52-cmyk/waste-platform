@@ -1,0 +1,30 @@
+# Example CI release identity handoff.
+#
+# This file is documentation/configuration guidance only.
+# It is intentionally NOT included automatically in the active workflow.
+#
+# The real CI pipeline should establish an immutable release identity
+# from the CI-provided source revision.
+#
+# Example conceptual flow:
+#
+# RELEASE_ID="sha-${GITHUB_SHA}"
+# IMAGE_TAG="release-${GITHUB_SHA}"
+#
+# Build:
+#
+# docker build \
+#   --tag "registry.example/waste-platform:${IMAGE_TAG}" \
+#   ...
+#
+# Push:
+#
+# docker push "registry.example/waste-platform:${IMAGE_TAG}"
+#
+# Production deployment then receives:
+#
+# RELEASE_ID
+# IMAGE_TAG
+#
+# The production deployment MUST NOT derive release identity by executing
+# git inside deploy.sh.

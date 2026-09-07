@@ -1,0 +1,21 @@
+=== LIST REAL ROUTES ===
+CAS: 2026-09-05 17:18:30 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+=== REGISTROVANE ROUTES ===
+PATH=/openapi.json | METHODS=['GET', 'HEAD'] | NAME=openapi | ENDPOINT=openapi
+PATH=/docs | METHODS=['GET', 'HEAD'] | NAME=swagger_ui_html | ENDPOINT=swagger_ui_html
+PATH=/docs/oauth2-redirect | METHODS=['GET', 'HEAD'] | NAME=swagger_ui_redirect | ENDPOINT=swagger_ui_redirect
+PATH=/redoc | METHODS=['GET', 'HEAD'] | NAME=redoc_html | ENDPOINT=redoc_html
+PATH=/health | METHODS=['GET'] | NAME=health | ENDPOINT=health
+
+=== API ROUTES ONLY ===
+
+=== HEALTH/METRICS FILTER ===
+/openapi.json -> ['GET', 'HEAD']
+/docs -> ['GET', 'HEAD']
+/docs/oauth2-redirect -> ['GET', 'HEAD']
+/health -> ['GET']
+
+REPORT: /data/data/com.termux/files/home/waste-platform/scripts/grok-audit/list_real_routes_report.txt
+=== KONIEC LIST REAL ROUTES ===

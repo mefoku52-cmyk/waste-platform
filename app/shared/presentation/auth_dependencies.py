@@ -37,9 +37,7 @@ async def require_admin(current_user: CurrentUserResponse = Depends(require_curr
 
     email = _user_email(current_user)
     raw = getattr(settings, "platform_admin_emails", None)
-    if raw is None:
-        import os
-        raw = os.getenv("PLATFORM_ADMIN_EMAILS", "admin@cmep-bootstrap.dev")
+    raw = settings.PLATFORM_ADMIN_EMAILS
     admins = {e.strip().lower() for e in str(raw).split(",") if e.strip()}
     codes = _role_codes(current_user)
     if email in admins or "admin" in codes or "platform_admin" in codes:

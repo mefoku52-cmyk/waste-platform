@@ -30,7 +30,8 @@ RATE_LIMIT_EXCEEDED_TOTAL = Counter(
 )
 
 def _allowed_hosts() -> set[str]:
-    raw = os.getenv("METRICS_ALLOWED_IPS", "127.0.0.1,::1,localhost")
+    from app.core.config import settings
+    raw = settings.METRICS_ALLOWED_IPS
     return {item.strip() for item in raw.split(",") if item.strip()}
 
 def _is_internal_metrics_request(request: Request) -> bool:
@@ -43,7 +44,8 @@ def _is_internal_metrics_request(request: Request) -> bool:
 
 @router.get("/metrics", include_in_schema=False)
 async def metrics(request: Request) -> Response:
-    enabled = os.getenv("ENABLE_METRICS", "false").strip().lower() in {"1", "true", "yes", "on"}
+    from app.core.config import settings
+    enabled = settings.ENABLE_METRICS
     if not enabled:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     if not _is_internal_metrics_request(request):

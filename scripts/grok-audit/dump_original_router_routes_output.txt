@@ -1,0 +1,155 @@
+=== DUMP ORIGINAL ROUTER ROUTES ===
+[PARENT 6] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=12
+    [1] _IncludedRouter path=None name=None methods=None
+    [2] _IncludedRouter path=None name=None methods=None
+    [3] _IncludedRouter path=None name=None methods=None
+    [4] _IncludedRouter path=None name=None methods=None
+    [5] _IncludedRouter path=None name=None methods=None
+    [6] _IncludedRouter path=None name=None methods=None
+    [7] _IncludedRouter path=None name=None methods=None
+    [8] _IncludedRouter path=None name=None methods=None
+    [9] _IncludedRouter path=None name=None methods=None
+    [10] _IncludedRouter path=None name=None methods=None
+    [11] _IncludedRouter path=None name=None methods=None
+    [12] _IncludedRouter path=None name=None methods=None
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff1bd6a0>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff1bd6a0>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 7] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=6
+    [1] APIRoute path='/auth/login' name='login' methods=['POST']
+    [2] APIRoute path='/auth/refresh' name='refresh_token' methods=['POST']
+    [3] APIRoute path='/auth/logout' name='logout' methods=['POST']
+    [4] APIRoute path='/auth/me' name='me' methods=['GET']
+    [5] APIRoute path='/auth/forgot-password' name='forgot_password' methods=['POST']
+    [6] APIRoute path='/auth/reset-password' name='reset_password' methods=['POST']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x740003b610>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x740003b610>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 8] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=5
+    [1] APIRoute path='/users' name='list_users' methods=['GET']
+    [2] APIRoute path='/users' name='create_user' methods=['POST']
+    [3] APIRoute path='/users/{user_id}' name='get_user' methods=['GET']
+    [4] APIRoute path='/users/{user_id}' name='update_user' methods=['PATCH']
+    [5] APIRoute path='/users/{user_id}/status' name='transition_user_status' methods=['PATCH']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ffd8d940>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ffd8d940>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 9] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=5
+    [1] APIRoute path='/companies' name='list_companies' methods=['GET']
+    [2] APIRoute path='/companies' name='create_company' methods=['POST']
+    [3] APIRoute path='/companies/{company_id}' name='get_company' methods=['GET']
+    [4] APIRoute path='/companies/{company_id}' name='update_company' methods=['PATCH']
+    [5] APIRoute path='/companies/{company_id}/status' name='transition_company_status' methods=['PATCH']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ffd8efd0>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ffd8efd0>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 10] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=4
+    [1] APIRoute path='/companies/{company_id}/memberships' name='list_company_memberships' methods=['GET']
+    [2] APIRoute path='/companies/{company_id}/memberships' name='create_company_membership' methods=['POST']
+    [3] APIRoute path='/company-memberships/{membership_id}' name='update_company_membership' methods=['PATCH']
+    [4] APIRoute path='/company-memberships/{membership_id}/status' name='transition_company_membership_status' methods=['PATCH']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ffd6be30>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ffd6be30>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 11] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=8
+    [1] APIRoute path='/listings' name='list_listings' methods=['GET']
+    [2] APIRoute path='/listings/marketplace' name='list_marketplace' methods=['GET']
+    [3] APIRoute path='/listings/matches' name='list_matches' methods=['GET']
+    [4] APIRoute path='/listings/{id}' name='get_listing' methods=['GET']
+    [5] APIRoute path='/listings' name='create_listing' methods=['POST']
+    [6] APIRoute path='/listings/{id}' name='update_listing' methods=['PATCH']
+    [7] APIRoute path='/listings/{id}/publish' name='publish_listing' methods=['POST']
+    [8] APIRoute path='/listings/{id}' name='delete_listing' methods=['DELETE']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff2fd370>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff2fd370>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 12] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=8
+    [1] APIRoute path='/inquiries' name='list_inquiries' methods=['GET']
+    [2] APIRoute path='/inquiries/received' name='list_received_inquiries' methods=['GET']
+    [3] APIRoute path='/inquiries/sent' name='list_sent_inquiries' methods=['GET']
+    [4] APIRoute path='/inquiries/{id}' name='get_inquiry' methods=['GET']
+    [5] APIRoute path='/inquiries' name='create_inquiry' methods=['POST']
+    [6] APIRoute path='/inquiries/{id}/status' name='update_inquiry_status' methods=['PATCH']
+    [7] APIRoute path='/inquiries/{id}' name='update_inquiry' methods=['PATCH']
+    [8] APIRoute path='/inquiries/{id}' name='delete_inquiry' methods=['DELETE']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff22b130>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff22b130>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 13] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=5
+    [1] APIRoute path='/documents' name='list_documents' methods=['GET']
+    [2] APIRoute path='/documents/{id}' name='get_document' methods=['GET']
+    [3] APIRoute path='/documents' name='create_document' methods=['POST']
+    [4] APIRoute path='/documents/{id}' name='update_document' methods=['PATCH']
+    [5] APIRoute path='/documents/{id}' name='delete_document' methods=['DELETE']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff397790>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff397790>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 14] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=5
+    [1] APIRoute path='/compliance' name='list_compliance' methods=['GET']
+    [2] APIRoute path='/compliance/{id}' name='get_compliance' methods=['GET']
+    [3] APIRoute path='/compliance' name='create_compliance' methods=['POST']
+    [4] APIRoute path='/compliance/{id}' name='update_compliance' methods=['PATCH']
+    [5] APIRoute path='/compliance/{id}' name='delete_compliance' methods=['DELETE']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff342140>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff342140>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 15] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=6
+    [1] APIRoute path='/notifications' name='list_notifications' methods=['GET']
+    [2] APIRoute path='/notifications/{id}' name='get_notification' methods=['GET']
+    [3] APIRoute path='/notifications' name='create_notification' methods=['POST']
+    [4] APIRoute path='/notifications/{id}/mark-read' name='mark_notification_read' methods=['POST']
+    [5] APIRoute path='/notifications/{id}/mark-unread' name='mark_notification_unread' methods=['POST']
+    [6] APIRoute path='/notifications/{id}' name='delete_notification' methods=['DELETE']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff16d590>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff16d590>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 16] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=5
+    [1] APIRoute path='/analytics' name='list_analytics' methods=['GET']
+    [2] APIRoute path='/analytics/{id}' name='get_analytic' methods=['GET']
+    [3] APIRoute path='/analytics' name='create_analytic' methods=['POST']
+    [4] APIRoute path='/analytics/{id}' name='update_analytic' methods=['PATCH']
+    [5] APIRoute path='/analytics/{id}' name='delete_analytic' methods=['DELETE']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff4f5f20>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff4f5f20>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 17] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=4
+    [1] APIRoute path='/admin' name='list_admin' methods=['GET']
+    [2] APIRoute path='/admin/all' name='list_all_admin' methods=['GET']
+    [3] APIRoute path='/admin/{id}' name='get_admin' methods=['GET']
+    [4] APIRoute path='/admin' name='create_admin' methods=['POST']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff5fa9c0>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff5fa9c0>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+
+[PARENT 18] _IncludedRouter
+  original_router_type=APIRouter
+  original_router.routes count=3
+    [1] APIRoute path='/uploads' name='upload_file' methods=['POST']
+    [2] APIRoute path='/uploads/{file_id}' name='get_uploaded_file' methods=['GET']
+    [3] APIRoute path='/uploads/files/{file_id}' name='get_uploaded_file_legacy' methods=['GET']
+  effective_route_contexts_type=method
+  effective_route_contexts_repr=<bound method _IncludedRouter.effective_route_contexts of _IncludedRouter(original_router=<fastapi.routing.APIRouter object at 0x73ff19a9c0>, include_context=_RouterIncludeContext(included_router=<fastapi.routing.APIRouter object at 0x73ff19a9c0>, prefix='/api/v1', tags=[], dependencies=[], default_response_class=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ced50>, responses={}, callbacks=[], deprecated=None, include_in_schema=True, generate_unique_id_function=<fastapi.datastructures.DefaultPlaceholder object at 0x74083ceda0>, strict_content_type=True, dependency_overrides_provider=<fastapi.applications.FastAPI object at 0x73ff10de80>), _effective_candidates=[], _effective_candidates_version=None, _effective_low_priority_routes=[], _effective_low_priority_routes_version=None
+

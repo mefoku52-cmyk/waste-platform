@@ -1,0 +1,318 @@
+=== BUILD PROJECT MANIFEST ===
+CAS: 2026-09-05 17:23:52 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+## BACKEND MODULE MANIFEST
+MODULE_PREFIX='/api/v1' FIRST_PATH=None ROUTE_COUNT=12
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+  - PATH=None METHODS=None NAME=None
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/auth/login' ROUTE_COUNT=6
+  - PATH='/auth/login' METHODS=['POST'] NAME='login'
+  - PATH='/auth/refresh' METHODS=['POST'] NAME='refresh_token'
+  - PATH='/auth/logout' METHODS=['POST'] NAME='logout'
+  - PATH='/auth/me' METHODS=['GET'] NAME='me'
+  - PATH='/auth/forgot-password' METHODS=['POST'] NAME='forgot_password'
+  - PATH='/auth/reset-password' METHODS=['POST'] NAME='reset_password'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/users' ROUTE_COUNT=5
+  - PATH='/users' METHODS=['GET'] NAME='list_users'
+  - PATH='/users' METHODS=['POST'] NAME='create_user'
+  - PATH='/users/{user_id}' METHODS=['GET'] NAME='get_user'
+  - PATH='/users/{user_id}' METHODS=['PATCH'] NAME='update_user'
+  - PATH='/users/{user_id}/status' METHODS=['PATCH'] NAME='transition_user_status'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/companies' ROUTE_COUNT=5
+  - PATH='/companies' METHODS=['GET'] NAME='list_companies'
+  - PATH='/companies' METHODS=['POST'] NAME='create_company'
+  - PATH='/companies/{company_id}' METHODS=['GET'] NAME='get_company'
+  - PATH='/companies/{company_id}' METHODS=['PATCH'] NAME='update_company'
+  - PATH='/companies/{company_id}/status' METHODS=['PATCH'] NAME='transition_company_status'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/companies/{company_id}/memberships' ROUTE_COUNT=4
+  - PATH='/companies/{company_id}/memberships' METHODS=['GET'] NAME='list_company_memberships'
+  - PATH='/companies/{company_id}/memberships' METHODS=['POST'] NAME='create_company_membership'
+  - PATH='/company-memberships/{membership_id}' METHODS=['PATCH'] NAME='update_company_membership'
+  - PATH='/company-memberships/{membership_id}/status' METHODS=['PATCH'] NAME='transition_company_membership_status'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/listings' ROUTE_COUNT=8
+  - PATH='/listings' METHODS=['GET'] NAME='list_listings'
+  - PATH='/listings/marketplace' METHODS=['GET'] NAME='list_marketplace'
+  - PATH='/listings/matches' METHODS=['GET'] NAME='list_matches'
+  - PATH='/listings/{id}' METHODS=['GET'] NAME='get_listing'
+  - PATH='/listings' METHODS=['POST'] NAME='create_listing'
+  - PATH='/listings/{id}' METHODS=['PATCH'] NAME='update_listing'
+  - PATH='/listings/{id}/publish' METHODS=['POST'] NAME='publish_listing'
+  - PATH='/listings/{id}' METHODS=['DELETE'] NAME='delete_listing'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/inquiries' ROUTE_COUNT=8
+  - PATH='/inquiries' METHODS=['GET'] NAME='list_inquiries'
+  - PATH='/inquiries/received' METHODS=['GET'] NAME='list_received_inquiries'
+  - PATH='/inquiries/sent' METHODS=['GET'] NAME='list_sent_inquiries'
+  - PATH='/inquiries/{id}' METHODS=['GET'] NAME='get_inquiry'
+  - PATH='/inquiries' METHODS=['POST'] NAME='create_inquiry'
+  - PATH='/inquiries/{id}/status' METHODS=['PATCH'] NAME='update_inquiry_status'
+  - PATH='/inquiries/{id}' METHODS=['PATCH'] NAME='update_inquiry'
+  - PATH='/inquiries/{id}' METHODS=['DELETE'] NAME='delete_inquiry'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/documents' ROUTE_COUNT=5
+  - PATH='/documents' METHODS=['GET'] NAME='list_documents'
+  - PATH='/documents/{id}' METHODS=['GET'] NAME='get_document'
+  - PATH='/documents' METHODS=['POST'] NAME='create_document'
+  - PATH='/documents/{id}' METHODS=['PATCH'] NAME='update_document'
+  - PATH='/documents/{id}' METHODS=['DELETE'] NAME='delete_document'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/compliance' ROUTE_COUNT=5
+  - PATH='/compliance' METHODS=['GET'] NAME='list_compliance'
+  - PATH='/compliance/{id}' METHODS=['GET'] NAME='get_compliance'
+  - PATH='/compliance' METHODS=['POST'] NAME='create_compliance'
+  - PATH='/compliance/{id}' METHODS=['PATCH'] NAME='update_compliance'
+  - PATH='/compliance/{id}' METHODS=['DELETE'] NAME='delete_compliance'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/notifications' ROUTE_COUNT=6
+  - PATH='/notifications' METHODS=['GET'] NAME='list_notifications'
+  - PATH='/notifications/{id}' METHODS=['GET'] NAME='get_notification'
+  - PATH='/notifications' METHODS=['POST'] NAME='create_notification'
+  - PATH='/notifications/{id}/mark-read' METHODS=['POST'] NAME='mark_notification_read'
+  - PATH='/notifications/{id}/mark-unread' METHODS=['POST'] NAME='mark_notification_unread'
+  - PATH='/notifications/{id}' METHODS=['DELETE'] NAME='delete_notification'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/analytics' ROUTE_COUNT=5
+  - PATH='/analytics' METHODS=['GET'] NAME='list_analytics'
+  - PATH='/analytics/{id}' METHODS=['GET'] NAME='get_analytic'
+  - PATH='/analytics' METHODS=['POST'] NAME='create_analytic'
+  - PATH='/analytics/{id}' METHODS=['PATCH'] NAME='update_analytic'
+  - PATH='/analytics/{id}' METHODS=['DELETE'] NAME='delete_analytic'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/admin' ROUTE_COUNT=4
+  - PATH='/admin' METHODS=['GET'] NAME='list_admin'
+  - PATH='/admin/all' METHODS=['GET'] NAME='list_all_admin'
+  - PATH='/admin/{id}' METHODS=['GET'] NAME='get_admin'
+  - PATH='/admin' METHODS=['POST'] NAME='create_admin'
+
+MODULE_PREFIX='/api/v1' FIRST_PATH='/uploads' ROUTE_COUNT=3
+  - PATH='/uploads' METHODS=['POST'] NAME='upload_file'
+  - PATH='/uploads/{file_id}' METHODS=['GET'] NAME='get_uploaded_file'
+  - PATH='/uploads/files/{file_id}' METHODS=['GET'] NAME='get_uploaded_file_legacy'
+
+## FRONTEND TREE
+./apps/web
+./apps/web/.dockerignore
+./apps/web/.env.local
+./apps/web/.eslintrc.json.legacy
+./apps/web/.lint-output.txt
+./apps/web/Dockerfile
+./apps/web/backups
+./apps/web/backups/src-lib-api
+./apps/web/backups/src-lib-auth
+./apps/web/build.log
+./apps/web/dev.log
+./apps/web/eslint.config.mjs
+./apps/web/log
+./apps/web/next-env.d.ts
+./apps/web/next.config.js
+./apps/web/next.config.mjs
+./apps/web/package-lock.json
+./apps/web/package.js
+./apps/web/package.json
+./apps/web/postcss.config.js
+./apps/web/src
+./apps/web/src/app
+./apps/web/src/app/dashboard
+./apps/web/src/app/forgot-password
+./apps/web/src/app/globals.css
+./apps/web/src/app/layout.tsx
+./apps/web/src/app/login
+./apps/web/src/app/page.tsx
+./apps/web/src/app/register
+./apps/web/src/app/reset-password
+./apps/web/src/cmep-dark.css
+./apps/web/src/components
+./apps/web/src/components/brand
+./apps/web/src/components/layout
+./apps/web/src/components/providers
+./apps/web/src/components/ui
+./apps/web/src/features
+./apps/web/src/features/admin
+./apps/web/src/features/auth
+./apps/web/src/features/companies
+./apps/web/src/features/compliance
+./apps/web/src/features/documents
+./apps/web/src/features/inquiries
+./apps/web/src/features/listings
+./apps/web/src/features/notifications
+./apps/web/src/features/uploads
+./apps/web/src/lib
+./apps/web/src/lib/api
+./apps/web/src/lib/auth
+./apps/web/src/lib/config.ts
+./apps/web/src/lib/config.ts.bak.20260901-054249
+./apps/web/src/lib/query-client.ts
+./apps/web/src/lib/types
+./apps/web/src/lib/utils
+./apps/web/tailwind.config.js
+./apps/web/tmp
+./apps/web/tmp/build-errors.log
+./apps/web/tsconfig.js
+./apps/web/tsconfig.json
+./apps/web/tsconfig.tsbuildinfo
+
+## TEST FILES
+./app/tests/__init__.py
+./app/tests/__pycache__/__init__.cpython-314.pyc
+./app/tests/__pycache__/conftest.cpython-314-pytest-9.1.1.pyc
+./app/tests/__pycache__/conftest.cpython-314.pyc
+./app/tests/conftest.py
+./app/tests/integration/__init__.py
+./app/tests/integration/__pycache__/__init__.cpython-314.pyc
+./app/tests/integration/__pycache__/test_auth_api.cpython-314-pytest-9.1.1.pyc
+./app/tests/integration/__pycache__/test_auth_api.cpython-314.pyc
+./app/tests/integration/__pycache__/test_companies_api.cpython-314-pytest-9.1.1.pyc
+./app/tests/integration/__pycache__/test_companies_api.cpython-314.pyc
+./app/tests/integration/__pycache__/test_users_api.cpython-314-pytest-9.1.1.pyc
+./app/tests/integration/__pycache__/test_users_api.cpython-314.pyc
+./app/tests/integration/test_auth_api.py
+./app/tests/integration/test_companies_api.py
+./app/tests/integration/test_users_api.py
+./app/tests/unit/__init__.py
+./app/tests/unit/__pycache__/__init__.cpython-314.pyc
+./app/tests/unit/__pycache__/test_auth.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_auth.cpython-314.pyc
+./app/tests/unit/__pycache__/test_companies.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_companies.cpython-314.pyc
+./app/tests/unit/__pycache__/test_documents.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_documents.cpython-314.pyc
+./app/tests/unit/__pycache__/test_inquiries.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_inquiries.cpython-314.pyc
+./app/tests/unit/__pycache__/test_listings.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_listings.cpython-314.pyc
+./app/tests/unit/__pycache__/test_uploads.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_uploads.cpython-314.pyc
+./app/tests/unit/__pycache__/test_users.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/__pycache__/test_users.cpython-314.pyc
+./app/tests/unit/auth/__init__.py
+./app/tests/unit/auth/__pycache__/__init__.cpython-314.pyc
+./app/tests/unit/auth/__pycache__/test_auth_services.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/auth/__pycache__/test_auth_services.cpython-314.pyc
+./app/tests/unit/auth/__pycache__/test_refresh_session_entity.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/auth/__pycache__/test_refresh_session_entity.cpython-314.pyc
+./app/tests/unit/auth/test_auth_services.py
+./app/tests/unit/auth/test_refresh_session_entity.py
+./app/tests/unit/companies/__init__.py
+./app/tests/unit/companies/__pycache__/__init__.cpython-314.pyc
+./app/tests/unit/companies/__pycache__/test_company_entity.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/companies/__pycache__/test_company_entity.cpython-314.pyc
+./app/tests/unit/companies/__pycache__/test_company_services.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/companies/__pycache__/test_company_services.cpython-314.pyc
+./app/tests/unit/companies/test_company_entity.py
+./app/tests/unit/companies/test_company_services.py
+./app/tests/unit/test_auth.py
+./app/tests/unit/test_companies.py
+./app/tests/unit/test_documents.py
+./app/tests/unit/test_inquiries.py
+./app/tests/unit/test_listings.py
+./app/tests/unit/test_uploads.py
+./app/tests/unit/test_users.py
+./app/tests/unit/users/__init__.py
+./app/tests/unit/users/__pycache__/__init__.cpython-314.pyc
+./app/tests/unit/users/__pycache__/test_user_entity.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/users/__pycache__/test_user_entity.cpython-314.pyc
+./app/tests/unit/users/__pycache__/test_user_services.cpython-314-pytest-9.1.1.pyc
+./app/tests/unit/users/__pycache__/test_user_services.cpython-314.pyc
+./app/tests/unit/users/test_user_entity.py
+./app/tests/unit/users/test_user_services.py
+./tests/load/k6/breakpoint-test.js
+./tests/load/k6/load-test.js
+./tests/load/k6/scenarios/auth.js
+./tests/load/k6/scenarios/companies.js
+./tests/load/k6/scenarios/listings.js
+./tests/test_auth_password_reset_revocation.py
+./tests/test_health.py
+
+## ROOT AUDIT ARTIFACTS
+./GLOBAL_P0_R1_R65_STATE.sh
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+./P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+./P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+./P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+./P0_R1_R65_DECISION_MAP_20260903_105724.txt
+./P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+./P0_R1_R65_META_AUDIT_20260903_105537.txt
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+./R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+./R_REQUIREMENT_COMPLIANCE_20260905_112705.txt
+./VPS_LOCAL_DISCOVERY_20260904_205626.txt
+./analyze_p0_r54_r65_frontier.sh
+./audit_clean_summary.sh
+./audit_clean_summary_20260905_111829.txt
+./audit_final_map.sh
+./audit_final_map_20260905_111659.txt
+./audit_master_map.sh
+./audit_master_map_20260905_112004.txt
+./audit_master_map_20260905_112033.txt
+./audit_r_final_resolver.sh
+./audit_r_final_resolver_20260905_112346.txt
+./audit_r_master.sh
+./audit_r_master_20260905_112221.txt
+./audit_r_requirement_compliance.sh
+./audit_result_summary.sh
+./audit_result_summary_20260905_111554.txt
+./build_p0_r1_r65_closure_truth_map.sh
+./build_p0_r65_decision_map.sh
+./check_vps_direct.sh
+./clean_restart.sh
+./collect_p0_r1_r65_meta_audit.sh
+./extract_vps_info.sh
+./fix_r26_extra_paren.sh
+./fix_r26_quote.sh
+./full_diagnostic_20260905-1253.txt
+./full_diagnostic_and_fix.sh
+./inspect_r60_exact_failure.sh
+./inspect_r60_failures_vs_r61.sh
+./inspect_r60_r61_authority_link.sh
+./inspect_r60_r65_reconciliation.sh
+./locate_r26_quote_break.sh
+./locate_r27_compose_literals.sh
+./locate_r27_literal_parser.sh
+./p0_03_r48_production_reload_authority_gate.txt
+./p0_03_r49_ci_production_deployment_authority_gate.txt
+./p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+./p0_03_r51_production_deployment_safety_authority_gate.txt
+./p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+./p0_03_r53_production_recovery_authority_implementation.txt
+./p0_03_r54_release_identity_authority_reconciliation_gate.txt
+./p0_03_r56_release_identity_post_r55_verification.txt
+./r73_deployment_identity_forensic.sh
+./r74_actual_deployment_identity_sources.sh
+./r75_deployment_identity_20260905_111008.txt
+./r75_deployment_identity_decision.sh
+./r76_deployment_active_gate.sh
+./r76_deployment_active_gate_20260905_111209.txt
+./r_audit_recon.sh
+./reality_check.sh
+./reality_check_output_20260905-1235.txt
+./reconstruct_p0_r65_global_truth_map.sh
+./requirements.txt
+./setup_postgres.sh
+./start-platform.sh
+./stderrgpudetect.txt
+./stdoutgpudetect.txt
+./waste-platform-finale-hygiene.sh
+
+## ROOT RISK FILES
+./dump.rdb
+./lockfile
+./lookup_website.html
+
+REPORT: /data/data/com.termux/files/home/waste-platform/scripts/grok-audit/build_project_manifest_report.txt
+=== KONIEC BUILD PROJECT MANIFEST ===

@@ -1,0 +1,28 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+#
+# CI RELEASE IDENTITY CONTRACT
+#
+# This example is intentionally inert and is NOT executed automatically.
+#
+# The CI platform must provide GITHUB_SHA.
+#
+
+: "${GITHUB_SHA:?GITHUB_SHA is required}"
+
+case "$GITHUB_SHA" in
+    ''|*[!A-Fa-f0-9]*)
+        printf '%s\n' "INVALID_GITHUB_SHA" >&2
+        exit 2
+        ;;
+esac
+
+RELEASE_ID="sha-${GITHUB_SHA}"
+IMAGE_TAG="release-${GITHUB_SHA}"
+
+export RELEASE_ID
+export IMAGE_TAG
+
+printf 'RELEASE_ID=%s\n' "$RELEASE_ID"
+printf 'IMAGE_TAG=%s\n' "$IMAGE_TAG"

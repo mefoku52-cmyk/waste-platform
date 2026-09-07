@@ -1,0 +1,942 @@
+=== FILTERED ANALYZA WASTE-PLATFORM ===
+CAS: 2026-09-05 17:14:08 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+=== 1. ROOT PREHLAD ===
+total 4729
+drwx------.  28 u0_a388 u0_a388   24576 Sep  5 16:18 .
+drwx------. 191 u0_a388 u0_a388   53248 Sep  5 16:39 ..
+drwx------.   2 u0_a388 u0_a388    3452 Sep  3 11:46 .closure_truth_20260903_114557
+drwx------.   2 u0_a388 u0_a388    3452 Sep  3 12:01 .closure_truth_20260903_120101
+drwx------.   2 u0_a388 u0_a388    8192 Sep  4 12:28 .closure_truth_20260903_120225
+-rw-------.   1 u0_a388 u0_a388     396 Aug 26 20:37 .dockerignore
+-rw-------.   1 u0_a388 u0_a388     236 Aug 25 04:01 .env
+-rw-------.   1 u0_a388 u0_a388     478 Sep  2 19:04 .env.example
+-rw-------.   1 u0_a388 u0_a388    1668 Sep  2 17:52 .env.production
+drwx------.   8 u0_a388 u0_a388    3452 Sep  5 12:53 .git
+drwx------.   3 u0_a388 u0_a388    3452 Jul 31 20:59 .github
+-rw-------.   1 u0_a388 u0_a388    3538 Sep  2 19:04 .gitignore
+drwx------.   2 u0_a388 u0_a388    3452 Sep  3 10:18 .production-recovery
+drwx------.   6 u0_a388 u0_a388    3452 Sep  3 10:47 .production-release
+drwx------.   3 u0_a388 u0_a388    3452 Sep  2 19:06 .pytest_cache
+drwx------.   5 u0_a388 u0_a388    3452 Sep  2 19:05 .venv
+-rw-------.   1 u0_a388 u0_a388   14904 Sep  2 13:22 FINALIZATION_ROADMAP.md
+-rwx------.   1 u0_a388 u0_a388    5417 Sep  3 11:02 GLOBAL_P0_R1_R65_STATE.sh
+-rw-------.   1 u0_a388 u0_a388   24423 Sep  3 11:02 GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+-rw-------.   1 u0_a388 u0_a388    3591 Aug  7 11:31 Makefile
+-rw-------.   1 u0_a388 u0_a388    1607 Sep  3 11:46 P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+-rw-------.   1 u0_a388 u0_a388    1607 Sep  3 12:01 P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+-rw-------.   1 u0_a388 u0_a388   18615 Sep  4 12:28 P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+-rw-------.   1 u0_a388 u0_a388 1140278 Sep  3 10:57 P0_R1_R65_DECISION_MAP_20260903_105724.txt
+-rw-------.   1 u0_a388 u0_a388  131128 Sep  3 21:23 P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+-rw-------.   1 u0_a388 u0_a388  880872 Sep  3 10:56 P0_R1_R65_META_AUDIT_20260903_105537.txt
+-rw-------.   1 u0_a388 u0_a388   64587 Sep  3 11:21 P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+-rw-------.   1 u0_a388 u0_a388   39641 Sep  4 20:39 R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+-rw-------.   1 u0_a388 u0_a388    1647 Sep  2 18:33 README.md
+-rw-------.   1 u0_a388 u0_a388   32779 Sep  5 11:27 R_REQUIREMENT_COMPLIANCE_20260905_112705.txt
+-rw-------.   1 u0_a388 u0_a388 1033904 Sep  4 20:56 VPS_LOCAL_DISCOVERY_20260904_205626.txt
+drwx------.   5 u0_a388 u0_a388    3452 Sep  2 21:21 _quarantine
+drwx------.   3 u0_a388 u0_a388    3452 Aug  7 19:10 alembic
+-rw-------.   1 u0_a388 u0_a388     411 Aug 25 07:15 alembic.ini
+-rw-------.   1 u0_a388 u0_a388   51290 Sep  3 00:11 all_projects_list.xml
+-rwx------.   1 u0_a388 u0_a388    7354 Sep  3 11:04 analyze_p0_r54_r65_frontier.sh
+drwx------.   8 u0_a388 u0_a388    3452 Sep  2 19:14 app
+drwx------.   3 u0_a388 u0_a388    3452 Sep  2 19:04 apps
+drwx------.   2 u0_a388 u0_a388   20480 Sep  5 12:55 archived-phase-scripts
+drwx------.   6 u0_a388 u0_a388   20480 Sep  3 09:49 audit-output
+-rwx------.   1 u0_a388 u0_a388    2561 Sep  5 11:18 audit_clean_summary.sh
+-rw-------.   1 u0_a388 u0_a388    7930 Sep  5 11:18 audit_clean_summary_20260905_111829.txt
+-rwx------.   1 u0_a388 u0_a388    2732 Sep  5 11:16 audit_final_map.sh
+-rw-------.   1 u0_a388 u0_a388  576817 Sep  5 11:17 audit_final_map_20260905_111659.txt
+-rwx------.   1 u0_a388 u0_a388    2928 Sep  5 11:20 audit_master_map.sh
+-rw-------.   1 u0_a388 u0_a388     191 Sep  5 11:20 audit_master_map_20260905_112004.txt
+-rw-------.   1 u0_a388 u0_a388   10933 Sep  5 11:21 audit_master_map_20260905_112033.txt
+-rwx------.   1 u0_a388 u0_a388    2879 Sep  5 11:23 audit_r_final_resolver.sh
+-rw-------.   1 u0_a388 u0_a388   10462 Sep  5 11:24 audit_r_final_resolver_20260905_112346.txt
+-rwx------.   1 u0_a388 u0_a388    1865 Sep  5 11:22 audit_r_master.sh
+-rw-------.   1 u0_a388 u0_a388   20658 Sep  5 11:22 audit_r_master_20260905_112221.txt
+-rwx------.   1 u0_a388 u0_a388   12556 Sep  5 11:27 audit_r_requirement_compliance.sh
+-rwx------.   1 u0_a388 u0_a388    3023 Sep  5 11:15 audit_result_summary.sh
+-rw-------.   1 u0_a388 u0_a388   16710 Sep  5 11:16 audit_result_summary_20260905_111554.txt
+-rwx------.   1 u0_a388 u0_a388   26736 Sep  3 12:02 build_p0_r1_r65_closure_truth_map.sh
+-rwx------.   1 u0_a388 u0_a388    6078 Sep  3 10:57 build_p0_r65_decision_map.sh
+-rwx------.   1 u0_a388 u0_a388    4725 Sep  4 20:54 check_vps_direct.sh
+-rwx------.   1 u0_a388 u0_a388    4117 Sep  5 13:42 clean_restart.sh
+-rw-------.   1 u0_a388 u0_a388    2819 Sep  3 00:12 client_state.xml
+-rw-------.   1 u0_a388 u0_a388    2762 Sep  3 00:11 client_state_prev.xml
+-rwx------.   1 u0_a388 u0_a388    7572 Sep  3 10:55 collect_p0_r1_r65_meta_audit.sh
+-rw-------.   1 u0_a388 u0_a388     252 Sep  3 00:11 coproc_info.xml
+-rw-------.   1 u0_a388 u0_a388     113 Sep  3 00:13 daily_xfer_history.xml
+drwx------.   5 u0_a388 u0_a388    3452 Aug 26 13:30 docker
+-rw-------.   1 u0_a388 u0_a388    2109 Sep  3 10:47 docker-compose.yml
+drwx------.   4 u0_a388 u0_a388    3452 Sep  2 19:04 docs
+-rw-------.   1 u0_a388 u0_a388      88 Sep  5 13:42 dump.rdb
+-rwx------.   1 u0_a388 u0_a388    4698 Sep  4 20:56 extract_vps_info.sh
+-rwx------.   1 u0_a388 u0_a388    2178 Sep  3 08:56 fix_r26_extra_paren.sh
+-rwx------.   1 u0_a388 u0_a388    2459 Sep  3 08:55 fix_r26_quote.sh
+-rw-------.   1 u0_a388 u0_a388    3892 Sep  5 12:53 full_diagnostic_20260905-1253.txt
+-rwx------.   1 u0_a388 u0_a388    3847 Sep  5 12:53 full_diagnostic_and_fix.sh
+-rw-------.   1 u0_a388 u0_a388      32 Sep  3 00:11 gui_rpc_auth.cfg
+drwx------.   6 u0_a388 u0_a388    3452 Aug  7 11:45 infra
+-rwx------.   1 u0_a388 u0_a388    4088 Sep  4 20:43 inspect_r60_exact_failure.sh
+-rwx------.   1 u0_a388 u0_a388    5564 Sep  4 20:45 inspect_r60_failures_vs_r61.sh
+-rwx------.   1 u0_a388 u0_a388    4304 Sep  4 20:46 inspect_r60_r61_authority_link.sh
+-rwx------.   1 u0_a388 u0_a388    6072 Sep  4 20:39 inspect_r60_r65_reconciliation.sh
+-rw-------.   1 u0_a388 u0_a388    1534 Sep  2 23:06 list
+-rwx------.   1 u0_a388 u0_a388    2423 Sep  3 08:52 locate_r26_quote_break.sh
+-rwx------.   1 u0_a388 u0_a388    2125 Sep  3 09:05 locate_r27_compose_literals.sh
+-rwx------.   1 u0_a388 u0_a388    1592 Sep  3 09:09 locate_r27_literal_parser.sh
+-rw-------.   1 u0_a388 u0_a388       0 Sep  3 00:11 lockfile
+drwx------.   2 u0_a388 u0_a388    3452 Aug 26 13:30 logs
+-rw-------.   1 u0_a388 u0_a388   83751 Sep  3 00:12 lookup_website.html
+drwx------.   4 u0_a388 u0_a388    3452 Aug 31 22:52 migrations
+drwxrwx--x.   2 u0_a388 u0_a388    3452 Sep  3 00:11 notices
+-rw-------.   1 u0_a388 u0_a388    4371 Sep  3 09:52 p0_03_r48_production_reload_authority_gate.txt
+-rw-------.   1 u0_a388 u0_a388    4390 Sep  3 09:54 p0_03_r49_ci_production_deployment_authority_gate.txt
+-rw-------.   1 u0_a388 u0_a388    4938 Sep  3 09:55 p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+-rw-------.   1 u0_a388 u0_a388    5421 Sep  3 09:57 p0_03_r51_production_deployment_safety_authority_gate.txt
+-rw-------.   1 u0_a388 u0_a388    4626 Sep  3 09:58 p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+-rw-------.   1 u0_a388 u0_a388    3416 Sep  3 10:00 p0_03_r53_production_recovery_authority_implementation.txt
+-rw-------.   1 u0_a388 u0_a388    4231 Sep  3 10:01 p0_03_r54_release_identity_authority_reconciliation_gate.txt
+-rw-------.   1 u0_a388 u0_a388    8382 Sep  3 10:25 p0_03_r56_release_identity_post_r55_verification.txt
+-rwx------.   1 u0_a388 u0_a388   14211 Sep  3 09:03 phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+-rw-------.   1 u0_a388 u0_a388    3521 Aug  7 11:31 pyproject.toml
+-rw-------.   1 u0_a388 u0_a388      71 Aug 24 19:26 pytest.ini
+-rwx------.   1 u0_a388 u0_a388    2595 Sep  5 09:14 r73_deployment_identity_forensic.sh
+-rwx------.   1 u0_a388 u0_a388    3239 Sep  5 09:15 r74_actual_deployment_identity_sources.sh
+-rw-------.   1 u0_a388 u0_a388   16115 Sep  5 11:10 r75_deployment_identity_20260905_111008.txt
+-rwx------.   1 u0_a388 u0_a388    3180 Sep  5 11:10 r75_deployment_identity_decision.sh
+-rwx------.   1 u0_a388 u0_a388    2291 Sep  5 11:12 r76_deployment_active_gate.sh
+-rw-------.   1 u0_a388 u0_a388    1631 Sep  5 11:12 r76_deployment_active_gate_20260905_111209.txt
+-rw-------.   1 u0_a388 u0_a388    3259 Sep  5 11:33 r_audit_recon.sh
+-rwx------.   1 u0_a388 u0_a388    2644 Sep  5 12:35 reality_check.sh
+-rw-------.   1 u0_a388 u0_a388    2344 Sep  5 12:35 reality_check_output_20260905-1235.txt
+-rwx------.   1 u0_a388 u0_a388    9099 Sep  3 21:20 reconstruct_p0_r65_global_truth_map.sh
+drwx------.   3 u0_a388 u0_a388    3452 Sep  1 09:37 reports
+-rw-------.   1 u0_a388 u0_a388     397 Aug 24 04:40 requirements.txt
+drwx------.  10 u0_a388 u0_a388    3452 Sep  5 12:35 scripts
+-rwx------.   1 u0_a388 u0_a388     838 Aug 21 13:42 setup_postgres.sh
+drwx------.   3 u0_a388 u0_a388    3452 Aug 17 10:16 src
+-rwx------.   1 u0_a388 u0_a388    1837 Aug 21 13:42 start-platform.sh
+-rw-------.   1 u0_a388 u0_a388     166 Sep  3 00:11 stderrgpudetect.txt
+-rw-------.   1 u0_a388 u0_a388      68 Sep  3 00:11 stdoutgpudetect.txt
+-rw-------.   1 u0_a388 u0_a388     208 Sep  5 16:18 test_debug.py
+drwx------.   3 u0_a388 u0_a388    3452 Aug 26 13:30 tests
+-rw-------.   1 u0_a388 u0_a388     171 Sep  3 00:31 time_stats_log
+drwx------.   4 u0_a388 u0_a388    3452 Sep  1 08:43 var
+-rwx------.   1 u0_a388 u0_a388    9139 Sep  2 19:03 waste-platform-finale-hygiene.sh
+
+=== 2. RUNTIME CODE FILES ===
+./app/__init__.py
+./app/core/__init__.py
+./app/core/config.py
+./app/core/http_exception_handlers.py
+./app/main.py
+./app/modules/__init__.py
+./app/modules/admin/__init__.py
+./app/modules/admin/application/__init__.py
+./app/modules/admin/application/dto.py
+./app/modules/admin/application/services.py
+./app/modules/admin/domain/__init__.py
+./app/modules/admin/domain/entities.py
+./app/modules/admin/domain/enums.py
+./app/modules/admin/domain/repositories.py
+./app/modules/admin/infrastructure/__init__.py
+./app/modules/admin/infrastructure/mappers.py
+./app/modules/admin/infrastructure/models.py
+./app/modules/admin/infrastructure/repositories.py
+./app/modules/admin/presentation/__init__.py
+./app/modules/admin/presentation/dependencies.py
+./app/modules/admin/presentation/mappers.py
+./app/modules/admin/presentation/router.py
+./app/modules/admin/presentation/schemas.py
+./app/modules/admin/router.py
+./app/modules/admin/schemas.py
+./app/modules/admin/service.py
+./app/modules/analytics/__init__.py
+./app/modules/analytics/application/__init__.py
+./app/modules/analytics/application/dto.py
+./app/modules/analytics/application/services.py
+./app/modules/analytics/domain/__init__.py
+./app/modules/analytics/domain/entities.py
+./app/modules/analytics/domain/enums.py
+./app/modules/analytics/domain/repositories.py
+./app/modules/analytics/infrastructure/__init__.py
+./app/modules/analytics/infrastructure/mappers.py
+./app/modules/analytics/infrastructure/models.py
+./app/modules/analytics/infrastructure/repositories.py
+./app/modules/analytics/presentation/__init__.py
+./app/modules/analytics/presentation/dependencies.py
+./app/modules/analytics/presentation/mappers.py
+./app/modules/analytics/presentation/router.py
+./app/modules/analytics/presentation/schemas.py
+./app/modules/analytics/router.py
+./app/modules/analytics/schemas.py
+./app/modules/analytics/service.py
+./app/modules/auth/__init__.py
+./app/modules/auth/application/__init__.py
+./app/modules/auth/application/dto.py
+./app/modules/auth/application/password_reset.py
+./app/modules/auth/application/services.py
+./app/modules/auth/domain/__init__.py
+./app/modules/auth/domain/entities.py
+./app/modules/auth/domain/repositories.py
+./app/modules/auth/infrastructure/__init__.py
+./app/modules/auth/infrastructure/mappers.py
+./app/modules/auth/infrastructure/models.py
+./app/modules/auth/infrastructure/repositories.py
+./app/modules/auth/presentation/__init__.py
+./app/modules/auth/presentation/dependencies.py
+./app/modules/auth/presentation/router.py
+./app/modules/auth/presentation/schemas.py
+./app/modules/companies/__init__.py
+./app/modules/companies/application/__init__.py
+./app/modules/companies/application/dto.py
+./app/modules/companies/application/mappers.py
+./app/modules/companies/application/services.py
+./app/modules/companies/domain/__init__.py
+./app/modules/companies/domain/entities.py
+./app/modules/companies/domain/enums.py
+./app/modules/companies/domain/repositories.py
+./app/modules/companies/infrastructure/__init__.py
+./app/modules/companies/infrastructure/mappers.py
+./app/modules/companies/infrastructure/models.py
+./app/modules/companies/infrastructure/repositories.py
+./app/modules/companies/presentation/__init__.py
+./app/modules/companies/presentation/dependencies.py
+./app/modules/companies/presentation/mappers.py
+./app/modules/companies/presentation/router.py
+./app/modules/companies/presentation/schemas.py
+./app/modules/company_memberships/__init__.py
+./app/modules/company_memberships/application/__init__.py
+./app/modules/company_memberships/application/dto.py
+./app/modules/company_memberships/application/mappers.py
+./app/modules/company_memberships/application/services.py
+./app/modules/company_memberships/domain/__init__.py
+./app/modules/company_memberships/domain/entities.py
+./app/modules/company_memberships/domain/enums.py
+./app/modules/company_memberships/domain/repositories.py
+./app/modules/company_memberships/infrastructure/__init__.py
+./app/modules/company_memberships/infrastructure/mappers.py
+./app/modules/company_memberships/infrastructure/models.py
+./app/modules/company_memberships/infrastructure/repositories.py
+./app/modules/company_memberships/presentation/__init__.py
+./app/modules/company_memberships/presentation/dependencies.py
+./app/modules/company_memberships/presentation/mappers.py
+./app/modules/company_memberships/presentation/router.py
+./app/modules/company_memberships/presentation/schemas.py
+./app/modules/compliance/__init__.py
+./app/modules/compliance/application/__init__.py
+./app/modules/compliance/application/dto.py
+./app/modules/compliance/application/services.py
+./app/modules/compliance/domain/__init__.py
+./app/modules/compliance/domain/entities.py
+./app/modules/compliance/domain/enums.py
+./app/modules/compliance/domain/repositories.py
+./app/modules/compliance/infrastructure/__init__.py
+./app/modules/compliance/infrastructure/mappers.py
+./app/modules/compliance/infrastructure/models.py
+./app/modules/compliance/infrastructure/repositories.py
+./app/modules/compliance/presentation/__init__.py
+./app/modules/compliance/presentation/dependencies.py
+./app/modules/compliance/presentation/mappers.py
+./app/modules/compliance/presentation/router.py
+./app/modules/compliance/presentation/schemas.py
+./app/modules/compliance/router.py
+./app/modules/compliance/schemas.py
+./app/modules/compliance/service.py
+./app/modules/documents/__init__.py
+./app/modules/documents/application/__init__.py
+./app/modules/documents/application/dto.py
+./app/modules/documents/application/services.py
+./app/modules/documents/domain/__init__.py
+./app/modules/documents/domain/entities.py
+./app/modules/documents/domain/enums.py
+./app/modules/documents/domain/repositories.py
+./app/modules/documents/infrastructure/__init__.py
+./app/modules/documents/infrastructure/mappers.py
+./app/modules/documents/infrastructure/models.py
+./app/modules/documents/infrastructure/repositories.py
+./app/modules/documents/presentation/__init__.py
+./app/modules/documents/presentation/dependencies.py
+./app/modules/documents/presentation/mappers.py
+./app/modules/documents/presentation/router.py
+./app/modules/documents/presentation/schemas.py
+./app/modules/documents/router.py
+./app/modules/documents/schemas.py
+./app/modules/documents/service.py
+./app/modules/inquiries/__init__.py
+./app/modules/inquiries/application/__init__.py
+./app/modules/inquiries/application/dto.py
+./app/modules/inquiries/application/services.py
+./app/modules/inquiries/domain/__init__.py
+./app/modules/inquiries/domain/entities.py
+./app/modules/inquiries/domain/enums.py
+./app/modules/inquiries/domain/repositories.py
+./app/modules/inquiries/infrastructure/__init__.py
+./app/modules/inquiries/infrastructure/mappers.py
+./app/modules/inquiries/infrastructure/models.py
+./app/modules/inquiries/infrastructure/repositories.py
+./app/modules/inquiries/presentation/__init__.py
+./app/modules/inquiries/presentation/dependencies.py
+./app/modules/inquiries/presentation/mappers.py
+./app/modules/inquiries/presentation/router.py
+./app/modules/inquiries/presentation/schemas.py
+./app/modules/inquiries/router.py
+./app/modules/inquiries/schemas.py
+./app/modules/inquiries/service.py
+./app/modules/listings/__init__.py
+./app/modules/listings/application/__init__.py
+./app/modules/listings/application/dto.py
+./app/modules/listings/application/services.py
+./app/modules/listings/domain/__init__.py
+./app/modules/listings/domain/entities.py
+./app/modules/listings/domain/enums.py
+./app/modules/listings/domain/repositories.py
+./app/modules/listings/infrastructure/__init__.py
+./app/modules/listings/infrastructure/mappers.py
+./app/modules/listings/infrastructure/models.py
+./app/modules/listings/infrastructure/repositories.py
+./app/modules/listings/presentation/__init__.py
+./app/modules/listings/presentation/dependencies.py
+./app/modules/listings/presentation/mappers.py
+./app/modules/listings/presentation/router.py
+./app/modules/listings/presentation/schemas.py
+./app/modules/notifications/__init__.py
+./app/modules/notifications/application/__init__.py
+./app/modules/notifications/application/dto.py
+./app/modules/notifications/application/services.py
+./app/modules/notifications/domain/__init__.py
+./app/modules/notifications/domain/entities.py
+./app/modules/notifications/domain/enums.py
+./app/modules/notifications/domain/repositories.py
+./app/modules/notifications/infrastructure/__init__.py
+./app/modules/notifications/infrastructure/mappers.py
+./app/modules/notifications/infrastructure/models.py
+./app/modules/notifications/infrastructure/repositories.py
+./app/modules/notifications/presentation/__init__.py
+./app/modules/notifications/presentation/dependencies.py
+./app/modules/notifications/presentation/mappers.py
+./app/modules/notifications/presentation/router.py
+./app/modules/notifications/presentation/schemas.py
+./app/modules/notifications/router.py
+./app/modules/notifications/schemas.py
+./app/modules/notifications/service.py
+./app/modules/uploads/__init__.py
+./app/modules/uploads/presentation/__init__.py
+./app/modules/uploads/presentation/router.py
+./app/modules/uploads/presentation/schemas.py
+./app/modules/users/__init__.py
+./app/modules/users/application/__init__.py
+./app/modules/users/application/dto.py
+./app/modules/users/application/mappers.py
+./app/modules/users/application/services.py
+./app/modules/users/domain/__init__.py
+./app/modules/users/domain/entities.py
+./app/modules/users/domain/enums.py
+./app/modules/users/domain/repositories.py
+./app/modules/users/infrastructure/__init__.py
+./app/modules/users/infrastructure/mappers.py
+./app/modules/users/infrastructure/models.py
+./app/modules/users/infrastructure/repositories.py
+./app/modules/users/presentation/__init__.py
+./app/modules/users/presentation/dependencies.py
+./app/modules/users/presentation/mappers.py
+./app/modules/users/presentation/router.py
+./app/modules/users/presentation/schemas.py
+./app/shared/__init__.py
+./app/shared/application/__init__.py
+./app/shared/application/clock.py
+./app/shared/application/interfaces.py
+./app/shared/application/passwords.py
+./app/shared/application/side_effects.py
+./app/shared/application/uuid_generator.py
+./app/shared/domain/__init__.py
+./app/shared/domain/base.py
+./app/shared/domain/exceptions.py
+./app/shared/domain/ports/__init__.py
+./app/shared/domain/ports/clock.py
+./app/shared/domain/status_transition.py
+./app/shared/infrastructure/__init__.py
+./app/shared/infrastructure/database.py
+./app/shared/infrastructure/db/__init__.py
+./app/shared/infrastructure/db/base.py
+./app/shared/infrastructure/db/register_models.py
+./app/shared/infrastructure/db/session.py
+./app/shared/infrastructure/email/sender.py
+./app/shared/infrastructure/rate_limit.py
+./app/shared/infrastructure/rate_limiter.py
+./app/shared/infrastructure/security/__init__.py
+./app/shared/infrastructure/security/jwt_exceptions.py
+./app/shared/infrastructure/security/jwt_revocation_store.py
+./app/shared/infrastructure/security/jwt_service.py
+./app/shared/presentation/__init__.py
+./app/shared/presentation/api_router.py
+./app/shared/presentation/auth_dependencies.py
+./app/shared/presentation/error_schemas.py
+./app/shared/presentation/exception_handlers.py
+./app/shared/presentation/health_router.py
+./app/shared/presentation/metrics_router.py
+./app/shared/presentation/schemas.py
+./app/tests/__init__.py
+./app/tests/conftest.py
+./app/tests/integration/__init__.py
+./app/tests/integration/test_auth_api.py
+./app/tests/integration/test_companies_api.py
+./app/tests/integration/test_users_api.py
+./app/tests/unit/__init__.py
+./app/tests/unit/auth/__init__.py
+./app/tests/unit/auth/test_auth_services.py
+./app/tests/unit/auth/test_refresh_session_entity.py
+./app/tests/unit/companies/__init__.py
+./app/tests/unit/companies/test_company_entity.py
+./app/tests/unit/companies/test_company_services.py
+./app/tests/unit/test_auth.py
+./app/tests/unit/test_companies.py
+./app/tests/unit/test_documents.py
+./app/tests/unit/test_inquiries.py
+./app/tests/unit/test_listings.py
+./app/tests/unit/test_uploads.py
+./app/tests/unit/test_users.py
+./app/tests/unit/users/__init__.py
+./app/tests/unit/users/test_user_entity.py
+./app/tests/unit/users/test_user_services.py
+./app/worker/__init__.py
+./apps/web/next-env.d.ts
+./apps/web/next.config.js
+./apps/web/package-lock.json
+./apps/web/package.js
+./apps/web/package.json
+./apps/web/postcss.config.js
+./apps/web/src/app/dashboard/admin/page.tsx
+./apps/web/src/app/dashboard/companies/new/page.tsx
+./apps/web/src/app/dashboard/documents/new/page.tsx
+./apps/web/src/app/dashboard/listings/[id]/page.tsx
+./apps/web/src/app/dashboard/listings/new/page.tsx
+./apps/web/src/app/dashboard/page.tsx
+./apps/web/src/app/forgot-password/page.tsx
+./apps/web/src/app/layout.tsx
+./apps/web/src/app/login/page.tsx
+./apps/web/src/app/page.tsx
+./apps/web/src/app/register/page.tsx
+./apps/web/src/app/reset-password/page.tsx
+./apps/web/src/components/brand/logo.tsx
+./apps/web/src/components/layout/app-shell.tsx
+./apps/web/src/components/providers/app-providers.tsx
+./apps/web/src/components/ui/button.tsx
+./apps/web/src/components/ui/data-table.tsx
+./apps/web/src/components/ui/form-field.tsx
+./apps/web/src/components/ui/input.tsx
+./apps/web/src/components/ui/page-header.tsx
+./apps/web/src/components/ui/select.tsx
+./apps/web/src/components/ui/status-badge.tsx
+./apps/web/src/components/ui/textarea.tsx
+./apps/web/src/features/admin/api.ts
+./apps/web/src/features/admin/components/admin-users-table.tsx
+./apps/web/src/features/admin/components/audit-table.tsx
+./apps/web/src/features/admin/hooks/use-admin-stats.ts
+./apps/web/src/features/admin/hooks/use-admin-users.ts
+./apps/web/src/features/admin/hooks/use-audit.ts
+./apps/web/src/features/admin/index.ts
+./apps/web/src/features/admin/types.ts
+./apps/web/src/features/auth/api.ts
+./apps/web/src/features/auth/components/auth-bootstrap.tsx
+./apps/web/src/features/auth/components/login-form.tsx
+./apps/web/src/features/auth/components/register-form.tsx
+./apps/web/src/features/auth/hooks/use-auth-required.ts
+./apps/web/src/features/auth/hooks/use-current-user.ts
+./apps/web/src/features/auth/hooks/use-login.ts
+./apps/web/src/features/auth/hooks/use-logout.ts
+./apps/web/src/features/auth/hooks/use-register.ts
+./apps/web/src/features/auth/index.ts
+./apps/web/src/features/auth/schemas.ts
+./apps/web/src/features/auth/types.ts
+./apps/web/src/features/companies/api.ts
+./apps/web/src/features/companies/components/companies-table.tsx
+./apps/web/src/features/companies/components/company-form.tsx
+./apps/web/src/features/companies/hooks/use-companies.ts
+./apps/web/src/features/companies/hooks/use-company.ts
+./apps/web/src/features/companies/hooks/use-create-company.ts
+./apps/web/src/features/companies/index.ts
+./apps/web/src/features/companies/schemas.ts
+./apps/web/src/features/companies/types.ts
+./apps/web/src/features/compliance/api.ts
+./apps/web/src/features/compliance/components/compliance-table.tsx
+./apps/web/src/features/compliance/hooks/use-compliance.ts
+./apps/web/src/features/compliance/hooks/use-create-compliance.ts
+./apps/web/src/features/compliance/index.ts
+./apps/web/src/features/documents/api.ts
+./apps/web/src/features/documents/components/document-form.tsx
+./apps/web/src/features/documents/components/documents-table.tsx
+./apps/web/src/features/documents/hooks/use-create-document.ts
+./apps/web/src/features/documents/hooks/use-documents.ts
+./apps/web/src/features/documents/index.ts
+./apps/web/src/features/inquiries/api.ts
+./apps/web/src/features/inquiries/components/inquiries-table.tsx
+./apps/web/src/features/inquiries/components/open-inquiries-badge.tsx
+./apps/web/src/features/inquiries/hooks/use-inquiries.ts
+./apps/web/src/features/inquiries/index.ts
+./apps/web/src/features/listings/api.ts
+./apps/web/src/features/listings/components/listing-filters.tsx
+./apps/web/src/features/listings/components/listing-form.tsx
+./apps/web/src/features/listings/components/listings-table.tsx
+./apps/web/src/features/listings/components/marketplace-table.tsx
+./apps/web/src/features/listings/components/matches-panel.tsx
+./apps/web/src/features/listings/hooks/use-create-listing.ts
+./apps/web/src/features/listings/hooks/use-listing.ts
+./apps/web/src/features/listings/hooks/use-listings.ts
+./apps/web/src/features/listings/hooks/use-marketplace.ts
+./apps/web/src/features/listings/hooks/use-matches.ts
+./apps/web/src/features/listings/index.ts
+./apps/web/src/features/listings/schemas.ts
+./apps/web/src/features/listings/types.ts
+./apps/web/src/features/notifications/api.ts
+./apps/web/src/features/notifications/components/notifications-panel.tsx
+./apps/web/src/features/notifications/hooks/use-notifications.ts
+./apps/web/src/features/notifications/index.ts
+./apps/web/src/features/uploads/api.ts
+./apps/web/src/features/uploads/index.ts
+./apps/web/src/lib/api/http.ts
+./apps/web/src/lib/auth/token-store.ts
+./apps/web/src/lib/config.ts
+./apps/web/src/lib/query-client.ts
+./apps/web/src/lib/types/common.ts
+./apps/web/src/lib/utils/cn.ts
+./apps/web/tailwind.config.js
+./apps/web/tsconfig.js
+./apps/web/tsconfig.json
+./tests/load/k6/breakpoint-test.js
+./tests/load/k6/load-test.js
+./tests/load/k6/scenarios/auth.js
+./tests/load/k6/scenarios/companies.js
+./tests/load/k6/scenarios/listings.js
+./tests/test_auth_password_reset_revocation.py
+./tests/test_health.py
+
+=== 3. DOCS ONLY ===
+./docs/AUTHORITY.md
+./docs/PRODUCTION-CHECKLIST.md
+./docs/SUMMARY.md
+./docs/api-contracts.md
+./docs/architecture-overview.md
+./docs/backend-modules.md
+./docs/decision-log/ai1-self-report-20260806.md
+./docs/decision-log/checkpoint-20260806.md
+./docs/deployment.md
+./docs/finalization.md
+./docs/fix-load-testing.md
+./docs/frontend-modules.md
+./docs/infra.md
+./docs/load-testing.md
+./docs/monitoring.md
+./docs/product-specification.md
+./docs/production-readiness.md
+./docs/reports/phase0_fix_report.md
+./docs/reports/phase0_report.md
+./docs/reports/phase1_final_report.md
+./docs/reports/phase1_fix_report.md
+./docs/reports/phase1_report.md
+./docs/tests.md
+./docs/troubleshooting.md
+
+=== 4. GENERATED OR CACHE ===
+./.venv/lib/python3.14/site-packages/__pycache__/six.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/__pycache__/typing_extensions.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/_yaml/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/__pycache__/__version__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/__pycache__/context.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/__pycache__/core.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/__pycache__/cursor.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/tests/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/tests/__pycache__/__main__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/tests/__pycache__/helpers.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/tests/__pycache__/perf.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/aiosqlite/tests/__pycache__/smoke.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/__main__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/command.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/config.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/context.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/environment.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/migration.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/__pycache__/op.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/__pycache__/api.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/__pycache__/render.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/__pycache__/rewriter.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/check_constraints.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/comments.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/constraints.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/schema.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/server_defaults.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/tables.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/types.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/autogenerate/compare/__pycache__/util.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/_autogen.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/impl.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/mssql.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/mysql.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/oracle.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/postgresql.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/ddl/__pycache__/sqlite.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/operations/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/operations/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/operations/__pycache__/batch.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/operations/__pycache__/ops.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/operations/__pycache__/schemaobj.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/operations/__pycache__/toimpl.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/runtime/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/runtime/__pycache__/environment.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/runtime/__pycache__/migration.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/runtime/__pycache__/plugins.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/script/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/script/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/script/__pycache__/revision.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/script/__pycache__/write_hooks.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/templates/async/__pycache__/env.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/templates/generic/__pycache__/env.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/templates/multidb/__pycache__/env.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/templates/pyproject/__pycache__/env.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/templates/pyproject_async/__pycache__/env.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/assertions.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/env.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/fixtures.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/requirements.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/schemacompare.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/util.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/__pycache__/warnings.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/plugin/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/plugin/__pycache__/bootstrap.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/_autogen_fixtures.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_autogen_comments.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_autogen_computed.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_autogen_diffs.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_autogen_fks.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_autogen_identity.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_environment.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/testing/suite/__pycache__/test_op.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/compat.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/editor.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/exc.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/langhelpers.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/messaging.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/pyfiles.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/alembic/util/__pycache__/sqla_compat.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/annotated_doc/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/annotated_doc/__pycache__/main.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/annotated_types/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/annotated_types/__pycache__/test_cases.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/from_thread.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/functools.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/itertools.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/lowlevel.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/pytest_plugin.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/to_interpreter.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/to_process.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/__pycache__/to_thread.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_backends/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_backends/__pycache__/_asyncio.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_backends/__pycache__/_trio.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_asyncio_selector_thread.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_contextmanagers.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_eventloop.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_exceptions.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_fileio.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_resources.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_signals.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_sockets.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_streams.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_subprocesses.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_synchronization.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_tasks.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_tempfile.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_testing.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/_core/__pycache__/_typedattr.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_eventloop.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_resources.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_sockets.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_streams.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_subprocesses.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_tasks.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/abc/__pycache__/_testing.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/buffered.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/file.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/memory.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/stapled.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/text.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/anyio/streams/__pycache__/tls.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/_asyncio_compat.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/_version.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/cluster.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/compat.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/connect_utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/connection.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/connresource.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/cursor.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/introspection.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/pool.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/prepared_stmt.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/serverversion.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/transaction.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/types.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/__pycache__/utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/_testbase/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/_testbase/__pycache__/fuzzer.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/exceptions/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/exceptions/__pycache__/_base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/pgproto/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/pgproto/__pycache__/types.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/protocol/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/asyncpg/protocol/codecs/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/bcrypt/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/certifi/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/certifi/__pycache__/__main__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/certifi/__pycache__/core.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/certifi/tests/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/certifi/tests/__pycache__/test_certify.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/_cffi_gen_src.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/_imp_emulation.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/_shimmed_dist_utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/api.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/backend_ctypes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/cffi_opcode.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/commontypes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/cparser.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/error.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/ffiplatform.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/gen_src.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/lock.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/model.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/pkgconfig.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/recompiler.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/setuptools_ext.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/vengine_cpy.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/vengine_gen.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cffi/__pycache__/verifier.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/_compat.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/_termui_impl.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/_textwrap.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/_utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/_winconsole.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/core.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/decorators.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/exceptions.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/formatting.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/globals.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/parser.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/shell_completion.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/termui.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/testing.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/types.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/click/__pycache__/utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/__pycache__/__about__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/__pycache__/cobblestone.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/__pycache__/exceptions.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/__pycache__/fernet.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/__pycache__/utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/__pycache__/_oid.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/asn1/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/asn1/__pycache__/asn1.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/backends/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/backends/openssl/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/backends/openssl/__pycache__/backend.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/bindings/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/bindings/openssl/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/bindings/openssl/__pycache__/_conditional.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/bindings/openssl/__pycache__/binding.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/decrepit/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/decrepit/ciphers/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/decrepit/ciphers/__pycache__/algorithms.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/decrepit/ciphers/__pycache__/modes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/_asymmetric.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/_cipheralgorithm.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/_modes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/_serialization.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/cmac.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/constant_time.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/hashes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/hmac.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/hpke.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/keywrap.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/padding.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/__pycache__/poly1305.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/dh.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/dsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/ec.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/ed25519.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/ed448.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/mldsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/mlkem.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/padding.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/rsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/types.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/utils.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/x25519.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/asymmetric/__pycache__/x448.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/ciphers/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/ciphers/__pycache__/aead.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/ciphers/__pycache__/algorithms.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/ciphers/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/ciphers/__pycache__/modes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/argon2.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/concatkdf.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/hkdf.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/kbkdf.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/pbkdf2.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/scrypt.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/kdf/__pycache__/x963kdf.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/serialization/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/serialization/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/serialization/__pycache__/pkcs12.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/serialization/__pycache__/pkcs7.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/serialization/__pycache__/ssh.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/twofactor/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/twofactor/__pycache__/hotp.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/hazmat/primitives/twofactor/__pycache__/totp.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/certificate_transparency.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/extensions.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/general_name.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/name.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/ocsp.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/oid.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/cryptography/x509/__pycache__/verification.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_asyncbackend.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_asyncio_backend.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_ddr.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_features.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_immutable_ctx.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_no_ssl.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_tls_util.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/_trio_backend.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/asyncbackend.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/asyncquery.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/asyncresolver.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/btree.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/btreezone.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/dnssec.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/dnssectypes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/e164.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/edns.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/entropy.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/enum.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/exception.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/flags.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/grange.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/immutable.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/inet.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/ipv4.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/ipv6.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/message.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/name.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/namedict.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/nameserver.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/node.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/opcode.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/query.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/rcode.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/rdata.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/rdataclass.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/rdataset.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/rdatatype.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/renderer.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/resolver.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/reversename.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/rrset.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/serial.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/set.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/tokenizer.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/transaction.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/tsig.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/tsigkeyring.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/ttl.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/update.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/version.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/versioned.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/win32util.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/wire.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/xfr.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/zone.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/zonefile.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/__pycache__/zonetypes.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/base.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/cryptography.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/dsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/ecdsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/eddsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/dnssecalgs/__pycache__/rsa.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/quic/__pycache__/__init__.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/quic/__pycache__/_asyncio.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/quic/__pycache__/_common.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/quic/__pycache__/_sync.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/quic/__pycache__/_trio.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/AFSDB.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/AMTRELAY.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/AVC.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/CAA.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/CDNSKEY.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/CDS.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/CERT.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/CNAME.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/CSYNC.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/DLV.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/DNAME.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/DNSKEY.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/DS.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/DSYNC.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/EUI48.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/EUI64.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/GPOS.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/HINFO.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/HIP.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/ISDN.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/L32.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/L64.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/LOC.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/LP.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/MX.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/NID.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/NINFO.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/NS.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/NSEC.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/NSEC3.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/NSEC3PARAM.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/OPENPGPKEY.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/OPT.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/PTR.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/RESINFO.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/RP.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/RRSIG.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/RT.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/SMIMEA.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/SOA.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/SPF.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/SSHFP.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/TKEY.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/TLSA.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/TSIG.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/TXT.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/URI.cpython-314.pyc
+./.venv/lib/python3.14/site-packages/dns/rdtypes/ANY/__pycache__/WALLET.cpython-314.pyc

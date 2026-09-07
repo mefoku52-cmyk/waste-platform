@@ -1,0 +1,28 @@
+# Production release handoff contract.
+#
+# CI produces this identity.
+# Production consumes this identity.
+#
+# No secrets belong here.
+
+RELEASE_ID=sha-<IMMUTABLE_SOURCE_REVISION>
+IMAGE_TAG=release-<IMMUTABLE_SOURCE_REVISION>
+
+API_IMAGE=cmep-api:${IMAGE_TAG}
+WORKER_IMAGE=cmep-worker:${IMAGE_TAG}
+WEB_IMAGE=cmep-web:${IMAGE_TAG>
+
+SOURCE_REVISION=<IMMUTABLE_SOURCE_REVISION>
+
+# Production deployment must:
+#
+# 1. validate RELEASE_ID
+# 2. validate IMAGE_TAG
+# 3. reject latest/dev/test/current
+# 4. deploy exact image identity
+# 5. capture previous release
+# 6. verify health
+# 7. rollback only to exact previous artifact
+# 8. verify rollback health
+#
+HANDOFF_FORMAT_VERSION=1

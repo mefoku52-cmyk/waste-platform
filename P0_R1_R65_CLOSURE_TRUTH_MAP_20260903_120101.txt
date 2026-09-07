@@ -1,0 +1,47 @@
+
+============================================================
+P0 → R1-R65 CLOSURE TRUTH MAP
+============================================================
+DATE=2026-09-03T12:01:01+0200
+PROJECT=/data/data/com.termux/files/home/waste-platform
+MODE=READ_ONLY
+OUTPUT=/data/data/com.termux/files/home/waste-platform/P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+============================================================
+
+
+------------------------------------------------------------
+0. READ-ONLY SAFETY
+------------------------------------------------------------
+No files will be modified.
+No scripts from the project will be executed.
+No .env values will be printed.
+No secret values will be printed.
+
+
+------------------------------------------------------------
+1. PROJECT STATE
+------------------------------------------------------------
+PWD=/data/data/com.termux/files/home/waste-platform
+GIT_BRANCH=main
+GIT_STATUS_SUMMARY=135
+PROJECT_FILES=22689
+SHELL_SCRIPTS=206
+
+
+------------------------------------------------------------
+2. BUILDING FORENSIC FILE INDEX
+------------------------------------------------------------
+[12:01:03] Indexing project files...
+[12:01:03] Indexed 22689 files.
+
+------------------------------------------------------------
+3. BUILDING REPORT / LOG INDEX
+------------------------------------------------------------
+[12:01:03] Locating reports, logs and evidence artifacts...
+[12:01:03] Report/evidence candidates: 505
+
+------------------------------------------------------------
+4. R1-R65 DISCOVERY
+------------------------------------------------------------
+
+### R1 

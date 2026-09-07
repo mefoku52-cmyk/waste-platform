@@ -11,8 +11,8 @@ DATABASE_URL=postgresql+asyncpg://cmep:cmep@postgres:5432/cmep
 REDIS_URL=redis://redis:6379/0
 JWT_SECRET_KEY=change-me-super-secret-key
 JWT_REFRESH_SECRET_KEY=change-me-super-secret-refresh-key
-JWT_ACCESS_TOKEN_EXPIRES_MINUTES=15
-JWT_REFRESH_TOKEN_EXPIRES_DAYS=30
+ACCESS_TOKEN_EXPIRE_MINUTES=15
+REFRESH_TOKEN_EXPIRE_DAYS=30
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
 ENVEOF
 echo "✅ .env vytvorený"

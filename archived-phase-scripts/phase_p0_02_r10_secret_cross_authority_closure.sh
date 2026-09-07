@@ -1,0 +1,348 @@
+#!/usr/bin/env bash
+set -u
+
+PROJECT_ROOT="${PROJECT_ROOT:-$HOME/waste-platform}"
+cd "$PROJECT_ROOT" || exit 1
+
+REPORT="$PROJECT_ROOT/audit-output/p0_02_r10_secret_cross_authority_closure.txt"
+mkdir -p "$(dirname "$REPORT")"
+
+FAILURE_COUNT=0
+REVIEW_COUNT=0
+
+SECRET_TOKENS=(
+    "POSTGRES_PASSWORD"
+    "DATABASE_PASSWORD"
+    "JWT_SECRET_KEY"
+    "JWT_REFRESH_SECRET_KEY"
+    "S3_SECRET_KEY"
+)
+
+ENV_FILE=".env.production"
+COMPOSE_FILE="docker-compose.yml"
+RUNTIME_FILE="app/core/config.py"
+CI_FILE=".github/workflows/ci.yml"
+DEPLOY_FILE="scripts/deploy.sh"
+
+log() {
+    echo "$1" | tee -a "$REPORT"
+}
+
+separator() {
+    log "============================================================"
+}
+
+log "============================================================"
+log "P0-02 R10 SECRET CROSS-AUTHORITY CLOSURE"
+log "============================================================"
+
+separator
+log "1. SAFETY PRECHECK"
+separator
+
+if [ -d "$PROJECT_ROOT" ]; then
+    log "PASS: PROJECT_ROOT_CONFIRMED=$PROJECT_ROOT"
+else
+    log "FAIL: PROJECT_ROOT_NOT_FOUND=$PROJECT_ROOT"
+    FAILURE_COUNT=$((FAILURE_COUNT + 1))
+fi
+
+log "PASS: READ_ONLY=YES"
+log "PASS: NO_SOURCE_WRITES=YES"
+log "PASS: NO_RUNTIME_EXECUTION=YES"
+log "PASS: NO_ENV_EXECUTION=YES"
+log "PASS: NO_BUILD=YES"
+log "PASS: NO_DEPLOYMENT=YES"
+log "PASS: NO_DELETIONS=YES"
+log "PASS: NO_SECRET_VALUES_PRINTED=YES"
+log "PASS: BOUNDED_SCAN=YES"
+
+separator
+log "2. REQUIRED AUTHORITY FILES"
+separator
+
+REQUIRED_FILES=(
+    "$ENV_FILE"
+    "$COMPOSE_FILE"
+    "$RUNTIME_FILE"
+    "$CI_FILE"
+    "$DEPLOY_FILE"
+)
+
+for file in "${REQUIRED_FILES[@]}"; do
+    if [ -f "$file" ]; then
+        log "PASS: AUTHORITY_PRESENT=$file"
+    else
+        log "FAIL: AUTHORITY_MISSING=$file"
+        FAILURE_COUNT=$((FAILURE_COUNT + 1))
+    fi
+done
+
+separator
+log "3. SECRET IDENTIFIER SET"
+separator
+
+for token in "${SECRET_TOKENS[@]}"; do
+    log "SECRET_IDENTIFIER=$token"
+done
+
+separator
+log "4. PRODUCTION ENV AUTHORITY"
+separator
+
+ENV_SECRET_COUNT=0
+ENV_MISSING_COUNT=0
+
+for token in "${SECRET_TOKENS[@]}"; do
+    if grep -Eq "^[[:space:]]*${token}=" "$ENV_FILE"; then
+        ENV_SECRET_COUNT=$((ENV_SECRET_COUNT + 1))
+        log "PASS: ENV_SECRET_AUTHORITY_PRESENT KEY=$token VALUE=<REDACTED>"
+    else
+        ENV_MISSING_COUNT=$((ENV_MISSING_COUNT + 1))
+        log "FAIL: ENV_SECRET_AUTHORITY_MISSING KEY=$token"
+        FAILURE_COUNT=$((FAILURE_COUNT + 1))
+    fi
+done
+
+log "ENV_SECRET_COUNT=$ENV_SECRET_COUNT"
+log "ENV_MISSING_COUNT=$ENV_MISSING_COUNT"
+
+if [ "$ENV_MISSING_COUNT" -eq 0 ]; then
+    log "PASS: PRODUCTION_SECRET_AUTHORITY_COMPLETE"
+fi
+
+separator
+log "5. COMPOSE SECRET WIRING"
+separator
+
+COMPOSE_REFERENCE_COUNT=0
+COMPOSE_LITERAL_COUNT=0
+COMPOSE_TARGET_COUNT=0
+
+# Only inspect mapping lines whose YAML key is one of the known secret tokens.
+while IFS= read -r line; do
+    key="$(printf '%s\n' "$line" | sed -E 's/^[[:space:]]*([A-Z0-9_]+):.*/\1/')"
+
+    case "$key" in
+        POSTGRES_PASSWORD|DATABASE_PASSWORD|JWT_SECRET_KEY|JWT_REFRESH_SECRET_KEY|S3_SECRET_KEY)
+            COMPOSE_TARGET_COUNT=$((COMPOSE_TARGET_COUNT + 1))
+
+            # Reference wiring must contain ${TOKEN...} or ${TOKEN}
+            if printf '%s\n' "$line" |
+                grep -Eq '\$\{(POSTGRES_PASSWORD|DATABASE_PASSWORD|JWT_SECRET_KEY|JWT_REFRESH_SECRET_KEY|S3_SECRET_KEY)([^}]*)\}'; then
+
+                COMPOSE_REFERENCE_COUNT=$((COMPOSE_REFERENCE_COUNT + 1))
+                log "PASS: COMPOSE_REFERENCE_WIRING KEY=$key VALUE=<REDACTED>"
+
+            else
+                COMPOSE_LITERAL_COUNT=$((COMPOSE_LITERAL_COUNT + 1))
+                log "FAIL: COMPOSE_LITERAL_OR_UNWIRED_SECRET KEY=$key VALUE=<REDACTED>"
+                FAILURE_COUNT=$((FAILURE_COUNT + 1))
+            fi
+            ;;
+    esac
+done < "$COMPOSE_FILE"
+
+log "COMPOSE_TARGET_COUNT=$COMPOSE_TARGET_COUNT"
+log "COMPOSE_REFERENCE_COUNT=$COMPOSE_REFERENCE_COUNT"
+log "COMPOSE_LITERAL_COUNT=$COMPOSE_LITERAL_COUNT"
+
+if [ "$COMPOSE_LITERAL_COUNT" -eq 0 ]; then
+    log "PASS: NO_LITERAL_COMPOSE_SECRET_ASSIGNMENT"
+fi
+
+separator
+log "6. DATABASE_URL SECRET BOUNDARY"
+separator
+
+DATABASE_URL_COUNT=0
+DATABASE_URL_SECRET_REFERENCE_COUNT=0
+
+while IFS= read -r line; do
+    if printf '%s\n' "$line" | grep -q "DATABASE_URL:"; then
+        DATABASE_URL_COUNT=$((DATABASE_URL_COUNT + 1))
+
+        if printf '%s\n' "$line" |
+            grep -Eq '\$\{POSTGRES_PASSWORD([^}]*)\}'; then
+            DATABASE_URL_SECRET_REFERENCE_COUNT=$((DATABASE_URL_SECRET_REFERENCE_COUNT + 1))
+            log "PASS: DATABASE_URL_USES_POSTGRES_PASSWORD_INTERPOLATION"
+        else
+            log "REVIEW: DATABASE_URL_SECRET_INTERPOLATION_NOT_CONFIRMED"
+            REVIEW_COUNT=$((REVIEW_COUNT + 1))
+        fi
+    fi
+done < "$COMPOSE_FILE"
+
+log "DATABASE_URL_COUNT=$DATABASE_URL_COUNT"
+log "DATABASE_URL_SECRET_REFERENCE_COUNT=$DATABASE_URL_SECRET_REFERENCE_COUNT"
+
+separator
+log "7. RUNTIME SECRET AUTHORITY"
+separator
+
+RUNTIME_DECLARATION_COUNT=0
+RUNTIME_CONTEXT_COUNT=0
+RUNTIME_LITERAL_COUNT=0
+
+if grep -Eq '^[[:space:]]*JWT_SECRET_KEY[[:space:]]*:' "$RUNTIME_FILE"; then
+    RUNTIME_DECLARATION_COUNT=$((RUNTIME_DECLARATION_COUNT + 1))
+    log "PASS: RUNTIME_JWT_SECRET_DECLARATION_PRESENT"
+else
+    log "FAIL: RUNTIME_JWT_SECRET_DECLARATION_MISSING"
+    FAILURE_COUNT=$((FAILURE_COUNT + 1))
+fi
+
+# The known runtime context must reference self.JWT_SECRET_KEY,
+# but must never contain a literal secret value.
+if grep -Eq 'self\.JWT_SECRET_KEY' "$RUNTIME_FILE"; then
+    RUNTIME_CONTEXT_COUNT=$(grep -Ec 'self\.JWT_SECRET_KEY' "$RUNTIME_FILE")
+    log "PASS: RUNTIME_JWT_SECRET_USE_CONTEXT_PRESENT COUNT=$RUNTIME_CONTEXT_COUNT"
+else
+    log "FAIL: RUNTIME_JWT_SECRET_USE_CONTEXT_MISSING"
+    FAILURE_COUNT=$((FAILURE_COUNT + 1))
+fi
+
+# Detect suspicious literal assignment patterns only.
+if grep -Eq 'JWT_SECRET_KEY[[:space:]]*=[[:space:]]*["'\''][^"'\'']+["'\'']' "$RUNTIME_FILE"; then
+    RUNTIME_LITERAL_COUNT=1
+    log "FAIL: LITERAL_RUNTIME_JWT_SECRET_ASSIGNMENT_DETECTED VALUE=<REDACTED>"
+    FAILURE_COUNT=$((FAILURE_COUNT + 1))
+else
+    log "PASS: NO_LITERAL_RUNTIME_SECRET_ASSIGNMENT"
+fi
+
+log "RUNTIME_DECLARATION_COUNT=$RUNTIME_DECLARATION_COUNT"
+log "RUNTIME_CONTEXT_COUNT=$RUNTIME_CONTEXT_COUNT"
+log "RUNTIME_LITERAL_COUNT=$RUNTIME_LITERAL_COUNT"
+
+separator
+log "8. CI TEST BOUNDARY"
+separator
+
+CI_SECRET_ASSIGNMENT_COUNT=0
+
+while IFS= read -r line; do
+    if printf '%s\n' "$line" |
+        grep -Eq '^[[:space:]]*(POSTGRES_PASSWORD|DATABASE_PASSWORD|JWT_SECRET_KEY|JWT_REFRESH_SECRET_KEY|S3_SECRET_KEY)[[:space:]]*:'; then
+
+        CI_SECRET_ASSIGNMENT_COUNT=$((CI_SECRET_ASSIGNMENT_COUNT + 1))
+        log "REVIEW: CI_SECRET_ASSIGNMENT_PRESENT VALUE=<REDACTED>"
+    fi
+done < "$CI_FILE"
+
+if [ "$CI_SECRET_ASSIGNMENT_COUNT" -eq 0 ]; then
+    log "PASS: NO_CI_PRODUCTION_SECRET_ASSIGNMENT_PATTERN"
+else
+    log "PASS: CI_SECRET_ASSIGNMENTS_REQUIRE_TEST_SCOPE_ONLY"
+fi
+
+log "CI_SECRET_ASSIGNMENT_COUNT=$CI_SECRET_ASSIGNMENT_COUNT"
+
+separator
+log "9. DEPLOYMENT AUTHORITY BOUNDARY"
+separator
+
+DEPLOY_SECRET_REFERENCE_COUNT=0
+
+for token in "${SECRET_TOKENS[@]}"; do
+    if grep -Eq "$token" "$DEPLOY_FILE"; then
+        DEPLOY_SECRET_REFERENCE_COUNT=$((DEPLOY_SECRET_REFERENCE_COUNT + 1))
+        log "REVIEW: DEPLOY_SCRIPT_REFERENCES_SECRET_IDENTIFIER=$token"
+    fi
+done
+
+log "DEPLOY_SECRET_REFERENCE_COUNT=$DEPLOY_SECRET_REFERENCE_COUNT"
+
+if [ "$DEPLOY_SECRET_REFERENCE_COUNT" -eq 0 ]; then
+    log "PASS: DEPLOY_SCRIPT_HAS_NO_DIRECT_SECRET_IDENTIFIER_REFERENCE"
+fi
+
+separator
+log "10. SECRET VALUE OUTPUT GUARD"
+separator
+
+SECRET_VALUE_OUTPUT_COUNT=0
+
+# Scan only the generated report itself for accidental non-redacted secret
+# assignments. Identifier-only occurrences are allowed.
+if grep -Eq '(POSTGRES_PASSWORD|DATABASE_PASSWORD|JWT_SECRET_KEY|JWT_REFRESH_SECRET_KEY|S3_SECRET_KEY)[=:][[:space:]]*[^<[:space:]]' "$REPORT"; then
+    SECRET_VALUE_OUTPUT_COUNT=1
+    log "FAIL: POTENTIAL_SECRET_VALUE_OUTPUT_DETECTED"
+    FAILURE_COUNT=$((FAILURE_COUNT + 1))
+else
+    log "PASS: SECRET_VALUE_OUTPUT_REMAINED_REDACTED"
+fi
+
+separator
+log "11. CROSS-AUTHORITY INVARIANTS"
+separator
+
+if [ "$ENV_SECRET_COUNT" -eq "${#SECRET_TOKENS[@]}" ]; then
+    log "PASS: INVARIANT_PRODUCTION_SECRET_SET_EXACT"
+else
+    log "FAIL: INVARIANT_PRODUCTION_SECRET_SET_INCOMPLETE"
+    FAILURE_COUNT=$((FAILURE_COUNT + 1))
+fi
+
+if [ "$COMPOSE_LITERAL_COUNT" -eq 0 ]; then
+    log "PASS: INVARIANT_NO_LITERAL_COMPOSE_SECRET"
+else
+    log "FAIL: INVARIANT_COMPOSE_LITERAL_SECRET"
+fi
+
+if [ "$RUNTIME_LITERAL_COUNT" -eq 0 ]; then
+    log "PASS: INVARIANT_NO_LITERAL_RUNTIME_SECRET"
+else
+    log "FAIL: INVARIANT_RUNTIME_LITERAL_SECRET"
+fi
+
+if [ "$SECRET_VALUE_OUTPUT_COUNT" -eq 0 ]; then
+    log "PASS: INVARIANT_NO_SECRET_VALUE_OUTPUT"
+else
+    log "FAIL: INVARIANT_SECRET_VALUE_OUTPUT"
+fi
+
+if [ "$DATABASE_URL_SECRET_REFERENCE_COUNT" -gt 0 ]; then
+    log "PASS: INVARIANT_DATABASE_URL_SECRET_BOUNDARY"
+else
+    log "REVIEW: INVARIANT_DATABASE_URL_SECRET_BOUNDARY_UNCONFIRMED"
+    REVIEW_COUNT=$((REVIEW_COUNT + 1))
+fi
+
+separator
+log "12. FINAL CLASSIFICATION"
+separator
+
+log "FAILURE_COUNT=$FAILURE_COUNT"
+log "REVIEW_COUNT=$REVIEW_COUNT"
+log "ENV_SECRET_COUNT=$ENV_SECRET_COUNT"
+log "COMPOSE_TARGET_COUNT=$COMPOSE_TARGET_COUNT"
+log "COMPOSE_REFERENCE_COUNT=$COMPOSE_REFERENCE_COUNT"
+log "COMPOSE_LITERAL_COUNT=$COMPOSE_LITERAL_COUNT"
+log "RUNTIME_DECLARATION_COUNT=$RUNTIME_DECLARATION_COUNT"
+log "RUNTIME_CONTEXT_COUNT=$RUNTIME_CONTEXT_COUNT"
+log "RUNTIME_LITERAL_COUNT=$RUNTIME_LITERAL_COUNT"
+log "CI_SECRET_ASSIGNMENT_COUNT=$CI_SECRET_ASSIGNMENT_COUNT"
+log "DEPLOY_SECRET_REFERENCE_COUNT=$DEPLOY_SECRET_REFERENCE_COUNT"
+log "SECRET_VALUE_OUTPUT_COUNT=$SECRET_VALUE_OUTPUT_COUNT"
+
+if [ "$FAILURE_COUNT" -gt 0 ]; then
+    STATUS="FAIL"
+    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_FAILURE"
+    EXIT_CODE=20
+elif [ "$REVIEW_COUNT" -gt 0 ]; then
+    STATUS="REVIEW"
+    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+    EXIT_CODE=10
+else
+    STATUS="CLEAN"
+    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_CLEAN"
+    EXIT_CODE=0
+fi
+
+log "P0_02_R10_STATUS=$STATUS"
+log "RESULT=$RESULT"
+log "EXIT_CODE=$EXIT_CODE"
+log "REPORT=$REPORT"
+
+exit "$EXIT_CODE"

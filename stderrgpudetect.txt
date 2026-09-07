@@ -1,0 +1,3 @@
+NVIDIA: dlopen failed: library "libcuda.so" not found
+ATI: dlopen failed: library "libaticalrt.so" not found
+clGetPlatformIDs() failed to return any OpenCL platforms

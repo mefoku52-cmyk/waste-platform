@@ -1,0 +1,145 @@
+============================================================
+R75 DEPLOYMENT IDENTITY DECISION AUDIT
+ROOT=.
+TIME=2026-09-05T11:10:08+02:00
+============================================================
+
+=== 1. ACTIVE PROJECT SOURCES ===
+./docs/deployment.md:641:        uses: appleboy/scp-action@v0.1.7
+./docs/deployment.md:643:          host: ${{ secrets.DEPLOY_HOST }}
+./docs/deployment.md:644:          username: ${{ secrets.DEPLOY_USER }}
+./docs/deployment.md:645:          key: ${{ secrets.DEPLOY_SSH_KEY }}
+./docs/deployment.md:646:          port: ${{ secrets.DEPLOY_PORT }}
+./docs/deployment.md:648:          target: "${{ secrets.DEPLOY_PATH }}"
+./docs/deployment.md:654:        uses: appleboy/ssh-action@v1.0.3
+./docs/deployment.md:656:          host: ${{ secrets.DEPLOY_HOST }}
+./docs/deployment.md:657:          username: ${{ secrets.DEPLOY_USER }}
+./docs/deployment.md:658:          key: ${{ secrets.DEPLOY_SSH_KEY }}
+./docs/deployment.md:659:          port: ${{ secrets.DEPLOY_PORT }}
+./docs/deployment.md:661:            cd "${{ secrets.DEPLOY_PATH }}"
+./docs/deployment.md:664:              PROJECT_DIR="${{ secrets.DEPLOY_PATH }}" ENV_FILE=".env.production" ./scripts/bootstrap-letsencrypt.sh
+./docs/deployment.md:666:            PROJECT_DIR="${{ secrets.DEPLOY_PATH }}" BRANCH="main" ENV_FILE=".env.production" ./scripts/deploy.sh
+./docs/deployment.md:824:10. Set GitHub repository secrets for DEPLOY_HOST, DEPLOY_USER, DEPLOY_PORT, DEPLOY_SSH_KEY, DEPLOY_PATH and all application secrets.
+./docker-compose.yml:35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./docker-compose.yml:53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./scripts/deploy.sh:46:REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-}"
+./scripts/deploy.sh:47:if [ -z "${REGISTRY_IMAGE_PREFIX}" ]; then
+./scripts/deploy.sh:48:    error "REGISTRY_IMAGE_PREFIX is required"
+./scripts/deploy.sh:51:case "${REGISTRY_IMAGE_PREFIX}" in
+./audit-output/p0_production_readiness_20260903_074116/P0-01_production_source_boundary.txt:766:scripts/forensics/archive/phase7_4_9_r3_11_r4_deployment_authority_chain_preflight.sh:122:        'Create production env file|appleboy/scp-action|appleboy/ssh-action|scripts/deploy\.sh|DEPLOY_HOST|DEPLOY_USER|DEPLOY_PATH|JWT_ACCESS_TOKEN_EXPIRES_MINUTES|JWT_REFRESH_TOKEN_EXPIRES_DAYS' \
+./audit-output/p0_03_r45_application_host_dataflow_locator_gate.txt:75:PASS: NO_EXPLICIT_SERVER_HOST_ARGUMENT_USING_HOST_SYMBOL_DETECTED
+./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt:59:SERVER_HOST_ARGUMENT_COUNT=0
+./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt:60:PASS: NO_PYTHON_SERVER_HOST_ARGUMENT_DETECTED
+./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt:108:R46_SERVER_HOST_ARGUMENT_COUNT=0
+./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt:132:SERVER_HOST_ARGUMENT_COUNT=0
+./.production-release/release.env.example:36:REGISTRY_IMAGE_PREFIX=ghcr.io/<github-owner>
+./phase_p0_03_r45_application_host_dataflow_locator_gate.sh:312:    pass "NO_EXPLICIT_SERVER_HOST_ARGUMENT_USING_HOST_SYMBOL_DETECTED"
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:536:./scripts/forensics/archive/phase7_4_9_r3_7_production_env_authority.sh:180:    "REDIS_HOST": "__R37_PRODUCTION_HOST__",
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:1787:./scripts/forensics/archive/phase7_4_9_r3_7_production_env_authority.sh:180:    "REDIS_HOST": "__R37_PRODUCTION_HOST__",
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6635:./docker-compose.yml:35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6636:./docker-compose.yml:53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6644:./scripts/deploy.sh:46:REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-}"
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6645:./scripts/deploy.sh:47:if [ -z "${REGISTRY_IMAGE_PREFIX}" ]; then
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6646:./scripts/deploy.sh:48:    error "REGISTRY_IMAGE_PREFIX is required"
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6647:./scripts/deploy.sh:51:case "${REGISTRY_IMAGE_PREFIX}" in
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6756:./.production-release/release.env.example:36:REGISTRY_IMAGE_PREFIX=ghcr.io/<github-owner>
+./P0_R1_R65_META_AUDIT_20260903_105537.txt:6900:./collect_p0_r1_r65_meta_audit.sh:239:    'REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG|docker build|docker push|docker tag|image:' \
+./P0_R1_R65_DECISION_MAP_20260903_105724.txt:555:./scripts/forensics/archive/phase7_4_9_r3_7_production_env_authority.sh:180:     "REDIS_HOST": "__R37_PRODUCTION_HOST__",
+./P0_R1_R65_DECISION_MAP_20260903_105724.txt:1153:./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt:108: R46_SERVER_HOST_ARGUMENT_COUNT=0
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt:432:35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt:433:53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt:444:46:REGISTRY_IMAGE_PREFIX=<REDACTED>
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt:445:47:if [ -z "${REGISTRY_IMAGE_PREFIX}" ]; then
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt:446:48:    error "REGISTRY_IMAGE_PREFIX is required"
+./GLOBAL_P0_R1_R65_STATE_20260903_110209.txt:447:51:case "${REGISTRY_IMAGE_PREFIX}" in
+./build_p0_r1_r65_closure_truth_map.sh:683:        'RELEASE_ID|IMAGE_TAG|REGISTRY_IMAGE_PREFIX|image:|docker build|docker push|docker tag' \
+./build_p0_r1_r65_closure_truth_map.sh:686:            's/(RELEASE_ID|IMAGE_TAG|REGISTRY_IMAGE_PREFIX)=([^[:space:]]+)/\1=<VALUE_REDACTED>/g' \
+./inspect_r60_r65_reconciliation.sh:139:      '(image:|REGISTRY_IMAGE_PREFIX|IMAGE_TAG|RELEASE_ID)' \
+./inspect_r60_r65_reconciliation.sh:142:      's/(REGISTRY_IMAGE_PREFIX=).*/\1<REDACTED>/g;
+./inspect_r60_r65_reconciliation.sh:152:for k in REGISTRY_IMAGE_PREFIX IMAGE_TAG RELEASE_ID; do
+./inspect_r60_exact_failure.sh:89:    '(REGISTRY_IMAGE_PREFIX|IMAGE_TAG|RELEASE_ID|COMPOSE_ENV_FILE_AUTHORITY_PRESERVED|VALID_RELEASE_ID_ACCEPTED|VALID_IMAGE_TAG_ACCEPTED|MUTABLE_IDENTITY_REJECTED|DEPLOY_DOES_NOT_CONTAIN_SECRET_VALUES)' \
+./check_vps_direct.sh:12:read -rp "VPS SSH user (napr. root): " VPS_USER
+./check_vps_direct.sh:13:read -rp "VPS host/IP: " VPS_HOST
+./check_vps_direct.sh:14:read -rp "SSH port [22]: " VPS_PORT
+./check_vps_direct.sh:15:VPS_PORT="${VPS_PORT:-22}"
+./check_vps_direct.sh:25:    -p "$VPS_PORT" \
+./check_vps_direct.sh:26:    "${VPS_USER}@${VPS_HOST}" \
+./check_vps_direct.sh:43:    -p "$VPS_PORT" \
+./check_vps_direct.sh:44:    "${VPS_USER}@${VPS_HOST}" \
+./check_vps_direct.sh:71:    -p "$VPS_PORT" \
+./check_vps_direct.sh:72:    "${VPS_USER}@${VPS_HOST}" \
+./check_vps_direct.sh:113:    -p "$VPS_PORT" \
+./check_vps_direct.sh:114:    "${VPS_USER}@${VPS_HOST}" \
+./check_vps_direct.sh:176:            "^[[:space:]]*(image|build):|REGISTRY_IMAGE_PREFIX|IMAGE_TAG|RELEASE_ID|env_file" \
+./check_vps_direct.sh:183:for v in REGISTRY_IMAGE_PREFIX IMAGE_TAG RELEASE_ID; do
+./extract_vps_info.sh:46:'CONTABO|VPS|SERVER|HOST|SSH|DEPLOY|REGISTRY|IMAGE_TAG|RELEASE_ID|DOMAIN|DOMAIN_NAME|PUBLIC_IP|SERVER_IP' \
+./extract_vps_info.sh:115:'(ssh[[:space:]]+|scp[[:space:]]+|rsync[[:space:]]+|HostName|SERVER_HOST|SERVER_IP|VPS_HOST|VPS_IP|CONTABO|registry|docker login|docker push|docker pull|production)' \
+./r73_deployment_identity_forensic.sh:13:        grep -nE '^(DEPLOY_|APP_DOMAIN|API_DOMAIN|PROJECT_DIR|BRANCH|REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG)=' \
+./r73_deployment_identity_forensic.sh:15:            | sed -E 's/(DEPLOY_SSH_KEY|[A-Z0-9_]*(PASSWORD|SECRET|TOKEN|KEY))=.*/\1=<REDACTED>/'
+./r73_deployment_identity_forensic.sh:34:    'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY|appleboy/(ssh|scp)-action' \
+./r73_deployment_identity_forensic.sh:57:    -G'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY' \
+./r74_actual_deployment_identity_sources.sh:38:            'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY|ssh |scp |rsync |appleboy|github.*secret|gh secret|docker.*login|docker.*push' \
+./r74_actual_deployment_identity_sources.sh:41:              's/(DEPLOY_SSH_KEY|[A-Z0-9_]*(PASSWORD|SECRET|TOKEN|KEY))=[^[:space:]]+/\1=<REDACTED>/g' \
+./r74_actual_deployment_identity_sources.sh:95:    'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY|appleboy/(ssh|scp)-action|ssh[[:space:]].*@|scp[[:space:]].*@|rsync[[:space:]].*@' \
+./r74_actual_deployment_identity_sources.sh:102:      's/(DEPLOY_SSH_KEY|[A-Z0-9_]*(PASSWORD|SECRET|TOKEN|KEY))=[^[:space:]]+/\1=<REDACTED>/g' \
+./r75_deployment_identity_decision.sh:7:PATTERN='DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY|VPS_HOST|VPS_USER|VPS_PORT|SERVER_HOST|SERVER_IP|PRODUCTION_HOST|PROD_HOST|REGISTRY_IMAGE_PREFIX|appleboy/(ssh|scp)-action'
+./r75_deployment_identity_decision.sh:27:  's/(DEPLOY_SSH_KEY|[A-Z0-9_]*(PASSWORD|SECRET|TOKEN|KEY))=[^[:space:]]+/\1=<REDACTED>/g' \
+./r75_deployment_identity_decision.sh:37:      'appleboy/(ssh|scp)-action|DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY' \
+./r75_deployment_identity_decision.sh:50:      'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY|ssh |scp |rsync ' \
+./r75_deployment_identity_decision.sh:61:  'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PORT|DEPLOY_PATH|DEPLOY_SSH_KEY|appleboy/(ssh|scp)-action' \
+./r75_deployment_identity_decision.sh:76:  'appleboy/(ssh|scp)-action|DEPLOY_HOST|DEPLOY_USER|DEPLOY_PATH|DEPLOY_SSH_KEY' \
+./r75_deployment_identity_decision.sh:83:  'DEPLOY_HOST|DEPLOY_USER|DEPLOY_PATH|DEPLOY_SSH_KEY' \
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:221:SERVER_HOST_ARGUMENT_COUNT=0
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:238:SERVER_HOST_ARGUMENT_COUNT="$(
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:243:log "SERVER_HOST_ARGUMENT_COUNT=${SERVER_HOST_ARGUMENT_COUNT}"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:245:if [ "${SERVER_HOST_ARGUMENT_COUNT}" -gt 0 ]; then
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:246:    fail "EXPLICIT_PYTHON_SERVER_HOST_ARGUMENT_DETECTED"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:248:    log "SERVER_HOST_ARGUMENTS_BEGIN"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:252:        log "SERVER_HOST_ARGUMENT=${line}"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:255:    log "SERVER_HOST_ARGUMENTS_END"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:257:    pass "NO_PYTHON_SERVER_HOST_ARGUMENT_DETECTED"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:374:if [ "${SERVER_HOST_ARGUMENT_COUNT}" -gt 0 ]; then
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:471:log "R46_SERVER_HOST_ARGUMENT_COUNT=${SERVER_HOST_ARGUMENT_COUNT}"
+./phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh:522:log "SERVER_HOST_ARGUMENT_COUNT=${SERVER_HOST_ARGUMENT_COUNT}"
+./collect_p0_r1_r65_meta_audit.sh:239:    'REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG|docker build|docker push|docker tag|image:' \
+./GLOBAL_P0_R1_R65_STATE.sh:160:        'REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG|image:|docker build|docker push|docker pull|docker compose|deploy' \
+./GLOBAL_P0_R1_R65_STATE.sh:163:        's/(REGISTRY_IMAGE_PREFIX=).*/\1<REDACTED>/;
+./GLOBAL_P0_R1_R65_STATE.sh:176:        grep -E '^[[:space:]]*(REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG)[[:space:]]*=' "$F" 2>/dev/null |
+./analyze_p0_r54_r65_frontier.sh:205:        'REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG|docker compose|docker push|docker pull|image:' \
+./analyze_p0_r54_r65_frontier.sh:208:        's/(REGISTRY_IMAGE_PREFIX=).*/\1<REDACTED>/;
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:592:35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:593:53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:604:46:REGISTRY_IMAGE_PREFIX=<REDACTED>
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:605:47:if [ -z "${REGISTRY_IMAGE_PREFIX}" ]; then
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:606:48:    error "REGISTRY_IMAGE_PREFIX is required"
+./P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt:607:51:case "${REGISTRY_IMAGE_PREFIX}" in
+./reconstruct_p0_r65_global_truth_map.sh:19:        -e 's/(REGISTRY_IMAGE_PREFIX)=([^[:space:]]+)/\1=<VALUE_PRESENT>/Ig' \
+./reconstruct_p0_r65_global_truth_map.sh:231:        'REGISTRY_IMAGE_PREFIX|RELEASE_ID|IMAGE_TAG|image:[[:space:]]|docker build|docker push' \
+./P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:1134:35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt:1135:53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:344:446:48:    error "REGISTRY_IMAGE_PREFIX is required"
+./R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:459:35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:460:53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+./R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt:463:REGISTRY_IMAGE_PREFIX=ABSENT
+./inspect_r60_failures_vs_r61.sh:120:        '(explicit.*release|release.*image|image:|docker compose config|compose config|config.*valid|build:|env_file|ENV_FILE|environment:|REGISTRY_IMAGE_PREFIX|IMAGE_TAG|RELEASE_ID|up --build|--build)' \
+./VPS_LOCAL_DISCOVERY_20260904_205626.txt:72:./docs/deployment.md:664:              PROJECT_DIR="${{ secrets.DEPLOY_PATH }}" ENV_FILE=".env.production" ./scripts/bootstrap-letsencrypt.sh
+./VPS_LOCAL_DISCOVERY_20260904_205626.txt:73:./docs/deployment.md:666:            PROJECT_DIR="${{ secrets.DEPLOY_PATH }}" BRANCH="main" ENV_FILE=".env.production" ./scripts/deploy.sh
+./VPS_LOCAL_DISCOVERY_20260904_205626.txt:724:./scripts/forensics/archive/phase7_4_9_r3_11_r4_deployment_authority_chain_preflight.sh:44:        'deploy:|Create production env|\.env\.production|DEPLOY_HOST|DEPLOY_USER|DEPLOY_PATH|appleboy/(scp|ssh)-action' \
+./VPS_LOCAL_DISCOVERY_20260904_205626.txt:726:./scripts/forensics/archive/phase7_4_9_r3_11_r4_deployment_authority_chain_preflight.sh:92:        'appleboy/(scp|ssh)-action|DEPLOY_HOST|DEPLOY_USER|DEPLOY_PATH|\.env\.production|docker compose.*up|scripts/deploy\.sh' \
+./VPS_LOCAL_DISCOVERY_20260904_205626.txt:727:./scripts/forensics/archive/phase7_4_9_r3_11_r4_deployment_authority_chain_preflight.sh:122:        'Create production env file|appleboy/scp-action|appleboy/ssh-action|scripts/deploy\.sh|DEPLOY_HOST|DEPLOY_USER|DEPLOY_PATH|JWT_ACCESS_TOKEN_EXPIRES_MINUTES|JWT_REFRESH_TOKEN_EXPIRES_DAYS' \
+
+=== 2. CI/CD WORKFLOWS ===
+
+=== 3. DEPLOYMENT SCRIPTS ===
+
+=== 4. GIT HISTORY SIGNAL ===
+46fbc54 Checkpoint 2026-08-06: metrics_router fix, requirements.txt, pred dalsimi zmenami
+
+=== 5. DECISION ===
+VERDICT=DEPLOYMENT_IDENTITY_DOCUMENTED_ONLY
+DOC_FILES=1
+
+SAFETY=READ_ONLY
+SECRETS=NOT_PRINTED
+R75 COMPLETE
+REPORT=r75_deployment_identity_20260905_111008.txt

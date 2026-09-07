@@ -32,9 +32,7 @@ services:
       - cmep-network
 
   api:
-    build:
-      context: .
-      dockerfile: app/Dockerfile
+    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
     container_name: cmep-api
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-cmep}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD musi byt nastaveny}@postgres:5432/${POSTGRES_DB:-cmep}
@@ -52,9 +50,7 @@ services:
       - cmep-network
 
   web:
-    build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
     container_name: cmep-web
     environment:
       NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000}

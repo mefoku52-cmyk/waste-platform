@@ -1,0 +1,59 @@
+=== CHECK BACKEND RUNTIME MOUNT ===
+CAS: 2026-09-05 17:16:59 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+=== 1. PYTHON KONTEXT ===
+PYTHON: /data/data/com.termux/files/usr/bin/python3
+PREFIX: /data/data/com.termux/files/usr
+
+=== 2. IMPORT app.main ===
+[IMPORT OK] app.main
+app objekt: True
+create_app objekt: True
+
+=== 3. CREATE_APP A STAV ROUTEROV ===
+[CREATE_APP OK]
+mounted_routers = ['shared.api_router', 'auth', 'users', 'companies', 'company_memberships', 'listings', 'inquiries', 'documents', 'compliance', 'notifications', 'analytics', 'admin', 'uploads']
+skipped_routers = []
+routes_count = 18
+routes_sample =
+ - /openapi.json {'HEAD', 'GET'}
+ - /docs {'HEAD', 'GET'}
+ - /docs/oauth2-redirect {'HEAD', 'GET'}
+ - /redoc {'HEAD', 'GET'}
+ - /health {'GET'}
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+ - None None
+
+=== 4. PRIAME IMPORTY MODULOVYCH ROUTEROV ===
+[WARN] app.shared.presentation.api_router -> router attribute missing
+[OK] app.modules.auth.presentation.router -> router loaded
+[OK] app.modules.users.presentation.router -> router loaded
+[OK] app.modules.companies.presentation.router -> router loaded
+[OK] app.modules.company_memberships.presentation.router -> router loaded
+[OK] app.modules.listings.presentation.router -> router loaded
+[OK] app.modules.inquiries.presentation.router -> router loaded
+[OK] app.modules.documents.presentation.router -> router loaded
+[OK] app.modules.compliance.presentation.router -> router loaded
+[OK] app.modules.notifications.presentation.router -> router loaded
+[OK] app.modules.analytics.presentation.router -> router loaded
+[OK] app.modules.admin.presentation.router -> router loaded
+[OK] app.modules.uploads.presentation.router -> router loaded
+
+=== 5. HEALTH ENDPOINT SIGNAL ===
+/data/data/com.termux/files/home/waste-platform/app/main.py:61:    @app.get("/health")
+/data/data/com.termux/files/home/waste-platform/app/shared/presentation/health_router.py:5:@router.get("/health")
+
+REPORT: /data/data/com.termux/files/home/waste-platform/scripts/grok-audit/check_backend_runtime_mount_report.txt
+=== KONIEC CHECK BACKEND RUNTIME MOUNT ===

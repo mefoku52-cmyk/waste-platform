@@ -1,0 +1,119 @@
+=== INSPECT ROUTE OBJECTS ===
+CAS: 2026-09-05 17:19:15 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+=== APP ROUTES DETAIL ===
+[1] CLASS=Route
+    path='/openapi.json'
+    name='openapi'
+    methods=['GET', 'HEAD']
+    endpoint='openapi'
+
+[2] CLASS=Route
+    path='/docs'
+    name='swagger_ui_html'
+    methods=['GET', 'HEAD']
+    endpoint='swagger_ui_html'
+
+[3] CLASS=Route
+    path='/docs/oauth2-redirect'
+    name='swagger_ui_redirect'
+    methods=['GET', 'HEAD']
+    endpoint='swagger_ui_redirect'
+
+[4] CLASS=Route
+    path='/redoc'
+    name='redoc_html'
+    methods=['GET', 'HEAD']
+    endpoint='redoc_html'
+
+[5] CLASS=APIRoute
+    path='/health'
+    name='health'
+    methods=['GET']
+    endpoint='health'
+
+[6] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[7] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[8] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[9] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[10] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[11] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[12] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[13] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[14] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[15] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[16] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[17] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+[18] CLASS=_IncludedRouter
+    path=None
+    name=None
+    methods=None
+    endpoint=None
+
+=== MOUNTED/ SKIPPED ===
+mounted_routers = ['shared.api_router', 'auth', 'users', 'companies', 'company_memberships', 'listings', 'inquiries', 'documents', 'compliance', 'notifications', 'analytics', 'admin', 'uploads']
+skipped_routers = []
+
+REPORT: /data/data/com.termux/files/home/waste-platform/scripts/grok-audit/inspect_route_objects_report.txt
+=== KONIEC INSPECT ROUTE OBJECTS ===

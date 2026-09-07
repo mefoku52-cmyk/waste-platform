@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { companiesApi } from '../../companies/api';
 import { uploadFile } from '../../uploads/api';
+import { config } from '../../../lib/config';
 
 export const ListingForm = () => {
   const { mutate: createListing, isPending, error } = useCreateListing();
@@ -105,7 +106,7 @@ export const ListingForm = () => {
             if (!f) return;
             try {
               const res = await uploadFile(f);
-              const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api/v1';
+              const base = config.apiBaseUrl;
               const full = res.url.startsWith('http') ? res.url : base + res.url;
               setValue('imageUrl', full as any, { shouldValidate: true });
             } catch (err: any) {

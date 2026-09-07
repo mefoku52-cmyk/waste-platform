@@ -1,0 +1,824 @@
+=== P1 DEEP READ: COMPLIANCE + NOTIFICATIONS + ADMIN ===
+CAS: 2026-09-05 17:31:00 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+############################################################
+### DOMAIN: compliance
+############################################################
+
+## A. BACKEND ROUTER (first 260 lines)
+     1	from app.shared.presentation.auth_dependencies import require_current_user
+     2	"""compliance API router."""
+     3	
+     4	from fastapi import APIRouter, Depends, HTTPException, status as http_status
+     5	
+     6	from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+     7	
+     8	from ..application.services import ComplianceRecordService
+     9	from ..domain.entities import ComplianceRecordEntity
+    10	from ..domain.enums import ComplianceRecordStatus
+    11	from .dependencies import get_compliance_service
+    12	from .schemas import (
+    13	    ComplianceRecordCreateRequest,
+    14	    ComplianceRecordData,
+    15	    ComplianceRecordResponse,
+    16	    ComplianceRecordUpdateRequest,
+    17	    PaginatedComplianceRecordsResponse,
+    18	    PaginationMeta,
+    19	)
+    20	
+    21	router = APIRouter(prefix="/compliance", tags=["compliance"])
+    22	
+    23	
+    24	def _to_data(entity: ComplianceRecordEntity) -> ComplianceRecordData:
+    25	    return ComplianceRecordData(
+    26	        id=entity.id,
+    27	        companyId=entity.company_id,
+    28	        regulationType=entity.regulation_type,
+    29	        documentRef=entity.document_ref,
+    30	        validUntil=entity.valid_until,
+    31	        notes=entity.notes,
+    32	        status=entity.status.value,
+    33	        createdAt=entity.created_at,
+    34	        updatedAt=entity.updated_at,
+    35	    )
+    36	
+    37	
+    38	@router.get(
+    39	    "",
+    40	    response_model=PaginatedComplianceRecordsResponse,
+    41	    summary="List compliance records",
+    42	    operation_id="listComplianceRecords",
+    43	)
+    44	async def list_compliance(
+    45	    page: int = 1,
+    46	    limit: int = 20,
+    47	    current_user=Depends(require_current_user),
+    48	    service: ComplianceRecordService = Depends(get_compliance_service),
+    49	):
+    50	    company_ids = []
+    51	    for m in (current_user.memberships or []):
+    52	        cid = m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None)
+    53	        if cid is not None:
+    54	            company_ids.append(cid)
+    55	    items = await service.list_by_company_ids(company_ids, page, limit)
+    56	    total = await service.count_by_company_ids(company_ids)
+    57	    return PaginatedComplianceRecordsResponse(
+    58	        items=[_to_data(e) for e in items],
+    59	        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    60	    )
+    61	
+    62	
+    63	@router.get(
+    64	    "/{id}",
+    65	    response_model=ComplianceRecordResponse,
+    66	    summary="Get compliance record by ID",
+    67	    operation_id="getComplianceRecordById",
+    68	)
+    69	async def get_compliance(id: str, service: ComplianceRecordService = Depends(get_compliance_service)):
+    70	    entity = await service.get_by_id(id)
+    71	    if entity is None:
+    72	        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="ComplianceRecord not found")
+    73	    return ComplianceRecordResponse(data=_to_data(entity))
+    74	
+    75	
+    76	@router.post(
+    77	    "",
+    78	    response_model=ComplianceRecordResponse,
+    79	    status_code=http_status.HTTP_201_CREATED,
+    80	    summary="Create compliance record",
+    81	    operation_id="createComplianceRecord",
+    82	)
+    83	async def create_compliance(
+    84	    request: ComplianceRecordCreateRequest,
+    85	    current_user=Depends(require_current_user),
+    86	    service: ComplianceRecordService = Depends(get_compliance_service),
+    87	):
+    88	    entity = ComplianceRecordEntity(
+    89	        company_id=request.companyId,
+    90	        regulation_type=request.regulationType,
+    91	        document_ref=request.documentRef,
+    92	        valid_until=request.validUntil,
+    93	        notes=request.notes,
+    94	    )
+    95	    try:
+    96	        created = await service.create(entity)
+    97	    except ValidationDomainError as exc:
+    98	        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+    99	    return ComplianceRecordResponse(data=_to_data(created))
+   100	
+   101	
+   102	@router.patch(
+   103	    "/{id}",
+   104	    response_model=ComplianceRecordResponse,
+   105	    summary="Update compliance record",
+   106	    operation_id="updateComplianceRecord",
+   107	)
+   108	async def update_compliance(
+   109	    id: str,
+   110	    request: ComplianceRecordUpdateRequest,
+   111	    service: ComplianceRecordService = Depends(get_compliance_service),
+   112	):
+   113	    existing = await service.get_by_id(id)
+   114	    if existing is None:
+   115	        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="ComplianceRecord not found")
+   116	    updated_entity = ComplianceRecordEntity(
+   117	        company_id=request.companyId if request.companyId is not None else existing.company_id,
+   118	        regulation_type=request.regulationType if request.regulationType is not None else existing.regulation_type,
+   119	        document_ref=request.documentRef if request.documentRef is not None else existing.document_ref,
+   120	        valid_until=request.validUntil if request.validUntil is not None else existing.valid_until,
+   121	        notes=request.notes if request.notes is not None else existing.notes,
+   122	        status=ComplianceRecordStatus(request.status) if request.status is not None else existing.status,
+   123	    )
+   124	    try:
+   125	        result = await service.update(id, updated_entity)
+   126	    except NotFoundDomainError as exc:
+   127	        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+   128	    except ValidationDomainError as exc:
+   129	        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+   130	    return ComplianceRecordResponse(data=_to_data(result))
+   131	
+   132	
+   133	@router.delete(
+   134	    "/{id}",
+   135	    status_code=http_status.HTTP_204_NO_CONTENT,
+   136	    summary="Delete compliance record",
+   137	    operation_id="deleteComplianceRecord",
+   138	)
+   139	async def delete_compliance(id: str, service: ComplianceRecordService = Depends(get_compliance_service)):
+   140	    try:
+   141	        await service.delete(id)
+   142	    except NotFoundDomainError as exc:
+   143	        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+
+## B. FRONTEND API FILE
+     1	import { http } from '../../lib/api/http';
+     2	
+     3	export const complianceApi = {
+     4	  list: (params?: Record<string, any>) =>
+     5	    http.get<{ items: any[]; meta: any }>('/compliance', { ...params }),
+     6	
+     7	  create: (data: {
+     8	    companyId: string;
+     9	    regulationType: string;
+    10	    documentRef?: string | null;
+    11	    notes?: string | null;
+    12	  }) => http.post<{ data: any }>('/compliance', data),
+    13	};
+
+## C. FRONTEND INDEX
+     1	export * from './api'
+     2	export * from './components/compliance-table'
+     3	export * from './hooks/use-compliance'
+     4	export * from './hooks/use-create-compliance'
+
+## D. FRONTEND COMPONENTS
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/compliance/components/compliance-table.tsx -----
+     1	'use client';
+     2	
+     3	import { useCompliance } from '../hooks/use-compliance';
+     4	
+     5	export const ComplianceTable = () => {
+     6	  const { data, isLoading, error } = useCompliance();
+     7	  const items = (data as any)?.items ?? [];
+     8	
+     9	  if (isLoading) return <div className="p-4 text-center text-sm text-gray-500">Načítavam compliance...</div>;
+    10	  if (error) return <div className="p-4 text-center text-sm text-red-600">Compliance sa nepodarilo načítať.</div>;
+    11	
+    12	  return (
+    13	    <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+    14	      <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
+    15	        <thead className="bg-gray-50">
+    16	          <tr>
+    17	            <th className="px-4 py-2 text-left font-medium text-gray-900">Regulácia</th>
+    18	            <th className="px-4 py-2 text-left font-medium text-gray-900">Dokument</th>
+    19	            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
+    20	            <th className="px-4 py-2 text-left font-medium text-gray-900">Poznámka</th>
+    21	          </tr>
+    22	        </thead>
+    23	        <tbody className="divide-y divide-gray-200">
+    24	          {items.length === 0 ? (
+    25	            <tr>
+    26	              <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+    27	                Žiadne compliance záznamy.
+    28	              </td>
+    29	            </tr>
+    30	          ) : (
+    31	            items.map((row: any) => (
+    32	              <tr key={row.id} className="hover:bg-gray-50">
+    33	                <td className="px-4 py-2 font-medium text-gray-900">{row.regulationType}</td>
+    34	                <td className="px-4 py-2 text-gray-700">{row.documentRef || '—'}</td>
+    35	                <td className="px-4 py-2 text-gray-700">{row.status}</td>
+    36	                <td className="px-4 py-2 text-gray-600 max-w-xs truncate">{row.notes || '—'}</td>
+    37	              </tr>
+    38	            ))
+    39	          )}
+    40	        </tbody>
+    41	      </table>
+    42	    </div>
+    43	  );
+    44	};
+
+
+## E. FRONTEND HOOKS
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/compliance/hooks/use-compliance.ts -----
+     1	import { useQuery } from '@tanstack/react-query';
+     2	import { complianceApi } from '../api';
+     3	
+     4	export const useCompliance = () =>
+     5	  useQuery({
+     6	    queryKey: ['compliance'],
+     7	    queryFn: () => complianceApi.list(),
+     8	  });
+
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/compliance/hooks/use-create-compliance.ts -----
+     1	import { useMutation, useQueryClient } from '@tanstack/react-query';
+     2	import { complianceApi } from '../api';
+     3	
+     4	export const useCreateCompliance = () => {
+     5	  const qc = useQueryClient();
+     6	  return useMutation({
+     7	    mutationFn: complianceApi.create,
+     8	    onSuccess: () => qc.invalidateQueries({ queryKey: ['compliance'] }),
+     9	  });
+    10	};
+
+
+## F. APP TEST FILE CANDIDATES
+[INFO] No app/tests files for compliance
+
+## G. ROOT TEST FILE CANDIDATES
+[INFO] No root tests files for compliance
+
+## H. QUICK GAP NOTE
+DOMAIN=compliance BACKEND_ROUTER=YES FRONTEND_API=YES FRONTEND_HOOKS=YES FRONTEND_COMPONENTS=YES APP_TESTS=NO ROOT_TESTS=NO
+
+############################################################
+### DOMAIN: notifications
+############################################################
+
+## A. BACKEND ROUTER (first 260 lines)
+     1	"""notifications API router."""
+     2	
+     3	from fastapi import APIRouter, Depends, Query, status as http_status
+     4	
+     5	from app.shared.domain.exceptions import ForbiddenDomainError, NotFoundDomainError
+     6	from app.shared.presentation.auth_dependencies import require_current_user
+     7	from app.shared.presentation.error_schemas import error_responses
+     8	
+     9	from ..application.services import NotificationService
+    10	from ..domain.entities import NotificationEntity
+    11	from .dependencies import get_notifications_service
+    12	from .schemas import (
+    13	    NotificationCreateRequest,
+    14	    NotificationData,
+    15	    NotificationResponse,
+    16	    PaginatedNotificationsResponse,
+    17	    PaginationMeta,
+    18	)
+    19	
+    20	router = APIRouter(prefix="/notifications", tags=["notifications"])
+    21	
+    22	
+    23	def _current_user_id(current_user):
+    24	    return getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
+    25	
+    26	
+    27	def _ensure_notification_owner(entity: NotificationEntity, current_user) -> None:
+    28	    if str(entity.user_id) != str(_current_user_id(current_user)):
+    29	        raise ForbiddenDomainError("You do not have access to this notification")
+    30	
+    31	
+    32	def _to_data(entity: NotificationEntity) -> NotificationData:
+    33	    return NotificationData(
+    34	        id=entity.id,
+    35	        userId=entity.user_id,
+    36	        type=entity.type,
+    37	        title=entity.title,
+    38	        message=entity.message,
+    39	        isRead=entity.is_read,
+    40	        relatedEntityId=entity.related_entity_id,
+    41	        createdAt=entity.created_at,
+    42	        updatedAt=entity.updated_at,
+    43	    )
+    44	
+    45	
+    46	@router.get(
+    47	    "",
+    48	    response_model=PaginatedNotificationsResponse,
+    49	    responses=error_responses(401, 403, 422, 500),
+    50	)
+    51	async def list_notifications(
+    52	    page: int = Query(default=1, ge=1),
+    53	    pageSize: int = Query(default=20, ge=1, le=100),
+    54	    limit: int | None = Query(default=None, ge=1, le=100, include_in_schema=False),
+    55	    current_user=Depends(require_current_user),
+    56	    service: NotificationService = Depends(get_notifications_service),
+    57	):
+    58	    uid = _current_user_id(current_user)
+    59	    effective_page_size = limit or pageSize
+    60	    items = await service.list_by_user_id(uid, page, effective_page_size)
+    61	    total = await service.count_by_user_id(uid)
+    62	    return PaginatedNotificationsResponse(
+    63	        items=[_to_data(e) for e in items],
+    64	        meta=PaginationMeta(page=page, pageSize=effective_page_size, total=total),
+    65	    )
+    66	
+    67	
+    68	@router.get(
+    69	    "/{id}",
+    70	    response_model=NotificationResponse,
+    71	    responses=error_responses(401, 403, 404, 500),
+    72	)
+    73	async def get_notification(
+    74	    id: str,
+    75	    current_user=Depends(require_current_user),
+    76	    service: NotificationService = Depends(get_notifications_service),
+    77	):
+    78	    entity = await service.get_by_id(id)
+    79	    if entity is None:
+    80	        raise NotFoundDomainError(f"Notification {id} not found")
+    81	    _ensure_notification_owner(entity, current_user)
+    82	    return NotificationResponse(data=_to_data(entity))
+    83	
+    84	
+    85	@router.post(
+    86	    "",
+    87	    response_model=NotificationResponse,
+    88	    status_code=http_status.HTTP_201_CREATED,
+    89	    responses=error_responses(401, 403, 409, 422, 500),
+    90	)
+    91	async def create_notification(
+    92	    request: NotificationCreateRequest,
+    93	    current_user=Depends(require_current_user),
+    94	    service: NotificationService = Depends(get_notifications_service),
+    95	):
+    96	    current_uid = _current_user_id(current_user)
+    97	    if str(request.userId) != str(current_uid):
+    98	        raise ForbiddenDomainError("You cannot create notifications for another user")
+    99	
+   100	    entity = NotificationEntity(
+   101	        user_id=request.userId,
+   102	        type=request.type,
+   103	        title=request.title,
+   104	        message=request.message,
+   105	        is_read=request.isRead,
+   106	        related_entity_id=request.relatedEntityId,
+   107	    )
+   108	    created = await service.create(entity)
+   109	    return NotificationResponse(data=_to_data(created))
+   110	
+   111	
+   112	@router.post(
+   113	    "/{id}/mark-read",
+   114	    response_model=NotificationResponse,
+   115	    responses=error_responses(401, 403, 404, 409, 422, 500),
+   116	)
+   117	async def mark_notification_read(
+   118	    id: str,
+   119	    current_user=Depends(require_current_user),
+   120	    service: NotificationService = Depends(get_notifications_service),
+   121	):
+   122	    entity = await service.get_by_id(id)
+   123	    if entity is None:
+   124	        raise NotFoundDomainError(f"Notification {id} not found")
+   125	    _ensure_notification_owner(entity, current_user)
+   126	
+   127	    result = await service.mark_read(id)
+   128	    return NotificationResponse(data=_to_data(result))
+   129	
+   130	
+   131	@router.post(
+   132	    "/{id}/mark-unread",
+   133	    response_model=NotificationResponse,
+   134	    responses=error_responses(401, 403, 404, 409, 422, 500),
+   135	)
+   136	async def mark_notification_unread(
+   137	    id: str,
+   138	    current_user=Depends(require_current_user),
+   139	    service: NotificationService = Depends(get_notifications_service),
+   140	):
+   141	    entity = await service.get_by_id(id)
+   142	    if entity is None:
+   143	        raise NotFoundDomainError(f"Notification {id} not found")
+   144	    _ensure_notification_owner(entity, current_user)
+   145	
+   146	    result = await service.mark_unread(id)
+   147	    return NotificationResponse(data=_to_data(result))
+   148	
+   149	
+   150	@router.delete(
+   151	    "/{id}",
+   152	    status_code=http_status.HTTP_204_NO_CONTENT,
+   153	    responses=error_responses(401, 403, 404, 500),
+   154	)
+   155	async def delete_notification(
+   156	    id: str,
+   157	    current_user=Depends(require_current_user),
+   158	    service: NotificationService = Depends(get_notifications_service),
+   159	):
+   160	    entity = await service.get_by_id(id)
+   161	    if entity is None:
+   162	        raise NotFoundDomainError(f"Notification {id} not found")
+   163	    _ensure_notification_owner(entity, current_user)
+   164	    await service.delete(id)
+
+## B. FRONTEND API FILE
+     1	import { http } from '../../lib/api/http';
+     2	
+     3	export const notificationsApi = {
+     4	  list: (params?: Record<string, any>) =>
+     5	    http.get<{ items: any[]; meta: any }>('/notifications', { ...params }),
+     6	};
+
+## C. FRONTEND INDEX
+     1	export * from './api'
+     2	export * from './components/notifications-panel'
+     3	export * from './hooks/use-notifications'
+
+## D. FRONTEND COMPONENTS
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/notifications/components/notifications-panel.tsx -----
+     1	'use client';
+     2	
+     3	import { useNotifications } from '../hooks/use-notifications';
+     4	
+     5	export const NotificationsPanel = () => {
+     6	  const { data, isLoading, error } = useNotifications();
+     7	  const items = (data as any)?.items ?? [];
+     8	
+     9	  if (isLoading) {
+    10	    return <div className="text-sm text-gray-500">Načítavam notifikácie...</div>;
+    11	  }
+    12	  if (error) {
+    13	    return (
+    14	      <div className="text-sm text-red-600">
+    15	        Notifikácie sa nepodarilo načítať.
+    16	      </div>
+    17	    );
+    18	  }
+    19	
+    20	  return (
+    21	    <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
+    22	      <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
+    23	        <h2 className="text-lg font-semibold text-gray-900">Notifikácie</h2>
+    24	        <span className="text-xs text-gray-500">{items.length}</span>
+    25	      </div>
+    26	      <ul className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
+    27	        {items.length === 0 ? (
+    28	          <li className="px-4 py-6 text-center text-sm text-gray-500">
+    29	            Žiadne notifikácie.
+    30	          </li>
+    31	        ) : (
+    32	          items.map((n: any) => (
+    33	            <li
+    34	              key={n.id}
+    35	              className={`px-4 py-3 text-sm ${
+    36	                n.isRead || n.is_read ? 'opacity-60' : 'bg-amber-50'
+    37	              }`}
+    38	            >
+    39	              <div className="font-medium text-gray-900">{n.title}</div>
+    40	              <div className="text-gray-600 mt-0.5">{n.message}</div>
+    41	              <div className="text-xs text-gray-400 mt-1">{n.type}</div>
+    42	            </li>
+    43	          ))
+    44	        )}
+    45	      </ul>
+    46	    </div>
+    47	  );
+    48	};
+
+
+## E. FRONTEND HOOKS
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/notifications/hooks/use-notifications.ts -----
+     1	import { useQuery } from '@tanstack/react-query';
+     2	import { notificationsApi } from '../api';
+     3	
+     4	export const useNotifications = () =>
+     5	  useQuery({
+     6	    queryKey: ['notifications'],
+     7	    queryFn: () => notificationsApi.list(),
+     8	  });
+
+
+## F. APP TEST FILE CANDIDATES
+[INFO] No app/tests files for notifications
+
+## G. ROOT TEST FILE CANDIDATES
+[INFO] No root tests files for notifications
+
+## H. QUICK GAP NOTE
+DOMAIN=notifications BACKEND_ROUTER=YES FRONTEND_API=YES FRONTEND_HOOKS=YES FRONTEND_COMPONENTS=YES APP_TESTS=NO ROOT_TESTS=NO
+
+############################################################
+### DOMAIN: admin
+############################################################
+
+## A. BACKEND ROUTER (first 260 lines)
+     1	from app.shared.presentation.auth_dependencies import require_admin
+     2	from app.shared.presentation.auth_dependencies import require_current_user
+     3	"""admin API router."""
+     4	
+     5	from fastapi import APIRouter, Depends, HTTPException, status as http_status
+     6	
+     7	from app.shared.domain.exceptions import ValidationDomainError
+     8	
+     9	from ..application.services import AdminAuditEntryService
+    10	from ..domain.entities import AdminAuditEntryEntity
+    11	from .dependencies import get_admin_service
+    12	from .schemas import (
+    13	    AdminAuditEntryCreateRequest,
+    14	    AdminAuditEntryData,
+    15	    AdminAuditEntryResponse,
+    16	    PaginatedAdminAuditEntriesResponse,
+    17	    PaginationMeta,
+    18	)
+    19	
+    20	router = APIRouter(prefix="/admin", tags=["admin-audit"])
+    21	
+    22	
+    23	def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
+    24	    return AdminAuditEntryData(
+    25	        id=entity.id,
+    26	        actorUserId=entity.actor_user_id,
+    27	        action=entity.action,
+    28	        targetType=entity.target_type,
+    29	        targetId=entity.target_id,
+    30	        details=entity.details,
+    31	        status=entity.status.value,
+    32	        createdAt=entity.created_at,
+    33	        updatedAt=entity.updated_at,
+    34	    )
+    35	
+    36	
+    37	@router.get(
+    38	    "",
+    39	    response_model=PaginatedAdminAuditEntriesResponse,
+    40	    summary="List current user's audit entries",
+    41	    operation_id="listCurrentUserAuditEntries",
+    42	)
+    43	async def list_admin(
+    44	    page: int = 1,
+    45	    limit: int = 20,
+    46	    current_user=Depends(require_current_user),
+    47	    service: AdminAuditEntryService = Depends(get_admin_service),
+    48	):
+    49	    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
+    50	    items = await service.list_by_actor(uid, page, limit)
+    51	    total = await service.count_by_actor(uid)
+    52	    return PaginatedAdminAuditEntriesResponse(
+    53	        items=[_to_data(e) for e in items],
+    54	        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    55	    )
+    56	
+    57	
+    58	@router.get(
+    59	    "/all",
+    60	    response_model=PaginatedAdminAuditEntriesResponse,
+    61	    summary="List all audit entries",
+    62	    operation_id="listAllAuditEntries",
+    63	)
+    64	async def list_all_admin(
+    65	    page: int = 1,
+    66	    limit: int = 20,
+    67	    current_user=Depends(require_admin),
+    68	    service: AdminAuditEntryService = Depends(get_admin_service),
+    69	):
+    70	    items = await service.list_all(page, limit)
+    71	    total = await service.count_all()
+    72	    return PaginatedAdminAuditEntriesResponse(
+    73	        items=[_to_data(e) for e in items],
+    74	        meta=PaginationMeta(page=page, pageSize=limit, total=total),
+    75	    )
+    76	
+    77	
+    78	@router.get(
+    79	    "/{id}",
+    80	    response_model=AdminAuditEntryResponse,
+    81	    summary="Get audit entry by ID",
+    82	    operation_id="getAuditEntryById",
+    83	)
+    84	async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin_service)):
+    85	    entity = await service.get_by_id(id)
+    86	    if entity is None:
+    87	        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="AdminAuditEntry not found")
+    88	    return AdminAuditEntryResponse(data=_to_data(entity))
+    89	
+    90	
+    91	@router.post(
+    92	    "",
+    93	    response_model=AdminAuditEntryResponse,
+    94	    status_code=http_status.HTTP_201_CREATED,
+    95	    summary="Create audit entry",
+    96	    operation_id="createAuditEntry",
+    97	)
+    98	async def create_admin(
+    99	    request: AdminAuditEntryCreateRequest,
+   100	    service: AdminAuditEntryService = Depends(get_admin_service),
+   101	):
+   102	    entity = AdminAuditEntryEntity(
+   103	        actor_user_id=request.actorUserId,
+   104	        action=request.action,
+   105	        target_type=request.targetType,
+   106	        target_id=request.targetId,
+   107	        details=request.details,
+   108	    )
+   109	    try:
+   110	        created = await service.create(entity)
+   111	    except ValidationDomainError as exc:
+   112	        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+   113	    return AdminAuditEntryResponse(data=_to_data(created))
+
+## B. FRONTEND API FILE
+     1	import { http } from '../../lib/api/http';
+     2	
+     3	type AdminStatsResponse = {
+     4	  total_users?: number;
+     5	  total_listings?: number;
+     6	  total_companies?: number;
+     7	  pending_verifications?: number;
+     8	};
+     9	
+    10	type AdminUsersResponse = {
+    11	  data?: any[];
+    12	};
+    13	
+    14	export const adminApi = {
+    15	  getStats: async () => http.get<AdminStatsResponse>('/admin/stats'),
+    16	  getUsers: async (_params?: Record<string, any>) => http.get<AdminUsersResponse>('/admin/users'),
+    17	
+    18	  listAudit: (params?: Record<string, any>) =>
+    19	    http.get<{ items: any[]; meta: any }>('/admin', { ...params }),
+    20	};
+
+## C. FRONTEND INDEX
+     1	export * from './api'
+     2	export * from './components/admin-users-table'
+     3	export * from './components/audit-table'
+     4	export * from './hooks/use-admin-stats'
+     5	export * from './hooks/use-admin-users'
+     6	export * from './hooks/use-audit'
+     7	export * from './types'
+
+## D. FRONTEND COMPONENTS
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/components/admin-users-table.tsx -----
+     1	'use client';
+     2	
+     3	import { useAdminUsers } from '../hooks/use-admin-users';
+     4	import { cn } from '../../../lib/utils/cn';
+     5	
+     6	export const AdminUsersTable = () => {
+     7	  const { data, isLoading, error } = useAdminUsers();
+     8	
+     9	  if (isLoading) return <div className="p-4 text-center text-gray-600">Načítavam používateľov...</div>;
+    10	  if (error) return <div className="p-4 text-red-500 text-center font-medium">Chyba pri načítaní používateľov.</div>;
+    11	
+    12	  const users = (data as any)?.data || [];
+    13	
+    14	  return (
+    15	    <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm bg-white">
+    16	      <table className="min-w-full divide-y divide-gray-200 text-sm">
+    17	        <thead className="bg-gray-50">
+    18	          <tr>
+    19	            <th className="px-4 py-3 text-left font-semibold text-gray-900">Meno</th>
+    20	            <th className="px-4 py-3 text-left font-semibold text-gray-900">E-mail</th>
+    21	            <th className="px-4 py-3 text-left font-semibold text-gray-900">Rola</th>
+    22	            <th className="px-4 py-3 text-left font-semibold text-gray-900">Stav</th>
+    23	          </tr>
+    24	        </thead>
+    25	        <tbody className="divide-y divide-gray-200">
+    26	          {users.length === 0 ? (
+    27	            <tr>
+    28	              <td colSpan={4} className="px-4 py-8 text-center text-gray-500 italic">
+    29	                Žiadni používatelia neboli nájdení.
+    30	              </td>
+    31	            </tr>
+    32	          ) : (
+    33	            users.map((user: any) => (
+    34	              <tr key={user.id} className="hover:bg-gray-50 transition-colors">
+    35	                <td className="px-4 py-3 font-medium text-gray-900">{user.first_name} {user.last_name}</td>
+    36	                <td className="px-4 py-3 text-gray-600">{user.email}</td>
+    37	                <td className="px-4 py-3">
+    38	                  <span className="capitalize px-2 py-1 rounded bg-gray-100 text-gray-700 text-xs">
+    39	                    {user.role}
+    40	                  </span>
+    41	                </td>
+    42	                <td className="px-4 py-3">
+    43	                  <span className={cn(
+    44	                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+    45	                    user.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+    46	                  )}>
+    47	                    {user.is_active ? 'Aktívny' : 'Deaktivovaný'}
+    48	                  </span>
+    49	                </td>
+    50	              </tr>
+    51	            ))
+    52	          )}
+    53	        </tbody>
+    54	      </table>
+    55	    </div>
+    56	  );
+    57	};
+
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/components/audit-table.tsx -----
+     1	'use client';
+     2	
+     3	import { useAudit } from '../hooks/use-audit';
+     4	
+     5	export const AuditTable = () => {
+     6	  const { data, isLoading, error } = useAudit();
+     7	  const items = (data as any)?.items ?? [];
+     8	
+     9	  if (isLoading) {
+    10	    return <div className="p-4 text-center text-sm text-gray-500">Načítavam audit...</div>;
+    11	  }
+    12	  if (error) {
+    13	    return <div className="p-4 text-center text-sm text-red-600">Audit sa nepodarilo načítať.</div>;
+    14	  }
+    15	
+    16	  return (
+    17	    <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+    18	      <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
+    19	        <thead className="bg-gray-50">
+    20	          <tr>
+    21	            <th className="px-4 py-2 text-left font-medium text-gray-900">Akcia</th>
+    22	            <th className="px-4 py-2 text-left font-medium text-gray-900">Typ</th>
+    23	            <th className="px-4 py-2 text-left font-medium text-gray-900">Detail</th>
+    24	            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
+    25	          </tr>
+    26	        </thead>
+    27	        <tbody className="divide-y divide-gray-200">
+    28	          {items.length === 0 ? (
+    29	            <tr>
+    30	              <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+    31	                Žiadne audit záznamy.
+    32	              </td>
+    33	            </tr>
+    34	          ) : (
+    35	            items.map((row: any) => (
+    36	              <tr key={row.id} className="hover:bg-gray-50">
+    37	                <td className="px-4 py-2 font-medium text-gray-900">{row.action}</td>
+    38	                <td className="px-4 py-2 text-gray-700">{row.targetType || row.target_type}</td>
+    39	                <td className="px-4 py-2 text-gray-600 max-w-xs truncate">{row.details || '—'}</td>
+    40	                <td className="px-4 py-2 text-gray-700">{row.status}</td>
+    41	              </tr>
+    42	            ))
+    43	          )}
+    44	        </tbody>
+    45	      </table>
+    46	    </div>
+    47	  );
+    48	};
+
+
+## E. FRONTEND HOOKS
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/hooks/use-admin-stats.ts -----
+     1	import { useQuery } from '@tanstack/react-query';
+     2	import { adminApi } from '../api';
+     3	
+     4	type AdminStats = {
+     5	  total_users?: number;
+     6	  total_listings?: number;
+     7	  total_companies?: number;
+     8	  pending_verifications?: number;
+     9	};
+    10	
+    11	export const useAdminStats = () => {
+    12	  return useQuery<AdminStats>({
+    13	    queryKey: ['admin-stats'],
+    14	    queryFn: () => adminApi.getStats(),
+    15	  });
+    16	};
+
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/hooks/use-admin-users.ts -----
+     1	import { useQuery } from '@tanstack/react-query';
+     2	import { adminApi } from '../api';
+     3	
+     4	export const useAdminUsers = (params?: Record<string, any>) => {
+     5	  return useQuery({
+     6	    queryKey: ['admin-users', params],
+     7	    queryFn: () => adminApi.getUsers(params),
+     8	  });
+     9	};
+
+----- FILE: /data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/hooks/use-audit.ts -----
+     1	import { useQuery } from '@tanstack/react-query';
+     2	import { adminApi } from '../api';
+     3	
+     4	export const useAudit = () =>
+     5	  useQuery({
+     6	    queryKey: ['admin-audit'],
+     7	    queryFn: () => adminApi.listAudit(),
+     8	  });
+
+
+## F. APP TEST FILE CANDIDATES
+[INFO] No app/tests files for admin
+
+## G. ROOT TEST FILE CANDIDATES
+[INFO] No root tests files for admin
+
+## H. QUICK GAP NOTE
+DOMAIN=admin BACKEND_ROUTER=YES FRONTEND_API=YES FRONTEND_HOOKS=YES FRONTEND_COMPONENTS=YES APP_TESTS=NO ROOT_TESTS=NO
+
+REPORT: /data/data/com.termux/files/home/waste-platform/scripts/grok-audit/p1_deep_read_compliance_notifications_admin_report.txt
+=== KONIEC P1 DEEP READ ===

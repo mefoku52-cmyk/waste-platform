@@ -1,0 +1,47 @@
+============================================================
+R76 DEPLOYMENT ACTIVE GATE
+ROOT=.
+TIME=2026-09-05T11:12:09+02:00
+============================================================
+
+=== ACTIVE WORKFLOWS ===
+
+=== DEPLOY SCRIPT ===
+FOUND=scripts/deploy.sh
+27:if ! docker compose version >/dev/null 2>&1; then
+35:RELEASE_ID=<REDACTED>
+36:IMAGE_TAG=<REDACTED>
+38:if [ -z "${RELEASE_ID}" ]; then
+39:    error "RELEASE_ID is required"
+42:if [ -z "${IMAGE_TAG}" ]; then
+43:    error "IMAGE_TAG is required"
+46:REGISTRY_IMAGE_PREFIX=<REDACTED>
+47:if [ -z "${REGISTRY_IMAGE_PREFIX}" ]; then
+48:    error "REGISTRY_IMAGE_PREFIX is required"
+51:case "${REGISTRY_IMAGE_PREFIX}" in
+57:case "${RELEASE_ID}" in
+59:        error "Mutable or non-production RELEASE_ID rejected"
+63:case "${IMAGE_TAG}" in
+65:        error "Mutable or non-production IMAGE_TAG rejected"
+69:if ! printf '%s\n' "${RELEASE_ID}" | grep -qE '^sha-[0-9a-fA-F]{7,64}$'; then
+70:    error "RELEASE_ID must use sha-<hex> identity"
+73:if ! printf '%s\n' "${IMAGE_TAG}" | grep -qE '^release-[0-9a-fA-F]{7,64}$'; then
+74:    error "IMAGE_TAG must use release-<hex> identity"
+88:RELEASE_ID=<REDACTED>
+89:IMAGE_TAG=<REDACTED>
+92:export RELEASE_ID
+93:export IMAGE_TAG
+95:docker compose \
+100:docker compose \
+105:docker compose \
+110:if ! docker compose \
+118:printf '[OK] Deployment completed RELEASE_ID=<REDACTED> IMAGE_TAG=<REDACTED> \
+119:    "${RELEASE_ID}" "${IMAGE_TAG}"
+
+=== DECISION ===
+VERDICT=DEPLOY_SCRIPT_PRESENT_BUT_NO_ACTIVE_WORKFLOW_FOUND
+WORKFLOW_COUNT=0
+SAFETY=READ_ONLY
+SECRETS=NOT_PRINTED
+R76 COMPLETE
+REPORT=r76_deployment_active_gate_20260905_111209.txt

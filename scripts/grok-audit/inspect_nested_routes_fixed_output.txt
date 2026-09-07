@@ -1,0 +1,21 @@
+=== TOP LEVEL ROUTES ===
+[1] Route path='/openapi.json' name='openapi' methods=['GET', 'HEAD']
+[2] Route path='/docs' name='swagger_ui_html' methods=['GET', 'HEAD']
+[3] Route path='/docs/oauth2-redirect' name='swagger_ui_redirect' methods=['GET', 'HEAD']
+[4] Route path='/redoc' name='redoc_html' methods=['GET', 'HEAD']
+[5] APIRoute path='/health' name='health' methods=['GET']
+[6] _IncludedRouter path=None name=None methods=None
+[7] _IncludedRouter path=None name=None methods=None
+[8] _IncludedRouter path=None name=None methods=None
+[9] _IncludedRouter path=None name=None methods=None
+[10] _IncludedRouter path=None name=None methods=None
+[11] _IncludedRouter path=None name=None methods=None
+[12] _IncludedRouter path=None name=None methods=None
+[13] _IncludedRouter path=None name=None methods=None
+[14] _IncludedRouter path=None name=None methods=None
+[15] _IncludedRouter path=None name=None methods=None
+[16] _IncludedRouter path=None name=None methods=None
+[17] _IncludedRouter path=None name=None methods=None
+[18] _IncludedRouter path=None name=None methods=None
+
+=== NESTED ROUTES ===

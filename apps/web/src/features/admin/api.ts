@@ -1,20 +1,12 @@
 import { http } from '../../lib/api/http';
-
-type AdminStatsResponse = {
-  total_users?: number;
-  total_listings?: number;
-  total_companies?: number;
-  pending_verifications?: number;
-};
-
-type AdminUsersResponse = {
-  data?: any[];
-};
+import type { AdminStats, AdminUsersResponse } from './types';
 
 export const adminApi = {
-  getStats: async () => http.get<AdminStatsResponse>('/admin/stats'),
-  getUsers: async (_params?: Record<string, any>) => http.get<AdminUsersResponse>('/admin/users'),
+  getStats: async () => http.get<AdminStats>('/admin/stats'),
 
-  listAudit: (params?: Record<string, any>) =>
-    http.get<{ items: any[]; meta: any }>('/admin', { ...params }),
+  getUsers: async (_params?: Record<string, unknown>) =>
+    http.get<AdminUsersResponse>('/admin/users'),
+
+  listAudit: (params?: Record<string, unknown>) =>
+    http.get<{ items: unknown[]; meta: Record<string, unknown> }>('/admin', { ...params }),
 };

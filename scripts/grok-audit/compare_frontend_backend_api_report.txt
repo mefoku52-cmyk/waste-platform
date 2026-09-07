@@ -1,0 +1,116 @@
+=== COMPARE FRONTEND BACKEND API ===
+CAS: 2026-09-05 17:24:54 +0200
+PROJEKT: /data/data/com.termux/files/home/waste-platform
+
+## BACKEND ROUTE SIGNALS
+/api/v1/auth/login :: ['POST']
+/api/v1/auth/refresh :: ['POST']
+/api/v1/auth/logout :: ['POST']
+/api/v1/auth/me :: ['GET']
+/api/v1/auth/forgot-password :: ['POST']
+/api/v1/auth/reset-password :: ['POST']
+/api/v1/users :: ['GET']
+/api/v1/users :: ['POST']
+/api/v1/users/{user_id} :: ['GET']
+/api/v1/users/{user_id} :: ['PATCH']
+/api/v1/users/{user_id}/status :: ['PATCH']
+/api/v1/companies :: ['GET']
+/api/v1/companies :: ['POST']
+/api/v1/companies/{company_id} :: ['GET']
+/api/v1/companies/{company_id} :: ['PATCH']
+/api/v1/companies/{company_id}/status :: ['PATCH']
+/api/v1/companies/{company_id}/memberships :: ['GET']
+/api/v1/companies/{company_id}/memberships :: ['POST']
+/api/v1/company-memberships/{membership_id} :: ['PATCH']
+/api/v1/company-memberships/{membership_id}/status :: ['PATCH']
+/api/v1/listings :: ['GET']
+/api/v1/listings/marketplace :: ['GET']
+/api/v1/listings/matches :: ['GET']
+/api/v1/listings/{id} :: ['GET']
+/api/v1/listings :: ['POST']
+/api/v1/listings/{id} :: ['PATCH']
+/api/v1/listings/{id}/publish :: ['POST']
+/api/v1/listings/{id} :: ['DELETE']
+/api/v1/inquiries :: ['GET']
+/api/v1/inquiries/received :: ['GET']
+/api/v1/inquiries/sent :: ['GET']
+/api/v1/inquiries/{id} :: ['GET']
+/api/v1/inquiries :: ['POST']
+/api/v1/inquiries/{id}/status :: ['PATCH']
+/api/v1/inquiries/{id} :: ['PATCH']
+/api/v1/inquiries/{id} :: ['DELETE']
+/api/v1/documents :: ['GET']
+/api/v1/documents/{id} :: ['GET']
+/api/v1/documents :: ['POST']
+/api/v1/documents/{id} :: ['PATCH']
+/api/v1/documents/{id} :: ['DELETE']
+/api/v1/compliance :: ['GET']
+/api/v1/compliance/{id} :: ['GET']
+/api/v1/compliance :: ['POST']
+/api/v1/compliance/{id} :: ['PATCH']
+/api/v1/compliance/{id} :: ['DELETE']
+/api/v1/notifications :: ['GET']
+/api/v1/notifications/{id} :: ['GET']
+/api/v1/notifications :: ['POST']
+/api/v1/notifications/{id}/mark-read :: ['POST']
+/api/v1/notifications/{id}/mark-unread :: ['POST']
+/api/v1/notifications/{id} :: ['DELETE']
+/api/v1/analytics :: ['GET']
+/api/v1/analytics/{id} :: ['GET']
+/api/v1/analytics :: ['POST']
+/api/v1/analytics/{id} :: ['PATCH']
+/api/v1/analytics/{id} :: ['DELETE']
+/api/v1/admin :: ['GET']
+/api/v1/admin/all :: ['GET']
+/api/v1/admin/{id} :: ['GET']
+/api/v1/admin :: ['POST']
+/api/v1/uploads :: ['POST']
+/api/v1/uploads/{file_id} :: ['GET']
+/api/v1/uploads/files/{file_id} :: ['GET']
+
+## FRONTEND API CALL SIGNALS
+/data/data/com.termux/files/home/waste-platform/apps/web/src/lib/config.ts:4:    'http://localhost:8001/api/v1',
+/data/data/com.termux/files/home/waste-platform/apps/web/src/lib/api/http.ts:18:  const response = await fetch(url, {
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/auth/hooks/use-register.ts:8:  const res = await fetch(`${config.apiBaseUrl}/users`, {
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/marketplace-table.tsx:32:                Žiadne cudzie publikované ponuky.
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/matches-panel.tsx:32:            setTimeout(() => refetch(), 0);
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/listings/components/listings-table.tsx:53:  if (isLoading) return <div className="p-4 text-center">Načítavam ponuky...</div>;
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/companies/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/admin/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/inquiries/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/notifications/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/documents/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/compliance/api.ts:1:import { http } from '../../lib/api/http';
+/data/data/com.termux/files/home/waste-platform/apps/web/src/features/uploads/api.ts:8:  const res = await fetch(`${config.apiBaseUrl}/uploads`, {
+
+## FRONTEND FEATURE TREE
+./apps/web/src/features/admin/api.ts
+./apps/web/src/features/admin/index.ts
+./apps/web/src/features/admin/types.ts
+./apps/web/src/features/auth/api.ts
+./apps/web/src/features/auth/index.ts
+./apps/web/src/features/auth/schemas.ts
+./apps/web/src/features/auth/types.ts
+./apps/web/src/features/companies/api.ts
+./apps/web/src/features/companies/index.ts
+./apps/web/src/features/companies/schemas.ts
+./apps/web/src/features/companies/types.ts
+./apps/web/src/features/compliance/api.ts
+./apps/web/src/features/compliance/index.ts
+./apps/web/src/features/documents/api.ts
+./apps/web/src/features/documents/index.ts
+./apps/web/src/features/inquiries/api.ts
+./apps/web/src/features/inquiries/index.ts
+./apps/web/src/features/listings/api.ts
+./apps/web/src/features/listings/index.ts
+./apps/web/src/features/listings/schemas.ts
+./apps/web/src/features/listings/types.ts
+./apps/web/src/features/notifications/api.ts
+./apps/web/src/features/notifications/index.ts
+./apps/web/src/features/uploads/api.ts
+./apps/web/src/features/uploads/index.ts
+
+REPORT: /data/data/com.termux/files/home/waste-platform/scripts/grok-audit/compare_frontend_backend_api_report.txt
+=== KONIEC COMPARE FRONTEND BACKEND API ===

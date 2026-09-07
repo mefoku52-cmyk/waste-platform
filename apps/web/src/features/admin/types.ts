@@ -8,6 +8,17 @@ export interface AdminStats {
 }
 
 export interface UserManagement extends User {
-  is_active: boolean;
+  is_active?: boolean;
+  isActive?: boolean;
   last_login?: string;
+  lastLogin?: string;
+  role_codes?: string[];
+  roleCodes?: string[];
+}
+
+export interface AdminUsersResponse {
+  data?: UserManagement[];
+  items?: UserManagement[];
+  users?: UserManagement[];
+  meta?: Record<string, unknown>;
 }

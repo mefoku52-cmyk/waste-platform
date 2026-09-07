@@ -21,7 +21,7 @@ from app.shared.infrastructure.security.jwt_revocation_store import (
 
 JWT_SECRET = settings.jwt.secret_key
 JWT_ALGORITHM = settings.jwt.algorithm
-ACCESS_TOKEN_TTL_MINUTES = int(os.getenv("ACCESS_TOKEN_TTL_MINUTES", "15"))
+ACCESS_TOKEN_TTL_MINUTES = settings.jwt.access_token_expire_minutes
 REFRESH_TOKEN_TTL_DAYS = int(str(settings.jwt.refresh_token_expire_days))
 
 

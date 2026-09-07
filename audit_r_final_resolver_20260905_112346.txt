@@ -1,0 +1,116 @@
+============================================================
+FINAL R AUDIT RESULT RESOLVER
+R1-R76
+TIME=2026-09-05T11:23:46+02:00
+============================================================
+
+=== FINAL R MAP ===
+R1   | p0_02_r1_secret_assignment_semantic_proof.txt                          | RESULT=P0_02_R1_SECRET_ASSIGNMENT_BOUNDARY_FAILURE
+R2   | P0-01-R2_production_authority_resolver.txt                             | RESULT=P0_01_R2_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+R2   | p0_02_r2_secret_value_token_aware_proof.txt                            | RESULT=P0_02_R2_SECRET_VALUE_TOKEN_AWARE_REVIEW_REQUIRED
+R3   | P0-01-R3_authority_discriminator.txt                                   | RESULT=P0_01_R3_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+R3   | P0-01-R3_authority_discriminator.txt                                   | RESULT=P0_01_R3_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+R3   | p0_02_r3_secret_authority_boundary_proof.txt                           | RESULT=P0_02_R3_SECRET_AUTHORITY_BOUNDARY_CLEAN
+R4   | p0_01_r4_legacy_ttl_targeted_review.txt                                | RESULT=P0_01_R4_LEGACY_TTL_RUNTIME_BOUNDARY_CLEAN
+R4   | p0_02_r4_secret_wiring_token_aware_proof.txt                           | RESULT=P0_02_R4_SECRET_WIRING_BOUNDARY_FAILURE
+R5   | p0_01_r5_legacy_ttl_authority_closure.txt                              | RESULT=P0_01_R5_LEGACY_TTL_AUTHORITY_REVIEW_REQUIRED
+R5   | p0_02_r5_secret_wiring_semantic_closure.txt                            | RESULT=P0_02_R5_SECRET_WIRING_SEMANTIC_REVIEW_REQUIRED
+R6   | p0_01_r6_forensic_execution_proof.txt                                  | RESULT=P0_01_R6_FORENSIC_EXECUTION_BOUNDARY_REVIEW_REQUIRED
+R6   | p0_02_r6_secret_wiring_context_closure.txt                             | RESULT=P0_02_R6_SECRET_WIRING_CONTEXT_BOUNDARY_FAILURE
+R7   | p0_01_r7_semantic_execution_proof.txt                                  | RESULT=P0_01_R7_SEMANTIC_EXECUTION_BOUNDARY_REVIEW_REQUIRED
+R7   | p0_02_r7_compose_secret_token_proof.txt                                | RESULT=P0_02_R7_COMPOSE_SECRET_TOKEN_PROOF_FAILURE
+R8   | p0_01_r8_token_aware_execution_proof.txt                               | RESULT=P0_01_R8_TOKEN_AWARE_EXECUTION_BOUNDARY_CLEAN
+R8   | p0_02_r8_compose_secret_context_closure.txt                            | RESULT=P0_02_R8_COMPOSE_SECRET_CONTEXT_BOUNDARY_CLEAN
+R9   | p0_02_r9_runtime_secret_authority_closure.txt                          | RESULT=P0_02_R9_RUNTIME_SECRET_AUTHORITY_CLOSURE_CLEAN
+R10  | p0_02_r10_secret_cross_authority_closure.txt                           | RESULT=P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_CLEAN
+R11  | p0_02_r11_secret_provenance_lineage_closure.txt                        | RESULT=P0_02_R11_SECRET_PROVENANCE_LINEAGE_CLOSURE_FAIL
+R12  | p0_02_r12_secret_provenance_analyzer_hardening.txt                     | RESULT=P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_FAILURE
+R13  | p0_02_r13_compose_secret_provenance_semantic_proof.txt                 | RESULT=P0_02_R13_COMPOSE_SECRET_PROVENANCE_SEMANTIC_FAILURE
+R14  | p0_02_r14_secret_provenance_analyzer_consistency_closure.txt           | RESULT=P0_02_R14_SECRET_PROVENANCE_ANALYZER_CONSISTENCY_FAILURE
+R15  | p0_02_r15_secret_provenance_expected_count_closure.txt                 | RESULT=P0_02_R15_SECRET_PROVENANCE_EXPECTED_COUNT_CLOSURE_CLEAN
+R16  | p0_02_r16_secret_provenance_final_lineage_closure.txt                  | RESULT=P0_02_R16_SECRET_PROVENANCE_FINAL_LINEAGE_CLOSURE_FAILURE
+R17  | p0_02_r17_secret_provenance_false_positive_closure.txt                 | RESULT=P0_02_R17_SECRET_PROVENANCE_FALSE_POSITIVE_CLOSURE_CLEAN
+R18  | p0_02_r18_secret_provenance_stability_gate.txt                         | RESULT=P0_02_R18_SECRET_PROVENANCE_STABILITY_GATE_FAILURE
+R19  | p0_02_r19_secret_provenance_parser_reconciliation.txt                  | RESULT=P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_FAILURE
+R20  | p0_02_r20_secret_provenance_semantic_reconciliation.txt                | RESULT=P0_02_R20_SECRET_PROVENANCE_SEMANTIC_RECONCILIATION_FAILURE
+R21  | p0_02_r21_secret_provenance_deterministic_parser_closure.txt           | RESULT=P0_02_R21_SECRET_PROVENANCE_DETERMINISTIC_PARSER_CLOSURE_FAILURE
+R22  | p0_02_r22_secret_provenance_semantic_parser_final_closure.txt          | RESULT=P0_02_R22_SECRET_PROVENANCE_SEMANTIC_PARSER_FINAL_CLOSURE_FAILURE
+R23  | MISSING
+R24  | p0_02_r24_secret_provenance_ground_truth_closure.txt                   | RESULT=P0_02_R24_SECRET_PROVENANCE_GROUND_TRUTH_CLOSURE_FAILURE
+R25  | p0_02_r25_secret_provenance_ground_truth_deterministic.txt             | RESULT=P0_02_R25_SECRET_PROVENANCE_GROUND_TRUTH_DETERMINISTIC_FAILURE
+R26  | p0_02_r26_secret_provenance_baseline_gate.txt                          | RESULT=P0_02_R26_SECRET_PROVENANCE_BASELINE_REVIEW
+R26  | p0_02_r26_secret_provenance_ground_truth_parser.txt                    | RESULT=P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_CLEAN
+R27  | p0_02_r27_secret_provenance_post_r26_integrity_gate.txt                | RESULT=P0_02_R27_SECRET_PROVENANCE_POST_R26_INTEGRITY_REVIEW
+R28  | p0_02_r28_secret_provenance_post_r27_regression_gate.txt               | RESULT=P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_REVIEW
+R29  | p0_02_r29_secret_provenance_cross_file_consistency_gate.txt            | RESULT=P0_02_R29_SECRET_PROVENANCE_CROSS_FILE_CONSISTENCY_REVIEW
+R30  | p0_02_r30_secret_provenance_regression_closure_gate.txt                | RESULT=P0_02_R30_SECRET_PROVENANCE_REGRESSION_CLOSURE_REVIEW
+R31  | p0_02_r31_r26_r30_forensic_reconciliation_gate.txt                     | RESULT=P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_REVIEW
+R32  | p0_02_r32_secret_output_false_positive_locator_gate.txt                | RESULT=P0_02_R32_SECRET_OUTPUT_FALSE_POSITIVE_LOCATOR_REVIEW
+R33  | p0_02_r33_secret_provenance_final_classification_gate.txt              | RESULT=P0_02_R33_SECRET_PROVENANCE_FINAL_CLASSIFICATION_FAIL
+R34  | p0_02_r34_secret_provenance_scope_corrected_gate.txt                   | RESULT=P0_02_R34_SECRET_PROVENANCE_SCOPE_CORRECTED_PASS
+R35  | p0_02_r35_secret_provenance_final_integrity_gate.txt                   | RESULT=P0_02_R35_SECRET_PROVENANCE_FINAL_INTEGRITY_PASS
+R36  | p0_02_r36_secret_provenance_closure_attestation_gate.txt               | RESULT=P0_02_R36_SECRET_PROVENANCE_CLOSURE_ATTESTATION_PASS
+R37  | p0_03_r37_production_readiness_chain_discovery_gate.txt                | RESULT=P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_FAIL
+R38  | p0_03_r38_production_readiness_normalized_ledger_gate.txt              | RESULT=P0_03_R38_PRODUCTION_READINESS_NORMALIZED_LEDGER_FAIL
+R39  | p0_03_r39_production_readiness_supersession_ledger_gate.txt            | RESULT=P0_03_R39_PRODUCTION_READINESS_SUPERSESSION_LEDGER_REVIEW
+R40  | p0_03_r40_production_readiness_deterministic_ledger_gate.txt           | RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+R41  | p0_03_r41_production_readiness_ledger_closure_gate.txt                 | RESULT=P0_03_R41_PRODUCTION_READINESS_LEDGER_CLOSURE_PASS
+R42  | p0_03_r42_real_production_readiness_gate.txt                           | RESULT=P0_03_R42_REAL_PRODUCTION_READINESS_REVIEW
+R43  | p0_03_r43_production_gap_classification_gate.txt                       | RESULT=P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_BLOCKED
+R44  | p0_03_r44_unsafe_bind_blocker_locator_gate.txt                         | RESULT=P0_03_R44_UNSAFE_BIND_BLOCKER_CLASSIFICATION_REVIEW
+R45  | p0_03_r45_application_host_dataflow_locator_gate.txt                   | RESULT=P0_03_R45_APPLICATION_HOST_DATAFLOW_REVIEW
+R46  | p0_03_r46_application_host_runtime_dataflow_closure_gate.txt           | RESULT=P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_CLOSURE_PASS
+R47  | p0_03_r47_production_reload_dataflow_gate.txt                          | RESULT=P0_03_R47_PRODUCTION_RELOAD_BLOCKER_CONFIRMED
+R48  | p0_03_r48_production_reload_authority_gate.txt                         | RESULT=P0_03_R48_PRODUCTION_RELOAD_AUTHORITY_CLOSED
+R49  | p0_03_r49_ci_production_deployment_authority_gate.txt                  | RESULT=P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_REVIEW
+R50  | p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt | RESULT=P0_03_R50_CI_PRODUCTION_ARCHITECTURAL_SEPARATION_CONFIRMED
+R51  | p0_03_r51_production_deployment_safety_authority_gate.txt              | RESULT=P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_REVIEW
+R52  | p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt          | RESULT=P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_REVIEW
+R53  | p0_03_r53_production_recovery_authority_implementation.txt             | RESULT=P0_03_R53_RECOVERY_AUTHORITY_IMPLEMENTED_BUT_ARTIFACT_ROLLBACK_REQUIRES_VERSIONED_RELEASE_AUTHORITY
+R54  | p0_03_r54_release_identity_authority_reconciliation_gate.txt           | RESULT=P0_03_R54_RELEASE_IDENTITY_AUTHORITY_REQUIRES_IMPLEMENTATION
+R55  | MISSING
+R56  | p0_03_r56_release_identity_post_r55_verification.txt                   | RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+R57  | MISSING
+R58  | MISSING
+R59  | MISSING
+R60  | MISSING
+R61  | MISSING
+R62  | MISSING
+R63  | MISSING
+R64  | MISSING
+R65  | MISSING
+R66  | MISSING
+R67  | MISSING
+R68  | MISSING
+R69  | MISSING
+R70  | MISSING
+R71  | MISSING
+R72  | MISSING
+R73  | MISSING
+R74  | MISSING
+R75  | r75_deployment_identity_20260905_111008.txt                            | VERDICT=DEPLOYMENT_IDENTITY_DOCUMENTED_ONLY
+R76  | r76_deployment_active_gate_20260905_111209.txt                         | VERDICT=DEPLOY_SCRIPT_PRESENT_BUT_NO_ACTIVE_WORKFLOW_FOUND
+
+=== CONFIRMED R IDS ===
+R1 R2 R3 R4 R5 R6 R7 R8 R9 R10 R11 R12 R13 R14 R15 R16 R17 R18 R19 R20 R21 R22 R24 R25 R26 R27 R28 R29 R30 R31 R32 R33 R34 R35 R36 R37 R38 R39 R40 R41 R42 R43 R44 R45 R46 R47 R48 R49 R50 R51 R52 R53 R54 R56 R75 R76 
+
+=== MISSING R IDS ===
+R23 R55 R57 R58 R59 R60 R61 R62 R63 R64 R65 R66 R67 R68 R69 R70 R71 R72 R73 R74 
+
+=== CURRENT DEPLOYMENT ===
+--- r75_deployment_identity_20260905_111008.txt ---
+VERDICT=DEPLOYMENT_IDENTITY_DOCUMENTED_ONLY
+SAFETY=READ_ONLY
+SECRETS=NOT_PRINTED
+--- r76_deployment_active_gate_20260905_111209.txt ---
+VERDICT=DEPLOY_SCRIPT_PRESENT_BUT_NO_ACTIVE_WORKFLOW_FOUND
+WORKFLOW_COUNT=0
+SAFETY=READ_ONLY
+SECRETS=NOT_PRINTED
+
+============================================================
+END
+SAFETY=READ_ONLY
+SECRETS=NOT_PRINTED
+REPORT=audit_r_final_resolver_20260905_112346.txt
+============================================================

@@ -1,0 +1,87 @@
+==========================================
+1. DIAGNOSTIKA BACKENDU
+==========================================
+INFO:     Will watch for changes in these directories: ['/data/data/com.termux/files/home/waste-platform']
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [22194] using WatchFiles
+INFO:     Started server process [22216]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+
+==========================================
+2. KONTROLA BEZIACICH PROCESOV
+==========================================
+u0_a388  22194  0.4  0.4 2327732 31572 pts/25  S<l   2022   0:04 /data/data/com.termux/files/usr/bin/python3.14 /data/data/com.termux/files/usr/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+u0_a388  22228  0.3  0.8 7655916 63764 pts/25  S<l   2022   0:03 node /data/data/com.termux/files/home/waste-platform/apps/web/node_modules/.bin/next dev --hostname 0.0.0.0 --port 3001 --port 3001 --hostname 0.0.0.0
+u0_a388  22245  8.7  6.1 25783492 476668 pts/25 S<l  2022   1:31 next-server (v15.5.24)
+
+==========================================
+3. SPUSTENIE BACKENDU (AK NEBEZI)
+==========================================
+Backend uz bezi
+
+==========================================
+4. KONTROLA BACKENDU
+==========================================
+Backend HTTP status: 200
+
+==========================================
+5. SPUSTENIE FRONTENDU (AK NEBEZI)
+==========================================
+Frontend uz bezi
+
+==========================================
+6. KONTROLA FRONTENDU
+==========================================
+Frontend HTTP status: 200
+
+==========================================
+7. STATUS SLUZIEB
+==========================================
+--- Beziace procesy ---
+u0_a388  22194  0.4  0.4 2327732 31572 pts/25  S<l   2022   0:04 /data/data/com.termux/files/usr/bin/python3.14 /data/data/com.termux/files/usr/bin/uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+u0_a388  22228  0.3  0.8 7655916 63764 pts/25  S<l   2022   0:03 node /data/data/com.termux/files/home/waste-platform/apps/web/node_modules/.bin/next dev --hostname 0.0.0.0 --port 3001 --port 3001 --hostname 0.0.0.0
+u0_a388  22245  8.8  6.1 25785796 479824 pts/25 S<l  2022   1:31 next-server (v15.5.24)
+
+==========================================
+8. GIT STAV (OPRAVENE PRÍKAZY)
+==========================================
+Zmenene subory:
+174
+
+Posledne commity:
+3baeef8 chore: quarantine forensic clutter and stop tracking env secrets
+9ca7ba3 chore: remove local archive artifacts from version control
+d8c2730 fix: repair shell syntax in run-check helper
+
+Aktualna vetva:
+main
+
+==========================================
+9. POKUS O COMMIT (AK SU ZMENY)
+==========================================
+Nachadzam zmeny, commitnem...
+[main cdd09c3] fix: update config and readme - 20260905-1253
+ 3 files changed, 8 insertions(+), 5 deletions(-)
+
+==========================================
+10. SSH KONTROLA (BEZ SKUTOCNEHO PRIJONENIA)
+==========================================
+/data/data/com.termux/files/usr/bin/ssh
+OpenSSH_10.5p1, OpenSSL 3.6.3 9 Jun 2026
+
+SSH kluc:
+-rw-------. 1 u0_a388 u0_a388  464 Aug 18 06:15 /data/data/com.termux/files/home/.ssh/id_ed25519
+-rw-------. 1 u0_a388 u0_a388  100 Aug 18 06:15 /data/data/com.termux/files/home/.ssh/id_ed25519.pub
+-rw-------. 1 u0_a388 u0_a388 3381 Aug 25 15:47 /data/data/com.termux/files/home/.ssh/id_rsa
+-rw-------. 1 u0_a388 u0_a388  744 Aug 25 15:47 /data/data/com.termux/files/home/.ssh/id_rsa.pub
+
+==========================================
+11. SIETOVE ROZHRANIA PRE VPS
+==========================================
+        inet 100.76.76.227  netmask 255.0.0.0
+        inet 192.168.2.179  netmask 255.255.255.0  broadcast 192.168.2.255
+
+==========================================
+HOTOVO - Kompletna diagnostika a opravy
+==========================================
