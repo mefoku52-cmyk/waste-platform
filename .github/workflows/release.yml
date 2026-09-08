@@ -34,14 +34,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-
           echo "RELEASE_ID=sha-${GITHUB_SHA}"
           echo "IMAGE_TAG=release-${GITHUB_SHA}"
 
       - name: Build API
         run: |
           set -euo pipefail
-
           docker build \
             -t "${REGISTRY}/cmep-api:release-${GITHUB_SHA}" \
             -f app/Dockerfile \
@@ -50,7 +48,6 @@ jobs:
       - name: Build worker
         run: |
           set -euo pipefail
-
           docker build \
             -t "${REGISTRY}/cmep-worker:release-${GITHUB_SHA}" \
             -f app/worker/Dockerfile \
@@ -60,10 +57,8 @@ jobs:
         working-directory: apps/web
         run: |
           set -euo pipefail
-
           npm ci
           npm run build
-
           docker build \
             -t "${REGISTRY}/cmep-web:release-${GITHUB_SHA}" \
             .
