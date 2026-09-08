@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
+set -euo pipefail
 
 PROJECT_DIR="${PROJECT_DIR:-/data/data/com.termux/files/home/waste-platform}"
 ENV_FILE="${ENV_FILE:-.env.production}"
@@ -16,13 +16,16 @@ error() {
     exit 1
 }
 
+require_cmd() {
+    command -v "$1" >/dev/null 2>&1 || \
+        error "$1 is not installed or not available in PATH"
+}
+
 if [ ! -f "${ENV_FILE}" ]; then
     error "Missing ${PROJECT_DIR}/${ENV_FILE}"
 fi
 
-if ! command -v docker >/dev/null 2>&1; then
-    error "Docker is not installed or not available in PATH"
-fi
+require_cmd docker
 
 if ! docker compose version >/dev/null 2>&1; then
     error "Docker Compose plugin is not available"
@@ -34,6 +37,7 @@ fi
 
 RELEASE_ID="${RELEASE_ID:-}"
 IMAGE_TAG="${IMAGE_TAG:-}"
+REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-}"
 
 if [ -z "${RELEASE_ID}" ]; then
     error "RELEASE_ID is required"
@@ -43,7 +47,6 @@ if [ -z "${IMAGE_TAG}" ]; then
     error "IMAGE_TAG is required"
 fi
 
-REGISTRY_IMAGE_PREFIX="${REGISTRY_IMAGE_PREFIX:-}"
 if [ -z "${REGISTRY_IMAGE_PREFIX}" ]; then
     error "REGISTRY_IMAGE_PREFIX is required"
 fi
@@ -77,43 +80,88 @@ fi
 RELEASE_STATE_DIR="${PROJECT_DIR}/.production-release/state"
 CURRENT_STATE="${RELEASE_STATE_DIR}/current-release.env"
 PREVIOUS_STATE="${RELEASE_STATE_DIR}/previous-release.env"
+STAGED_STATE="${RELEASE_STATE_DIR}/current-release.env.staged"
 
 mkdir -p "${RELEASE_STATE_DIR}"
 
-if [ -f "${CURRENT_STATE}" ]; then
-    cp -p "${CURRENT_STATE}" "${PREVIOUS_STATE}"
-fi
-
-cat > "${CURRENT_STATE}" <<STATE_EOF
-RELEASE_ID=${RELEASE_ID}
-IMAGE_TAG=${IMAGE_TAG}
-STATE_EOF
-
 export RELEASE_ID
 export IMAGE_TAG
+export REGISTRY_IMAGE_PREFIX
+
+log "=== RELEASE IDENTITY ==="
+log "RELEASE_ID=${RELEASE_ID}"
+log "IMAGE_TAG=${IMAGE_TAG}"
+log "REGISTRY_IMAGE_PREFIX=${REGISTRY_IMAGE_PREFIX}"
+
+log "=== COMPOSE CONFIG VALIDATION ==="
 
 docker compose \
     --env-file "${ENV_FILE}" \
     -f "${COMPOSE_FILE}" \
     config >/dev/null
 
+log "[OK] Compose configuration valid"
+
+log "=== IMAGE PULL ==="
+
 docker compose \
     --env-file "${ENV_FILE}" \
     -f "${COMPOSE_FILE}" \
     pull api web
+
+log "[OK] Images pulled"
+
+log "=== DEPLOY ==="
 
 docker compose \
     --env-file "${ENV_FILE}" \
     -f "${COMPOSE_FILE}" \
     up -d --remove-orphans
 
+log "[OK] Compose deployment command completed"
+
+log "=== SERVICE VERIFICATION ==="
+
 if ! docker compose \
     --env-file "${ENV_FILE}" \
     -f "${COMPOSE_FILE}" \
     ps --status running --services >/dev/null 2>&1; then
+
     printf '[ERROR] Compose service status verification failed\n' >&2
     exit 1
 fi
+
+RUNNING_SERVICES="$(
+    docker compose \
+        --env-file "${ENV_FILE}" \
+        -f "${COMPOSE_FILE}" \
+        ps --status running --services 2>/dev/null || true
+)"
+
+printf '%s\n' "${RUNNING_SERVICES}"
+
+for service in postgres redis api web; do
+    if ! printf '%s\n' "${RUNNING_SERVICES}" | grep -qx "${service}"; then
+        error "Required service is not running: ${service}"
+    fi
+done
+
+log "[OK] All required services are running"
+
+log "=== COMMIT RELEASE STATE ==="
+
+if [ -f "${CURRENT_STATE}" ]; then
+    cp -p "${CURRENT_STATE}" "${PREVIOUS_STATE}"
+fi
+
+cat > "${STAGED_STATE}" <<STATE_EOF
+RELEASE_ID=${RELEASE_ID}
+IMAGE_TAG=${IMAGE_TAG}
+STATE_EOF
+
+mv -f "${STAGED_STATE}" "${CURRENT_STATE}"
+
+log "[OK] Release state committed"
 
 printf '[OK] Deployment completed RELEASE_ID=%s IMAGE_TAG=%s\n' \
     "${RELEASE_ID}" "${IMAGE_TAG}"

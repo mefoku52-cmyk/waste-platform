@@ -1,0 +1,111 @@
+name: Release Images
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io/mefoku52-cmyk
+
+jobs:
+  release-images:
+    name: Build and publish release images
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set release identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "RELEASE_ID=sha-${GITHUB_SHA}"
+          echo "IMAGE_TAG=release-${GITHUB_SHA}"
+
+      - name: Build API
+        run: |
+          set -euo pipefail
+
+          docker build \
+            -t "${REGISTRY}/cmep-api:release-${GITHUB_SHA}" \
+            -f app/Dockerfile \
+            .
+
+      - name: Build worker
+        run: |
+          set -euo pipefail
+
+          docker build \
+            -t "${REGISTRY}/cmep-worker:release-${GITHUB_SHA}" \
+            -f app/worker/Dockerfile \
+            app
+
+      - name: Build web
+        working-directory: apps/web
+        run: |
+          set -euo pipefail
+
+          npm ci
+          npm run build
+
+          docker build \
+            -t "${REGISTRY}/cmep-web:release-${GITHUB_SHA}" \
+            .
+
+      - name: Push API
+        run: |
+          set -euo pipefail
+          docker push "${REGISTRY}/cmep-api:release-${GITHUB_SHA}"
+
+      - name: Push worker
+        run: |
+          set -euo pipefail
+          docker push "${REGISTRY}/cmep-worker:release-${GITHUB_SHA}"
+
+      - name: Push web
+        run: |
+          set -euo pipefail
+          docker push "${REGISTRY}/cmep-web:release-${GITHUB_SHA}"
+
+      - name: Verify published manifests
+        run: |
+          set -euo pipefail
+
+          docker manifest inspect \
+            "${REGISTRY}/cmep-api:release-${GITHUB_SHA}" >/dev/null
+
+          docker manifest inspect \
+            "${REGISTRY}/cmep-worker:release-${GITHUB_SHA}" >/dev/null
+
+          docker manifest inspect \
+            "${REGISTRY}/cmep-web:release-${GITHUB_SHA}" >/dev/null
+
+          echo "GHCR_MANIFESTS=PASS"
+
+      - name: Release summary
+        run: |
+          {
+            echo "## Release"
+            echo
+            echo "- RELEASE_ID: sha-${GITHUB_SHA}"
+            echo "- IMAGE_TAG: release-${GITHUB_SHA}"
+            echo "- API: ${REGISTRY}/cmep-api:release-${GITHUB_SHA}"
+            echo "- WORKER: ${REGISTRY}/cmep-worker:release-${GITHUB_SHA}"
+            echo "- WEB: ${REGISTRY}/cmep-web:release-${GITHUB_SHA}"
+          } >> "$GITHUB_STEP_SUMMARY"

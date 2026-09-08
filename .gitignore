@@ -249,3 +249,27 @@ FINAL-SCHEMA-AUTHORITY-DIFF*.txt
 STEP-09-SCHEMA-PROVENANCE-AUDIT*.txt
 fix_report.txt
 audit_report.json
+# Tajomstvá
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.keystore
+*_secret*.json
+secret*.env
+secrets*.env
+.token
+*_token
+token*.txt
+
+# SSH
+.ssh/
+.gnupg/
+
+# Backupy s tajomstvami
+.env.backup*
+.env.bak*
+.env.*bak
