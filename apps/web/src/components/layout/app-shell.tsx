@@ -17,7 +17,11 @@ export function AppShell({
   children: ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#eef3ee]">
+    <div className="relative min-h-screen bg-[#eef3ee]">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[url('/rc-mark.png')] bg-no-repeat bg-center bg-[length:220px] opacity-[0.07]"
+      />
       {header}
       <div className="border-b border-amber-200/70 bg-amber-50">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-2 sm:px-6">
