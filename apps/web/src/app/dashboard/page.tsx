@@ -44,15 +44,15 @@ function SectionCard({
   subtitle?: string;
 }) {
   return (
-    <section id={id} className="scroll-mt-28 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-gradient-to-r from-slate-50 to-emerald-50/40 px-4 py-3 sm:px-5">
+    <section id={id} className="scroll-mt-24">
+      <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h2 className="text-base font-semibold tracking-tight text-slate-900 sm:text-lg">{title}</h2>
-          {subtitle ? <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p> : null}
+          <h2 className="text-sm font-semibold text-slate-800">{title}</h2>
+          {subtitle ? <p className="text-[11px] text-slate-500">{subtitle}</p> : null}
         </div>
         {action}
       </div>
-      <div className="p-3 sm:p-4">{children}</div>
+      <div className="text-sm">{children}</div>
     </section>
   );
 }
@@ -126,7 +126,7 @@ export default function DashboardPage() {
       </header>
       }
     >
-      <main className="space-y-4 sm:space-y-6">
+      <main className="space-y-3">
         <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
           <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Notif.</span>
           <div className="min-w-0 flex-1 text-sm">
