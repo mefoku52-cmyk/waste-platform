@@ -127,11 +127,9 @@ export default function DashboardPage() {
       }
     >
       <main className="space-y-4 sm:space-y-6">
-        <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
-          <div className="border-b border-emerald-50 bg-emerald-50/50 px-4 py-2.5">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Notifikácie</p>
-          </div>
-          <div className="p-3 sm:p-4">
+        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Notif.</span>
+          <div className="min-w-0 flex-1 text-sm">
             <NotificationsPanel />
           </div>
         </div>
