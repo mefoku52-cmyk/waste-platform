@@ -81,3 +81,4 @@ TEST_FILES=426
 5295599 ./.closure_truth_20260903_120225/r2_signals.txt
 
 === PYTHON SYNTAX ===
+FAIL: ./.venv/lib/python3.14/site-packages/sqlalchemy/sql/roles.py
