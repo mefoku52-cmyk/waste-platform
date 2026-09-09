@@ -36,13 +36,6 @@ export const LoginForm = () => {
     try {
       await login(data);
 
-      alert(
-        JSON.stringify({
-          accessToken: tokenStore.getToken(),
-          refreshToken: tokenStore.getRefreshToken(),
-          rememberMe: localStorage.getItem('rememberMe'),
-        })
-      );
 
       router.refresh();
       router.push('/dashboard');
@@ -76,14 +69,6 @@ export const LoginForm = () => {
               true,
             );
 
-            alert(
-              JSON.stringify({
-                accessToken: tokenStore.getToken(),
-                refreshToken: tokenStore.getRefreshToken(),
-                rememberMe: localStorage.getItem('rememberMe'),
-                provider: 'google',
-              })
-            );
 
             router.refresh();
             router.push('/dashboard');
