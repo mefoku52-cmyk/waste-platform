@@ -1,0 +1,167 @@
+==================================================
+CMEP / waste-platform — RUNTIME DIAGNOSTICS
+Cas: 2026-09-07T19:18:36+02:00
+==================================================
+
+=== 1. FRONTEND PROCES ===
+u0_a388  28338 28315  0  2022 pts/24   00:00:03 node /data/data/com.termux/files/home/waste-platform/apps/web/node_modules/.bin/next dev --hostname 0.0.0.0 --port 3001
+
+=== 2. FRONTEND PORT 3001 ===
+
+--- localhost ---
+*   Trying 127.0.0.1:3001...
+* Established connection to 127.0.0.1 (127.0.0.1 port 3001) from 127.0.0.1 port 55122 
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: 127.0.0.1:3001
+> User-Agent: curl/8.22.0
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+< Cache-Control: no-store, must-revalidate
+< X-Powered-By: Next.js
+< Content-Type: text/html; charset=utf-8
+< Date: Mon, 07 Sep 2026 17:18:37 GMT
+< Connection: keep-alive
+< Keep-Alive: timeout=5
+< Transfer-Encoding: chunked
+< 
+{ [1097 bytes data]
+<!DOCTYPE html><html lang="sk"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1788801517213" data-precedence="next_static/css/app/layout.css"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack.js?v=1788801517213"/><script src="/_next/static/chunks/main-app.js?v=1788801517213" async=""></script><script src="/_next/static/chunks/app-pages-internals.js" async=""></script><script src="/_next/static/chunks/app/layout.js" async=""></script><title>CMEP · Obehové materiály</title><meta name="description" content="Circular Materials Exchange Platform frontend"/><script src="/_next/static/chunks/polyfills.js" noModule=""></script></head><body><div hidden=""><!--$--><!--/$--></div><div class="flex h-screen w-full items-center justify-center"><div class="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div></div><script src="/_next/static/chunks/webpack.js?v=1788801517213" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"5:I[\"(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"SegmentViewNode\"]\n7:\"$Sreact.fragment\"\n16:I[\"(app-pages-browser)/./src/components/providers/app-providers.tsx\",[\"app/layout\",\"static/chunks/app/layout.js\"],\"AppProviders\"]\n18:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\n1a:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/render-from-template-context.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\n2f:I[\"(app-pages-browser)/./node_modules/next/dist/lib/framework/boundary-components.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"OutletBoundary\"]\n36:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/metadata/async-metadata.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"AsyncMetadataOutlet\"]\n3e:I[\"(app-pages-browser)/./node_modules/next/dist/lib/framework/boundary-components.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"ViewportBoundary\"]\n44:I[\"(app-pages-browser)/./node_modules/next/dist/lib/framework/boundary-components.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"MetadataBoundary\"]\n49:\"$Sreact.suspense\"\n4d:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/builtin/global-error.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\n:HL[\"/_next/static/css/app/layout.css?v=1788801517213\",\"style\"]\n:N1788801517306.1763\n3:\"$EObject.defineProperty(()=\u003e{ctx.componentMod.preloadStyle(fullHref,ctx.renderOpts.crossOrigin,ctx.nonce)},\\\"name\\\",{value:\\\"\\\"})\"\n2:{\"name\":\"Preloads\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{\"preloadCallbacks\":[\"$3\"]}}\n4:[]\n6:[]\n8:[[\"Array.map\",\"\",0,0,0,0,false]]\nb:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js"])</script><script>self.__next_f.push([1,"\"],\"\"]\ne:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/render-from-template-context.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\nf:{}\n10:[[\"Promise.all\",\"\",0,0,0,0,true]]\nd:{\"children\":[\"$\",\"$Le\",null,\"$f\",null,\"$10\",1]}\n11:[[\"Promise.all\",\"\",0,0,0,0,true]]\nc:{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$7\",null,\"$d\",null,\"$11\",0],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$Y\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\",\"segmentViewBoundaries\":\"$Y\"}\n12:[[\"Promise.all\",\"\",0,0,0,0,true]]\na:{\"name\":\"RootLayout\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{\"children\":[\"$\",\"$Lb\",null,\"$c\",null,\"$12\",1],\"params\":\"$Y\"}}\n13:[[\"RootLayout\",\"webpack-internal:///(rsc)/./src/app/layout.tsx\",20,87,19,1,false]]\n14:[[\"RootLayout\",\"webpack-internal:///(rsc)/./src/app/layout.tsx\",22,94,19,1,false]]\n15:[[\"RootLayout\",\"webpack-internal:///(rsc)/./src/app/layout.tsx\",23,98,19,1,false]]\n17:[[\"Promise.all\",\"\",0,0,0,0,true]]\n19:[[\"Promise.all\",\"\",0,0,0,0,true]]\n1b:[]\n1d:{\"name\":\"NotFound\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{}}\n1e:{\"name\":\"HTTPAccessErrorFallback\",\"key\":null,\"env\":\"Server\",\"owner\":\"$1d\",\"stack\":[],\"props\":{\"status\":404,\"message\":\"This page could not be found.\"}}\n1f:[]\n20:[]\n21:[]\n22:[]\n23:[]\n24:[]\n25:[]\n26:[[\"Promise.all\",\"\",0,0,0,0,true]]\n27:[[\"Promise.all\",\"\",0,0,0,0,true]]\n28:[[\"Promise.all\",\"\",0,0,0,0,true]]\n29:[[\"Promise.all\",\"\",0,0,0,0,true]]\n2b:{\"name\":\"RootPage\",\"key\":null,\"env\":\"Server\",\"stack\":[[\"Promise.all\",\"\",0,0,0,0,true]],\"props\":{\"params\":\"$@2c\",\"searchParams\":\"$@2d\"}}\n2e:[[\"Promise.all\",\"\",0,0,0,0,true]]\n32:\"$EObject.defineProperty(async function getViewportReady() {\\n        await viewport();\\n        return undefined;\\n    },\\\"name\\\",{value:\\\"getViewportReady\\\"})\"\n31:{\"name\":\"__next_outlet_boundary__\",\"key\":null,\"env\":\"Server\",\"stack\":[[\"Promise.all\",\"\",0,0,0,0,true]],\"props\":{\"ready\":\"$32\"}}\n34:{\"name\":\"StreamingMetadataOutletI"])</script><script>self.__next_f.push([1,"mpl\",\"key\":null,\"env\":\"Server\",\"stack\":[[\"Promise.all\",\"\",0,0,0,0,true]],\"props\":{}}\n35:[]\n38:[]\n3a:{\"name\":\"NonIndex\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{\"pagePath\":\"/\",\"statusCode\":200,\"isPossibleServerAction\":false}}\n3c:{\"name\":\"ViewportTree\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{}}\n3d:[]\n40:{\"name\":\"__next_viewport_boundary__\",\"key\":null,\"env\":\"Server\",\"owner\":\"$3c\",\"stack\":[],\"props\":{}}\n42:{\"name\":\"MetadataTree\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{}}\n43:[]\n46:{\"name\":\"__next_metadata_boundary__\",\"key\":null,\"env\":\"Server\",\"owner\":\"$42\",\"stack\":[],\"props\":{}}\n47:[]\n48:[]\n4b:{\"name\":\"MetadataResolver\",\"key\":null,\"env\":\"Server\",\"owner\":\"$46\",\"stack\":[],\"props\":{}}\n4e:[]\n2c:{}\n2d:\n4f:[]\n50:[]\n51:[]\n52:[]\n1:D\"$2\"\n1:null\n9:D\"$a\"\n1c:D\"$1d\"\n1c:D\"$1e\"\n"])</script><script>self.__next_f.push([1,"1c:[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"},\"$1e\",\"$1f\",1],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}},\"$1e\",\"$22\",1],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404},\"$1e\",\"$23\",1],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"},\"$1e\",\"$25\",1]},\"$1e\",\"$24\",1]]},\"$1e\",\"$21\",1]},\"$1e\",\"$20\",1]]\n"])</script><script>self.__next_f.push([1,"9:[\"$\",\"html\",null,{\"lang\"100  11653   0  11653   0      0  12427      0                              0100  11653   0  11653   0      0  12425      0                              0100  11653   0  11653   0      0  12423      0                              0
+* Connection #0 to host 127.0.0.1:3001 left intact
+:\"sk\",\"children\":[\"$\",\"body\",null,{\"children\":[\"$\",\"$L16\",null,{\"children\":[\"$\",\"$L18\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L1a\",null,{},null,\"$19\",1],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[\"$\",\"$L5\",\"c-not-found\",{\"type\":\"not-found\",\"pagePath\":\"__next_builtin__not-found.js\",\"children\":[\"$1c\",[]]},null,\"$1b\",0],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\",\"segmentViewBoundaries\":[[\"$\",\"$L5\",null,{\"type\":\"boundary:not-found\",\"pagePath\":\"__next_builtin__not-found.js@boundary\"},null,\"$26\",1],\"$undefined\",\"$undefined\",[\"$\",\"$L5\",null,{\"type\":\"boundary:global-error\",\"pagePath\":\"__next_builtin__global-error.js\"},null,\"$27\",1]]},null,\"$17\",1]},\"$a\",\"$15\",1]},\"$a\",\"$14\",1]},\"$a\",\"$13\",1]\n"])</script><script>self.__next_f.push([1,"2a:D\"$2b\"\n30:D\"$31\"\n33:D\"$34\"\n33:[\"$\",\"$L36\",null,{\"promise\":\"$@37\"},\"$34\",\"$35\",1]\n39:D\"$3a\"\n39:null\n3b:D\"$3c\"\n3f:D\"$40\"\n3b:[[\"$\",\"$L3e\",null,{\"children\":\"$L3f\"},\"$3c\",\"$3d\",1],null]\n41:D\"$42\"\n45:D\"$46\"\n4a:D\"$4b\"\n45:[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$49\",null,{\"fallback\":null,\"children\":\"$L4a\"},\"$46\",\"$48\",1]},\"$46\",\"$47\",1]\n41:[\"$\",\"$L44\",null,{\"children\":\"$45\"},\"$42\",\"$43\",1]\n4c:[]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":\"$1\",\"b\":\"development\",\"p\":\"\",\"c\":[\"\",\"\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$L5\",\"layout\",{\"type\":\"layout\",\"pagePath\":\"layout.tsx\",\"children\":[\"$\",\"$7\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/app/layout.css?v=1788801517213\",\"precedence\":\"next_static/css/app/layout.css\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"},null,\"$8\",0]],\"$9\"]},null,\"$6\",1]},null,\"$4\",0],{\"children\":[\"__PAGE__\",[\"$\",\"$7\",\"c\",{\"children\":[[\"$\",\"$L5\",\"c-page\",{\"type\":\"page\",\"pagePath\":\"page.tsx\",\"children\":\"$L2a\"},null,\"$29\",1],null,[\"$\",\"$L2f\",null,{\"children\":[\"$L30\",\"$33\"]},null,\"$2e\",1]]},null,\"$28\",0],{},null,false]},null,false],[\"$\",\"$7\",\"h\",{\"children\":[\"$39\",\"$3b\",\"$41\"]},null,\"$38\",0],false]],\"m\":\"$W4c\",\"G\":[\"$4d\",[\"$\",\"$L5\",\"ge-svn\",{\"type\":\"global-error\",\"pagePath\":\"__next_builtin__global-error.js\",\"children\":[]},null,\"$4e\",0]],\"s\":false,\"S\":false}\n"])</script><script>self.__next_f.push([1,"3f:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"},\"$31\",\"$4f\",0],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"},\"$31\",\"$50\",0]]\n30:null\n37:{\"metadata\":[[\"$\",\"title\",\"0\",{\"children\":\"CMEP · Obehové materiály\"},\"$34\",\"$51\",0],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Circular Materials Exchange Platform frontend\"},\"$34\",\"$52\",0]],\"error\":null,\"digest\":\"$undefined\"}\n4a:\"$37:metadata\"\n2a:E{\"digest\":\"NEXT_REDIRECT;replace;/dashboard;307;\",\"name\":\"Error\",\"message\":\"NEXT_REDIRECT\",\"stack\":[[\"RootPage\",\"webpack-internal:///(rsc)/./src/app/page.tsx\",8,62,7,1,false]],\"env\":\"Server\"}\n"])</script></body></html>
+--- 0.0.0.0 ---
+*   Trying 0.0.0.0:3001...
+* Established connection to 0.0.0.0 (0.0.0.0 port 3001) from 127.0.0.1 port 55136 
+  % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+                                 Dload  Upload  Total   Spent   Left   Speed
+  0      0   0      0   0      0      0      0                              0* using HTTP/1.x
+> GET / HTTP/1.1
+> Host: 0.0.0.0:3001
+> User-Agent: curl/8.22.0
+> Accept: */*
+> 
+* Request completely sent off
+< HTTP/1.1 200 OK
+< Vary: rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding
+< Cache-Control: no-store, must-revalidate
+< X-Powered-By: Next.js
+< Content-Type: text/html; charset=utf-8
+< Date: Mon, 07 Sep 2026 17:18:38 GMT
+< Connection: keep-alive
+< Keep-Alive: timeout=5
+< Transfer-Encoding: chunked
+< 
+{ [1097 bytes data]
+<!DOCTYPE html><html lang="sk"><head><meta charSet="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="/_next/static/css/app/layout.css?v=1788801517964" data-precedence="next_static/css/app/layout.css"/><link rel="preload" as="script" fetchPriority="low" href="/_next/static/chunks/webpack.js?v=1788801517964"/><script src="/_next/static/chunks/main-app.js?v=1788801517964" async=""></script><script src="/_next/static/chunks/app-pages-internals.js" async=""></script><script src="/_next/static/chunks/app/layout.js" async=""></script><title>CMEP · Obehové materiály</title><meta name="description" content="Circular Materials Exchange Platform frontend"/><script src="/_next/static/chunks/polyfills.js" noModule=""></script></head><body><div hidden=""><!--$--><!--/$--></div><div class="flex h-screen w-full items-center justify-center"><div class="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div></div><script src="/_next/static/chunks/webpack.js?v=1788801517964" id="_R_" async=""></script><script>(self.__next_f=self.__next_f||[]).push([0])</script><script>self.__next_f.push([1,"5:I[\"(app-pages-browser)/./node_modules/next/dist/next-devtools/userspace/app/segment-explorer-node.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"SegmentViewNode\"]\n7:\"$Sreact.fragment\"\n16:I[\"(app-pages-browser)/./src/components/providers/app-providers.tsx\",[\"app/layout\",\"static/chunks/app/layout.js\"],\"AppProviders\"]\n18:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\n1a:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/render-from-template-context.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\n2f:I[\"(app-pages-browser)/./node_modules/next/dist/lib/framework/boundary-components.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"OutletBoundary\"]\n36:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/metadata/async-metadata.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"AsyncMetadataOutlet\"]\n3e:I[\"(app-pages-browser)/./node_modules/next/dist/lib/framework/boundary-components.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"ViewportBoundary\"]\n44:I[\"(app-pages-browser)/./node_modules/next/dist/lib/framework/boundary-components.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"MetadataBoundary\"]\n49:\"$Sreact.suspense\"\n4d:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/builtin/global-error.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\n:HL[\"/_next/static/css/app/layout.css?v=1788801517964\",\"style\"]\n:N1788801517974.1223\n3:\"$EObject.defineProperty(()=\u003e{ctx.componentMod.preloadStyle(fullHref,ctx.renderOpts.crossOrigin,ctx.nonce)},\\\"name\\\",{value:\\\"\\\"})\"\n2:{\"name\":\"Preloads\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{\"preloadCallbacks\":[\"$3\"]}}\n4:[]\n6:[]\n8:[[\"Array.map\",\"\",0,0,0,0,false]]\nb:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/layout-router.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js"])</script><script>self.__next_f.push([1,"\"],\"\"]\ne:I[\"(app-pages-browser)/./node_modules/next/dist/client/components/render-from-template-context.js\",[\"app-pages-internals\",\"static/chunks/app-pages-internals.js\"],\"\"]\nf:{}\n10:[[\"Promise.all\",\"\",0,0,0,0,true]]\nd:{\"children\":[\"$\",\"$Le\",null,\"$f\",null,\"$10\",1]}\n11:[[\"Promise.all\",\"\",0,0,0,0,true]]\nc:{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$7\",null,\"$d\",null,\"$11\",0],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":\"$Y\",\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\",\"segmentViewBoundaries\":\"$Y\"}\n12:[[\"Promise.all\",\"\",0,0,0,0,true]]\na:{\"name\":\"RootLayout\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{\"children\":[\"$\",\"$Lb\",null,\"$c\",null,\"$12\",1],\"params\":\"$Y\"}}\n13:[[\"RootLayout\",\"webpack-internal:///(rsc)/./src/app/layout.tsx\",20,87,19,1,false]]\n14:[[\"RootLayout\",\"webpack-internal:///(rsc)/./src/app/layout.tsx\",22,94,19,1,false]]\n15:[[\"RootLayout\",\"webpack-internal:///(rsc)/./src/app/layout.tsx\",23,98,19,1,false]]\n17:[[\"Promise.all\",\"\",0,0,0,0,true]]\n19:[[\"Promise.all\",\"\",0,0,0,0,true]]\n1b:[]\n1d:{\"name\":\"NotFound\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{}}\n1e:{\"name\":\"HTTPAccessErrorFallback\",\"key\":null,\"env\":\"Server\",\"owner\":\"$1d\",\"stack\":[],\"props\":{\"status\":404,\"message\":\"This page could not be found.\"}}\n1f:[]\n20:[]\n21:[]\n22:[]\n23:[]\n24:[]\n25:[]\n26:[[\"Promise.all\",\"\",0,0,0,0,true]]\n27:[[\"Promise.all\",\"\",0,0,0,0,true]]\n28:[[\"Promise.all\",\"\",0,0,0,0,true]]\n29:[[\"Promise.all\",\"\",0,0,0,0,true]]\n2b:{\"name\":\"RootPage\",\"key\":null,\"env\":\"Server\",\"stack\":[[\"Promise.all\",\"\",0,0,0,0,true]],\"props\":{\"params\":\"$@2c\",\"searchParams\":\"$@2d\"}}\n2e:[[\"Promise.all\",\"\",0,0,0,0,true]]\n32:\"$EObject.defineProperty(async function getViewportReady() {\\n        await viewport();\\n        return undefined;\\n    },\\\"name\\\",{value:\\\"getViewportReady\\\"})\"\n31:{\"name\":\"__next_outlet_boundary__\",\"key\":null,\"env\":\"Server\",\"stack\":[[\"Promise.all\",\"\",0,0,0,0,true]],\"props\":{\"ready\":\"$32\"}}\n34:{\"name\":\"StreamingMetadataOutletI"])</script><script>self.__next_f.push([1,"mpl\",\"key\":null,\"env\":\"Server\",\"stack\":[[\"Promise.all\",\"\",0,0,0,0,true]],\"props\":{}}\n35:[]\n38:[]\n3a:{\"name\":\"NonIndex\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{\"pagePath\":\"/\",\"statusCode\":200,\"isPossibleServerAction\":false}}\n3c:{\"name\":\"ViewportTree\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{}}\n3d:[]\n40:{\"name\":\"__next_viewport_boundary__\",\"key\":null,\"env\":\"Server\",\"owner\":\"$3c\",\"stack\":[],\"props\":{}}\n42:{\"name\":\"MetadataTree\",\"key\":null,\"env\":\"Server\",\"stack\":[],\"props\":{}}\n43:[]\n46:{\"name\":\"__next_metadata_boundary__\",\"key\":null,\"env\":\"Server\",\"owner\":\"$42\",\"stack\":[],\"props\":{}}\n47:[]\n48:[]\n4b:{\"name\":\"MetadataResolver\",\"key\":null,\"env\":\"Server\",\"owner\":\"$46\",\"stack\":[],\"props\":{}}\n4e:[]\n2c:{}\n2d:\n4f:[]\n50:[]\n51:[]\n52:[]\n1:D\"$2\"\n1:null\n9:D\"$a\"\n1c:D\"$1d\"\n1c:D\"$1e\"\n"])</script><script>self.__next_f.push([1,"1c:[[\"$\",\"title\",null,{\"children\":\"404: This page could not be found.\"},\"$1e\",\"$1f\",1],[\"$\",\"div\",null,{\"style\":{\"fontFamily\":\"system-ui,\\\"Segoe UI\\\",Roboto,Helvetica,Arial,sans-serif,\\\"Apple Color Emoji\\\",\\\"Segoe UI Emoji\\\"\",\"height\":\"100vh\",\"textAlign\":\"center\",\"display\":\"flex\",\"flexDirection\":\"column\",\"alignItems\":\"center\",\"justifyContent\":\"center\"},\"children\":[\"$\",\"div\",null,{\"children\":[[\"$\",\"style\",null,{\"dangerouslySetInnerHTML\":{\"__html\":\"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}\"}},\"$1e\",\"$22\",1],[\"$\",\"h1\",null,{\"className\":\"next-error-h1\",\"style\":{\"display\":\"inline-block\",\"margin\":\"0 20px 0 0\",\"padding\":\"0 23px 0 0\",\"fontSize\":24,\"fontWeight\":500,\"verticalAlign\":\"top\",\"lineHeight\":\"49px\"},\"children\":404},\"$1e\",\"$23\",1],[\"$\",\"div\",null,{\"style\":{\"display\":\"inline-block\"},\"children\":[\"$\",\"h2\",null,{\"style\":{\"fontSize\":14,\"fontWeight\":400,\"lineHeight\":\"49px\",\"margin\":0},\"children\":\"This page could not be found.\"},\"$1e\",\"$25\",1]},\"$1e\",\"$24\",1]]},\"$1e\",\"$21\",1]},\"$1e\",\"$20\",1]]\n"])</script><script>self.__next_f.push([1,"9:[\"$\",\"html\",null,{\"lang\"100  11653   0  11653   0      0  21190      0                              0100  11653   0  11653   0      0  21185      0                              0100  11653   0  11653   0      0  21180      0                              0
+* Connection #0 to host 0.0.0.0:3001 left intact
+:\"sk\",\"children\":[\"$\",\"body\",null,{\"children\":[\"$\",\"$L16\",null,{\"children\":[\"$\",\"$L18\",null,{\"parallelRouterKey\":\"children\",\"error\":\"$undefined\",\"errorStyles\":\"$undefined\",\"errorScripts\":\"$undefined\",\"template\":[\"$\",\"$L1a\",null,{},null,\"$19\",1],\"templateStyles\":\"$undefined\",\"templateScripts\":\"$undefined\",\"notFound\":[\"$\",\"$L5\",\"c-not-found\",{\"type\":\"not-found\",\"pagePath\":\"__next_builtin__not-found.js\",\"children\":[\"$1c\",[]]},null,\"$1b\",0],\"forbidden\":\"$undefined\",\"unauthorized\":\"$undefined\",\"segmentViewBoundaries\":[[\"$\",\"$L5\",null,{\"type\":\"boundary:not-found\",\"pagePath\":\"__next_builtin__not-found.js@boundary\"},null,\"$26\",1],\"$undefined\",\"$undefined\",[\"$\",\"$L5\",null,{\"type\":\"boundary:global-error\",\"pagePath\":\"__next_builtin__global-error.js\"},null,\"$27\",1]]},null,\"$17\",1]},\"$a\",\"$15\",1]},\"$a\",\"$14\",1]},\"$a\",\"$13\",1]\n"])</script><script>self.__next_f.push([1,"2a:D\"$2b\"\n30:D\"$31\"\n33:D\"$34\"\n33:[\"$\",\"$L36\",null,{\"promise\":\"$@37\"},\"$34\",\"$35\",1]\n39:D\"$3a\"\n39:null\n3b:D\"$3c\"\n3f:D\"$40\"\n3b:[[\"$\",\"$L3e\",null,{\"children\":\"$L3f\"},\"$3c\",\"$3d\",1],null]\n41:D\"$42\"\n45:D\"$46\"\n4a:D\"$4b\"\n45:[\"$\",\"div\",null,{\"hidden\":true,\"children\":[\"$\",\"$49\",null,{\"fallback\":null,\"children\":\"$L4a\"},\"$46\",\"$48\",1]},\"$46\",\"$47\",1]\n41:[\"$\",\"$L44\",null,{\"children\":\"$45\"},\"$42\",\"$43\",1]\n4c:[]\n"])</script><script>self.__next_f.push([1,"0:{\"P\":\"$1\",\"b\":\"development\",\"p\":\"\",\"c\":[\"\",\"\"],\"i\":false,\"f\":[[[\"\",{\"children\":[\"__PAGE__\",{}]},\"$undefined\",\"$undefined\",true],[\"\",[\"$\",\"$L5\",\"layout\",{\"type\":\"layout\",\"pagePath\":\"layout.tsx\",\"children\":[\"$\",\"$7\",\"c\",{\"children\":[[[\"$\",\"link\",\"0\",{\"rel\":\"stylesheet\",\"href\":\"/_next/static/css/app/layout.css?v=1788801517964\",\"precedence\":\"next_static/css/app/layout.css\",\"crossOrigin\":\"$undefined\",\"nonce\":\"$undefined\"},null,\"$8\",0]],\"$9\"]},null,\"$6\",1]},null,\"$4\",0],{\"children\":[\"__PAGE__\",[\"$\",\"$7\",\"c\",{\"children\":[[\"$\",\"$L5\",\"c-page\",{\"type\":\"page\",\"pagePath\":\"page.tsx\",\"children\":\"$L2a\"},null,\"$29\",1],null,[\"$\",\"$L2f\",null,{\"children\":[\"$L30\",\"$33\"]},null,\"$2e\",1]]},null,\"$28\",0],{},null,false]},null,false],[\"$\",\"$7\",\"h\",{\"children\":[\"$39\",\"$3b\",\"$41\"]},null,\"$38\",0],false]],\"m\":\"$W4c\",\"G\":[\"$4d\",[\"$\",\"$L5\",\"ge-svn\",{\"type\":\"global-error\",\"pagePath\":\"__next_builtin__global-error.js\",\"children\":[]},null,\"$4e\",0]],\"s\":false,\"S\":false}\n"])</script><script>self.__next_f.push([1,"3f:[[\"$\",\"meta\",\"0\",{\"charSet\":\"utf-8\"},\"$31\",\"$4f\",0],[\"$\",\"meta\",\"1\",{\"name\":\"viewport\",\"content\":\"width=device-width, initial-scale=1\"},\"$31\",\"$50\",0]]\n30:null\n37:{\"metadata\":[[\"$\",\"title\",\"0\",{\"children\":\"CMEP · Obehové materiály\"},\"$34\",\"$51\",0],[\"$\",\"meta\",\"1\",{\"name\":\"description\",\"content\":\"Circular Materials Exchange Platform frontend\"},\"$34\",\"$52\",0]],\"error\":null,\"digest\":\"$undefined\"}\n4a:\"$37:metadata\"\n2a:E{\"digest\":\"NEXT_REDIRECT;replace;/dashboard;307;\",\"name\":\"Error\",\"message\":\"NEXT_REDIRECT\",\"stack\":[[\"RootPage\",\"webpack-internal:///(rsc)/./src/app/page.tsx\",8,62,7,1,false]],\"env\":\"Server\"}\n"])</script></body></html>
+=== 3. FRONTEND LOG PROCESU ===
+NEXT_PID=28338
+--- cmdline ---
+node /data/data/com.termux/files/home/waste-platform/apps/web/node_modules/.bin/next dev --hostname 0.0.0.0 --port 3001 
+--- cwd ---
+/data/data/com.termux/files/home/waste-platform/apps/web
+
+--- status ---
+State:	S (sleeping)
+VmRSS:	    7276 kB
+Threads:	11
+
+=== 4. NODE / NPM ===
+v26.4.0
+11.19.1
+
+> @cmep/web@0.1.0 typecheck
+> tsc --noEmit
+
+
+=== 5. NEXT BUILD CHECK ===
+
+> @cmep/web@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.24
+   - Environments: .env.local
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 27.9s
+   Linting and checking validity of types ...
+
+ ⚠ The Next.js plugin was not detected in your ESLint configuration. See https://nextjs.org/docs/app/api-reference/config/eslint#migrating-existing-config
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ ✓ Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                      120 B         103 kB
+├ ○ /_not-found                            994 B         104 kB
+├ ○ /dashboard                           5.91 kB         156 kB
+├ ○ /dashboard/admin                     2.33 kB         146 kB
+├ ○ /dashboard/companies/new             2.09 kB         144 kB
+├ ○ /dashboard/documents/new              3.5 kB         119 kB
+├ ƒ /dashboard/listings/[id]             3.26 kB         151 kB
+├ ○ /dashboard/listings/new              1.59 kB         145 kB
+├ ○ /forgot-password                      1.3 kB         145 kB
+├ ○ /login                                 851 B         147 kB
+├ ○ /register                              248 B         147 kB
+└ ○ /reset-password                      1.21 kB         145 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/255-c5a697ddbf82d774.js       46.4 kB
+  ├ chunks/4bd1b696-c023c6e3521b1417.js  54.2 kB
+  └ other shared chunks (total)          1.92 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+=== 6. BACKEND ===
+{"status":"ok","service":"CMEP Platform","version":"0.1.0","env":"development","database_url":"sqlite+aiosqlite:///./var/cmep.db","mounted_routers":["shared.api_router","auth","users","companies","company_memberships","listings","inquiries","documents","compliance","notifications","analytics","admin","uploads"],"skipped_routers":[]}
+=== 7. BACKEND PORT ===
+
+=== 8. POSTGRES ===
+
+=== 9. DOCKER CLI ===
+Docker version v24.0.6-ce, build 
+Docker Compose version dev
+
+=== 10. DOCKER DAEMON ===
+Client:
+ Version:    v24.0.6-ce
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  compose: Docker Compose (Docker Inc.)
+    Version:  dev
+    Path:     /data/data/com.termux/files/usr/libexec/docker/cli-plugins/docker-compose
+
+Server:
+ERROR: Cannot connect to the Docker daemon at unix:///data/data/com.termux/files/usr/var/run/docker.sock. Is the docker daemon running?
+errors pretty printing info
+
+=== 11. DOCKER SOCKET ===
+ls: cannot access '/data/data/com.termux/files/usr/var/run/docker.sock': No such file or directory
+
+=== 12. QEMU ===
+
+=== 13. QEMU DOCKER SCRIPTS ===
+ls: cannot access '/data/data/com.termux/files/home/boot-docker.sh': No such file or directory
+-rwx------. 1 u0_a388 u0_a388 1446 Aug 25 16:14 /data/data/com.termux/files/home/START_CMEP_DOCKER.sh
+-rwx------. 1 u0_a388 u0_a388  272 Aug 25 18:46 /data/data/com.termux/files/home/alpine-vm/qemu-docker/boot-docker-api.sh
+-rwx------. 1 u0_a388 u0_a388  272 Aug 25 17:47 /data/data/com.termux/files/home/alpine-vm/qemu-docker/boot-docker.sh
+
+=== 14. COMPOSE CONFIG VALIDATION ===
+COMPOSE_CONFIG=FAIL
+
+=== HOTOVO ===
+Report: /data/data/com.termux/files/home/waste-platform/reports/runtime-diagnostics-20260907-191836.txt

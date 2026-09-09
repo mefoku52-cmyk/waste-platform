@@ -1,0 +1,24 @@
+WASTE PLATFORM RELEASE NEXT STAGE
+
+HEAD=55bc4d6927660d6ecff6ad1fb7f6ec26fa1f5137
+RELEASE_ID=sha-55bc4d6927660d6ecff6ad1fb7f6ec26fa1f5137
+IMAGE_TAG=release-55bc4d6927660d6ecff6ad1fb7f6ec26fa1f5137
+
+API_IMAGE=ghcr.io/mefoku52-cmyk/cmep-api:release-55bc4d6927660d6ecff6ad1fb7f6ec26fa1f5137
+WEB_IMAGE=ghcr.io/mefoku52-cmyk/cmep-web:release-55bc4d6927660d6ecff6ad1fb7f6ec26fa1f5137
+
+GHCR_WORKFLOW=.github/workflows/release.yml
+
+RC10_VERDICT=PASS
+WEB_RELEASE_CANDIDATE=READY_FOR_NEXT_STAGE
+
+NO_GIT_PUSH=1
+NO_GHCR_PUSH_FROM_LOCAL=1
+NO_PRODUCTION_DEPLOY=1
+
+NEXT CONTROLLED ACTION:
+Trigger GitHub Actions release workflow only after reviewing
+the generated .github/workflows/release.yml.
+
+PRODUCTION DEPLOYMENT:
+NOT PERFORMED.

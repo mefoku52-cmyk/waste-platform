@@ -11,3 +11,6 @@ bcrypt
 prometheus-client
 email-validator
 aiosqlite>=0.20
+
+# Required by FastAPI file/form upload routes
+python-multipart>=0.0.20,<1

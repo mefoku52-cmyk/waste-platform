@@ -8,7 +8,7 @@ ENV PORT=3001
 ENV HOSTNAME=0.0.0.0
 
 COPY .next/standalone/ ./
-COPY .next/static/ ./apps/web/.next/static/
+COPY .next/static/ ./.next/static/
 
 EXPOSE 3001
 

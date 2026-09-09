@@ -1,0 +1,393 @@
+==================================================
+CMEP / waste-platform — PRODUCTION READINESS INVENTORY
+Cas: 2026-09-07T19:17:20+02:00
+==================================================
+
+=== 1. KOREN PROJEKTU A GIT ===
+Projekt: /data/data/com.termux/files/home/waste-platform
+--- branch ---
+main
+--- status ---
+ M .gitignore
+?? reports/
+?? scripts/deploy/
+?? scripts/grok-audit/check_db_state.sh
+?? scripts/grok-audit/create_admin_simple.sh
+?? scripts/grok-audit/finalize-secrets-security.sh
+?? scripts/grok-audit/find_bootstrap_password.sh
+?? scripts/grok-audit/fix_db_setup.sh
+?? scripts/grok-audit/remove-secrets-from-history.sh
+?? scripts/grok-audit/secure-secrets-now.sh
+?? scripts/grok-audit/seed_and_login_check.sh
+?? scripts/grok-audit/seed_existing_db.sh
+?? scripts/grok-audit/setup_db.sh
+?? scripts/grok-audit/test_authenticated_api.sh
+?? scripts/grok-audit/test_authenticated_api2.sh
+?? scripts/grok-audit/test_authenticated_api_py.py
+?? scripts/grok-audit/test_login.sh
+?? scripts/grok-audit/try_passwords.sh
+?? scripts/grok-audit/ultimate-secret-audit-v2.sh
+?? scripts/grok-audit/ultimate-secret-audit.sh
+?? scripts/grok-audit/use_sqlite.sh
+--- poslednych 10 commitov ---
+55bc4d6 checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+cdd09c3 fix: update config and readme - 20260905-1253
+3baeef8 chore: quarantine forensic clutter and stop tracking env secrets
+9ca7ba3 chore: remove local archive artifacts from version control
+d8c2730 fix: repair shell syntax in run-check helper
+69bbaa4 chore: add reusable development diagnostics
+02df337 checkpoint: priebezne zmeny pred dalsim krokom
+034826c feat(web): add frontend feature barrel exports and cmep styles
+9f7da29 refactor(web): consolidate tracked frontend application updates
+47aa0c3 refactor: reconcile backend docker and repository wiring
+--- remote ---
+origin	https://github.com/mefoku52-cmyk/waste-platform.git (fetch)
+origin	https://github.com/mefoku52-cmyk/waste-platform.git (push)
+--- tracked deployment/config files ---
+.env.example
+.production-release/ci-handoff/compose-release-injection.example.yml
+.production-release/ci-handoff/production-release-handoff.example
+.production-release/r61-backup-20260903_104708/deploy.sh
+.production-release/r61-backup-20260903_104708/docker-compose.yml
+.production-release/r61-backup-20260903_104708/production-recovery.sh
+alembic.ini
+alembic/env.py
+alembic/script.py.mako
+alembic/versions/__init__.py
+app/Dockerfile
+app/worker/Dockerfile
+apps/web/Dockerfile
+docker-compose.yml
+docker/backend/Dockerfile
+docker/frontend/Dockerfile
+docker/nginx/Dockerfile
+docker/nginx/conf.d/cmep.conf
+docs/PRODUCTION-CHECKLIST.md
+docs/deployment.md
+docs/production-readiness.md
+infra/docker-compose.load.yml
+scripts/deploy.sh
+scripts/production-recovery.sh
+
+=== 2. RUNTIME SLUZBY ===
+--- porty 3001 / 8001 / 5432 ---
+--- procesy ---
+u0_a388   4884     1  0  2022 ?        00:00:00 /data/data/com.termux/files/usr/bin/postgres -D /data/data/com.termux/files/home/postgres/data
+u0_a388   4887  4884  0  2022 ?        00:00:00 postgres: io worker 0
+u0_a388   4888  4884  0  2022 ?        00:00:00 postgres: io worker 1
+u0_a388   4890  4884  0  2022 ?        00:00:00 postgres: io worker 2
+u0_a388   4891  4884  0  2022 ?        00:00:00 postgres: checkpointer 
+u0_a388   4892  4884  0  2022 ?        00:00:00 postgres: background writer 
+u0_a388   4898  4884  0  2022 ?        00:00:00 postgres: walwriter 
+u0_a388   4899  4884  0  2022 ?        00:00:00 postgres: autovacuum launcher 
+u0_a388   4900  4884  0  2022 ?        00:00:00 postgres: logical replication launcher 
+u0_a388   7557     1  0  2022 pts/24   00:00:11 python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8001
+u0_a388  11818 11786  0  2022 pts/27   00:00:00 /data/data/com.termux/files/usr/bin/bash ./START_CMEP_DOCKER.sh
+u0_a388  11820 11818  0  2022 pts/27   00:00:00 /data/data/com.termux/files/usr/bin/bash ./boot-docker.sh
+u0_a388  11822 11820 99  2022 pts/27   00:21:02 /data/data/com.termux/files/usr/bin/qemu-system-x86_64 -m 1536 -smp 2 -netdev user,id=n1 -device virtio-net,netdev=n1 -nographic -drive file=alpine.qcow2,format=qcow2
+u0_a388  21004 20999  0  2022 ?        00:00:00 runsv postgres
+u0_a388  21021 21004  0  2022 ?        00:00:00 svlogd -tt /data/data/com.termux/files/usr/var/log/sv/postgres
+u0_a388  28338 28315  0  2022 pts/24   00:00:03 node /data/data/com.termux/files/home/waste-platform/apps/web/node_modules/.bin/next dev --hostname 0.0.0.0 --port 3001
+--- backend health ---
+{"status":"ok","service":"CMEP Platform","version":"0.1.0","env":"development","database_url":"sqlite+aiosqlite:///./var/cmep.db","mounted_routers":["shared.api_router","auth","users","companies","company_memberships","listings","inquiries","documents","compliance","notifications","analytics","admin","uploads"],"skipped_routers":[]}
+--- frontend HTTP ---
+curl: (28) Operation timed out after 5001 milliseconds with 0 bytes received
+HTTP 000
+
+=== 3. DOCKER A COMPOSE ===
+--- docker command ---
+/data/data/com.termux/files/usr/bin/docker
+Docker version v24.0.6-ce, build 
+--- docker compose ---
+Docker Compose version dev
+--- docker-compose command ---
+/data/data/com.termux/files/home/waste-platform/scripts/deploy/00_production_readiness_inventory.sh: line 80: docker-compose: command not found
+--- containers ---
+Cannot connect to the Docker daemon at unix:///data/data/com.termux/files/usr/var/run/docker.sock. Is the docker daemon running?
+
+=== 4. ALPINE / PROOT / QEMU ===
+--- proot-distro ---
+/data/data/com.termux/files/usr/bin/proot-distro
+
+Installed containers:
+
+  * ubuntu
+
+Log in with: proot-distro login <name>
+
+--- relevantne cesty v HOME ---
+/data/data/com.termux/files/home/.alpine-smime
+/data/data/com.termux/files/home/Python-3.12.7/.devcontainer/Dockerfile
+/data/data/com.termux/files/home/QR-PAY-FINAL/backend/Dockerfile
+/data/data/com.termux/files/home/QR-PAY-FINAL/backend/docker-compose.yml
+/data/data/com.termux/files/home/START_CMEP_DOCKER.sh
+/data/data/com.termux/files/home/ZeroNet/Dockerfile
+/data/data/com.termux/files/home/ZeroNet/Dockerfile.arm64v8
+/data/data/com.termux/files/home/ZeroNet/ZeroNet-0.7.1/Dockerfile
+/data/data/com.termux/files/home/alpine-vm
+/data/data/com.termux/files/home/alpine-vm/qemu-docker
+/data/data/com.termux/files/home/alpine-vm/qemu-docker/README-CMEP-DOCKER.txt
+/data/data/com.termux/files/home/alpine-vm/qemu-docker/alpine-installed.flag
+/data/data/com.termux/files/home/alpine-vm/qemu-docker/alpine-virt-3.20.3-x86_64.iso
+/data/data/com.termux/files/home/alpine-vm/qemu-docker/alpine.qcow2
+/data/data/com.termux/files/home/alpine-vm/qemu-docker/boot-docker-api.sh
+/data/data/com.termux/files/home/alpine-vm/qemu-docker/boot-docker.sh
+/data/data/com.termux/files/home/alpine-vm/repair_and_boot_alpine.sh
+/data/data/com.termux/files/home/backups/waste-platform-CANONICAL-AUDIT-20260902-035107/docker
+/data/data/com.termux/files/home/backups/waste-platform-FINAL-AUTHORITY-RESOLUTION-20260902-041448/docker
+/data/data/com.termux/files/home/backups/waste-platform-backups/Dockerfile.bak-20260808-062720
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.monitoring.yml.bak-20260807-114506
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.yml.bak-20260807-114506
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.yml.bak-20260808-011012
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.yml.bak-backend-frontend-20260808-010439
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.yml.bak-before-context-fix-20260808-062723
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.yml.bak-wrong-restore-20260808-011754
+/data/data/com.termux/files/home/backups/waste-platform-backups/docker-compose.yml.bak-wrong-restore-20260808-062509
+/data/data/com.termux/files/home/backups/waste-platform-docker-diagnostic.sh
+/data/data/com.termux/files/home/blackbird/Dockerfile
+/data/data/com.termux/files/home/bootstrap_qemu_docker_termux.sh
+/data/data/com.termux/files/home/cmep.dockererr.txt
+/data/data/com.termux/files/home/cmep.dockerinfo.txt
+/data/data/com.termux/files/home/dockerd.log
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/.dockerignore
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker-compose-app-variant.yml
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker-compose-original-check.yml
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker-compose.monitoring.yml
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker-compose.production.yml
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker-compose.yml
+/data/data/com.termux/files/home/downloads/waste-platform-fix-web-build-admin-user-type/docker-compose.yml.backend-frontend-variant-20260808-011656
+/data/data/com.termux/files/home/fix_cmep_docker_termux.sh
+/data/data/com.termux/files/home/fix_qemu_ports_and_run.sh
+/data/data/com.termux/files/home/osint-tools/sherlock/.dockerignore
+/data/data/com.termux/files/home/osint-tools/sherlock/Dockerfile
+/data/data/com.termux/files/home/osint-tools/spiderfoot/.dockerignore
+/data/data/com.termux/files/home/osint-tools/spiderfoot/Dockerfile
+/data/data/com.termux/files/home/osint-tools/spiderfoot/Dockerfile.full
+/data/data/com.termux/files/home/osint-tools/spiderfoot/docker-compose-dev.yml
+/data/data/com.termux/files/home/osint-tools/spiderfoot/docker-compose-full.yml
+/data/data/com.termux/files/home/osint-tools/spiderfoot/docker-compose.yml
+/data/data/com.termux/files/home/osint-tools/theHarvester/.dockerignore
+/data/data/com.termux/files/home/osint-tools/theHarvester/Dockerfile
+/data/data/com.termux/files/home/osint-tools/theHarvester/docker-compose.yml
+/data/data/com.termux/files/home/recon-ng/Dockerfile
+/data/data/com.termux/files/home/recon-ng/docker-compose.yml
+/data/data/com.termux/files/home/tools/holehe/Dockerfile
+/data/data/com.termux/files/home/waste-platform/.dockerignore
+/data/data/com.termux/files/home/waste-platform/app/.dockerignore
+/data/data/com.termux/files/home/waste-platform/app/Dockerfile
+/data/data/com.termux/files/home/waste-platform/audit-output/.r46_docker.tmp
+/data/data/com.termux/files/home/waste-platform/audit-output/.r47_docker.tmp
+/data/data/com.termux/files/home/waste-platform/audit-output/.r48_docker.tmp
+/data/data/com.termux/files/home/waste-platform/docker
+/data/data/com.termux/files/home/waste-platform/docker-compose.yml
+/data/data/com.termux/files/home/waste-platform/infra/docker-compose.load.yml
+/data/data/com.termux/files/home/wp-docker-fix-test.sh
+
+=== 5. DEPLOYMENT SUBORY ===
+/data/data/com.termux/files/home/waste-platform/.production-release/ci-handoff/compose-release-injection.example.yml
+/data/data/com.termux/files/home/waste-platform/.production-release/ci-handoff/validate-production-release-handoff.sh
+/data/data/com.termux/files/home/waste-platform/.production-release/r60-test/test-r60-release-aware-deploy.sh
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/deploy.sh
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/docker-compose.yml
+/data/data/com.termux/files/home/waste-platform/.production-release/r61-backup-20260903_104708/production-recovery.sh
+/data/data/com.termux/files/home/waste-platform/app/Dockerfile
+/data/data/com.termux/files/home/waste-platform/app/worker/Dockerfile
+/data/data/com.termux/files/home/waste-platform/apps/web/Dockerfile
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_01_production_source_boundary.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_01_r2_production_authority_resolver.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_02_safety_signed_production_remediation_preflight.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r42_real_production_readiness_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r43_production_gap_classification_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r47_production_reload_dataflow_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r48_production_reload_authority_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r49_ci_production_deployment_authority_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r51_production_deployment_safety_authority_gate.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r53_production_recovery_authority_implementation.sh
+/data/data/com.termux/files/home/waste-platform/archived-phase-scripts/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+/data/data/com.termux/files/home/waste-platform/docker-compose.yml
+/data/data/com.termux/files/home/waste-platform/docker/backend/Dockerfile
+/data/data/com.termux/files/home/waste-platform/docker/frontend/Dockerfile
+/data/data/com.termux/files/home/waste-platform/docker/nginx/Dockerfile
+/data/data/com.termux/files/home/waste-platform/infra/docker-compose.load.yml
+/data/data/com.termux/files/home/waste-platform/r73_deployment_identity_forensic.sh
+/data/data/com.termux/files/home/waste-platform/r74_actual_deployment_identity_sources.sh
+/data/data/com.termux/files/home/waste-platform/r75_deployment_identity_decision.sh
+/data/data/com.termux/files/home/waste-platform/r76_deployment_active_gate.sh
+/data/data/com.termux/files/home/waste-platform/scripts/deploy.sh
+/data/data/com.termux/files/home/waste-platform/scripts/deploy/00_production_readiness_inventory.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase747-frontend-deployment-classification.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase748-frontend-production-and-env-governance.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r10_production_env_ttl_canonical_remediation.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r10_v1_production_env_ttl_verification.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r9_production_env_ttl_forensic.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_10_r9_production_env_ttl_forensic_v2.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_11_r3_deployment_secret_authority_provenance.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_11_r4_deployment_authority_chain_preflight.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_7_production_env_authority.sh
+/data/data/com.termux/files/home/waste-platform/scripts/forensics/archive/phase7_4_9_r3_8_env_runtime_deployment_matrix.sh
+/data/data/com.termux/files/home/waste-platform/scripts/production-recovery.sh
+/data/data/com.termux/files/home/waste-platform/scripts/validate-release-identity.sh
+
+=== 6. KONFIGURACIA BEZ HODNOT TAJOMSTIEV ===
+--- /data/data/com.termux/files/home/waste-platform/.env ---
+DATABASE_URL=REDACTED
+JWT_SECRET_KEY=REDACTED
+JWT_ALGORITHM=REDACTED
+ACCESS_TOKEN_EXPIRE_MINUTES=REDACTED
+REFRESH_TOKEN_EXPIRE_DAYS=REDACTED
+NEXT_PUBLIC_API_URL=REDACTED
+--- /data/data/com.termux/files/home/waste-platform/.env.production ---
+APP_ENV=REDACTED
+APP_NAME=REDACTED
+APP_DOMAIN=REDACTED
+API_DOMAIN=REDACTED
+LETSENCRYPT_EMAIL=REDACTED
+APP_HOST=REDACTED
+APP_PORT=REDACTED
+APP_DEBUG=REDACTED
+APP_LOG_LEVEL=REDACTED
+POSTGRES_DB=REDACTED
+POSTGRES_USER=REDACTED
+POSTGRES_PASSWORD=REDACTED
+POSTGRES_HOST=REDACTED
+POSTGRES_PORT=REDACTED
+DATABASE_HOST=REDACTED
+DATABASE_PORT=REDACTED
+DATABASE_NAME=REDACTED
+DATABASE_USER=REDACTED
+DATABASE_PASSWORD=REDACTED
+DATABASE_URL=REDACTED
+REDIS_HOST=REDACTED
+REDIS_PORT=REDACTED
+REDIS_URL=REDACTED
+MINIO_ROOT_USER=REDACTED
+MINIO_ROOT_PASSWORD=REDACTED
+S3_ENDPOINT_URL=REDACTED
+S3_PUBLIC_ENDPOINT_URL=REDACTED
+S3_REGION=REDACTED
+S3_ACCESS_KEY=REDACTED
+S3_SECRET_KEY=REDACTED
+S3_BUCKET_DOCUMENTS=REDACTED
+S3_BUCKET_MEDIA=REDACTED
+S3_USE_SSL=REDACTED
+S3_FORCE_PATH_STYLE=REDACTED
+JWT_ISSUER=REDACTED
+JWT_AUDIENCE=REDACTED
+JWT_SECRET_KEY=REDACTED
+JWT_REFRESH_SECRET_KEY=REDACTED
+ACCESS_TOKEN_EXPIRE_MINUTES=REDACTED
+REFRESH_TOKEN_EXPIRE_DAYS=REDACTED
+JWT_ALGORITHM=REDACTED
+PASSWORD_BCRYPT_ROUNDS=REDACTED
+CORS_ALLOWED_ORIGINS=REDACTED
+NEXT_PUBLIC_API_BASE_URL=REDACTED
+EMAIL_PROVIDER=REDACTED
+EMAIL_FROM=REDACTED
+SMTP_HOST=REDACTED
+SMTP_PORT=REDACTED
+SMTP_USERNAME=REDACTED
+SMTP_PASSWORD=REDACTED
+SMTP_USE_TLS=REDACTED
+QUEUE_DRIVER=REDACTED
+WORKER_CONCURRENCY=REDACTED
+DEFAULT_PAGE_SIZE=REDACTED
+MAX_PAGE_SIZE=REDACTED
+OTEL_ENABLED=REDACTED
+SENTRY_DSN=REDACTED
+REQUEST_ID_HEADER=REDACTED
+--- /data/data/com.termux/files/home/waste-platform/.env.example ---
+APP_ENV=REDACTED
+APP_DEBUG=REDACTED
+APP_HOST=REDACTED
+APP_PORT=REDACTED
+DATABASE_URL=REDACTED
+REDIS_URL=REDACTED
+JWT_SECRET=REDACTED
+JWT_ALGORITHM=REDACTED
+JWT_ACCESS_TTL_SECONDS=REDACTED
+JWT_REFRESH_TTL_SECONDS=REDACTED
+CORS_ORIGINS=REDACTED
+NEXT_PUBLIC_API_BASE_URL=REDACTED
+--- /data/data/com.termux/files/home/waste-platform/apps/web/.env.local ---
+NEXT_PUBLIC_API_BASE_URL=REDACTED
+
+=== 7. DATABAZA A MIGRACIE ===
+--- alembic.ini URL (redacted) ---
+sqlalchemy.url =REDACTED
+--- alembic versions ---
+1577dceccd9e_initial_schema.py
+--- SQLite databazy ---
+147456 bytes  /data/data/com.termux/files/home/waste-platform/var/cmep.db
+139264 bytes  /data/data/com.termux/files/home/waste-platform/var/waste_platform.db
+0 bytes  /data/data/com.termux/files/home/waste-platform/_quarantine/20260902_190406/moved/waste.db
+
+=== 8. BUILD A TEST PRIKAZY Z PROJEKTU ===
+--- Makefile targets ---
+.PHONY: help install install-dev dev dev-worker dev-beat test test-unit test-integration test-cov lint format format-check migrate migrate-create db-upgrade db-downgrade db-reset up down ps logs logs-api monitor-up monitor-down audit audit-security clean clean-all
+help:	## Zobrazi napovedu
+install:	## Instaluje produkcne zavislosti
+install-dev:	## Instaluje dev zavislosti
+dev:	## Spusti backend v dev mode (auto-reload)
+dev-worker:	## Spusti Celery worker
+dev-beat:	## Spusti Celery beat (scheduler)
+test:	## Spusti vsetky testy
+test-unit:	## Spusti unit testy
+test-integration:	## Spusti integration testy
+test-cov:	## Spusti testy s coverage reportom
+lint:	## Spusti linting (flake8 + mypy)
+format:	## Formatuje kod (black + isort)
+format-check:	## Kontrola formatovania bez zmeny
+migrate:	## Vytvori a aplikuje Alembic migracie
+migrate-create:	## Vytvori novu migraciu (manualny nazov)
+db-upgrade:	## Aplikuje migracie
+db-downgrade:	## Vrati poslednu migraciu
+db-reset:	## Resetuje databazu (POZOR: maze data!)
+up:	## Spusti vsetky sluzby v Dockeri
+down:	## Zastavi Docker sluzby
+ps:	## Stav Docker sluzieb
+logs:	## Logy zo vsetkych sluzieb
+logs-api:	## Logy iba z API
+monitor-up:	## Spusti monitoring stack
+monitor-down:	## Zastavi monitoring stack
+audit:	## Forenzny audit projektu
+audit-security:	## Kontrola hardcoded secretov
+clean:	## Vycisti cache, pyc, logy
+clean-all: clean	## Vycisti aj Docker volumes (POZOR!)
+--- package scripts ---
+{
+  "dev": "next dev --hostname 0.0.0.0 --port 3001",
+  "build": "next build",
+  "start": "next start --hostname 0.0.0.0 --port 3001",
+  "lint": "eslint .",
+  "typecheck": "tsc --noEmit",
+  "test": "vitest run",
+  "test:watch": "vitest",
+  "lint:fix": "eslint . --fix"
+}
+--- pyproject relevantne riadky ---
+28:    "uvicorn[standard]>=0.24.0",
+31:    "sqlalchemy>=2.0.0",
+32:    "alembic>=1.12.0",
+59:    "pytest>=7.4.2",
+60:    "pytest-asyncio>=0.21.1",
+61:    "pytest-cov>=4.1.0",
+62:    "pytest-mock>=3.11.1",
+66:    "mypy>=1.6.1",
+70:    "pytest>=7.4.2",
+71:    "pytest-asyncio>=0.21.1",
+72:    "pytest-cov>=4.1.0",
+96:  | \.mypy_cache
+103:  | alembic
+116:[tool.mypy]
+128:[tool.pytest.ini_options]
+142:    "*/alembic/*",
+
+=== HOTOVO ===
+Report: /data/data/com.termux/files/home/waste-platform/reports/production-readiness-20260907-191720.txt
