@@ -16,10 +16,9 @@ logger = logging.getLogger("cmep.main")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(
-        "Starting CMEP app env=%s docs=%s db=%s",
+        "Starting CMEP app env=%s docs=%s",
         settings.app_env,
         settings.ENABLE_PUBLIC_DOCS,
-        settings.DATABASE_URL,
     )
     yield
     logger.info("Stopping CMEP app")
