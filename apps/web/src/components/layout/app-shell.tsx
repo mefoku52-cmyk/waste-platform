@@ -20,7 +20,7 @@ export function AppShell({
     <div className="relative min-h-screen bg-[#eef3ee]">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[url('/rc-mark.png')] bg-no-repeat bg-center bg-[length:220px] opacity-[0.07]"
+        className="pointer-events-none absolute inset-0 bg-[url('/rc-mark.png')] bg-no-repeat bg-center bg-cover opacity-30"
       />
       {header}
       <div className="border-b border-amber-200/70 bg-amber-50">
