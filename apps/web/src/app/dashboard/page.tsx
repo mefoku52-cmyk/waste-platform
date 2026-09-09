@@ -1,6 +1,7 @@
 'use client';
 
 import { Logo } from "@/components/brand/logo";
+import { AppShell } from "@/components/layout/app-shell";
 
 import { MatchesPanel } from "@/features/listings";
 import { ComplianceTable } from "@/features/compliance";
@@ -70,8 +71,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-100 via-slate-50 to-emerald-50/30">
-      {/* sticky top */}
+    <AppShell
+      header={
       <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-3 py-3 sm:px-6">
           <div className="min-w-0">
@@ -123,8 +124,9 @@ export default function DashboardPage() {
           </div>
         </div>
       </header>
-
-      <main className="mx-auto max-w-6xl space-y-4 px-3 py-4 sm:space-y-6 sm:px-6 sm:py-8">
+      }
+    >
+      <main className="space-y-4 sm:space-y-6">
         <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white shadow-sm">
           <div className="border-b border-emerald-50 bg-emerald-50/50 px-4 py-2.5">
             <p className="text-xs font-semibold uppercase tracking-wide text-emerald-800">Notifikácie</p>
@@ -203,6 +205,6 @@ export default function DashboardPage() {
 
         <p className="pb-6 text-center text-[11px] text-slate-400">CMEP · lokálny vývoj</p>
       </main>
-    </div>
+    </AppShell>
   );
 }
