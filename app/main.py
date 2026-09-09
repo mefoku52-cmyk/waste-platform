@@ -65,7 +65,6 @@ def create_app() -> FastAPI:
             "service": settings.app_name,
             "version": settings.app_version,
             "env": settings.app_env,
-            "database_url": settings.DATABASE_URL,
             "mounted_routers": mounted,
             "skipped_routers": skipped,
         }

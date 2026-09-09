@@ -100,7 +100,11 @@ class PasswordResetService:
         token = secrets.token_urlsafe(32)
         self._store_token(token, str(user.id))
 
-        base = settings.frontend_url.rstrip("/")
+        base = str(
+            getattr(settings, "FRONTEND_URL", "")
+            or getattr(settings, "NEXT_PUBLIC_API_URL", "")
+            or "http://127.0.0.1:3001"
+        ).rstrip("/")
         nl = chr(10)
         body = (
             "Obnova hesla CMEP"

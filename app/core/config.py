@@ -112,6 +112,11 @@ class Settings(BaseSettings):
 
     DATABASE_URL: str = SQLITE_DEFAULT
 
+    REDIS_URL: str = ""
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+
     JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
@@ -127,6 +132,13 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
     NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    EMAIL_FROM: str = ""
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
 
     @property
     def is_development(self) -> bool:
@@ -180,6 +192,21 @@ class Settings(BaseSettings):
                     refresh_token_expire_days=self.REFRESH_TOKEN_EXPIRE_DAYS,
                 ),
             )
+
+        redis_url = str(self.REDIS_URL or "").strip()
+        object.__setattr__(
+            self,
+            "redis",
+            self.redis.model_copy(
+                update={
+                    "url": redis_url or self.redis.url,
+                    "host": str(self.REDIS_HOST or "") or self.redis.host,
+                    "port": int(self.REDIS_PORT),
+                    "db": int(self.REDIS_DB),
+                    "enabled": bool(redis_url),
+                }
+            ),
+        )
 
 
 settings = Settings()
