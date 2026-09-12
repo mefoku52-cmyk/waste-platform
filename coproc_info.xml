@@ -1,5 +1,0 @@
-    <coprocs>
-<warning>NVIDIA: dlopen failed: library "libcuda.so" not found</warning>
-<warning>ATI: dlopen failed: library "libaticalrt.so" not found</warning>
-<warning>clGetPlatformIDs() failed to return any OpenCL platforms</warning>
-    </coprocs>
