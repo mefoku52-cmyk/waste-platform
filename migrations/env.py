@@ -8,13 +8,10 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-import app.shared.infrastructure.db.register_models
+import app.shared.infrastructure.db.register_models  # noqa: F401
 from app.shared.infrastructure.db.base import Base
 
-try:
-    from app.core.config import settings
-except Exception:
-    from app.core.config import settings
+from app.core.config import settings
 
 config = context.config
 
@@ -29,27 +26,36 @@ config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
 target_metadata = Base.metadata
 
 
-def _is_uuidish(type_obj) -> bool:
+def _type_name(type_obj) -> str:
     if type_obj is None:
-        return False
-    name = type(type_obj).__name__.lower()
-    text = str(type_obj).lower()
-    return "uuid" in name or "uuid" in text
-
-
-def _is_sqlite_numericish(type_obj) -> bool:
-    if type_obj is None:
-        return False
-    name = type(type_obj).__name__.lower()
-    text = str(type_obj).lower()
-    return "numeric" in name or "numeric" in text
+        return ""
+    return type(type_obj).__name__.lower()
 
 
 def custom_compare_type(context, inspected_column, metadata_column, inspected_type, metadata_type):
+    """Custom type comparison pre Alembic.
+
+    Na SQLite dochadza k "false positive" rozdielom:
+    - UUID v modeli vs NUMERIC v DB (SQLite nepodporuje UUID nativne)
+    - TEXT vs VARCHAR (SQLite ich mapuje rovnako)
+    - String bez dlzky vs String s dlzkou
+    """
     dialect_name = context.dialect.name
 
     if dialect_name == "sqlite":
-        if _is_sqlite_numericish(inspected_type) and _is_uuidish(metadata_type):
+        insp_name = _type_name(inspected_type)
+        meta_name = _type_name(metadata_type)
+
+        # UUID vs NUMERIC/CHAR - SQLite to mapuje rovnako
+        if "uuid" in insp_name or "uuid" in meta_name:
+            return False
+        if insp_name == "numeric" and ("uuid" in meta_name or "char" in meta_name):
+            return False
+        if "numeric" in insp_name and "uuid" in meta_name:
+            return False
+
+        # TEXT vs VARCHAR - SQLite ich mapuje rovnako
+        if insp_name in ("text", "string", "varchar") and meta_name in ("text", "string", "varchar"):
             return False
 
     return None
