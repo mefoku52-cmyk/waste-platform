@@ -2,7 +2,7 @@
 # Production Proof Report — dôkaz produkčnej pripravenosti
 set +e  # pokračuj aj keď niečo zlyhá
 
-REPORT="PRODUCTION_PROOF_$(date +%Y%m%d_%H%M%S).txt"
+REPORT="PRODUCTION_PROOF.txt"
 
 {
 echo "════════════════════════════════════════════════════════════════════════"
