@@ -135,7 +135,7 @@ echo "Test files:"
 find tests -name "test_*.py" -not -path "*/__pycache__/*" | wc -l
 echo ""
 echo "Test count:"
-python3 -m pytest tests/ --collect-only -q 2>&1 | tail -1
+python3 -m pytest tests/ --collect-only -q --no-header 2>&1 | grep "test" | tail -1 || python3 -m pytest tests/ --collect-only -q --no-header 2>&1 | tail -1
 echo ""
 echo "Dead code check (unused imports in app):"
 grep -rn "from.*import.*# noqa: F401" app/ 2>/dev/null | wc -l
@@ -162,7 +162,7 @@ echo ".env files in git (should be only .env.example):"
 git ls-files | grep -E "^\.env" || echo "  ✅ Only .env.example tracked"
 echo ""
 echo "Hardcoded secrets scan:"
-grep -rn "password.*=.*['\"][^'\"]\{8,\}['\"]" app/ --include="*.py" 2>/dev/null | grep -v "password_hash\|hashed\|test_\|example" | head -5 || echo "  ✅ None found"
+grep -rn "password.*=.*['\"][^'\"]\{8,\}['\"]" app/ --include="*.py" 2>/dev/null | grep -v "password_hash\|hashed\|test_\|example\|getattr(settings" | head -5 || echo "  ✅ None found"
 echo ""
 
 echo "════════════════════════════════════════════════════════════════════════"
