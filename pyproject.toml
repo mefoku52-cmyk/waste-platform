@@ -128,7 +128,8 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra -q --strict-markers --cov=app --cov-report=term-missing"
-testpaths = ["app/tests"]
+testpaths = ["app/tests", "tests"]
+pythonpath = ["."]
 asyncio_mode = "auto"
 markers = [
     "unit: Unit tests",
