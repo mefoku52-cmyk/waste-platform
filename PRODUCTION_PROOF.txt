@@ -1,0 +1,216 @@
+════════════════════════════════════════════════════════════════════════
+         WASTE-PLATFORM PRODUCTION PROOF
+         Generated: Sat Sep 12 06:04:35 CEST 2026
+════════════════════════════════════════════════════════════════════════
+
+════════════════════════════════════════════════════════════════════════
+1. PROJECT STRUCTURE
+════════════════════════════════════════════════════════════════════════
+Project size (excl. node_modules, .venv, .git):
+162M	.
+
+Top-level structure:
+  .coverage
+  .dockerignore
+  .env
+  .env.compose
+  .env.example
+  .env.production
+  .git
+  .github
+  .gitignore
+  .mypy_cache
+  .pre-commit-config.yaml
+  .pytest_cache
+  .ruff_cache
+  .venv
+  Makefile
+  PRODUCTION_PROOF.txt
+  README.md
+  alembic
+  alembic.ini
+  app
+  apps
+  docker-compose.yml
+  docs
+  infra
+  logs
+  migrations
+  pyproject.toml
+  requirements.txt
+  ruff.toml
+  scripts
+  tests
+  var
+
+════════════════════════════════════════════════════════════════════════
+2. STATIC ANALYSIS
+════════════════════════════════════════════════════════════════════════
+--- ty check (type safety) ---
+All checks passed!
+
+--- ruff format (code style) ---
+296 files already formatted
+
+--- ruff check (lint) ---
+All checks passed!
+
+════════════════════════════════════════════════════════════════════════
+3. TEST SUITE
+════════════════════════════════════════════════════════════════════════
+app/shared/infrastructure/security/jwt_revocation_store.py          99     33    67%   23, 44, 63-71, 74-77, 80-84, 103-104, 110-111, 114-118, 121-125
+app/shared/infrastructure/security/jwt_service.py                   72      9    88%   54, 72, 88, 107, 110-112, 117, 120
+app/shared/presentation/__init__.py                                  0      0   100%
+app/shared/presentation/api_router.py                               26      0   100%
+app/shared/presentation/auth_dependencies.py                        30     16    47%   23-26, 30-33, 40-50
+app/shared/presentation/error_schemas.py                            19      0   100%
+app/shared/presentation/metrics_router.py                           27     16    41%   32-35, 39-44, 49-58
+app/worker/__init__.py                                               0      0   100%
+----------------------------------------------------------------------------------------------
+TOTAL                                                             3931   1638    58%
+
+════════════════════════════════════════════════════════════════════════
+4. COVERAGE SUMMARY
+════════════════════════════════════════════════════════════════════════
+TOTAL                                                             3931   1638    58%
+
+════════════════════════════════════════════════════════════════════════
+5. BACKEND HEALTH CHECK
+════════════════════════════════════════════════════════════════════════
+FastAPI routes count:
+  18 routes registered
+
+Route list:
+  GET             /openapi.json
+  GET             /docs
+  GET             /docs/oauth2-redirect
+  GET             /redoc
+  GET             /health
+
+════════════════════════════════════════════════════════════════════════
+6. ALEMBIC MIGRATIONS
+════════════════════════════════════════════════════════════════════════
+Migration heads:
+1577dceccd9e (head)
+
+Migration history:
+<base> -> 1577dceccd9e (head), initial_schema
+
+Schema consistency check (SQLite):
+No new upgrade operations detected.
+
+════════════════════════════════════════════════════════════════════════
+7. FRONTEND
+════════════════════════════════════════════════════════════════════════
+Next.js build artifacts:
+total 288
+drwx------. 8 u0_a388 u0_a388   3452 Sep 12 05:50 .
+drwx------. 6 u0_a388 u0_a388   3452 Sep 12 05:06 ..
+-rw-------. 1 u0_a388 u0_a388     21 Sep 12 05:34 BUILD_ID
+-rw-------. 1 u0_a388 u0_a388   6204 Sep 12 05:34 app-build-manifest.json
+
+Frontend dependencies:
+  name: @cmep/web
+  version: 0.1.0
+  scripts: ['dev', 'build', 'start', 'lint', 'typecheck', 'test', 'test:watch', 'lint:fix']
+  dependencies: 9
+  devDependencies: 11
+
+════════════════════════════════════════════════════════════════════════
+8. DOCKER & DEPLOYMENT
+════════════════════════════════════════════════════════════════════════
+Dockerfiles present:
+./app/Dockerfile
+./app/worker/Dockerfile
+./apps/web/Dockerfile
+
+docker-compose.yml validation:
+  ✅ Compose syntax OK
+
+Makefile targets:
+[36mhelp                [0m Zobrazi napovedu
+[36minstall             [0m Instaluje produkcne zavislosti
+[36minstall-dev         [0m Instaluje dev zavislosti
+[36mdev                 [0m Spusti backend v dev mode (auto-reload)
+[36mdev-worker          [0m Spusti Celery worker
+[36mdev-beat            [0m Spusti Celery beat (scheduler)
+[36mtest                [0m Spusti vsetky testy
+[36mtest-unit           [0m Spusti unit testy
+[36mtest-integration    [0m Spusti integration testy
+[36mtest-cov            [0m Spusti testy s coverage reportom
+[36mlint                [0m Spusti linting (flake8 + mypy)
+[36mformat              [0m Formatuje kod (black + isort)
+[36mformat-check        [0m Kontrola formatovania bez zmeny
+[36mmigrate             [0m Vytvori a aplikuje Alembic migracie
+[36mmigrate-create      [0m Vytvori novu migraciu (manualny nazov)
+
+════════════════════════════════════════════════════════════════════════
+9. GIT REPOSITORY
+════════════════════════════════════════════════════════════════════════
+Current branch:
+main
+
+Git status:
+ M scripts/production-proof.sh
+  Uncommitted: 1
+
+Recent commits (last 15):
+5988c11 chore: gitignore production proof reports
+57c9a5f chore: add production proof script
+9842a27 chore: add local CI script (scripts/ci-local.sh)
+1193846 fix: repair Makefile clean-all target
+49d36fb chore: fix Makefile test paths (app/tests → tests)
+b9e9a06 test: add tests for users mappers
+70f829f test: add tests for CreateUser, UpdateUser, TransitionUserStatus services
+9752955 chore: remove unused shared/presentation modules
+4a63cd9 test: add coverage for exception handlers, health router, domain exceptions
+cd75e7e chore: remove AI Docker stack and frontend balast
+076f132 chore: remove skeleton tests and placeholder files
+8c32fd4 chore: remove dead legacy service.py placeholders
+4c17e45 test: add unit tests for PasswordService, JwtService, User entity, API health
+f55a050 test: fix testpaths and add SQLite fallback for local tests
+ec0dc4e ci: proper GitHub Actions workflow
+
+Branches:
+* main
+  remotes/origin/HEAD -> origin/main
+  remotes/origin/main
+
+════════════════════════════════════════════════════════════════════════
+10. CODE QUALITY METRICS
+════════════════════════════════════════════════════════════════════════
+Python files:
+250
+
+Test files:
+14
+
+Test count:
+TOTAL                                                             3931   2009    49%
+
+Dead code check (unused imports in app):
+7
+  (should be low — most are register_models.py)
+
+════════════════════════════════════════════════════════════════════════
+11. AI-GENERATED BALAST CHECK
+════════════════════════════════════════════════════════════════════════
+Backup files (.bak, .old, .backup):
+
+AI script directories (should be empty):
+  ✅ None found
+
+Placeholder/TODO in production code:
+
+════════════════════════════════════════════════════════════════════════
+12. SECURITY CHECK
+════════════════════════════════════════════════════════════════════════
+.env files in git (should be only .env.example):
+.env.example
+
+Hardcoded secrets scan:
+app/shared/infrastructure/email/sender.py:18:    password = getattr(settings, "SMTP_PASSWORD", "")
+
+════════════════════════════════════════════════════════════════════════
+                    END OF PRODUCTION PROOF
+════════════════════════════════════════════════════════════════════════
