@@ -111,4 +111,4 @@ clean:	## Vycisti cache, pyc, logy
 
 clean-all: clean	## Vycisti aj Docker volumes (POZOR!)
 	docker compose down -v
-/docker system prune -f
+	docker system prune -f
