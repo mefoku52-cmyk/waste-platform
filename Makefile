@@ -27,7 +27,7 @@ dev-beat:	## Spusti Celery beat (scheduler)
 
 # --- Testing ---
 test:	## Spusti vsetky testy
-	pytest app/tests -v
+	pytest tests -v
 
 test-unit:	## Spusti unit testy
 	pytest app/tests/unit -v -m unit
@@ -36,7 +36,7 @@ test-integration:	## Spusti integration testy
 	pytest app/tests/integration -v -m integration
 
 test-cov:	## Spusti testy s coverage reportom
-	pytest app/tests --cov=app --cov-report=html --cov-report=term
+	pytest tests --cov=app --cov-report=html --cov-report=term
 
 # --- Code Quality ---
 lint:	## Spusti linting (flake8 + mypy)
