@@ -8,10 +8,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-import app.shared.infrastructure.db.register_models  # noqa: F401
-from app.shared.infrastructure.db.base import Base
-
+import app.shared.infrastructure.db.register_models
 from app.core.config import settings
+from app.shared.infrastructure.db.base import Base
 
 config = context.config
 
@@ -55,7 +54,11 @@ def custom_compare_type(context, inspected_column, metadata_column, inspected_ty
             return False
 
         # TEXT vs VARCHAR - SQLite ich mapuje rovnako
-        if insp_name in ("text", "string", "varchar") and meta_name in ("text", "string", "varchar"):
+        if insp_name in ("text", "string", "varchar") and meta_name in (
+            "text",
+            "string",
+            "varchar",
+        ):
             return False
 
     return None
