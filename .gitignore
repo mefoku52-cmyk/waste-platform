@@ -282,3 +282,6 @@ token*.txt
 # Alembic lokálne DB
 *.db
 dev.db
+
+# Production proof reports (generated)
+PRODUCTION_PROOF*.txt
