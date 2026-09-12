@@ -1,5 +1,5 @@
 # Ruff konfigurácia pre waste-platform
-# FastAPI projekt — niektoré pravidlá sú nekompatibilné s FastAPI patternmi.
+# FastAPI + Pydantic projekt — niektoré pravidlá sú nekompatibilné s camelCase JSON API.
 
 target-version = "py312"
 line-length = 100
@@ -17,16 +17,16 @@ extend-exclude = [
     "scripts/forensics",
     "scripts/ops",
     "test_debug.py",
+    "fix_diagnostics.sh",
+    "fix_pyright_errors.sh",
 ]
 
 [lint]
-# Základné sady
 select = [
     "E",    # pycodestyle errors
     "W",    # pycodestyle warnings
     "F",    # pyflakes
     "I",    # isort
-    "N",    # pep8-naming
     "UP",   # pyupgrade
     "B",    # flake8-bugbear
     "C4",   # flake8-comprehensions
@@ -34,41 +34,60 @@ select = [
     "RUF",  # ruff-specific
 ]
 
-# Ignoruj pravidlá, ktoré kolidujú s FastAPI/SQLAlchemy patternmi
+# Ignorované pravidlá — kolidujú s FastAPI/Pydantic patternmi
 ignore = [
-    "B008",   # FastAPI: Depends()/File()/Query() v defaultoch je SPRÁVNE
-    "B904",   # raise from — nechceme všade
-    "BLE001", # blind except Exception — máme vlastné error handlery
-    "E501",   # line too long — rieši formatter
-    "N818",   # exception naming (Error suffix)
-    "RUF012", # mutable class attr — SQLAlchemy to používa
-    "RUF059", # unused unpacked variable — často potrebné pre tuple unpacking
-    "S110",   # try-except-pass — občas zámerné
-    "SIM102", # nested if — čitateľnosť
-    "TRY203", # re-raise — zámerné pre FastAPI exception handlery
+    "B008",   # FastAPI: Depends()/File()/Query() v defaultoch
+    "B904",   # raise from
+    "BLE001", # blind except Exception
+    "E402",   # modul-level import nie hore (máme lazy imports)
+    "E501",   # line too long
+    "N803",   # argument name camelCase (FastAPI query params!)
+    "N815",   # variable name camelCase (Pydantic JSON schémy!)
+    "N818",   # exception naming
+    "RUF001", # ambiguous unicode (en dash v komentároch)
+    "RUF002", # ambiguous unicode v docstring
+    "RUF003", # ambiguous unicode v komentároch
+    "RUF012", # mutable class attr
+    "RUF059", # unused unpacked variable
+    "S110",   # try-except-pass
+    "SIM102", # nested if
+    "TRY203", # re-raise
     "TRY401", # redundant exception in logging
+    "UP042",  # StrEnum — SQLAlchemy modely používajú (str, Enum)
+    "C414",   # unnecessary list() in sorted()
 ]
 
-# Per-file ignorovanie
 [lint.per-file-ignores]
+# __init__.py majú zámerné re-exporty a star imports
+"**/__init__.py" = [
+    "F401",  # unused imports (re-export)
+    "F403",  # star imports
+    "F405",  # may be undefined from star imports
+]
 "app/modules/*/presentation/*.py" = [
-    "B008",   # FastAPI dependencies
+    "B008",
+    "N803",
+    "N815",
 ]
 "app/shared/presentation/*.py" = [
     "B008",
 ]
 "app/tests/**/*.py" = [
     "B008",
-    "S101",   # assert v testoch je OK
+    "S101",
 ]
 "migrations/**/*.py" = [
-    "E501",   # alembic generuje dlhé riadky
+    "E501",
     "B008",
+    "F401",
 ]
 "scripts/**/*.py" = [
     "E501",
     "B008",
     "BLE001",
+    "F401",
+    "F403",
+    "F405",
 ]
 
 [lint.isort]
