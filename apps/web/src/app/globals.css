@@ -43,3 +43,139 @@ body > * {
   z-index: 1;
 }
 
+/* CMEP-GLASS-FRAME-V3 */
+
+/* Hlavný obsah zostáva nad logom/obrázkom */
+main {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/*
+  PANELY A OBĹŽNIKOVÉ RÁMČEKY:
+  nízka krycia vrstva = logo pod nimi ostane viditeľné.
+*/
+main > div,
+main section,
+main article,
+main [class*="card"],
+main [class*="rounded"] {
+  background: rgba(10, 8, 5, 0.17) !important;
+  border-color: rgba(255, 218, 100, 0.72) !important;
+  box-shadow:
+    0 2px 9px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 1px rgba(255, 243, 185, 0.10) !important;
+}
+
+/*
+  Tabuľky a ich okolie sú takmer priehľadné.
+  Na pozadí bude viditeľné logo, aj písmená v strede.
+*/
+main table,
+main form,
+main [class*="border"] {
+  background-color: rgba(7, 6, 4, 0.13) !important;
+  border-color: rgba(255, 222, 116, 0.68) !important;
+}
+
+/* Hlavičky tabuľky: jemný odtieň, nie nepriehľadný pás */
+main thead,
+main tr:first-child,
+main th {
+  background: rgba(10, 8, 5, 0.28) !important;
+  color: #fff4bd !important;
+  border-color: rgba(255, 226, 135, 0.82) !important;
+  font-weight: 900 !important;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 6px #000 !important;
+}
+
+/*
+  Silný svetlý text vo všetkých rámčekoch.
+  Čierny tieň zachová čitateľnosť priamo cez logo.
+*/
+main h1,
+main h2,
+main h3,
+main h4,
+main p,
+main label,
+main span,
+main td,
+main th,
+main strong,
+main small,
+main li {
+  color: #fffdf2 !important;
+  font-weight: 700 !important;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.88),
+     1px -1px 0 rgba(0, 0, 0, 0.88),
+    -1px  1px 0 rgba(0, 0, 0, 0.88),
+     1px  1px 0 rgba(0, 0, 0, 0.88),
+     0 0 7px rgba(0, 0, 0, 1) !important;
+}
+
+/* Názvy blokov: „Odporúčané zhody“, „Registrované firmy“ atď. */
+main h2,
+main h3,
+main h4 {
+  color: #fff8cf !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
+}
+
+/* Text „Žiadne záznamy...“ a bunky tabuliek */
+main td,
+main td[colspan],
+main tbody p,
+main tbody span {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+
+/*
+  Inputy: presvitné, ale jasný zlatý okraj.
+  Logo cez plochu inputu stále jemne presvitá.
+*/
+main input,
+main textarea,
+main select {
+  background: rgba(5, 4, 3, 0.20) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 220, 105, 0.92) !important;
+  box-shadow:
+    inset 0 0 6px rgba(0, 0, 0, 0.30),
+    0 0 5px rgba(255, 211, 85, 0.20) !important;
+  font-weight: 800 !important;
+  text-shadow:
+    0 1px 3px #000,
+    0 0 5px #000 !important;
+}
+
+main input::placeholder,
+main textarea::placeholder {
+  color: #fff0b8 !important;
+  opacity: 1 !important;
+  font-weight: 700 !important;
+}
+
+/* Tlačidlá nech sú dobre viditeľné, ale nie sú úplne čierne */
+main button {
+  background: rgba(20, 15, 7, 0.38) !important;
+  color: #fff7d1 !important;
+  border: 1px solid rgba(255, 220, 105, 0.90) !important;
+  font-weight: 900 !important;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 4px #000 !important;
+}
+
+/* Riadky tabuliek: maximálna priehľadnosť */
+main tbody,
+main tbody tr,
+main tbody td {
+  background: rgba(6, 5, 3, 0.08) !important;
+  border-color: rgba(255, 222, 120, 0.34) !important;
+}

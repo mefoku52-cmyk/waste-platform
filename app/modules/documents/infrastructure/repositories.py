@@ -1,8 +1,6 @@
 """documents repository implementations."""
 
-from typing import List, Optional
-
-from sqlalchemy import and_,  delete as sql_delete
+from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,7 +16,7 @@ class DocumentRepositoryImpl(DocumentRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: str) -> Optional[DocumentEntity]:
+    async def get_by_id(self, id: str) -> DocumentEntity | None:
         result = await self.session.execute(select(DocumentModel).where(DocumentModel.id == id))
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
@@ -41,13 +39,20 @@ class DocumentRepositoryImpl(DocumentRepository):
         if not company_ids:
             return 0
         result = await self.session.execute(
-            select(func.count()).select_from(DocumentModel).where(DocumentModel.company_id.in_(list(company_ids)))
+            select(func.count())
+            .select_from(DocumentModel)
+            .where(DocumentModel.company_id.in_(list(company_ids)))
         )
         return int(result.scalar_one())
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[DocumentEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[DocumentEntity]:
         offset = (page - 1) * limit
-        result = await self.session.execute(select(DocumentModel).order_by(DocumentModel.created_at.desc()).offset(offset).limit(limit))
+        result = await self.session.execute(
+            select(DocumentModel)
+            .order_by(DocumentModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 

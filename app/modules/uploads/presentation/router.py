@@ -11,6 +11,7 @@ from fastapi.responses import FileResponse
 
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.error_schemas import error_responses
+
 from .schemas import UploadResponse
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])

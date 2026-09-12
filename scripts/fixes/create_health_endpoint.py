@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Vytvorenie health endpointov."""
 
-import os
 from pathlib import Path
 
 # Vytvorenie health routera
@@ -69,9 +68,9 @@ async def metrics() -> Response:
     return await metrics_endpoint()
 '''
 
-health_path = Path('backend/app/api/v1/health.py')
+health_path = Path("backend/app/api/v1/health.py")
 health_path.parent.mkdir(parents=True, exist_ok=True)
-with open(health_path, 'w') as f:
+with open(health_path, "w") as f:
     f.write(health_router)
 
 print("Health endpointy vytvorené")

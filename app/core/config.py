@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import json
-from typing import List, Union
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
 
@@ -101,7 +99,7 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8001
 
-    CORS_ORIGINS: Union[List[str], str] = Field(
+    CORS_ORIGINS: list[str] | str = Field(
         default_factory=lambda: [
             "http://127.0.0.1:3001",
             "http://localhost:3001",
@@ -165,7 +163,9 @@ class Settings(BaseSettings):
             if self.is_development:
                 database_url = SQLITE_DEFAULT
             else:
-                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+                raise ValueError(
+                    "DATABASE_URL is missing or invalid for non-development environment."
+                )
         else:
             database_url = _normalize_database_url(raw_db)
 

@@ -1,6 +1,7 @@
 """documents API router."""
 
-from fastapi import APIRouter, Depends, Query, status as http_status
+from fastapi import APIRouter, Depends, Query
+from fastapi import status as http_status
 
 from app.shared.domain.exceptions import NotFoundDomainError
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -37,7 +38,7 @@ def _to_data(entity: DocumentEntity) -> DocumentData:
 
 def _allowed_company_ids(current_user) -> set:
     ids = set()
-    for m in (current_user.memberships or []):
+    for m in current_user.memberships or []:
         cid = m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None)
         if cid is not None:
             ids.add(cid)
@@ -105,6 +106,7 @@ async def create_document(
     allowed_company_ids = _allowed_company_ids(current_user)
     if request.companyId not in allowed_company_ids:
         from app.shared.domain.exceptions import ForbiddenDomainError
+
         raise ForbiddenDomainError("You do not have access to this company")
 
     entity = DocumentEntity(
@@ -138,11 +140,14 @@ async def update_document(
     target_company_id = request.companyId if request.companyId is not None else existing.company_id
     if target_company_id not in _allowed_company_ids(current_user):
         from app.shared.domain.exceptions import ForbiddenDomainError
+
         raise ForbiddenDomainError("You do not have access to this company")
 
     updated_entity = DocumentEntity(
         title=request.title if request.title is not None else existing.title,
-        document_type=request.documentType if request.documentType is not None else existing.document_type,
+        document_type=request.documentType
+        if request.documentType is not None
+        else existing.document_type,
         file_url=request.fileUrl if request.fileUrl is not None else existing.file_url,
         company_id=target_company_id,
         listing_id=request.listingId if request.listingId is not None else existing.listing_id,

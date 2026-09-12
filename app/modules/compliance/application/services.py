@@ -1,7 +1,5 @@
 """compliance application services."""
 
-from typing import List, Optional
-
 from app.shared.domain.exceptions import NotFoundDomainError
 
 from ..domain.entities import ComplianceRecordEntity
@@ -14,10 +12,10 @@ class ComplianceRecordService:
     def __init__(self, repository: ComplianceRecordRepository):
         self.repository = repository
 
-    async def get_by_id(self, id: str) -> Optional[ComplianceRecordEntity]:
+    async def get_by_id(self, id: str) -> ComplianceRecordEntity | None:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[ComplianceRecordEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[ComplianceRecordEntity]:
         return await self.repository.list_all(page, limit)
 
     async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20):

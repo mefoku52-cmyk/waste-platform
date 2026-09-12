@@ -1,34 +1,35 @@
-"""notifications domain repositories."""
-
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
-from .entities import NotificationEntity
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.notifications.infrastructure.models import NotificationModel
 
 
 class NotificationRepository(ABC):
-    """Notification repository interface."""
+    def __init__(self, session: AsyncSession):
+        self.session = session
+        self.model = NotificationModel
 
     @abstractmethod
-    async def get_by_id(self, id: str) -> Optional[NotificationEntity]:
-        pass
+    async def get_by_id(self, id: str): ...
 
     @abstractmethod
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[NotificationEntity]:
-        pass
+    async def list_by_user_id(self, user_id, page: int = 1, limit: int = 20): ...
 
     @abstractmethod
-    async def count_all(self) -> int:
-        pass
+    async def count_by_user_id(self, user_id) -> int: ...
 
     @abstractmethod
-    async def create(self, entity: NotificationEntity) -> NotificationEntity:
-        pass
+    async def list_all(self, page: int = 1, limit: int = 20): ...
 
     @abstractmethod
-    async def update(self, entity: NotificationEntity) -> NotificationEntity:
-        pass
+    async def count_all(self) -> int: ...
 
     @abstractmethod
-    async def delete(self, id: str) -> None:
-        pass
+    async def create(self, entity): ...
+
+    @abstractmethod
+    async def update(self, entity): ...
+
+    @abstractmethod
+    async def delete(self, id: str) -> None: ...

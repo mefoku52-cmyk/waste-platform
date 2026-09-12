@@ -15,6 +15,7 @@ class SqlAlchemyUserRepository(UserRepository):
 
     async def add(self, user: User) -> None:
         from app.modules.users.infrastructure.mappers import to_model
+
         self.session.add(to_model(user))
         await self.session.commit()
 
@@ -30,7 +31,15 @@ class SqlAlchemyUserRepository(UserRepository):
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
-    async def list(self, *, status: str | None, company_id: UUID | None, q: str | None, page: int, page_size: int) -> tuple[list[User], int]:
+    async def list(
+        self,
+        *,
+        status: str | None,
+        company_id: UUID | None,
+        q: str | None,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[User], int]:
         stmt = select(UserModel)
         count_stmt = select(func.count()).select_from(UserModel)
 
@@ -48,7 +57,11 @@ class SqlAlchemyUserRepository(UserRepository):
             stmt = stmt.where(filter_expr)
             count_stmt = count_stmt.where(filter_expr)
 
-        stmt = stmt.order_by(UserModel.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
+        stmt = (
+            stmt.order_by(UserModel.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
 
         rows = (await self.session.execute(stmt)).scalars().all()
         total = (await self.session.execute(count_stmt)).scalar_one()

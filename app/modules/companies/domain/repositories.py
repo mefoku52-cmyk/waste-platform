@@ -1,33 +1,35 @@
 from abc import ABC, abstractmethod
-from uuid import UUID
 
-from app.modules.companies.domain.entities import Company
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.companies.infrastructure.models import CompanyModel
 
 
 class CompanyRepository(ABC):
-    @abstractmethod
-    async def add(self, company: Company) -> None:
-        raise NotImplementedError
+    def __init__(self, session: AsyncSession):
+        self.session = session
+        self.model = CompanyModel
 
     @abstractmethod
-    async def get_by_id(self, company_id: UUID) -> Company | None:
-        raise NotImplementedError
+    async def add(self, company) -> None: ...
+
+    @abstractmethod
+    async def get_by_id(self, company_id): ...
 
     @abstractmethod
     async def list(
         self,
         *,
-        status: str | None,
-        company_type: str | None,
-        seller_capability: bool | None,
-        buyer_capability: bool | None,
-        logistics_capability: bool | None,
-        q: str | None,
-        page: int,
-        page_size: int,
-    ) -> tuple[list[Company], int]:
-        raise NotImplementedError
+        status: str | None = None,
+        company_type: str | None = None,
+        seller_capability: bool | None = None,
+        buyer_capability: bool | None = None,
+        logistics_capability: bool | None = None,
+        q: str | None = None,
+        page: int = 1,
+        page_size: int = 20,
+        company_ids: list[int] | None = None,
+    ): ...
 
     @abstractmethod
-    async def update(self, company: Company) -> None:
-        raise NotImplementedError
+    async def update(self, company) -> None: ...

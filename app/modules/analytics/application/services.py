@@ -1,7 +1,5 @@
 """analytics application services."""
 
-from typing import List, Optional
-
 from app.shared.domain.exceptions import NotFoundDomainError
 
 from ..domain.entities import AnalyticsEventEntity
@@ -14,10 +12,10 @@ class AnalyticsEventService:
     def __init__(self, repository: AnalyticsEventRepository):
         self.repository = repository
 
-    async def get_by_id(self, id: str) -> Optional[AnalyticsEventEntity]:
+    async def get_by_id(self, id: str) -> AnalyticsEventEntity | None:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[AnalyticsEventEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[AnalyticsEventEntity]:
         return await self.repository.list_all(page, limit)
 
     async def count_all(self) -> int:

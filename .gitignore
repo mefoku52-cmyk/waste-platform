@@ -273,3 +273,12 @@ token*.txt
 .env.backup*
 .env.bak*
 .env.*bak
+# Ruff cache
+.ruff_cache/
+# Pytest cache
+.pytest_cache/
+# Type checker cache
+.ty/
+# Alembic lokálne DB
+*.db
+dev.db

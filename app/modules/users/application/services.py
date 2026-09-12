@@ -70,8 +70,18 @@ class ListUsersService:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
-    async def execute(self, *, status: str | None, company_id: UUID | None, q: str | None, page: int, page_size: int) -> tuple[list[UserDTO], int]:
-        users, total = await self.repo.list(status=status, company_id=company_id, q=q, page=page, page_size=page_size)
+    async def execute(
+        self,
+        *,
+        status: str | None,
+        company_id: UUID | None,
+        q: str | None,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[UserDTO], int]:
+        users, total = await self.repo.list(
+            status=status, company_id=company_id, q=q, page=page, page_size=page_size
+        )
         return [to_user_dto(user) for user in users], total
 
 
@@ -119,7 +129,9 @@ class TransitionUserStatusService:
         self.repo = repo
         self.clock = clock
 
-    async def execute(self, *, user_id: UUID, to_status: str, actor_user_id: UUID | None) -> UserDTO:
+    async def execute(
+        self, *, user_id: UUID, to_status: str, actor_user_id: UUID | None
+    ) -> UserDTO:
         user = await self.repo.get_by_id(user_id)
         if not user:
             raise NotFoundDomainError("User not found")

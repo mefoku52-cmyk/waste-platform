@@ -29,7 +29,13 @@ class ForbiddenDomainError(DomainError):
 class InvalidTransitionDomainError(DomainError):
     code = "invalid_transition"
 
-    def __init__(self, message: str, current_status: str, attempted_status: str, allowed_transitions: list[str]):
+    def __init__(
+        self,
+        message: str,
+        current_status: str,
+        attempted_status: str,
+        allowed_transitions: list[str],
+    ):
         self.current_status = current_status
         self.attempted_status = attempted_status
         self.allowed_transitions = allowed_transitions

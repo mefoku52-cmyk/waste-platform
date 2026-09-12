@@ -1,6 +1,7 @@
 """analytics API router."""
 
-from fastapi import APIRouter, Depends, HTTPException, status as http_status
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi import status as http_status
 
 from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
 
@@ -61,7 +62,10 @@ async def list_analytics(
 async def get_analytic(id: str, service: AnalyticsEventService = Depends(get_analytics_service)):
     entity = await service.get_by_id(id)
     if entity is None:
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="AnalyticsEvent not found")
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="AnalyticsEvent not found",
+        )
     return AnalyticsEventResponse(data=_to_data(entity))
 
 
@@ -87,7 +91,9 @@ async def create_analytic(
     try:
         created = await service.create(entity)
     except ValidationDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+        raise HTTPException(
+            status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message
+        ) from exc
     return AnalyticsEventResponse(data=_to_data(created))
 
 
@@ -104,13 +110,18 @@ async def update_analytic(
 ):
     existing = await service.get_by_id(id)
     if existing is None:
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="AnalyticsEvent not found")
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="AnalyticsEvent not found",
+        )
     updated_entity = AnalyticsEventEntity(
         event_type=request.eventType if request.eventType is not None else existing.event_type,
         entity_type=request.entityType if request.entityType is not None else existing.entity_type,
         entity_id=request.entityId if request.entityId is not None else existing.entity_id,
         company_id=request.companyId if request.companyId is not None else existing.company_id,
-        event_metadata=request.eventMetadata if request.eventMetadata is not None else existing.event_metadata,
+        event_metadata=request.eventMetadata
+        if request.eventMetadata is not None
+        else existing.event_metadata,
         recorded_at=request.recordedAt if request.recordedAt is not None else existing.recorded_at,
     )
     try:
@@ -118,7 +129,9 @@ async def update_analytic(
     except NotFoundDomainError as exc:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
     except ValidationDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+        raise HTTPException(
+            status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message
+        ) from exc
     return AnalyticsEventResponse(data=_to_data(result))
 
 

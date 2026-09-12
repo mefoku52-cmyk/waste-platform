@@ -8,7 +8,9 @@ for i, r in enumerate(app.routes, 1):
     path = getattr(r, "path", None)
     name = getattr(r, "name", None)
     methods = getattr(r, "methods", None)
-    print(f"[{i}] {cls} path={path!r} name={name!r} methods={sorted(methods) if methods else None}")
+    print(
+        f"[{i}] {cls} path={path!r} name={name!r} methods={sorted(methods) if methods else None}"
+    )
 
 print()
 print("=== NESTED ROUTES ===")
@@ -22,4 +24,6 @@ for i, r in enumerate(app.routes, 1):
         npath = getattr(nr, "path", None)
         nname = getattr(nr, "name", None)
         nmethods = getattr(nr, "methods", None)
-        print(f"  [{j}] {ncls} path={npath!r} name={nname!r} methods={sorted(nmethods) if nmethods else None}")
+        print(
+            f"  [{j}] {ncls} path={npath!r} name={nname!r} methods={sorted(nmethods) if nmethods else None}"
+        )

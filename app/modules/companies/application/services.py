@@ -5,15 +5,24 @@ from app.modules.companies.application.mappers import to_company_dto
 from app.modules.companies.domain.entities import Company
 from app.modules.companies.domain.enums import CompanyStatus, CompanyType
 from app.modules.companies.domain.repositories import CompanyRepository
+from app.modules.company_memberships.domain.entities import CompanyMembership
+from app.modules.company_memberships.domain.enums import (
+    CompanyMembershipRole,
+    CompanyMembershipStatus,
+)
 from app.shared.application.clock import Clock
 from app.shared.application.uuid_generator import UuidGenerator
 from app.shared.domain.exceptions import NotFoundDomainError
-from app.modules.company_memberships.domain.entities import CompanyMembership
-from app.modules.company_memberships.domain.enums import CompanyMembershipRole, CompanyMembershipStatus
 
 
 class CreateCompanyService:
-    def __init__(self, repo: CompanyRepository, membership_repo, uuid_generator: UuidGenerator, clock: Clock):
+    def __init__(
+        self,
+        repo: CompanyRepository,
+        membership_repo,
+        uuid_generator: UuidGenerator,
+        clock: Clock,
+    ):
         self.repo = repo
         self.membership_repo = membership_repo
         self.uuid_generator = uuid_generator
@@ -205,7 +214,9 @@ class TransitionCompanyStatusService:
         self.repo = repo
         self.clock = clock
 
-    async def execute(self, *, company_id: UUID, to_status: str, actor_user_id: UUID | None) -> CompanyDTO:
+    async def execute(
+        self, *, company_id: UUID, to_status: str, actor_user_id: UUID | None
+    ) -> CompanyDTO:
         company = await self.repo.get_by_id(company_id)
         if not company:
             raise NotFoundDomainError("Company not found")

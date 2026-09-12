@@ -69,9 +69,7 @@ class PasswordResetService:
             return
 
         logger.error("Password reset unavailable: Redis is not reachable")
-        raise ValidationDomainError(
-            "Obnova hesla je dočasne nedostupná. Skúste to neskôr."
-        )
+        raise ValidationDomainError("Obnova hesla je dočasne nedostupná. Skúste to neskôr.")
 
     def _pop_token(self, token: str) -> str | None:
         key = RESET_PREFIX + _token_digest(token)
@@ -108,9 +106,11 @@ class PasswordResetService:
         nl = chr(10)
         body = (
             "Obnova hesla CMEP"
-            + nl + nl
+            + nl
+            + nl
             + f"Token (platný 30 min): {token}"
-            + nl + nl
+            + nl
+            + nl
             + f"Link: {base}/reset-password?token={token}"
             + nl
         )
@@ -127,9 +127,7 @@ class PasswordResetService:
         )
 
         if not token or len(new_password) < 8:
-            raise ValidationDomainError(
-                "Neplatný token alebo heslo (min. 8 znakov)."
-            )
+            raise ValidationDomainError("Neplatný token alebo heslo (min. 8 znakov).")
         user_id = self._pop_token(token)
         if not user_id:
             raise ValidationDomainError("Token je neplatný alebo expirovaný.")

@@ -29,7 +29,9 @@ def to_domain(model: CompanyModel) -> Company:
         logistics_capability=model.logistics_capability,
         verification_submitted_at=model.verification_submitted_at,
         verification_reviewed_at=model.verification_reviewed_at,
-        verification_reviewed_by_user_id=UUID(model.verification_reviewed_by_user_id) if model.verification_reviewed_by_user_id else None,
+        verification_reviewed_by_user_id=UUID(model.verification_reviewed_by_user_id)
+        if model.verification_reviewed_by_user_id
+        else None,
         verified_at=model.verified_at,
         verified_by_user_id=UUID(model.verified_by_user_id) if model.verified_by_user_id else None,
         rejected_at=model.rejected_at,
@@ -65,7 +67,9 @@ def to_model(entity: Company) -> CompanyModel:
         logistics_capability=entity.logistics_capability,
         verification_submitted_at=entity.verification_submitted_at,
         verification_reviewed_at=entity.verification_reviewed_at,
-        verification_reviewed_by_user_id=str(entity.verification_reviewed_by_user_id) if entity.verification_reviewed_by_user_id else None,
+        verification_reviewed_by_user_id=str(entity.verification_reviewed_by_user_id)
+        if entity.verification_reviewed_by_user_id
+        else None,
         verified_at=entity.verified_at,
         verified_by_user_id=str(entity.verified_by_user_id) if entity.verified_by_user_id else None,
         rejected_at=entity.rejected_at,

@@ -49,12 +49,25 @@ class Company(AuditFields):
 
     def transition_status(self, to_status: CompanyStatus) -> None:
         allowed = {
-            CompanyStatus.DRAFT: {CompanyStatus.VERIFICATION_SUBMITTED, CompanyStatus.INACTIVE},
-            CompanyStatus.VERIFICATION_SUBMITTED: {CompanyStatus.VERIFIED, CompanyStatus.REJECTED, CompanyStatus.DRAFT},
+            CompanyStatus.DRAFT: {
+                CompanyStatus.VERIFICATION_SUBMITTED,
+                CompanyStatus.INACTIVE,
+            },
+            CompanyStatus.VERIFICATION_SUBMITTED: {
+                CompanyStatus.VERIFIED,
+                CompanyStatus.REJECTED,
+                CompanyStatus.DRAFT,
+            },
             CompanyStatus.VERIFIED: {CompanyStatus.SUSPENDED, CompanyStatus.INACTIVE},
-            CompanyStatus.REJECTED: {CompanyStatus.DRAFT, CompanyStatus.VERIFICATION_SUBMITTED, CompanyStatus.INACTIVE},
+            CompanyStatus.REJECTED: {
+                CompanyStatus.DRAFT,
+                CompanyStatus.VERIFICATION_SUBMITTED,
+                CompanyStatus.INACTIVE,
+            },
             CompanyStatus.SUSPENDED: {CompanyStatus.VERIFIED, CompanyStatus.INACTIVE},
             CompanyStatus.INACTIVE: set(),
         }
-        ensure_transition(self.status.value, to_status.value, {s.value for s in allowed[self.status]})
+        ensure_transition(
+            self.status.value, to_status.value, {s.value for s in allowed[self.status]}
+        )
         self.status = to_status

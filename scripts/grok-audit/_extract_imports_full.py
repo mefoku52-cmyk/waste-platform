@@ -35,12 +35,14 @@ for path in sorted(all_imports):
     for mod in all_imports[path]:
         print(f"  - {mod}")
 
-external = sorted({
-    mod
-    for mods in all_imports.values()
-    for mod in mods
-    if mod not in stdlib and mod != "app"
-})
+external = sorted(
+    {
+        mod
+        for mods in all_imports.values()
+        for mod in mods
+        if mod not in stdlib and mod != "app"
+    }
+)
 print("\n=== EXTERNE IMPORTY UNIKATNE ===")
 for mod in external:
     print(mod)

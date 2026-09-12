@@ -1,24 +1,38 @@
-from logging.config import fileConfig
 import os
+from logging.config import fileConfig
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
-from alembic import context
 
-from app.shared.infrastructure.db.base import Base
+from app.modules.admin.infrastructure import models as admin_models  # noqa: F401
+from app.modules.analytics.infrastructure import (
+    models as analytics_models,  # noqa: F401
+)
+from app.modules.auth.infrastructure import models as auth_models  # noqa: F401
+from app.modules.companies.infrastructure import (
+    models as companies_models,  # noqa: F401
+)
+from app.modules.company_memberships.infrastructure import (
+    models as memberships_models,  # noqa: F401
+)
+from app.modules.compliance.infrastructure import (
+    models as compliance_models,  # noqa: F401
+)
+from app.modules.documents.infrastructure import (
+    models as documents_models,  # noqa: F401
+)
+from app.modules.inquiries.infrastructure import (
+    models as inquiries_models,  # noqa: F401
+)
+from app.modules.listings.infrastructure import models as listings_models  # noqa: F401
+from app.modules.notifications.infrastructure import (
+    models as notifications_models,  # noqa: F401
+)
 
 # Import all SQLAlchemy models so Base.metadata is complete.
 from app.modules.users.infrastructure import models as users_models  # noqa: F401
-from app.modules.auth.infrastructure import models as auth_models  # noqa: F401
-from app.modules.companies.infrastructure import models as companies_models  # noqa: F401
-from app.modules.company_memberships.infrastructure import models as memberships_models  # noqa: F401
-from app.modules.listings.infrastructure import models as listings_models  # noqa: F401
-from app.modules.inquiries.infrastructure import models as inquiries_models  # noqa: F401
-from app.modules.documents.infrastructure import models as documents_models  # noqa: F401
-from app.modules.compliance.infrastructure import models as compliance_models  # noqa: F401
-from app.modules.notifications.infrastructure import models as notifications_models  # noqa: F401
-from app.modules.analytics.infrastructure import models as analytics_models  # noqa: F401
-from app.modules.admin.infrastructure import models as admin_models  # noqa: F401
+from app.shared.infrastructure.db.base import Base
 
 config = context.config
 
@@ -73,6 +87,7 @@ async def run_async_migrations():
 
 def run_migrations_online() -> None:
     import asyncio
+
     asyncio.run(run_async_migrations())
 
 

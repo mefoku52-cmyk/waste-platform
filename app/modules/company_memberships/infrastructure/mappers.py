@@ -1,7 +1,10 @@
 from uuid import UUID
 
 from app.modules.company_memberships.domain.entities import CompanyMembership
-from app.modules.company_memberships.domain.enums import CompanyMembershipRole, CompanyMembershipStatus
+from app.modules.company_memberships.domain.enums import (
+    CompanyMembershipRole,
+    CompanyMembershipStatus,
+)
 from app.modules.company_memberships.infrastructure.models import CompanyMembershipModel
 
 

@@ -1,9 +1,10 @@
 """inquiries API router."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Query, status as http_status
+from fastapi import APIRouter, Depends, Query
+from fastapi import status as http_status
 
 from app.shared.application.side_effects import notify_company_members, write_audit
 from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
@@ -138,7 +139,7 @@ async def create_inquiry(
     service: InquiryService = Depends(get_inquiries_service),
     session=Depends(get_db_session),
 ):
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     entity = InquiryEntity(
         id=uuid4(),
         listing_id=request.listingId,
@@ -167,6 +168,7 @@ async def create_inquiry(
         )
 
         from sqlalchemy import text
+
         r = await session.execute(
             text("SELECT company_id FROM listings WHERE id = :id"),
             {"id": str(created.listing_id)},
@@ -202,7 +204,11 @@ async def update_inquiry_status(
 ):
     company_ids = {str(x) for x in _user_company_ids(current_user)}
 
-    if request.status not in (InquiryStatus.OPEN, InquiryStatus.ANSWERED, InquiryStatus.CLOSED):
+    if request.status not in (
+        InquiryStatus.OPEN,
+        InquiryStatus.ANSWERED,
+        InquiryStatus.CLOSED,
+    ):
         raise ValidationDomainError("Invalid inquiry status transition target")
 
     try:
@@ -238,8 +244,12 @@ async def update_inquiry(
         listing_id=request.listingId if request.listingId is not None else existing.listing_id,
         company_id=request.companyId if request.companyId is not None else existing.company_id,
         message=request.message if request.message is not None else existing.message,
-        contact_email=request.contactEmail if request.contactEmail is not None else existing.contact_email,
-        contact_phone=request.contactPhone if request.contactPhone is not None else existing.contact_phone,
+        contact_email=request.contactEmail
+        if request.contactEmail is not None
+        else existing.contact_email,
+        contact_phone=request.contactPhone
+        if request.contactPhone is not None
+        else existing.contact_phone,
         status=request.status if request.status is not None else existing.status,
         created_at=existing.created_at,
         updated_at=existing.updated_at,

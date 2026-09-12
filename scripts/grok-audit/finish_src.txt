@@ -1,0 +1,1365 @@
+===== META =====
+DATE=2026-09-09T16:29:40+02:00
+PWD=/data/data/com.termux/files/home/waste-platform
+HEAD=9060a88
+BRANCH=chore/auto-fix-baseline-20260909-050735
+
+===== LOCATE =====
+app/__init__.py
+app/core/__init__.py
+app/core/config.py
+app/core/http_exception_handlers.py
+app/main.py
+app/modules/__init__.py
+app/modules/admin/__init__.py
+app/modules/admin/application/__init__.py
+app/modules/admin/application/dto.py
+app/modules/admin/application/services.py
+app/modules/admin/domain/__init__.py
+app/modules/admin/domain/entities.py
+app/modules/admin/domain/enums.py
+app/modules/admin/domain/repositories.py
+app/modules/admin/infrastructure/__init__.py
+app/modules/admin/infrastructure/mappers.py
+app/modules/admin/infrastructure/models.py
+app/modules/admin/infrastructure/repositories.py
+app/modules/admin/presentation/__init__.py
+app/modules/admin/presentation/dependencies.py
+app/modules/admin/presentation/mappers.py
+app/modules/admin/presentation/router.py
+app/modules/admin/presentation/schemas.py
+app/modules/admin/router.py
+app/modules/admin/schemas.py
+app/modules/admin/service.py
+app/modules/analytics/__init__.py
+app/modules/analytics/application/__init__.py
+app/modules/analytics/application/dto.py
+app/modules/analytics/application/services.py
+app/modules/analytics/domain/__init__.py
+app/modules/analytics/domain/entities.py
+app/modules/analytics/domain/enums.py
+app/modules/analytics/domain/repositories.py
+app/modules/analytics/infrastructure/__init__.py
+app/modules/analytics/infrastructure/mappers.py
+app/modules/analytics/infrastructure/models.py
+app/modules/analytics/infrastructure/repositories.py
+app/modules/analytics/presentation/__init__.py
+app/modules/analytics/presentation/dependencies.py
+app/modules/analytics/presentation/mappers.py
+app/modules/analytics/presentation/router.py
+app/modules/analytics/presentation/schemas.py
+app/modules/analytics/router.py
+app/modules/analytics/schemas.py
+app/modules/analytics/service.py
+app/modules/auth/__init__.py
+app/modules/auth/application/__init__.py
+app/modules/auth/application/dto.py
+app/modules/auth/application/password_reset.py
+app/modules/auth/application/services.py
+app/modules/auth/domain/__init__.py
+app/modules/auth/domain/entities.py
+app/modules/auth/domain/repositories.py
+app/modules/auth/infrastructure/__init__.py
+app/modules/auth/infrastructure/mappers.py
+app/modules/auth/infrastructure/models.py
+app/modules/auth/infrastructure/repositories.py
+app/modules/auth/presentation/__init__.py
+app/modules/auth/presentation/dependencies.py
+app/modules/auth/presentation/router.py
+app/modules/auth/presentation/schemas.py
+app/modules/companies/__init__.py
+app/modules/companies/application/__init__.py
+app/modules/companies/application/dto.py
+app/modules/companies/application/mappers.py
+app/modules/companies/application/services.py
+app/modules/companies/domain/__init__.py
+app/modules/companies/domain/entities.py
+app/modules/companies/domain/enums.py
+app/modules/companies/domain/repositories.py
+app/modules/companies/infrastructure/__init__.py
+app/modules/companies/infrastructure/mappers.py
+app/modules/companies/infrastructure/models.py
+app/modules/companies/infrastructure/repositories.py
+app/modules/companies/presentation/__init__.py
+app/modules/companies/presentation/dependencies.py
+app/modules/companies/presentation/mappers.py
+app/modules/companies/presentation/router.py
+app/modules/companies/presentation/schemas.py
+app/modules/company_memberships/__init__.py
+app/modules/company_memberships/application/__init__.py
+app/modules/company_memberships/application/dto.py
+app/modules/company_memberships/application/mappers.py
+app/modules/company_memberships/application/services.py
+app/modules/company_memberships/domain/__init__.py
+app/modules/company_memberships/domain/entities.py
+app/modules/company_memberships/domain/enums.py
+app/modules/company_memberships/domain/repositories.py
+app/modules/company_memberships/infrastructure/__init__.py
+app/modules/company_memberships/infrastructure/mappers.py
+app/modules/company_memberships/infrastructure/models.py
+app/modules/company_memberships/infrastructure/repositories.py
+app/modules/company_memberships/presentation/__init__.py
+app/modules/company_memberships/presentation/dependencies.py
+app/modules/company_memberships/presentation/mappers.py
+app/modules/company_memberships/presentation/router.py
+app/modules/company_memberships/presentation/schemas.py
+app/modules/compliance/__init__.py
+app/modules/compliance/application/__init__.py
+app/modules/compliance/application/dto.py
+app/modules/compliance/application/services.py
+app/modules/compliance/domain/__init__.py
+app/modules/compliance/domain/entities.py
+app/modules/compliance/domain/enums.py
+app/modules/compliance/domain/repositories.py
+app/modules/compliance/infrastructure/__init__.py
+app/modules/compliance/infrastructure/mappers.py
+app/modules/compliance/infrastructure/models.py
+app/modules/compliance/infrastructure/repositories.py
+app/modules/compliance/presentation/__init__.py
+app/modules/compliance/presentation/dependencies.py
+app/modules/compliance/presentation/mappers.py
+app/modules/compliance/presentation/router.py
+app/modules/compliance/presentation/schemas.py
+app/modules/compliance/router.py
+app/modules/compliance/schemas.py
+app/modules/compliance/service.py
+app/modules/documents/__init__.py
+app/modules/documents/application/__init__.py
+app/modules/documents/application/dto.py
+app/modules/documents/application/services.py
+app/modules/documents/domain/__init__.py
+app/modules/documents/domain/entities.py
+app/modules/documents/domain/enums.py
+app/modules/documents/domain/repositories.py
+app/modules/documents/infrastructure/__init__.py
+app/modules/documents/infrastructure/mappers.py
+app/modules/documents/infrastructure/models.py
+app/modules/documents/infrastructure/repositories.py
+app/modules/documents/presentation/__init__.py
+app/modules/documents/presentation/dependencies.py
+app/modules/documents/presentation/mappers.py
+app/modules/documents/presentation/router.py
+app/modules/documents/presentation/schemas.py
+app/modules/documents/router.py
+app/modules/documents/schemas.py
+app/modules/documents/service.py
+app/modules/inquiries/__init__.py
+app/modules/inquiries/application/__init__.py
+app/modules/inquiries/application/dto.py
+app/modules/inquiries/application/services.py
+app/modules/inquiries/domain/__init__.py
+app/modules/inquiries/domain/entities.py
+app/modules/inquiries/domain/enums.py
+app/modules/inquiries/domain/repositories.py
+app/modules/inquiries/infrastructure/__init__.py
+app/modules/inquiries/infrastructure/mappers.py
+app/modules/inquiries/infrastructure/models.py
+app/modules/inquiries/infrastructure/repositories.py
+app/modules/inquiries/presentation/__init__.py
+app/modules/inquiries/presentation/dependencies.py
+app/modules/inquiries/presentation/mappers.py
+app/modules/inquiries/presentation/router.py
+app/modules/inquiries/presentation/schemas.py
+app/modules/inquiries/router.py
+app/modules/inquiries/schemas.py
+app/modules/inquiries/service.py
+app/modules/listings/__init__.py
+app/modules/listings/application/__init__.py
+app/modules/listings/application/dto.py
+app/modules/listings/application/services.py
+app/modules/listings/domain/__init__.py
+app/modules/listings/domain/entities.py
+app/modules/listings/domain/enums.py
+app/modules/listings/domain/repositories.py
+app/modules/listings/infrastructure/__init__.py
+app/modules/listings/infrastructure/mappers.py
+app/modules/listings/infrastructure/models.py
+app/modules/listings/infrastructure/repositories.py
+app/modules/listings/presentation/__init__.py
+app/modules/listings/presentation/dependencies.py
+app/modules/listings/presentation/mappers.py
+app/modules/listings/presentation/router.py
+app/modules/listings/presentation/schemas.py
+app/modules/notifications/__init__.py
+app/modules/notifications/application/__init__.py
+app/modules/notifications/application/dto.py
+app/modules/notifications/application/services.py
+app/modules/notifications/domain/__init__.py
+app/modules/notifications/domain/entities.py
+app/modules/notifications/domain/enums.py
+app/modules/notifications/domain/repositories.py
+app/modules/notifications/infrastructure/__init__.py
+app/modules/notifications/infrastructure/mappers.py
+app/modules/notifications/infrastructure/models.py
+app/modules/notifications/infrastructure/repositories.py
+app/modules/notifications/presentation/__init__.py
+app/modules/notifications/presentation/dependencies.py
+app/modules/notifications/presentation/mappers.py
+app/modules/notifications/presentation/router.py
+app/modules/notifications/presentation/schemas.py
+app/modules/notifications/router.py
+app/modules/notifications/schemas.py
+app/modules/notifications/service.py
+app/modules/uploads/__init__.py
+app/modules/uploads/presentation/__init__.py
+app/modules/uploads/presentation/router.py
+app/modules/uploads/presentation/schemas.py
+app/modules/users/__init__.py
+app/modules/users/application/__init__.py
+app/modules/users/application/dto.py
+app/modules/users/application/mappers.py
+app/modules/users/application/services.py
+app/modules/users/domain/__init__.py
+app/modules/users/domain/entities.py
+app/modules/users/domain/enums.py
+app/modules/users/domain/repositories.py
+app/modules/users/infrastructure/__init__.py
+app/modules/users/infrastructure/mappers.py
+app/modules/users/infrastructure/models.py
+app/modules/users/infrastructure/repositories.py
+app/modules/users/presentation/__init__.py
+app/modules/users/presentation/dependencies.py
+app/modules/users/presentation/mappers.py
+app/modules/users/presentation/router.py
+app/modules/users/presentation/schemas.py
+app/shared/__init__.py
+app/shared/application/__init__.py
+app/shared/application/clock.py
+app/shared/application/interfaces.py
+app/shared/application/passwords.py
+app/shared/application/side_effects.py
+app/shared/application/uuid_generator.py
+app/shared/domain/__init__.py
+app/shared/domain/base.py
+app/shared/domain/exceptions.py
+app/shared/domain/ports/__init__.py
+app/shared/domain/ports/clock.py
+app/shared/domain/status_transition.py
+app/shared/infrastructure/__init__.py
+app/shared/infrastructure/database.py
+app/shared/infrastructure/db/__init__.py
+app/shared/infrastructure/db/base.py
+app/shared/infrastructure/db/register_models.py
+app/shared/infrastructure/db/session.py
+app/shared/infrastructure/email/sender.py
+app/shared/infrastructure/rate_limit.py
+app/shared/infrastructure/rate_limiter.py
+app/shared/infrastructure/security/__init__.py
+app/shared/infrastructure/security/jwt_exceptions.py
+app/shared/infrastructure/security/jwt_revocation_store.py
+app/shared/infrastructure/security/jwt_service.py
+app/shared/presentation/__init__.py
+app/shared/presentation/api_router.py
+app/shared/presentation/auth_dependencies.py
+app/shared/presentation/error_schemas.py
+app/shared/presentation/exception_handlers.py
+app/shared/presentation/health_router.py
+app/shared/presentation/metrics_router.py
+app/shared/presentation/schemas.py
+app/tests/__init__.py
+app/tests/conftest.py
+app/tests/integration/__init__.py
+app/tests/integration/test_auth_api.py
+app/tests/integration/test_companies_api.py
+app/tests/integration/test_users_api.py
+app/tests/unit/__init__.py
+app/tests/unit/auth/__init__.py
+app/tests/unit/auth/test_auth_services.py
+app/tests/unit/auth/test_refresh_session_entity.py
+app/tests/unit/companies/__init__.py
+app/tests/unit/companies/test_company_entity.py
+app/tests/unit/companies/test_company_services.py
+app/tests/unit/test_auth.py
+app/tests/unit/test_companies.py
+app/tests/unit/test_documents.py
+app/tests/unit/test_inquiries.py
+app/tests/unit/test_listings.py
+app/tests/unit/test_uploads.py
+app/tests/unit/test_users.py
+app/tests/unit/users/__init__.py
+app/tests/unit/users/test_user_entity.py
+app/tests/unit/users/test_user_services.py
+app/worker/__init__.py
+
+--- hits ---
+app/main.py:61:    @app.get("/health")
+app/main.py:62:    async def health():
+app/shared/presentation/health_router.py:5:@router.get("/health")
+app/shared/presentation/health_router.py:6:async def healthcheck():
+app/modules/auth/application/password_reset.py:71:        logger.error("Password reset unavailable: Redis is not reachable")
+app/modules/auth/presentation/router.py:97:    "/forgot-password",
+app/modules/auth/presentation/router.py:100:async def forgot_password(
+
+===== FILE app/core/config.py =====
+BYTES=6857
+-----BEGIN-----
+from __future__ import annotations
+
+import json
+from typing import List, Union
+
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
+
+
+class JWTSettings(BaseModel):
+    secret_key: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 14
+    secret: str = ""
+    expire_minutes: int = 60
+
+    def model_post_init(self, __context) -> None:
+        if not self.secret:
+            object.__setattr__(self, "secret", self.secret_key)
+
+
+class RedisSettings(BaseModel):
+    url: str = "memory://"
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    enabled: bool = False
+
+
+class RateLimitSettings(BaseModel):
+    enabled: bool = False
+    limit: int = 10
+    period: int = 60
+    requests: int = 100
+    window_seconds: int = 60
+
+
+class DatabaseSettings(BaseModel):
+    url: str = SQLITE_DEFAULT
+    async_url: str = SQLITE_DEFAULT
+    echo: bool = False
+    pool_size: int = 5
+    pool_pre_ping: bool = True
+
+    def model_post_init(self, __context) -> None:
+        if not self.async_url:
+            object.__setattr__(self, "async_url", self.url)
+
+
+def _is_placeholder_db_value(raw: str | None) -> bool:
+    value = str(raw or "").strip()
+    return (
+        not value
+        or "{" in value
+        or "}" in value
+        or "POSTGRES_" in value
+        or value.lower() in {"none", "null", "undefined"}
+    )
+
+
+def _normalize_database_url(raw: str) -> str:
+    value = raw.strip()
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("sqlite:///"):
+        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    return value
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+        populate_by_name=True,
+    )
+
+    app_name: str = "CMEP Platform"
+    app_version: str = "0.1.0"
+    app_description: str = "CMEP - Platform for circular materials exchange"
+
+    app_env: str = Field(default="development", alias="APP_ENV")
+    DEBUG: bool = True
+    ENABLE_PUBLIC_DOCS: bool = True
+    ENABLE_METRICS: bool = False
+    METRICS_ALLOWED_IPS: str = "127.0.0.1,::1,localhost"
+    PLATFORM_ADMIN_EMAILS: str = "admin@cmep-bootstrap.dev"
+    ROOT_PATH: str = ""
+
+    HOST: str = "0.0.0.0"
+    PORT: int = 8001
+
+    CORS_ORIGINS: Union[List[str], str] = Field(
+        default_factory=lambda: [
+            "http://127.0.0.1:3001",
+            "http://localhost:3001",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    )
+
+    DATABASE_URL: str = SQLITE_DEFAULT
+
+    REDIS_URL: str = ""
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+
+    jwt: JWTSettings | None = None
+    redis: RedisSettings = Field(default_factory=RedisSettings)
+    rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
+    database: DatabaseSettings | None = None
+
+    def model_post_init(self, __context) -> None:
+        redis_url = str(getattr(self, "REDIS_URL", "") or "").strip()
+        redis_host = str(getattr(self, "REDIS_HOST", "") or "").strip()
+        redis_port = int(getattr(self, "REDIS_PORT", 6379))
+        redis_db = int(getattr(self, "REDIS_DB", 0))
+
+        new_redis = self.redis.model_copy(
+            update={
+                "url": redis_url or self.redis.url,
+                "host": redis_host or self.redis.host,
+                "port": redis_port,
+                "db": redis_db,
+                "enabled": True if redis_url else self.redis.enabled,
+            }
+        )
+        object.__setattr__(self, "redis", new_redis)
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
+    NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    EMAIL_FROM: str = ""
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
+
+    @property
+    def is_development(self) -> bool:
+        return self.app_env.lower() in {"development", "dev", "local", "test"}
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors(cls, value):
+        if value is None or value == "":
+            return ["http://127.0.0.1:3001", "http://localhost:3001"]
+        if isinstance(value, list):
+            return value
+
+        text = str(value).strip()
+        if text.startswith("["):
+            return json.loads(text)
+
+        return [item.strip() for item in text.split(",") if item.strip()]
+
+    def model_post_init(self, __context) -> None:
+        raw_db = str(self.DATABASE_URL or "").strip()
+
+        if _is_placeholder_db_value(raw_db):
+            if self.is_development:
+                database_url = SQLITE_DEFAULT
+            else:
+                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+        else:
+            database_url = _normalize_database_url(raw_db)
+
+        object.__setattr__(self, "DATABASE_URL", database_url)
+        object.__setattr__(
+            self,
+            "database",
+            DatabaseSettings(
+                url=database_url,
+                async_url=database_url,
+            ),
+        )
+
+        if self.jwt is None:
+            object.__setattr__(
+                self,
+                "jwt",
+                JWTSettings(
+                    secret_key=self.JWT_SECRET_KEY,
+                    secret=self.JWT_SECRET_KEY,
+                    algorithm=self.JWT_ALGORITHM,
+                    access_token_expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    refresh_token_expire_days=self.REFRESH_TOKEN_EXPIRE_DAYS,
+                ),
+            )
+
+        redis_url = str(self.REDIS_URL or "").strip()
+        object.__setattr__(
+            self,
+            "redis",
+            self.redis.model_copy(
+                update={
+                    "url": redis_url or self.redis.url,
+                    "host": str(self.REDIS_HOST or "") or self.redis.host,
+                    "port": int(self.REDIS_PORT),
+                    "db": int(self.REDIS_DB),
+                    "enabled": bool(redis_url),
+                }
+            ),
+        )
+
+
+settings = Settings()
+
+-----END-----
+
+===== FILE app/main.py =====
+BYTES=4041
+-----BEGIN-----
+from __future__ import annotations
+
+import importlib
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.core.http_exception_handlers import register_http_exception_handlers
+
+logger = logging.getLogger("cmep.main")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(
+        "Starting CMEP app env=%s docs=%s db=%s",
+        settings.app_env,
+        settings.ENABLE_PUBLIC_DOCS,
+        settings.DATABASE_URL,
+    )
+    yield
+    logger.info("Stopping CMEP app")
+
+
+def _cors_origins() -> list[str]:
+    if isinstance(settings.CORS_ORIGINS, list):
+        return settings.CORS_ORIGINS
+    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
+        return [settings.CORS_ORIGINS.strip()]
+    return ["http://127.0.0.1:3001", "http://localhost:3001"]
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        description=settings.app_description,
+        version=settings.app_version,
+        docs_url="/docs" if settings.ENABLE_PUBLIC_DOCS else None,
+        redoc_url="/redoc" if settings.ENABLE_PUBLIC_DOCS else None,
+        openapi_url="/openapi.json" if settings.ENABLE_PUBLIC_DOCS else None,
+        root_path=settings.ROOT_PATH or "",
+        lifespan=lifespan,
+    )
+
+    register_http_exception_handlers(app)
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    mounted: list[str] = []
+    skipped: list[dict[str, str]] = []
+
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "service": settings.app_name,
+            "version": settings.app_version,
+            "env": settings.app_env,
+            "database_url": settings.DATABASE_URL,
+            "mounted_routers": mounted,
+            "skipped_routers": skipped,
+        }
+
+    try:
+        from app.shared.presentation.api_router import api_router
+
+        pref = getattr(api_router, "prefix", "") or ""
+        if pref.startswith("/api"):
+            app.include_router(api_router)
+        else:
+            app.include_router(api_router, prefix="/api/v1")
+        mounted.append("shared.api_router")
+    except Exception as e:
+        logger.exception("Failed to include shared.api_router")
+        skipped.append({"module": "shared.api_router", "error": str(e)})
+
+    module_routers = [
+        "app.modules.auth.presentation.router",
+        "app.modules.users.presentation.router",
+        "app.modules.companies.presentation.router",
+        "app.modules.company_memberships.presentation.router",
+        "app.modules.listings.presentation.router",
+        "app.modules.inquiries.presentation.router",
+        "app.modules.documents.presentation.router",
+        "app.modules.compliance.presentation.router",
+        "app.modules.notifications.presentation.router",
+        "app.modules.analytics.presentation.router",
+        "app.modules.admin.presentation.router",
+        "app.modules.uploads.presentation.router",
+    ]
+
+    for mod_path in module_routers:
+        tag = mod_path.split(".")[2]
+        try:
+            mod = importlib.import_module(mod_path)
+            router = getattr(mod, "router", None)
+            if router is None:
+                skipped.append({"module": tag, "error": "router attribute missing"})
+                logger.warning("Router missing for module=%s", tag)
+                continue
+
+            app.include_router(router, prefix="/api/v1")
+            mounted.append(tag)
+        except Exception as ex:
+            logger.exception("Failed to include router module=%s", tag)
+            skipped.append({"module": tag, "error": str(ex)})
+
+    app.state.mounted_routers = mounted
+    app.state.skipped_routers = skipped
+
+    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+
+    return app
+
+
+app = create_app()
+
+-----END-----
+
+===== CANDIDATE FILES FROM HITS =====
+===== FILE app/modules/auth/application/password_reset.py =====
+BYTES=4457
+-----BEGIN-----
+"""Password reset via Redis token + optional SMTP."""
+
+from __future__ import annotations
+
+import hashlib
+import logging
+import secrets
+from uuid import UUID
+
+from app.core.config import settings
+from app.modules.users.domain.repositories import UserRepository
+from app.shared.application.passwords import PasswordService
+from app.shared.infrastructure.email.sender import send_email
+from app.shared.infrastructure.security.jwt_service import JwtService
+
+logger = logging.getLogger(__name__)
+
+RESET_PREFIX = "pwdreset:"
+RESET_TTL_SECONDS = 60 * 30
+
+
+def _token_digest(token: str) -> str:
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+class PasswordResetService:
+    _mem: dict = {}
+
+    def __init__(
+        self,
+        user_repo: UserRepository,
+        password_service: PasswordService,
+        jwt_service: JwtService,
+        redis_client=None,
+    ):
+        self.user_repo = user_repo
+        self.password_service = password_service
+        self.jwt_service = jwt_service
+        self.redis = redis_client
+
+    def _get_redis(self):
+        if self.redis is not None:
+            return self.redis
+        try:
+            import redis
+
+            host = getattr(settings.redis, "host", "localhost")
+            port = getattr(settings.redis, "port", 6379)
+            url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
+            self.redis = redis.from_url(url, decode_responses=True)
+            self.redis.ping()
+            return self.redis
+        except Exception:
+            self.redis = None
+            return None
+
+    def _store_token(self, token: str, user_id: str) -> None:
+        from app.shared.domain.exceptions import ValidationDomainError
+
+        key = RESET_PREFIX + _token_digest(token)
+        r = self._get_redis()
+        if r is not None:
+            r.set(key, user_id, ex=RESET_TTL_SECONDS)
+            return
+
+        if settings.is_development:
+            logger.warning("Password reset using in-memory fallback storage")
+            PasswordResetService._mem[key] = user_id
+            return
+
+        logger.error("Password reset unavailable: Redis is not reachable")
+        raise ValidationDomainError(
+            "Obnova hesla je dočasne nedostupná. Skúste to neskôr."
+        )
+
+    def _pop_token(self, token: str) -> str | None:
+        key = RESET_PREFIX + _token_digest(token)
+        r = self._get_redis()
+        if r is not None:
+            uid = r.get(key)
+            if uid:
+                r.delete(key)
+            return uid
+
+        if settings.is_development:
+            return PasswordResetService._mem.pop(key, None)
+
+        return None
+
+    async def request_reset(self, email: str) -> dict:
+        email_n = email.lower().strip()
+        user = await self.user_repo.get_by_email(email_n)
+        result = {
+            "ok": True,
+            "message": "Ak účet existuje, poslali sme inštrukcie na e-mail.",
+        }
+        if user is None:
+            return result
+
+        token = secrets.token_urlsafe(32)
+        self._store_token(token, str(user.id))
+
+        base = settings.frontend_url.rstrip("/")
+        nl = chr(10)
+        body = (
+            "Obnova hesla CMEP"
+            + nl + nl
+            + f"Token (platný 30 min): {token}"
+            + nl + nl
+            + f"Link: {base}/reset-password?token={token}"
+            + nl
+        )
+        sent = send_email(to=email_n, subject="CMEP – obnova hesla", body=body)
+        result["emailSent"] = bool(sent)
+        if settings.is_development:
+            result["resetToken"] = token
+        return result
+
+    async def reset_password(self, token: str, new_password: str) -> None:
+        from app.shared.domain.exceptions import (
+            NotFoundDomainError,
+            ValidationDomainError,
+        )
+
+        if not token or len(new_password) < 8:
+            raise ValidationDomainError(
+                "Neplatný token alebo heslo (min. 8 znakov)."
+            )
+        user_id = self._pop_token(token)
+        if not user_id:
+            raise ValidationDomainError("Token je neplatný alebo expirovaný.")
+        user = await self.user_repo.get_by_id(UUID(str(user_id)))
+        if user is None:
+            raise NotFoundDomainError("User not found")
+        user.password_hash = self.password_service.hash_password(new_password)
+        await self.user_repo.update(user)
+        await self.jwt_service.revoke_all_user_tokens(str(user.id))
+
+-----END-----
+
+===== FILE app/modules/auth/presentation/router.py =====
+BYTES=3997
+-----BEGIN-----
+from app.shared.infrastructure.db.session import get_db_session
+from fastapi import APIRouter, Depends, Request, Response, status
+
+from app.modules.auth.presentation.dependencies import (
+    get_auth_service,
+    get_login_service,
+    get_logout_service,
+    get_password_reset_service,
+    get_refresh_token_service,
+)
+from app.modules.auth.presentation.schemas import (
+    AuthTokenPairResponse,
+    CurrentUserResponse,
+    ForgotPasswordRequest,
+    LoginRequest,
+    LogoutRequest,
+    MembershipContext,
+    RefreshTokenRequest,
+    ResetPasswordRequest,
+)
+from app.modules.users.presentation.mappers import to_user_data
+from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.error_schemas import error_responses
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+@router.post(
+    "/login",
+    response_model=AuthTokenPairResponse,
+    responses=error_responses(401, 422, 500),
+)
+async def login(request: Request, payload: LoginRequest, service=Depends(get_login_service)):
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+    ip = client_ip(request)
+    check_rate_limit(f"login:{ip}", limit=10, period=60)
+    check_rate_limit(f"login:email:{payload.email.lower().strip()}", limit=5, period=60)
+    dto = await service.execute(email=payload.email, password=payload.password)
+    return AuthTokenPairResponse(
+        accessToken=dto.access_token,
+        refreshToken=dto.refresh_token,
+        tokenType=dto.token_type,
+        expiresIn=dto.expires_in,
+    )
+
+
+@router.post(
+    "/refresh",
+    response_model=AuthTokenPairResponse,
+    responses=error_responses(401, 422, 500),
+)
+async def refresh_token(payload: RefreshTokenRequest, service=Depends(get_refresh_token_service)):
+    dto = await service.execute(refresh_token=payload.refreshToken)
+    return AuthTokenPairResponse(
+        accessToken=dto.access_token,
+        refreshToken=dto.refresh_token,
+        tokenType=dto.token_type,
+        expiresIn=dto.expires_in,
+    )
+
+
+@router.post(
+    "/logout",
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses=error_responses(401, 422, 500),
+)
+async def logout(payload: LogoutRequest, service=Depends(get_logout_service)):
+    await service.execute(refresh_token=payload.refreshToken)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get(
+    "/me",
+    response_model=CurrentUserResponse,
+    responses=error_responses(401, 403, 500),
+)
+async def me(current_user=Depends(require_current_user), service=Depends(get_auth_service)):
+    context = current_user
+    return CurrentUserResponse(
+        user=to_user_data(context.user),
+        roleCodes=context.role_codes,
+        memberships=[
+            MembershipContext(
+                id=item["id"],
+                companyId=item["companyId"],
+                membershipRole=item["membershipRole"],
+                status=item["status"],
+                isPrimaryContact=item["isPrimaryContact"],
+            )
+            for item in context.memberships
+        ],
+    )
+
+
+@router.post(
+    "/forgot-password",
+    responses=error_responses(400, 422, 500),
+)
+async def forgot_password(
+    request: Request,
+    payload: ForgotPasswordRequest,
+    svc=Depends(get_password_reset_service),
+):
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    ip = client_ip(request)
+    check_rate_limit(f"forgot:{ip}", limit=5, period=60)
+    check_rate_limit(f"forgot:email:{payload.email.lower().strip()}", limit=3, period=300)
+
+    return await svc.request_reset(payload.email)
+
+
+@router.post(
+    "/reset-password",
+    responses=error_responses(400, 404, 422, 500),
+)
+async def reset_password(
+    payload: ResetPasswordRequest,
+    svc=Depends(get_password_reset_service),
+):
+    await svc.reset_password(payload.token, payload.newPassword)
+    return {"ok": True, "message": "Heslo bolo zmenené."}
+
+-----END-----
+
+===== HEALTH FILES =====
+===== FILE app/core/config.py =====
+BYTES=6857
+-----BEGIN-----
+from __future__ import annotations
+
+import json
+from typing import List, Union
+
+from pydantic import BaseModel, Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+SQLITE_DEFAULT = "sqlite+aiosqlite:///./var/cmep.db"
+
+
+class JWTSettings(BaseModel):
+    secret_key: str
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    refresh_token_expire_days: int = 14
+    secret: str = ""
+    expire_minutes: int = 60
+
+    def model_post_init(self, __context) -> None:
+        if not self.secret:
+            object.__setattr__(self, "secret", self.secret_key)
+
+
+class RedisSettings(BaseModel):
+    url: str = "memory://"
+    host: str = "localhost"
+    port: int = 6379
+    db: int = 0
+    enabled: bool = False
+
+
+class RateLimitSettings(BaseModel):
+    enabled: bool = False
+    limit: int = 10
+    period: int = 60
+    requests: int = 100
+    window_seconds: int = 60
+
+
+class DatabaseSettings(BaseModel):
+    url: str = SQLITE_DEFAULT
+    async_url: str = SQLITE_DEFAULT
+    echo: bool = False
+    pool_size: int = 5
+    pool_pre_ping: bool = True
+
+    def model_post_init(self, __context) -> None:
+        if not self.async_url:
+            object.__setattr__(self, "async_url", self.url)
+
+
+def _is_placeholder_db_value(raw: str | None) -> bool:
+    value = str(raw or "").strip()
+    return (
+        not value
+        or "{" in value
+        or "}" in value
+        or "POSTGRES_" in value
+        or value.lower() in {"none", "null", "undefined"}
+    )
+
+
+def _normalize_database_url(raw: str) -> str:
+    value = raw.strip()
+
+    if value.startswith("postgresql://"):
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("postgres://"):
+        return value.replace("postgres://", "postgresql+asyncpg://", 1)
+
+    if value.startswith("sqlite:///"):
+        return value.replace("sqlite:///", "sqlite+aiosqlite:///", 1)
+
+    return value
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        case_sensitive=False,
+        populate_by_name=True,
+    )
+
+    app_name: str = "CMEP Platform"
+    app_version: str = "0.1.0"
+    app_description: str = "CMEP - Platform for circular materials exchange"
+
+    app_env: str = Field(default="development", alias="APP_ENV")
+    DEBUG: bool = True
+    ENABLE_PUBLIC_DOCS: bool = True
+    ENABLE_METRICS: bool = False
+    METRICS_ALLOWED_IPS: str = "127.0.0.1,::1,localhost"
+    PLATFORM_ADMIN_EMAILS: str = "admin@cmep-bootstrap.dev"
+    ROOT_PATH: str = ""
+
+    HOST: str = "0.0.0.0"
+    PORT: int = 8001
+
+    CORS_ORIGINS: Union[List[str], str] = Field(
+        default_factory=lambda: [
+            "http://127.0.0.1:3001",
+            "http://localhost:3001",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+        ]
+    )
+
+    DATABASE_URL: str = SQLITE_DEFAULT
+
+    REDIS_URL: str = ""
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+
+    JWT_SECRET_KEY: str
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 14
+
+    jwt: JWTSettings | None = None
+    redis: RedisSettings = Field(default_factory=RedisSettings)
+    rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)
+    database: DatabaseSettings | None = None
+
+    def model_post_init(self, __context) -> None:
+        redis_url = str(getattr(self, "REDIS_URL", "") or "").strip()
+        redis_host = str(getattr(self, "REDIS_HOST", "") or "").strip()
+        redis_port = int(getattr(self, "REDIS_PORT", 6379))
+        redis_db = int(getattr(self, "REDIS_DB", 0))
+
+        new_redis = self.redis.model_copy(
+            update={
+                "url": redis_url or self.redis.url,
+                "host": redis_host or self.redis.host,
+                "port": redis_port,
+                "db": redis_db,
+                "enabled": True if redis_url else self.redis.enabled,
+            }
+        )
+        object.__setattr__(self, "redis", new_redis)
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GOOGLE_REDIRECT_URI: str = "http://127.0.0.1:3001/api/auth/callback/google"
+    NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
+    NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
+
+    EMAIL_FROM: str = ""
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_USE_TLS: bool = True
+
+    @property
+    def is_development(self) -> bool:
+        return self.app_env.lower() in {"development", "dev", "local", "test"}
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors(cls, value):
+        if value is None or value == "":
+            return ["http://127.0.0.1:3001", "http://localhost:3001"]
+        if isinstance(value, list):
+            return value
+
+        text = str(value).strip()
+        if text.startswith("["):
+            return json.loads(text)
+
+        return [item.strip() for item in text.split(",") if item.strip()]
+
+    def model_post_init(self, __context) -> None:
+        raw_db = str(self.DATABASE_URL or "").strip()
+
+        if _is_placeholder_db_value(raw_db):
+            if self.is_development:
+                database_url = SQLITE_DEFAULT
+            else:
+                raise ValueError("DATABASE_URL is missing or invalid for non-development environment.")
+        else:
+            database_url = _normalize_database_url(raw_db)
+
+        object.__setattr__(self, "DATABASE_URL", database_url)
+        object.__setattr__(
+            self,
+            "database",
+            DatabaseSettings(
+                url=database_url,
+                async_url=database_url,
+            ),
+        )
+
+        if self.jwt is None:
+            object.__setattr__(
+                self,
+                "jwt",
+                JWTSettings(
+                    secret_key=self.JWT_SECRET_KEY,
+                    secret=self.JWT_SECRET_KEY,
+                    algorithm=self.JWT_ALGORITHM,
+                    access_token_expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    expire_minutes=self.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    refresh_token_expire_days=self.REFRESH_TOKEN_EXPIRE_DAYS,
+                ),
+            )
+
+        redis_url = str(self.REDIS_URL or "").strip()
+        object.__setattr__(
+            self,
+            "redis",
+            self.redis.model_copy(
+                update={
+                    "url": redis_url or self.redis.url,
+                    "host": str(self.REDIS_HOST or "") or self.redis.host,
+                    "port": int(self.REDIS_PORT),
+                    "db": int(self.REDIS_DB),
+                    "enabled": bool(redis_url),
+                }
+            ),
+        )
+
+
+settings = Settings()
+
+-----END-----
+
+===== FILE app/main.py =====
+BYTES=4041
+-----BEGIN-----
+from __future__ import annotations
+
+import importlib
+import logging
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.core.config import settings
+from app.core.http_exception_handlers import register_http_exception_handlers
+
+logger = logging.getLogger("cmep.main")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info(
+        "Starting CMEP app env=%s docs=%s db=%s",
+        settings.app_env,
+        settings.ENABLE_PUBLIC_DOCS,
+        settings.DATABASE_URL,
+    )
+    yield
+    logger.info("Stopping CMEP app")
+
+
+def _cors_origins() -> list[str]:
+    if isinstance(settings.CORS_ORIGINS, list):
+        return settings.CORS_ORIGINS
+    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
+        return [settings.CORS_ORIGINS.strip()]
+    return ["http://127.0.0.1:3001", "http://localhost:3001"]
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title=settings.app_name,
+        description=settings.app_description,
+        version=settings.app_version,
+        docs_url="/docs" if settings.ENABLE_PUBLIC_DOCS else None,
+        redoc_url="/redoc" if settings.ENABLE_PUBLIC_DOCS else None,
+        openapi_url="/openapi.json" if settings.ENABLE_PUBLIC_DOCS else None,
+        root_path=settings.ROOT_PATH or "",
+        lifespan=lifespan,
+    )
+
+    register_http_exception_handlers(app)
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=_cors_origins(),
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    mounted: list[str] = []
+    skipped: list[dict[str, str]] = []
+
+    @app.get("/health")
+    async def health():
+        return {
+            "status": "ok",
+            "service": settings.app_name,
+            "version": settings.app_version,
+            "env": settings.app_env,
+            "database_url": settings.DATABASE_URL,
+            "mounted_routers": mounted,
+            "skipped_routers": skipped,
+        }
+
+    try:
+        from app.shared.presentation.api_router import api_router
+
+        pref = getattr(api_router, "prefix", "") or ""
+        if pref.startswith("/api"):
+            app.include_router(api_router)
+        else:
+            app.include_router(api_router, prefix="/api/v1")
+        mounted.append("shared.api_router")
+    except Exception as e:
+        logger.exception("Failed to include shared.api_router")
+        skipped.append({"module": "shared.api_router", "error": str(e)})
+
+    module_routers = [
+        "app.modules.auth.presentation.router",
+        "app.modules.users.presentation.router",
+        "app.modules.companies.presentation.router",
+        "app.modules.company_memberships.presentation.router",
+        "app.modules.listings.presentation.router",
+        "app.modules.inquiries.presentation.router",
+        "app.modules.documents.presentation.router",
+        "app.modules.compliance.presentation.router",
+        "app.modules.notifications.presentation.router",
+        "app.modules.analytics.presentation.router",
+        "app.modules.admin.presentation.router",
+        "app.modules.uploads.presentation.router",
+    ]
+
+    for mod_path in module_routers:
+        tag = mod_path.split(".")[2]
+        try:
+            mod = importlib.import_module(mod_path)
+            router = getattr(mod, "router", None)
+            if router is None:
+                skipped.append({"module": tag, "error": "router attribute missing"})
+                logger.warning("Router missing for module=%s", tag)
+                continue
+
+            app.include_router(router, prefix="/api/v1")
+            mounted.append(tag)
+        except Exception as ex:
+            logger.exception("Failed to include router module=%s", tag)
+            skipped.append({"module": tag, "error": str(ex)})
+
+    app.state.mounted_routers = mounted
+    app.state.skipped_routers = skipped
+
+    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+
+    return app
+
+
+app = create_app()
+
+-----END-----
+
+===== FILE app/shared/presentation/health_router.py =====
+BYTES=144
+-----BEGIN-----
+from fastapi import APIRouter
+
+router = APIRouter(tags=["health"])
+
+@router.get("/health")
+async def healthcheck():
+    return {"status": "ok"}
+
+-----END-----
+
+===== EMAIL SENDER =====
+===== FILE app/shared/infrastructure/email/sender.py =====
+BYTES=1371
+-----BEGIN-----
+"""Best-effort SMTP sender. Without credentials logs and returns False."""
+
+from __future__ import annotations
+
+import logging
+import smtplib
+from email.message import EmailMessage
+
+from app.core.config import settings
+
+logger = logging.getLogger(__name__)
+
+
+def send_email(*, to: str, subject: str, body: str) -> bool:
+    host = getattr(settings, "SMTP_HOST", "")
+    port = int(getattr(settings, "SMTP_PORT", 587))
+    user = getattr(settings, "SMTP_USERNAME", "")
+    password = getattr(settings, "SMTP_PASSWORD", "")
+    from_address = getattr(settings, "EMAIL_FROM", "") or user
+    use_tls = bool(getattr(settings, "SMTP_USE_TLS", True))
+
+    if not host or not user or not password:
+        logger.warning(
+            "EMAIL not configured – message to %s not sent. subject=%s",
+            to,
+            subject,
+        )
+        logger.info("EMAIL_DEV_BODY to=%s\n%s", to, body)
+        return False
+
+    msg = EmailMessage()
+    msg["From"] = from_address
+    msg["To"] = to
+    msg["Subject"] = subject
+    msg.set_content(body)
+
+    try:
+        with smtplib.SMTP(host, port, timeout=20) as smtp:
+            if use_tls:
+                smtp.starttls()
+            smtp.login(user, password)
+            smtp.send_message(msg)
+        return True
+    except Exception as exc:
+        logger.exception("send_email failed: %s", exc)
+        return False
+
+-----END-----
+
+===== END =====

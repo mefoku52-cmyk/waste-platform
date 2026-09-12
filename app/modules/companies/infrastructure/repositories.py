@@ -24,15 +24,15 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
     async def list(
         self,
         *,
-        status,
-        company_type,
-        seller_capability,
-        buyer_capability,
-        logistics_capability,
-        q,
-        page,
-        page_size,
-        company_ids=None,
+        status: str | None = None,
+        company_type: str | None = None,
+        seller_capability: bool | None = None,
+        buyer_capability: bool | None = None,
+        logistics_capability: bool | None = None,
+        q: str | None = None,
+        page: int = 1,
+        page_size: int = 20,
+        company_ids: list[int] | None = None,
     ):
         stmt = select(CompanyModel)
         count_stmt = select(func.count()).select_from(CompanyModel)
@@ -69,7 +69,11 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
             stmt = stmt.where(expr)
             count_stmt = count_stmt.where(expr)
 
-        stmt = stmt.order_by(CompanyModel.created_at.desc()).offset((page - 1) * page_size).limit(page_size)
+        stmt = (
+            stmt.order_by(CompanyModel.created_at.desc())
+            .offset((page - 1) * page_size)
+            .limit(page_size)
+        )
         rows = (await self.session.execute(stmt)).scalars().all()
         total = (await self.session.execute(count_stmt)).scalar_one()
         return [to_domain(row) for row in rows], int(total)
@@ -94,12 +98,20 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
         model.verification_submitted_at = company.verification_submitted_at
         model.verification_reviewed_at = company.verification_reviewed_at
         model.verification_reviewed_by_user_id = (
-            str(company.verification_reviewed_by_user_id) if company.verification_reviewed_by_user_id else None
+            str(company.verification_reviewed_by_user_id)
+            if company.verification_reviewed_by_user_id
+            else None
         )
         model.verified_at = company.verified_at
-        model.verified_by_user_id = str(company.verified_by_user_id) if company.verified_by_user_id else None
+        model.verified_by_user_id = (
+            str(company.verified_by_user_id) if company.verified_by_user_id else None
+        )
         model.rejected_at = company.rejected_at
-        model.rejected_by_user_id = str(company.rejected_by_user_id) if company.rejected_by_user_id else None
+        model.rejected_by_user_id = (
+            str(company.rejected_by_user_id) if company.rejected_by_user_id else None
+        )
         model.updated_at = company.updated_at
-        model.updated_by_user_id = str(company.updated_by_user_id) if company.updated_by_user_id else None
+        model.updated_by_user_id = (
+            str(company.updated_by_user_id) if company.updated_by_user_id else None
+        )
         await self.session.commit()

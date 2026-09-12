@@ -87,7 +87,9 @@ async def list_marketplace(
 ):
     effective_page_size = limit or pageSize
     company_ids = _membership_company_ids(current_user)
-    items = await service.list_marketplace(page, effective_page_size, exclude_company_ids=company_ids)
+    items = await service.list_marketplace(
+        page, effective_page_size, exclude_company_ids=company_ids
+    )
     total = await service.count_marketplace(exclude_company_ids=company_ids)
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in items],
@@ -116,7 +118,7 @@ async def list_matches(
         limit=effective_page_size * page,
     )
     start = (page - 1) * effective_page_size
-    slice_items = items[start:start + effective_page_size]
+    slice_items = items[start : start + effective_page_size]
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in slice_items],
         meta=PaginationMeta(page=page, pageSize=effective_page_size, total=len(items)),
@@ -177,13 +179,13 @@ async def update_listing(
         raise NotFoundDomainError(f"Listing {id} not found")
 
     if request.status is not None and request.status.value == "published":
-        raise ConflictDomainError(
-            "Listing publication must use POST /api/v1/listings/{id}/publish"
-        )
+        raise ConflictDomainError("Listing publication must use POST /api/v1/listings/{id}/publish")
 
     updated_entity = ListingsEntity(
         title=request.title if request.title is not None else existing.title,
-        material_type=request.materialType if request.materialType is not None else existing.material_type,
+        material_type=request.materialType
+        if request.materialType is not None
+        else existing.material_type,
         quantity=request.quantity if request.quantity is not None else existing.quantity,
         unit=request.unit if request.unit is not None else existing.unit,
         price=request.price if request.price is not None else existing.price,
@@ -192,8 +194,12 @@ async def update_listing(
         location=request.location if request.location is not None else existing.location,
         status=request.status if request.status is not None else existing.status,
         company_id=existing.company_id,
-        description=request.description if request.description is not None else existing.description,
-        image_url=request.imageUrl if getattr(request, "imageUrl", None) is not None else getattr(existing, "image_url", None),
+        description=request.description
+        if request.description is not None
+        else existing.description,
+        image_url=request.imageUrl
+        if getattr(request, "imageUrl", None) is not None
+        else getattr(existing, "image_url", None),
     )
     result = await service.update(id, updated_entity)
     return ListingResponse(data=_to_listing_data(result))

@@ -1,5 +1,4 @@
-import os
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 from uuid import uuid4
 
@@ -19,10 +18,12 @@ from app.shared.infrastructure.security.jwt_revocation_store import (
     get_revocation_store,
 )
 
-JWT_SECRET = settings.jwt.secret_key
-JWT_ALGORITHM = settings.jwt.algorithm
-ACCESS_TOKEN_TTL_MINUTES = settings.jwt.access_token_expire_minutes
-REFRESH_TOKEN_TTL_DAYS = int(str(settings.jwt.refresh_token_expire_days))
+_jwt = settings.jwt
+assert _jwt is not None, "JWT settings are not configured"
+JWT_SECRET = _jwt.secret_key
+JWT_ALGORITHM = _jwt.algorithm
+ACCESS_TOKEN_TTL_MINUTES = _jwt.access_token_expire_minutes
+REFRESH_TOKEN_TTL_DAYS = int(str(_jwt.refresh_token_expire_days))
 
 
 class JwtService:
@@ -39,7 +40,7 @@ class JwtService:
     async def issue_access_token(
         self, subject: str, extra_claims: dict[str, Any] | None = None
     ) -> tuple[str, datetime]:
-        issued_at = datetime.now(timezone.utc)
+        issued_at = datetime.now(UTC)
         expires_at = issued_at + timedelta(minutes=ACCESS_TOKEN_TTL_MINUTES)
         jti = str(uuid4())
         payload: dict[str, Any] = {
@@ -56,7 +57,7 @@ class JwtService:
     async def issue_refresh_token(
         self, subject: str, family_id: str, extra_claims: dict[str, Any] | None = None
     ) -> tuple[str, str, datetime]:
-        issued_at = datetime.now(timezone.utc)
+        issued_at = datetime.now(UTC)
         expires_at = issued_at + timedelta(days=REFRESH_TOKEN_TTL_DAYS)
         jti = str(uuid4())
         payload: dict[str, Any] = {
@@ -86,35 +87,29 @@ class JwtService:
         except jwt.ExpiredSignatureError:
             raise TokenExpiredError("Token has expired")
         except jwt.InvalidTokenError as e:
-            raise InvalidTokenError(f"Invalid token: {str(e)}")
+            raise InvalidTokenError(f"Invalid token: {e!s}")
 
         token_type = payload.get("type")
         if token_type != expected_type:
-            raise TokenTypeMismatchError(
-                f"Expected {expected_type} token, got {token_type}"
-            )
+            raise TokenTypeMismatchError(f"Expected {expected_type} token, got {token_type}")
 
         sub = payload.get("sub")
         iat_raw = payload.get("iat")
         if sub and iat_raw is not None:
-            token_issued_at = datetime.fromtimestamp(iat_raw, tz=timezone.utc)
+            token_issued_at = datetime.fromtimestamp(iat_raw, tz=UTC)
             revoked_after = await self.revocation_store.get_user_tokens_revoked_after(sub)
             if revoked_after is not None and token_issued_at <= revoked_after:
-                raise TokenUserRevokedError(
-                    "All existing user sessions have been revoked"
-                )
+                raise TokenUserRevokedError("All existing user sessions have been revoked")
 
         if expected_type == "access":
             jti = payload.get("jti")
-            if await self.revocation_store.is_access_token_revoked(jti):
+            if jti and await self.revocation_store.is_access_token_revoked(jti):
                 raise TokenRevokedError("Access token has been revoked")
 
         if expected_type == "refresh":
             family_id = payload.get("family_id")
-            if await self.revocation_store.is_family_revoked(family_id):
-                raise TokenFamilyRevokedError(
-                    "Token family revoked - possible replay attack"
-                )
+            if family_id and await self.revocation_store.is_family_revoked(family_id):
+                raise TokenFamilyRevokedError("Token family revoked - possible replay attack")
 
         return payload
 
@@ -124,12 +119,10 @@ class JwtService:
     async def revoke_refresh_token(self, jti: str, family_id: str, exp: datetime) -> None:
         await self.revocation_store.revoke_refresh_token(jti, family_id, exp)
 
-    async def revoke_all_user_tokens(
-        self, subject: str, cutoff: datetime | None = None
-    ) -> None:
+    async def revoke_all_user_tokens(self, subject: str, cutoff: datetime | None = None) -> None:
         await self.revocation_store.revoke_user_tokens_after(
             subject,
-            cutoff or datetime.now(timezone.utc),
+            cutoff or datetime.now(UTC),
         )
 
     def decode(self, token: str) -> dict[str, Any]:

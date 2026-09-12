@@ -1,0 +1,1 @@
+{"ok":true,"message":"Ak účet existuje, poslali sme inštrukcie na e-mail.","emailSent":false,"resetToken":"0nEvRyVFuJkqSUdb0CeZ-iBzvU3w4I2BWoxTS2kM7jo"}

@@ -27,7 +27,9 @@ for i, r in enumerate(app.routes, 1):
                     npath = getattr(nr, "path", None)
                     nname = getattr(nr, "name", None)
                     nmethods = getattr(nr, "methods", None)
-                    print(f"    [{j}] {ncls} path={npath!r} name={nname!r} methods={sorted(nmethods) if nmethods else None}")
+                    print(
+                        f"    [{j}] {ncls} path={npath!r} name={nname!r} methods={sorted(nmethods) if nmethods else None}"
+                    )
             else:
                 print("  original_router.routes = None_or_empty")
         except Exception as e:

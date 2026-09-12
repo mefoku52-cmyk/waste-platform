@@ -1,4 +1,3 @@
-from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
@@ -39,6 +38,7 @@ class CurrentUserResponse(BaseModel):
     roleCodes: list[str]
     memberships: list[MembershipContext]
 
+
 class ForgotPasswordRequest(BaseModel):
     email: str
 
@@ -46,4 +46,3 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     newPassword: str
-

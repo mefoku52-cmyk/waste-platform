@@ -38,7 +38,7 @@ async def list_company_memberships(
 ):
     items = await service.execute(company_id=company_id, status=status)
     start = (page - 1) * pageSize
-    slice_items = items[start:start + pageSize]
+    slice_items = items[start : start + pageSize]
     return PaginatedCompanyMembershipsResponse(
         items=[to_membership_data(item) for item in slice_items],
         meta=PaginationMeta(page=page, pageSize=pageSize, total=len(items)),

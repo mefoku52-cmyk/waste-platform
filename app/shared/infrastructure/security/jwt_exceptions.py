@@ -12,29 +12,23 @@ class JwtServiceError(Exception):
 
 class TokenExpiredError(JwtServiceError):
     """Token has expired."""
-    pass
 
 
 class TokenRevokedError(JwtServiceError):
     """Token has been revoked."""
-    pass
 
 
 class TokenFamilyRevokedError(JwtServiceError):
     """Token family has been revoked (replay attack detected)."""
-    pass
 
 
 class TokenUserRevokedError(JwtServiceError):
     """All user sessions issued before cutoff have been revoked."""
-    pass
 
 
 class InvalidTokenError(JwtServiceError):
     """Token is malformed or signature is invalid."""
-    pass
 
 
 class TokenTypeMismatchError(JwtServiceError):
     """Token type doesn't match expected type."""
-    pass

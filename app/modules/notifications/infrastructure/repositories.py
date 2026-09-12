@@ -1,7 +1,5 @@
 """notifications repository implementations."""
 
-from typing import List, Optional
-
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,8 +16,10 @@ class NotificationRepositoryImpl(NotificationRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: str) -> Optional[NotificationEntity]:
-        result = await self.session.execute(select(NotificationModel).where(NotificationModel.id == id))
+    async def get_by_id(self, id: str) -> NotificationEntity | None:
+        result = await self.session.execute(
+            select(NotificationModel).where(NotificationModel.id == id)
+        )
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
@@ -36,13 +36,20 @@ class NotificationRepositoryImpl(NotificationRepository):
 
     async def count_by_user_id(self, user_id) -> int:
         result = await self.session.execute(
-            select(func.count()).select_from(NotificationModel).where(NotificationModel.user_id == user_id)
+            select(func.count())
+            .select_from(NotificationModel)
+            .where(NotificationModel.user_id == user_id)
         )
         return int(result.scalar_one())
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[NotificationEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[NotificationEntity]:
         offset = (page - 1) * limit
-        result = await self.session.execute(select(NotificationModel).order_by(NotificationModel.created_at.desc()).offset(offset).limit(limit))
+        result = await self.session.execute(
+            select(NotificationModel)
+            .order_by(NotificationModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 

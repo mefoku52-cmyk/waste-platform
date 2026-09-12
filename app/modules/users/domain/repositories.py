@@ -18,7 +18,15 @@ class UserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def list(self, *, status: str | None, company_id: UUID | None, q: str | None, page: int, page_size: int) -> tuple[list[User], int]:
+    async def list(
+        self,
+        *,
+        status: str | None,
+        company_id: UUID | None,
+        q: str | None,
+        page: int,
+        page_size: int,
+    ) -> tuple[list[User], int]:
         raise NotImplementedError
 
     @abstractmethod

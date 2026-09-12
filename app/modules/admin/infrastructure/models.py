@@ -1,9 +1,9 @@
 """admin database models."""
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
-from sqlalchemy import Boolean, Column, DateTime, String, Text
+from sqlalchemy import Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.shared.infrastructure.db.base import Base
@@ -19,7 +19,11 @@ class AdminAuditEntryModel(Base):
     target_id = Column(UUID(as_uuid=True), nullable=True)
     details = Column(Text, nullable=True)
     status = Column(String(32), nullable=False, default="success")
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
     created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
     updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)

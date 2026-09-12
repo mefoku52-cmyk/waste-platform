@@ -1,11 +1,14 @@
 import asyncio
+from datetime import UTC, datetime
+
 from sqlalchemy import select
-from app.shared.infrastructure.db.session import engine, SessionLocal
-from app.shared.infrastructure.db.base import Base
-from app.shared.infrastructure.db.register_models import *
+
 from app.modules.users.infrastructure.models import UserModel
 from app.shared.application.passwords import PasswordService
-from datetime import datetime, timezone
+from app.shared.infrastructure.db.base import Base
+from app.shared.infrastructure.db.register_models import *
+from app.shared.infrastructure.db.session import SessionLocal, engine
+
 
 async def init():
     print("   [DB] Vytváram tabuľky...")
@@ -30,12 +33,13 @@ async def init():
             first_name="System",
             last_name="Admin",
             display_name="Administrator",
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
         session.add(admin)
         await session.commit()
         print("   [DB] Admin vytvorený: admin@cmep.dev / Admin123!")
+
 
 if __name__ == "__main__":
     asyncio.run(init())

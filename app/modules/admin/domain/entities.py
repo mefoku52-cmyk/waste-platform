@@ -1,7 +1,6 @@
 """admin domain entities."""
 
 from dataclasses import dataclass
-from datetime import datetime
 from uuid import UUID
 
 from app.modules.admin.domain.enums import AdminAuditEntryStatus

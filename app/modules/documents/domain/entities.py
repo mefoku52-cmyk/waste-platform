@@ -1,7 +1,6 @@
 """documents domain entities."""
 
 from dataclasses import dataclass
-from datetime import datetime
 from uuid import UUID
 
 from app.modules.documents.domain.enums import DocumentStatus

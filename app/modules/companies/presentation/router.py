@@ -2,24 +2,24 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
-from app.shared.application.side_effects import write_audit
-from app.shared.infrastructure.db.session import get_db_session
 from app.modules.companies.presentation.dependencies import (
     get_create_company_service,
     get_get_company_service,
     get_list_companies_service,
-    get_update_company_service,
     get_transition_company_status_service,
+    get_update_company_service,
 )
 from app.modules.companies.presentation.mappers import to_company_data
 from app.modules.companies.presentation.schemas import (
     CompanyCreateRequest,
     CompanyResponse,
+    CompanyStatusTransitionRequest,
     CompanyUpdateRequest,
     PaginatedCompaniesResponse,
     PaginationMeta,
-    CompanyStatusTransitionRequest,
 )
+from app.shared.application.side_effects import write_audit
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.error_schemas import error_responses
 
@@ -81,7 +81,9 @@ async def create_company(
     if target in admin_only:
         roles = list(getattr(current_user, "roleCodes", None) or [])
         u = getattr(current_user, "user", None)
-        email = (getattr(u, "email", None) if u is not None else None) or getattr(current_user, "email", None)
+        email = (getattr(u, "email", None) if u is not None else None) or getattr(
+            current_user, "email", None
+        )
         is_admin = (
             "admin" in [str(r).lower() for r in roles]
             or "platform_admin" in [str(r).lower() for r in roles]
@@ -89,6 +91,7 @@ async def create_company(
         )
         if not is_admin:
             from app.shared.domain.exceptions import ForbiddenDomainError
+
             raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor.")
 
     dto = await service.execute(

@@ -1,20 +1,23 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 class AnalyticsCreate(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
+
 
 class AnalyticsUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
+
 
 class AnalyticsResponse(BaseModel):
     id: int
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     created_at: datetime
-    
+
     class Config:
         from_attributes = True

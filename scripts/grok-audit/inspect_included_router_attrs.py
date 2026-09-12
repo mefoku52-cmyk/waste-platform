@@ -22,7 +22,9 @@ for i, r in enumerate(app.routes, 1):
         if hasattr(r, key):
             try:
                 value = getattr(r, key)
-                print(f"  {key} -> type={type(value).__name__} repr={repr(value)[:300]}")
+                print(
+                    f"  {key} -> type={type(value).__name__} repr={repr(value)[:300]}"
+                )
             except Exception as e:
                 print(f"  {key} -> ERROR {e!r}")
 

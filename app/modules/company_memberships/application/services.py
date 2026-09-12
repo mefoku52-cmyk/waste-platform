@@ -3,15 +3,25 @@ from uuid import UUID
 from app.modules.company_memberships.application.dto import CompanyMembershipDTO
 from app.modules.company_memberships.application.mappers import to_membership_dto
 from app.modules.company_memberships.domain.entities import CompanyMembership
-from app.modules.company_memberships.domain.enums import CompanyMembershipRole, CompanyMembershipStatus
-from app.modules.company_memberships.domain.repositories import CompanyMembershipRepository
+from app.modules.company_memberships.domain.enums import (
+    CompanyMembershipRole,
+    CompanyMembershipStatus,
+)
+from app.modules.company_memberships.domain.repositories import (
+    CompanyMembershipRepository,
+)
 from app.shared.application.clock import Clock
 from app.shared.application.uuid_generator import UuidGenerator
 from app.shared.domain.exceptions import NotFoundDomainError
 
 
 class CreateCompanyMembershipService:
-    def __init__(self, repo: CompanyMembershipRepository, uuid_generator: UuidGenerator, clock: Clock):
+    def __init__(
+        self,
+        repo: CompanyMembershipRepository,
+        uuid_generator: UuidGenerator,
+        clock: Clock,
+    ):
         self.repo = repo
         self.uuid_generator = uuid_generator
         self.clock = clock
@@ -86,7 +96,9 @@ class TransitionCompanyMembershipStatusService:
         self.repo = repo
         self.clock = clock
 
-    async def execute(self, *, membership_id: UUID, to_status: str, actor_user_id: UUID | None) -> CompanyMembershipDTO:
+    async def execute(
+        self, *, membership_id: UUID, to_status: str, actor_user_id: UUID | None
+    ) -> CompanyMembershipDTO:
         membership = await self.repo.get_by_id(membership_id)
         if not membership:
             raise NotFoundDomainError("Company membership not found")

@@ -10,8 +10,8 @@ from app.shared.presentation.error_schemas import (
 __all__ = [
     "ApiErrorResponse",
     "FieldError",
-    "ValidationApiErrorResponse",
-    "InvalidTransitionDetails",
     "InvalidTransitionApiErrorResponse",
+    "InvalidTransitionDetails",
+    "ValidationApiErrorResponse",
     "error_responses",
 ]

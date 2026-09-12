@@ -40,7 +40,9 @@ async def list_users(
     current_user=Depends(require_current_user),
     service=Depends(get_list_users_service),
 ):
-    items, total = await service.execute(status=status, company_id=companyId, q=q, page=page, page_size=pageSize)
+    items, total = await service.execute(
+        status=status, company_id=companyId, q=q, page=page, page_size=pageSize
+    )
     return PaginatedUsersResponse(
         items=[to_user_data(item) for item in items],
         meta=PaginationMeta(page=page, pageSize=pageSize, total=total),
@@ -121,5 +123,7 @@ async def transition_user_status(
     current_user=Depends(require_current_user),
     service=Depends(get_transition_user_status_service),
 ):
-    dto = await service.execute(user_id=user_id, to_status=payload.toStatus, actor_user_id=current_user.user.id)
+    dto = await service.execute(
+        user_id=user_id, to_status=payload.toStatus, actor_user_id=current_user.user.id
+    )
     return UserResponse(data=to_user_data(dto))

@@ -1,7 +1,7 @@
 import base64
 import json
 import uuid
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 import pytest
 from httpx import ASGITransport, AsyncClient

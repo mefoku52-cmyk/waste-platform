@@ -1,6 +1,6 @@
 """listings application services."""
 
-from typing import List, Optional
+from datetime import UTC
 
 from app.shared.domain.exceptions import NotFoundDomainError
 
@@ -14,17 +14,21 @@ class ListingsService:
     def __init__(self, repository: ListingsRepository):
         self.repository = repository
 
-    async def get_by_id(self, id: str) -> Optional[ListingsEntity]:
+    async def get_by_id(self, id: str) -> ListingsEntity | None:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20, company_ids=None) -> List[ListingsEntity]:
+    async def list_all(
+        self, page: int = 1, limit: int = 20, company_ids=None
+    ) -> list[ListingsEntity]:
         return await self.repository.list_all(page, limit, company_ids=company_ids)
 
     async def count_all(self, company_ids=None) -> int:
         return await self.repository.count_all(company_ids=company_ids)
 
     async def list_marketplace(self, page: int = 1, limit: int = 20, exclude_company_ids=None):
-        return await self.repository.list_marketplace(page, limit, exclude_company_ids=exclude_company_ids)
+        return await self.repository.list_marketplace(
+            page, limit, exclude_company_ids=exclude_company_ids
+        )
 
     async def count_marketplace(self, exclude_company_ids=None) -> int:
         return await self.repository.count_marketplace(exclude_company_ids=exclude_company_ids)
@@ -43,12 +47,15 @@ class ListingsService:
         entity.validate()
         return await self.repository.update(entity)
 
-
     async def publish(self, id: str):
         """draft → published, len ak firma listing-u je verified."""
-        from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
-        from app.modules.listings.domain.enums import ListingsStatus
         from datetime import datetime
+
+        from app.modules.listings.domain.enums import ListingsStatus
+        from app.shared.domain.exceptions import (
+            NotFoundDomainError,
+            ValidationDomainError,
+        )
 
         existing = await self.repository.get_by_id(id)
         if existing is None:
@@ -62,7 +69,7 @@ class ListingsService:
             )
 
         existing.status = ListingsStatus.PUBLISHED
-        existing.updated_at = datetime.utcnow()
+        existing.updated_at = datetime.now(UTC)
         return await self.repository.update(existing)
 
     async def delete(self, id: str) -> None:

@@ -8,11 +8,11 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from app.shared.infrastructure.db.base import Base
 import app.shared.infrastructure.db.register_models  # noqa: F401
+from app.shared.infrastructure.db.base import Base
 
 try:
-    from app.shared.config import settings
+    from app.core.config import settings
 except Exception:
     from app.core.config import settings
 

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from uuid import UUID
 
 from app.modules.users.domain.enums import UserStatus
 from app.shared.domain.base import AuditFields
@@ -36,5 +35,7 @@ class User(AuditFields):
             UserStatus.SUSPENDED: {UserStatus.ACTIVE, UserStatus.DEACTIVATED},
             UserStatus.DEACTIVATED: set(),
         }
-        ensure_transition(self.status.value, to_status.value, {s.value for s in allowed[self.status]})
+        ensure_transition(
+            self.status.value, to_status.value, {s.value for s in allowed[self.status]}
+        )
         self.status = to_status

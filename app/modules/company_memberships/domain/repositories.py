@@ -14,7 +14,9 @@ class CompanyMembershipRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def list_by_company_id(self, company_id: UUID, status: str | None = None) -> list[CompanyMembership]:
+    async def list_by_company_id(
+        self, company_id: UUID, status: str | None = None
+    ) -> list[CompanyMembership]:
         raise NotImplementedError
 
     @abstractmethod

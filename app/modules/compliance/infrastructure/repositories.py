@@ -1,7 +1,5 @@
 """compliance repository implementations."""
 
-from typing import List, Optional
-
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,8 +16,10 @@ class ComplianceRecordRepositoryImpl(ComplianceRecordRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: str) -> Optional[ComplianceRecordEntity]:
-        result = await self.session.execute(select(ComplianceRecordModel).where(ComplianceRecordModel.id == id))
+    async def get_by_id(self, id: str) -> ComplianceRecordEntity | None:
+        result = await self.session.execute(
+            select(ComplianceRecordModel).where(ComplianceRecordModel.id == id)
+        )
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
@@ -40,15 +40,20 @@ class ComplianceRecordRepositoryImpl(ComplianceRecordRepository):
         if not company_ids:
             return 0
         result = await self.session.execute(
-            select(func.count()).select_from(ComplianceRecordModel).where(
-                ComplianceRecordModel.company_id.in_(list(company_ids))
-            )
+            select(func.count())
+            .select_from(ComplianceRecordModel)
+            .where(ComplianceRecordModel.company_id.in_(list(company_ids)))
         )
         return int(result.scalar_one())
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[ComplianceRecordEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[ComplianceRecordEntity]:
         offset = (page - 1) * limit
-        result = await self.session.execute(select(ComplianceRecordModel).order_by(ComplianceRecordModel.created_at.desc()).offset(offset).limit(limit))
+        result = await self.session.execute(
+            select(ComplianceRecordModel)
+            .order_by(ComplianceRecordModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 
@@ -80,5 +85,7 @@ class ComplianceRecordRepositoryImpl(ComplianceRecordRepository):
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
-        await self.session.execute(sql_delete(ComplianceRecordModel).where(ComplianceRecordModel.id == id))
+        await self.session.execute(
+            sql_delete(ComplianceRecordModel).where(ComplianceRecordModel.id == id)
+        )
         await self.session.commit()

@@ -1,12 +1,15 @@
 """Token revocation store — Redis or in-memory (Termux / dev)."""
+
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from app.core.config import settings
 
-REFRESH_TOKEN_TTL_DAYS = int(str(settings.jwt.refresh_token_expire_days))
+_jwt = settings.jwt
+assert _jwt is not None, "JWT settings are not configured"
+REFRESH_TOKEN_TTL_DAYS = int(str(_jwt.refresh_token_expire_days))
 
 
 class _MemoryBackend:
@@ -14,7 +17,7 @@ class _MemoryBackend:
         self._store: dict[str, tuple[str, float | None]] = {}
 
     def _purge(self) -> None:
-        now = datetime.now(timezone.utc).timestamp()
+        now = datetime.now(UTC).timestamp()
         dead = [k for k, (_, exp) in self._store.items() if exp is not None and exp <= now]
         for k in dead:
             self._store.pop(k, None)
@@ -23,7 +26,7 @@ class _MemoryBackend:
         self._purge()
         exp = None
         if ex is not None and ex > 0:
-            exp = datetime.now(timezone.utc).timestamp() + ex
+            exp = datetime.now(UTC).timestamp() + ex
         self._store[key] = (value, exp)
 
     async def get(self, key: str) -> str | None:
@@ -59,6 +62,7 @@ class TokenRevocationStore:
             return self._client
         try:
             import redis.asyncio as redis
+
             self._client = redis.from_url(self.redis_url, decode_responses=True)
             return self._client
         except Exception:
@@ -68,20 +72,20 @@ class TokenRevocationStore:
 
     async def revoke_access_token(self, jti: str, exp: datetime) -> None:
         client = await self._get_client()
-        ttl = int((exp - datetime.now(timezone.utc)).total_seconds())
+        ttl = int((exp - datetime.now(UTC)).total_seconds())
         if ttl > 0:
             await client.set(f"revoked:access:{jti}", "1", ex=ttl)
 
     async def revoke_refresh_token(self, jti: str, family_id: str, exp: datetime) -> None:
         client = await self._get_client()
-        ttl = int((exp - datetime.now(timezone.utc)).total_seconds())
+        ttl = int((exp - datetime.now(UTC)).total_seconds())
         if ttl > 0:
             await client.set(f"revoked:refresh:{jti}", "1", ex=ttl)
             await client.set(f"revoked:family:{family_id}", "1", ex=ttl)
 
     async def revoke_user_tokens_after(self, subject: str, cutoff: datetime) -> None:
         client = await self._get_client()
-        cutoff_utc = cutoff.astimezone(timezone.utc)
+        cutoff_utc = cutoff.astimezone(UTC)
         ttl = int(timedelta(days=REFRESH_TOKEN_TTL_DAYS).total_seconds())
         await client.set(
             f"revoked:user:{subject}:after",

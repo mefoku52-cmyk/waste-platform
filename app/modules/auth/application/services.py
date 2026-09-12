@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.modules.auth.application.dto import AuthTokenPairDTO
@@ -32,26 +32,22 @@ class LoginService:
 
     async def execute(self, email: str, password: str) -> AuthTokenPairDTO:
         user = await self.user_repo.get_by_email(email)
-        if not user or not self.password_service.verify_password(
-            password, user.password_hash
-        ):
+        if not user or not self.password_service.verify_password(password, user.password_hash):
             raise UnauthorizedDomainError("Invalid credentials")
 
         subject = str(user.id)
         family_id = str(uuid4())
-        access_token, access_expires_at = await self.jwt_service.issue_access_token(
-            subject=subject
-        )
-        refresh_token, refresh_jti, refresh_expires_at = (
-            await self.jwt_service.issue_refresh_token(
-                subject=subject,
-                family_id=family_id,
-            )
+        access_token, access_expires_at = await self.jwt_service.issue_access_token(subject=subject)
+        (
+            refresh_token,
+            refresh_jti,
+            refresh_expires_at,
+        ) = await self.jwt_service.issue_refresh_token(
+            subject=subject,
+            family_id=family_id,
         )
 
-        expires_in = int(
-            (access_expires_at - datetime.now(timezone.utc)).total_seconds()
-        )
+        expires_in = int((access_expires_at - datetime.now(UTC)).total_seconds())
 
         return AuthTokenPairDTO(
             access_token=access_token,
@@ -73,35 +69,31 @@ class RefreshTokenService:
             )
         except TokenFamilyRevokedError as e:
             logger.warning(f"Replay attack detected: {e}")
-            raise UnauthorizedDomainError(
-                "Session invalidated due to security concern"
-            )
+            raise UnauthorizedDomainError("Session invalidated due to security concern")
         except TokenUserRevokedError:
             raise UnauthorizedDomainError("Session has been revoked")
 
         sub = payload.get("sub")
         family_id = payload.get("family_id")
         old_jti = payload.get("jti")
-        old_exp = datetime.fromtimestamp(payload.get("exp"), tz=timezone.utc)
+        old_exp = datetime.fromtimestamp(payload.get("exp"), tz=UTC)
 
         if await self.jwt_service.revocation_store.is_family_revoked(family_id):
             raise UnauthorizedDomainError("Session has been revoked")
 
         await self.jwt_service.revoke_refresh_token(old_jti, family_id, old_exp)
 
-        access_token, access_expires_at = await self.jwt_service.issue_access_token(
-            subject=sub
-        )
-        new_refresh_token, new_jti, refresh_expires_at = (
-            await self.jwt_service.issue_refresh_token(
-                subject=sub,
-                family_id=family_id,
-            )
+        access_token, access_expires_at = await self.jwt_service.issue_access_token(subject=sub)
+        (
+            new_refresh_token,
+            new_jti,
+            refresh_expires_at,
+        ) = await self.jwt_service.issue_refresh_token(
+            subject=sub,
+            family_id=family_id,
         )
 
-        expires_in = int(
-            (access_expires_at - datetime.now(timezone.utc)).total_seconds()
-        )
+        expires_in = int((access_expires_at - datetime.now(UTC)).total_seconds())
 
         return AuthTokenPairDTO(
             access_token=access_token,
@@ -180,9 +172,7 @@ class LogoutService:
                 )
                 refresh_jti = refresh_payload.get("jti")
                 refresh_family = refresh_payload.get("family_id")
-                refresh_exp = datetime.fromtimestamp(
-                    refresh_payload.get("exp"), tz=timezone.utc
-                )
+                refresh_exp = datetime.fromtimestamp(refresh_payload.get("exp"), tz=UTC)
                 await self.jwt_service.revoke_refresh_token(
                     refresh_jti, refresh_family, refresh_exp
                 )

@@ -1,7 +1,7 @@
 """analytics domain entities."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 
 from app.shared.domain.base import AuditFields
@@ -17,7 +17,7 @@ class AnalyticsEventEntity(AuditFields):
     entity_id: UUID | None = None
     company_id: UUID | None = None
     event_metadata: str | None = None
-    recorded_at: datetime = field(default_factory=datetime.utcnow)
+    recorded_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def validate(self) -> None:
         if not self.event_type:

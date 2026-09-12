@@ -1,7 +1,5 @@
 """notifications application services."""
 
-from typing import List, Optional
-
 from app.shared.domain.exceptions import NotFoundDomainError
 
 from ..domain.entities import NotificationEntity
@@ -14,10 +12,10 @@ class NotificationService:
     def __init__(self, repository: NotificationRepository):
         self.repository = repository
 
-    async def get_by_id(self, id: str) -> Optional[NotificationEntity]:
+    async def get_by_id(self, id: str) -> NotificationEntity | None:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[NotificationEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[NotificationEntity]:
         return await self.repository.list_all(page, limit)
 
     async def list_by_user_id(self, user_id, page: int = 1, limit: int = 20):

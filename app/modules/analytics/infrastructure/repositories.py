@@ -1,7 +1,5 @@
 """analytics repository implementations."""
 
-from typing import List, Optional
-
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,14 +16,21 @@ class AnalyticsEventRepositoryImpl(AnalyticsEventRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: str) -> Optional[AnalyticsEventEntity]:
-        result = await self.session.execute(select(AnalyticsEventModel).where(AnalyticsEventModel.id == id))
+    async def get_by_id(self, id: str) -> AnalyticsEventEntity | None:
+        result = await self.session.execute(
+            select(AnalyticsEventModel).where(AnalyticsEventModel.id == id)
+        )
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[AnalyticsEventEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[AnalyticsEventEntity]:
         offset = (page - 1) * limit
-        result = await self.session.execute(select(AnalyticsEventModel).order_by(AnalyticsEventModel.created_at.desc()).offset(offset).limit(limit))
+        result = await self.session.execute(
+            select(AnalyticsEventModel)
+            .order_by(AnalyticsEventModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 
@@ -57,5 +62,7 @@ class AnalyticsEventRepositoryImpl(AnalyticsEventRepository):
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
-        await self.session.execute(sql_delete(AnalyticsEventModel).where(AnalyticsEventModel.id == id))
+        await self.session.execute(
+            sql_delete(AnalyticsEventModel).where(AnalyticsEventModel.id == id)
+        )
         await self.session.commit()

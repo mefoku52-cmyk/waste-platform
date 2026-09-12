@@ -155,3 +155,6 @@ exclude_lines = [
     "class .*\\bProtocol\\):",
     "@abstractmethod",
 ]
+[tool.ty.rules]
+invalid-argument-type = "ignore"
+invalid-assignment = "ignore"

@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import time
-from typing import Callable
 
 from fastapi import HTTPException, Request
 
@@ -15,6 +14,7 @@ _mem: dict[str, list[float]] = {}
 def _client():
     try:
         import redis
+
         host = getattr(settings.redis, "host", "localhost")
         port = getattr(settings.redis, "port", 6379)
         url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"

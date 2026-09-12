@@ -1,5 +1,3 @@
-import os
-
 from fastapi import APIRouter, HTTPException, Request, Response, status
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 
@@ -29,10 +27,13 @@ RATE_LIMIT_EXCEEDED_TOTAL = Counter(
     ["route"],
 )
 
+
 def _allowed_hosts() -> set[str]:
     from app.core.config import settings
+
     raw = settings.METRICS_ALLOWED_IPS
     return {item.strip() for item in raw.split(",") if item.strip()}
+
 
 def _is_internal_metrics_request(request: Request) -> bool:
     client_host = request.client.host if request.client else ""
@@ -42,12 +43,16 @@ def _is_internal_metrics_request(request: Request) -> bool:
     candidates.discard("")
     return any(host in _allowed_hosts() for host in candidates)
 
+
 @router.get("/metrics", include_in_schema=False)
 async def metrics(request: Request) -> Response:
     from app.core.config import settings
+
     enabled = settings.ENABLE_METRICS
     if not enabled:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     if not _is_internal_metrics_request(request):
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Metrics are internal only")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, detail="Metrics are internal only"
+        )
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

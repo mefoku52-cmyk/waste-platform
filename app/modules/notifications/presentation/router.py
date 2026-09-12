@@ -1,6 +1,7 @@
 """notifications API router."""
 
-from fastapi import APIRouter, Depends, Query, status as http_status
+from fastapi import APIRouter, Depends, Query
+from fastapi import status as http_status
 
 from app.shared.domain.exceptions import ForbiddenDomainError, NotFoundDomainError
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -21,7 +22,9 @@ router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 
 def _current_user_id(current_user):
-    return getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
+    return getattr(getattr(current_user, "user", None), "id", None) or getattr(
+        current_user, "id", None
+    )
 
 
 def _ensure_notification_owner(entity: NotificationEntity, current_user) -> None:

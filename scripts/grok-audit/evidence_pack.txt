@@ -1,0 +1,1039 @@
+===== META =====
+DATE=2026-09-09T14:04:25+02:00
+PWD=/data/data/com.termux/files/home/waste-platform
+USER=u0_a388
+HOST=localhost
+SHELL=/data/data/com.termux/files/usr/bin/bash
+BASH_VERSION=5.3.15(1)-release
+
+===== Q1 SOURCE BOUNDARY =====
+total 76744
+drwx------.  30 u0_a388 u0_a388    24576 Sep  9 10:15 .
+drwx------. 153 u0_a388 u0_a388    53248 Sep  9 12:11 ..
+drwx------.   2 u0_a388 u0_a388     3452 Sep  3 11:46 .closure_truth_20260903_114557
+drwx------.   2 u0_a388 u0_a388     3452 Sep  3 12:01 .closure_truth_20260903_120101
+drwx------.   2 u0_a388 u0_a388     8192 Sep  4 12:28 .closure_truth_20260903_120225
+-rw-------.   1 u0_a388 u0_a388      396 Aug 26 20:37 .dockerignore
+-rw-------.   1 u0_a388 u0_a388      540 Sep  9 12:15 .env
+-rw-------.   1 u0_a388 u0_a388      308 Sep  9 00:20 .env.compose
+-rw-------.   1 u0_a388 u0_a388      478 Sep  2 19:04 .env.example
+-rw-------.   1 u0_a388 u0_a388     1757 Sep  8 13:28 .env.production
+-rw-------.   1 u0_a388 u0_a388     1712 Sep  7 19:28 .env.production.backup.20260908_132807
+-rw-------.   1 u0_a388 u0_a388     1668 Sep  2 17:52 .env.production.bak_registry_20260907_192851
+-rw-------.   1 u0_a388 u0_a388      592 Sep  7 22:09 .forensic-api-build.log
+-rw-------.   1 u0_a388 u0_a388      476 Sep  7 22:09 .forensic-web-build.log
+drwx------.   8 u0_a388 u0_a388     3452 Sep  9 07:10 .git
+drwx------.   3 u0_a388 u0_a388     3452 Jul 31 20:59 .github
+-rw-------.   1 u0_a388 u0_a388     3757 Sep  7 18:58 .gitignore
+drwx------.   2 u0_a388 u0_a388     3452 Sep  3 10:18 .production-recovery
+drwx------.   6 u0_a388 u0_a388     3452 Sep  3 10:47 .production-release
+drwx------.   3 u0_a388 u0_a388     3452 Sep  2 19:06 .pytest_cache
+drwx------.   3 u0_a388 u0_a388     3452 Sep  9 05:07 .ruff_cache
+drwx------.   5 u0_a388 u0_a388     3452 Sep  2 19:05 .venv
+-rw-------.   1 u0_a388 u0_a388        0 Sep  8 23:02 0.0.0.0:3101
+-rw-------.   1 u0_a388 u0_a388      155 Sep  7 13:06 2805MikysS446.txt
+-rw-------.   1 u0_a388 u0_a388   101181 Sep  7 16:54 CMEP-refresh-rotation-forensic-20260907-165436.txt
+-rw-------.   1 u0_a388 u0_a388    14904 Sep  2 13:22 FINALIZATION_ROADMAP.md
+-rwx------.   1 u0_a388 u0_a388     5417 Sep  3 11:02 GLOBAL_P0_R1_R65_STATE.sh
+-rw-------.   1 u0_a388 u0_a388    24423 Sep  3 11:02 GLOBAL_P0_R1_R65_STATE_20260903_110209.txt
+-rw-r--r--.   1 u0_a388 u0_a388     3591 Sep  7 15:44 Makefile
+-rw-------.   1 u0_a388 u0_a388     1607 Sep  3 11:46 P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_114557.txt
+-rw-------.   1 u0_a388 u0_a388     1607 Sep  3 12:01 P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120101.txt
+-rw-------.   1 u0_a388 u0_a388    18615 Sep  4 12:28 P0_R1_R65_CLOSURE_TRUTH_MAP_20260903_120225.txt
+-rw-------.   1 u0_a388 u0_a388  1140278 Sep  3 10:57 P0_R1_R65_DECISION_MAP_20260903_105724.txt
+-rw-------.   1 u0_a388 u0_a388   131128 Sep  3 21:23 P0_R1_R65_GLOBAL_TRUTH_MAP_20260903_212053.txt
+-rw-------.   1 u0_a388 u0_a388   880872 Sep  3 10:56 P0_R1_R65_META_AUDIT_20260903_105537.txt
+-rw-------.   1 u0_a388 u0_a388    64587 Sep  3 11:21 P0_R54_R65_FRONTIER_ANALYSIS_20260903_110430.txt
+-rw-------.   1 u0_a388 u0_a388     2095 Sep  8 23:14 POST_CUTOVER_RELEASE_EVIDENCE_20260908_231334.txt
+-rw-------.   1 u0_a388 u0_a388    39641 Sep  4 20:39 R60_R65_FORENSIC_RECONCILIATION_20260904_203914.txt
+-rw-------.   1 u0_a388 u0_a388 73447225 Sep  8 23:23 R60_R65_FULL_RECONCILIATION_20260908_231821.txt
+-rw-------.   1 u0_a388 u0_a388     1647 Sep  2 18:33 README.md
+-rw-------.   1 u0_a388 u0_a388      718 Sep  8 12:39 RELEASE_NEXT_STAGE.txt
+-rw-------.   1 u0_a388 u0_a388    32779 Sep  5 11:27 R_REQUIREMENT_COMPLIANCE_20260905_112705.txt
+-rw-------.   1 u0_a388 u0_a388  1033904 Sep  4 20:56 VPS_LOCAL_DISCOVERY_20260904_205626.txt
+-rw-------.   1 u0_a388 u0_a388        0 Sep  8 23:02 [::]:3101
+drwx------.   6 u0_a388 u0_a388     3452 Sep  7 17:46 _quarantine
+drwx------.   3 u0_a388 u0_a388     3452 Sep  9 06:26 alembic
+-rw-------.   1 u0_a388 u0_a388      411 Aug 25 07:15 alembic.ini
+-rw-------.   1 u0_a388 u0_a388    51290 Sep  3 00:11 all_projects_list.xml
+-rwx------.   1 u0_a388 u0_a388     7354 Sep  3 11:04 analyze_p0_r54_r65_frontier.sh
+drwx------.   8 u0_a388 u0_a388     3452 Sep  9 11:31 app
+drwx------.   3 u0_a388 u0_a388     3452 Sep  2 19:04 apps
+drwx------.   2 u0_a388 u0_a388    20480 Sep  5 12:55 archived-phase-scripts
+drwx------.   4 u0_a388 u0_a388     3452 Sep  9 05:10 audit
+drwx------.   6 u0_a388 u0_a388    20480 Sep  3 09:49 audit-output
+-rwx------.   1 u0_a388 u0_a388     2561 Sep  5 11:18 audit_clean_summary.sh
+-rw-------.   1 u0_a388 u0_a388     7930 Sep  5 11:18 audit_clean_summary_20260905_111829.txt
+-rwx------.   1 u0_a388 u0_a388     2732 Sep  5 11:16 audit_final_map.sh
+-rw-------.   1 u0_a388 u0_a388   576817 Sep  5 11:17 audit_final_map_20260905_111659.txt
+-rwx------.   1 u0_a388 u0_a388     2928 Sep  5 11:20 audit_master_map.sh
+-rw-------.   1 u0_a388 u0_a388      191 Sep  5 11:20 audit_master_map_20260905_112004.txt
+-rw-------.   1 u0_a388 u0_a388    10933 Sep  5 11:21 audit_master_map_20260905_112033.txt
+-rwx------.   1 u0_a388 u0_a388     2879 Sep  5 11:23 audit_r_final_resolver.sh
+-rw-------.   1 u0_a388 u0_a388    10462 Sep  5 11:24 audit_r_final_resolver_20260905_112346.txt
+-rwx------.   1 u0_a388 u0_a388     1865 Sep  5 11:22 audit_r_master.sh
+-rw-------.   1 u0_a388 u0_a388    20658 Sep  5 11:22 audit_r_master_20260905_112221.txt
+-rwx------.   1 u0_a388 u0_a388    12556 Sep  5 11:27 audit_r_requirement_compliance.sh
+-rwx------.   1 u0_a388 u0_a388     3023 Sep  5 11:15 audit_result_summary.sh
+-rw-------.   1 u0_a388 u0_a388    16710 Sep  5 11:16 audit_result_summary_20260905_111554.txt
+-rwx------.   1 u0_a388 u0_a388    26736 Sep  3 12:02 build_p0_r1_r65_closure_truth_map.sh
+-rwx------.   1 u0_a388 u0_a388     6078 Sep  3 10:57 build_p0_r65_decision_map.sh
+-rwx------.   1 u0_a388 u0_a388     4725 Sep  4 20:54 check_vps_direct.sh
+-rwx------.   1 u0_a388 u0_a388     4117 Sep  5 13:42 clean_restart.sh
+-rw-------.   1 u0_a388 u0_a388     2819 Sep  3 00:12 client_state.xml
+-rw-------.   1 u0_a388 u0_a388     2762 Sep  3 00:11 client_state_prev.xml
+-rw-------.   1 u0_a388 u0_a388    10292 Sep  8 23:03 cmep-web-pre-cutover-20260908_230357.inspect.json
+-rw-------.   1 u0_a388 u0_a388     9043 Sep  8 23:03 cmep-web-pre-cutover-20260908_230357.preview.inspect.json
+-rwx------.   1 u0_a388 u0_a388     7572 Sep  3 10:55 collect_p0_r1_r65_meta_audit.sh
+-rw-------.   1 u0_a388 u0_a388      252 Sep  3 00:11 coproc_info.xml
+-rw-------.   1 u0_a388 u0_a388      113 Sep  3 00:13 daily_xfer_history.xml
+-rwx------.   1 u0_a388 u0_a388     6088 Sep  9 03:55 deploy_web_production.sh
+drwx------.   5 u0_a388 u0_a388     3452 Aug 26 13:30 docker
+-rw-------.   1 u0_a388 u0_a388     2109 Sep  3 10:47 docker-compose.yml
+drwx------.   4 u0_a388 u0_a388     3452 Sep  2 19:04 docs
+-rw-------.   1 u0_a388 u0_a388       88 Sep  5 13:42 dump.rdb
+-rwx------.   1 u0_a388 u0_a388     4698 Sep  4 20:56 extract_vps_info.sh
+-rwx------.   1 u0_a388 u0_a388     2178 Sep  3 08:56 fix_r26_extra_paren.sh
+-rwx------.   1 u0_a388 u0_a388     2459 Sep  3 08:55 fix_r26_quote.sh
+-rw-------.   1 u0_a388 u0_a388     3892 Sep  5 12:53 full_diagnostic_20260905-1253.txt
+-rwx------.   1 u0_a388 u0_a388     3847 Sep  5 12:53 full_diagnostic_and_fix.sh
+-rw-------.   1 u0_a388 u0_a388       32 Sep  3 00:11 gui_rpc_auth.cfg
+drwx------.   6 u0_a388 u0_a388     3452 Aug  7 11:45 infra
+-rwx------.   1 u0_a388 u0_a388     4088 Sep  4 20:43 inspect_r60_exact_failure.sh
+-rwx------.   1 u0_a388 u0_a388     5564 Sep  4 20:45 inspect_r60_failures_vs_r61.sh
+-rwx------.   1 u0_a388 u0_a388     4304 Sep  4 20:46 inspect_r60_r61_authority_link.sh
+-rwx------.   1 u0_a388 u0_a388     6072 Sep  4 20:39 inspect_r60_r65_reconciliation.sh
+-rw-------.   1 u0_a388 u0_a388     1534 Sep  2 23:06 list
+-rwx------.   1 u0_a388 u0_a388     2423 Sep  3 08:52 locate_r26_quote_break.sh
+-rwx------.   1 u0_a388 u0_a388     2125 Sep  3 09:05 locate_r27_compose_literals.sh
+-rwx------.   1 u0_a388 u0_a388     1592 Sep  3 09:09 locate_r27_literal_parser.sh
+-rw-------.   1 u0_a388 u0_a388        0 Sep  3 00:11 lockfile
+drwx------.   2 u0_a388 u0_a388     3452 Aug 26 13:30 logs
+-rw-------.   1 u0_a388 u0_a388    83751 Sep  3 00:12 lookup_website.html
+drwx------.   4 u0_a388 u0_a388     3452 Aug 31 22:52 migrations
+drwxrwx--x.   2 u0_a388 u0_a388     3452 Sep  3 00:11 notices
+-rw-------.   1 u0_a388 u0_a388     4371 Sep  3 09:52 p0_03_r48_production_reload_authority_gate.txt
+-rw-------.   1 u0_a388 u0_a388     4390 Sep  3 09:54 p0_03_r49_ci_production_deployment_authority_gate.txt
+-rw-------.   1 u0_a388 u0_a388     4938 Sep  3 09:55 p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+-rw-------.   1 u0_a388 u0_a388     5421 Sep  3 09:57 p0_03_r51_production_deployment_safety_authority_gate.txt
+-rw-------.   1 u0_a388 u0_a388     4626 Sep  3 09:58 p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+-rw-------.   1 u0_a388 u0_a388     3416 Sep  3 10:00 p0_03_r53_production_recovery_authority_implementation.txt
+-rw-------.   1 u0_a388 u0_a388     4231 Sep  3 10:01 p0_03_r54_release_identity_authority_reconciliation_gate.txt
+-rw-------.   1 u0_a388 u0_a388     8382 Sep  3 10:25 p0_03_r56_release_identity_post_r55_verification.txt
+-rwx------.   1 u0_a388 u0_a388     6994 Sep  8 13:04 phase1_release_rc_audit.sh
+-rwx------.   1 u0_a388 u0_a388     4648 Sep  8 13:05 phase2_release_authority_check.sh
+-rwx------.   1 u0_a388 u0_a388     4200 Sep  8 13:06 phase3_secrets_runtime_audit.sh
+-rwx------.   1 u0_a388 u0_a388    14211 Sep  3 09:03 phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+-rw-------.   1 u0_a388 u0_a388     3521 Aug  7 11:31 pyproject.toml
+-rw-------.   1 u0_a388 u0_a388       71 Aug 24 19:26 pytest.ini
+-rwx------.   1 u0_a388 u0_a388     2595 Sep  5 09:14 r73_deployment_identity_forensic.sh
+-rwx------.   1 u0_a388 u0_a388     3239 Sep  5 09:15 r74_actual_deployment_identity_sources.sh
+-rw-------.   1 u0_a388 u0_a388    16115 Sep  5 11:10 r75_deployment_identity_20260905_111008.txt
+-rwx------.   1 u0_a388 u0_a388     3180 Sep  5 11:10 r75_deployment_identity_decision.sh
+-rwx------.   1 u0_a388 u0_a388     2291 Sep  5 11:12 r76_deployment_active_gate.sh
+-rw-------.   1 u0_a388 u0_a388     1631 Sep  5 11:12 r76_deployment_active_gate_20260905_111209.txt
+-rw-------.   1 u0_a388 u0_a388     3259 Sep  5 11:33 r_audit_recon.sh
+-rwx------.   1 u0_a388 u0_a388     2644 Sep  5 12:35 reality_check.sh
+-rw-------.   1 u0_a388 u0_a388     2344 Sep  5 12:35 reality_check_output_20260905-1235.txt
+-rwx------.   1 u0_a388 u0_a388     9099 Sep  3 21:20 reconstruct_p0_r65_global_truth_map.sh
+drwx------.   3 u0_a388 u0_a388     3452 Sep  7 19:28 reports
+-rw-------.   1 u0_a388 u0_a388      397 Aug 24 04:40 requirements.txt
+-rwx------.   1 u0_a388 u0_a388    11033 Sep  9 03:43 safe_browser_proxy_cutover.sh
+drwx------.  11 u0_a388 u0_a388     3452 Sep  7 19:15 scripts
+-rwx------.   1 u0_a388 u0_a388      838 Aug 21 13:42 setup_postgres.sh
+drwx------.   3 u0_a388 u0_a388     3452 Aug 17 10:16 src
+-rwx------.   1 u0_a388 u0_a388     1837 Aug 21 13:42 start-platform.sh
+-rw-------.   1 u0_a388 u0_a388      166 Sep  3 00:11 stderrgpudetect.txt
+-rw-------.   1 u0_a388 u0_a388       68 Sep  3 00:11 stdoutgpudetect.txt
+-rw-------.   1 u0_a388 u0_a388      208 Sep  5 16:18 test_debug.py
+drwx------.   3 u0_a388 u0_a388     3452 Sep  9 05:07 tests
+-rw-------.   1 u0_a388 u0_a388      171 Sep  3 00:31 time_stats_log
+drwx------.   4 u0_a388 u0_a388     3452 Sep  9 07:24 var
+-rwx------.   1 u0_a388 u0_a388     9139 Sep  2 19:03 waste-platform-finale-hygiene.sh
+
+--- git ---
+IN_GIT=yes
+/data/data/com.termux/files/home/waste-platform
+origin	https://github.com/mefoku52-cmyk/waste-platform.git (fetch)
+origin	https://github.com/mefoku52-cmyk/waste-platform.git (push)
+  backup-before-secret-cleanup-20260907-190019 55bc4d6 checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+* chore/auto-fix-baseline-20260909-050735      9060a88 checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+  fix/dashboard-copy-validation                793980e db: scale indexes on listings/inquiries/documents/notifications
+  main                                         69be017 [origin/main: ahead 1] checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+  master                                       cfba6b2 Feat: kompletna implementacia listings modulu (entity, model, mapper, repository, service, schemas, router) - vzorova sablona pre zvysnych 6 modulov
+  stabilize-api-surface-20260808               793980e db: scale indexes on listings/inquiries/documents/notifications
+## chore/auto-fix-baseline-20260909-050735
+ M app/core/config.py
+ M app/requirements.txt
+ M app/shared/infrastructure/email/sender.py
+?? app/core/config.py.backup.20260909_132155
+?? app/core/config.py.backup.20260909_133325
+?? app/core/config.py.backup.20260909_133520
+?? app/requirements.txt.backup.20260909_082520
+?? app/requirements.txt.backup.20260909_113144
+?? app/shared/infrastructure/email/sender.py.backup.20260909_130750
+?? app/shared/infrastructure/email/sender.py.broken.20260909_131047
+?? scripts/grok-audit/evidence_pack.txt
+?? scripts/grok-audit/wp_evidence_pack.sh
+9060a88 (HEAD -> chore/auto-fix-baseline-20260909-050735) checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+69be017 (main) checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+c1014ee (origin/main) ci: fix release workflow syntax
+a24dffb release: finalize GHCR image publishing
+55bc4d6 (backup-before-secret-cleanup-20260907-190019) checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+HEAD_SHA=9060a88079a6cf4185327b0f6100a00bf82374d5
+HEAD_SUBJECT=checkpoint: priebezny stav pred restartom sluzieb (117 zmien z upratovania)
+
+===== Q2 TOPOLOGY =====
+.
+./.closure_truth_20260903_114557
+./.closure_truth_20260903_120101
+./.closure_truth_20260903_120225
+./.git
+./.github
+./.github/workflows
+./.production-recovery
+./.production-release
+./.production-release/ci-handoff
+./.production-release/r60-backup
+./.production-release/r60-test
+./.production-release/r61-backup-20260903_104708
+./.pytest_cache
+./.pytest_cache/v
+./.pytest_cache/v/cache
+./.ruff_cache
+./.ruff_cache/0.16.6
+./.venv
+./.venv/bin
+./.venv/include
+./.venv/include/site
+./.venv/lib
+./.venv/lib/python3.14
+./_quarantine
+./_quarantine/20260902_190401
+./_quarantine/20260902_190401/moved
+./_quarantine/20260902_190406
+./_quarantine/20260902_190406/moved
+./_quarantine/20260902_212124
+./_quarantine/20260902_212124/moved
+./_quarantine/20260907_174602
+./_quarantine/20260907_174602/moved
+./alembic
+./alembic/versions
+./app
+./app/__pycache__
+./app/core
+./app/core/__pycache__
+./app/modules
+./app/modules/__pycache__
+./app/modules/admin
+./app/modules/analytics
+./app/modules/auth
+./app/modules/companies
+./app/modules/company_memberships
+./app/modules/compliance
+./app/modules/documents
+./app/modules/inquiries
+./app/modules/listings
+./app/modules/notifications
+./app/modules/uploads
+./app/modules/users
+./app/shared
+./app/shared/__pycache__
+./app/shared/application
+./app/shared/domain
+./app/shared/infrastructure
+./app/shared/presentation
+./app/tests
+./app/tests/__pycache__
+./app/tests/integration
+./app/tests/unit
+./app/worker
+./apps
+./apps/web
+./apps/web/.next
+./apps/web/backups
+./apps/web/log
+./apps/web/src
+./apps/web/tmp
+./archived-phase-scripts
+./audit
+./audit-output
+./audit-output/p0_production_readiness_20260903_074116
+./audit-output/p0_production_readiness_20260903_074435
+./audit-output/p0_production_readiness_20260903_074656
+./audit-output/p0_production_readiness_20260903_074724
+./audit/reports
+./audit/termux-baseline
+./docker
+./docker/backend
+./docker/frontend
+./docker/nginx
+./docker/nginx/conf.d
+./docs
+./docs/decision-log
+./docs/reports
+./infra
+./infra/alertmanager
+./infra/grafana
+./infra/grafana/provisioning
+./infra/loki
+./infra/prometheus
+./infra/prometheus/rules
+./logs
+./migrations
+./migrations/__pycache__
+./migrations/versions
+./migrations/versions/__pycache__
+./notices
+./reports
+./reports/repo-hygiene
+./scripts
+./scripts/backup
+./scripts/deploy
+./scripts/dev
+./scripts/fixes
+./scripts/fixes/__pycache__
+./scripts/forensics
+./scripts/forensics/archive
+./scripts/grok-audit
+./scripts/legacy
+./scripts/ops
+./scripts/ops/__pycache__
+./scripts/security
+./src
+./src/utils
+./tests
+./tests/load
+./tests/load/k6
+./var
+./var/state
+./var/uploads
+
+--- key files ---
+EXISTS docker-compose.yml
+EXISTS .env
+EXISTS .env.example
+EXISTS .env.production
+EXISTS README.md
+EXISTS Makefile
+EXISTS .github/workflows
+
+===== Q3 DEPLOY IDENTITY =====
+./docs/deployment.md
+./.github/workflows/ci.yml
+./.github/workflows/release.yml
+./.venv/lib/python3.14/site-packages/pip/_internal/models/release_control.py
+./.venv/lib/python3.14/site-packages/pip/_internal/models/__pycache__/release_control.cpython-314.pyc
+./scripts/deploy.sh
+./scripts/forensics/archive/phase747-frontend-deployment-classification.sh
+./scripts/forensics/archive/phase7_4_9_r3_11_r3_deployment_secret_authority_provenance.sh
+./scripts/forensics/archive/phase7_4_9_r3_11_r4_deployment_authority_chain_preflight.sh
+./scripts/forensics/archive/phase7_4_9_r3_8_env_runtime_deployment_matrix.sh
+./scripts/validate-release-identity.sh
+./scripts/deploy/00_production_readiness_inventory.sh
+./scripts/deploy/01_runtime_diagnostics.sh
+./scripts/deploy/02_runtime_gate.sh
+./scripts/deploy/03_authority_diagnostics.sh
+./scripts/deploy/04_release_preflight.sh
+./scripts/deploy/05_registry_authority_check.sh
+./scripts/deploy/06_set_registry_authority.sh
+./scripts/deploy/07_docker_daemon_diagnostics.sh
+./scripts/deploy/08_docker_vm_api_diagnostics.sh
+./scripts/deploy/09_alpine_access_diagnostics.sh
+./audit-output/.r48_deploy.tmp
+./audit-output/.r47_deploy.tmp
+./_quarantine/20260902_190406/moved/docs/DEPLOYMENT.md
+./RELEASE_NEXT_STAGE.txt
+./phase1_release_rc_audit.sh
+./phase2_release_authority_check.sh
+./POST_CUTOVER_RELEASE_EVIDENCE_20260908_231334.txt
+./deploy_web_production.sh
+./.production-release/release.env.example
+./.production-release/README.md
+./.production-release/ci-release-identity.example.yml
+./.production-release/ci-handoff/ci-release-identity.sh.example
+./.production-release/ci-handoff/release-manifest.example
+./.production-release/ci-handoff/production-release-handoff.example
+./.production-release/ci-handoff/ci-release-identity-step.example.yml
+./.production-release/ci-handoff/application-image-matrix.example
+./.production-release/ci-handoff/compose-release-injection.example.yml
+./.production-release/ci-handoff/validate-production-release-handoff.sh
+./.production-release/r60-backup/docker-compose.yml.20260903_103811.bak
+./.production-release/r60-backup/deploy.sh.20260903_103811.bak
+./.production-release/r60-test/test-r60-release-aware-deploy.sh
+./.production-release/r61-backup-20260903_104708/ci.yml
+./.production-release/r61-backup-20260903_104708/docker-compose.yml
+./.production-release/r61-backup-20260903_104708/deploy.sh
+./.production-release/r61-backup-20260903_104708/production-recovery.sh
+./p0_03_r49_ci_production_deployment_authority_gate.txt
+./p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+./p0_03_r51_production_deployment_safety_authority_gate.txt
+./r73_deployment_identity_forensic.sh
+./r74_actual_deployment_identity_sources.sh
+./r75_deployment_identity_decision.sh
+./r75_deployment_identity_20260905_111008.txt
+./p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+./p0_03_r53_production_recovery_authority_implementation.txt
+./p0_03_r54_release_identity_authority_reconciliation_gate.txt
+./p0_03_r56_release_identity_post_r55_verification.txt
+./r76_deployment_active_gate.sh
+./r76_deployment_active_gate_20260905_111209.txt
+./archived-phase-scripts/phase_p0_03_r52_rollback_recovery_authority_reconciliation_gate.sh
+./archived-phase-scripts/phase_p0_03_r49_ci_production_deployment_authority_gate.sh
+./archived-phase-scripts/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+./archived-phase-scripts/phase_p0_03_r51_production_deployment_safety_authority_gate.sh
+./archived-phase-scripts/phase_p0_03_r53_production_recovery_authority_implementation.sh
+./archived-phase-scripts/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+
+GITHUB_WORKFLOWS=present
+total 15
+drwx------. 2 u0_a388 u0_a388 3452 Sep  8 12:39 .
+drwx------. 3 u0_a388 u0_a388 3452 Jul 31 20:59 ..
+-rw-------. 1 u0_a388 u0_a388 3271 Jul 31 21:05 ci.yml
+-rw-------. 1 u0_a388 u0_a388 2725 Sep  8 12:51 release.yml
+WORKFLOW_COUNT=2
+GITLAB_CI=absent
+
+===== Q4 COMPOSE / DOCKER =====
+--- FILE docker-compose.yml ---
+1:services:
+3:    image: postgres:16-alpine
+4:    container_name: cmep-postgres
+5:    environment:
+16:    restart: unless-stopped
+21:    image: redis:7-alpine
+22:    container_name: cmep-redis
+30:    restart: unless-stopped
+35:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-api:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+36:    container_name: cmep-api
+37:    environment:
+48:    restart: unless-stopped
+53:    image: ${REGISTRY_IMAGE_PREFIX:?REGISTRY_IMAGE_PREFIX musi byt nastaveny}/cmep-web:${IMAGE_TAG:?IMAGE_TAG musi byt nastaveny}
+54:    container_name: cmep-web
+55:    environment:
+60:    restart: unless-stopped
+DOCKER_PS_UNAVAILABLE
+
+===== Q5 ENV NAMES ONLY =====
+ENVFILE=./apps/web/.env.local KEY_COUNT=1 KEYS=NEXT_PUBLIC_API_BASE_URL,
+ENVFILE=./.env.example KEY_COUNT=12 KEYS=APP_ENV,APP_DEBUG,APP_HOST,APP_PORT,DATABASE_URL,REDIS_URL,JWT_SECRET,JWT_ALGORITHM,JWT_ACCESS_TTL_SECONDS,JWT_REFRESH_TTL_SECONDS,CORS_ORIGINS,NEXT_PUBLIC_API_BASE_URL,
+ENVFILE=./.env KEY_COUNT=12 KEYS=POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,DATABASE_URL,JWT_SECRET_KEY,JWT_REFRESH_SECRET_KEY,JWT_ALGORITHM,JWT_ACCESS_TOKEN_EXPIRE_MINUTES,JWT_REFRESH_TOKEN_EXPIRE_DAYS,REGISTRY_IMAGE_PREFIX,ENVIRONMENT,LOG_LEVEL,
+ENVFILE=./scripts/dev/.env KEY_COUNT=31 KEYS=POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_DB,DATABASE_URL,REDIS_URL,SECRET_KEY,ALGORITHM,ACCESS_TOKEN_EXPIRE_MINUTES,REFRESH_TOKEN_EXPIRE_DAYS,ENVIRONMENT,DEBUG,LOG_LEVEL,API_V1_PREFIX,CORS_ORIGINS,NEXT_PUBLIC_API_URL,NEXT_PUBLIC_WEBSOCKET_URL,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASSWORD,EMAIL_FROM,CELERY_BROKER_URL,CELERY_RESULT_BACKEND,PROMETHEUS_MULTIPROC_DIR,GRAFANA_USER,GRAFANA_PASSWORD,RATE_LIMIT_ENABLED,RATE_LIMIT_REQUESTS,RATE_LIMIT_PERIOD,GDPR_ENABLED,GDPR_COOKIE_CONSENT,
+ENVFILE=./.env.production.bak_registry_20260907_192851 KEY_COUNT=58 KEYS=APP_ENV,APP_NAME,APP_DOMAIN,API_DOMAIN,LETSENCRYPT_EMAIL,APP_HOST,APP_PORT,APP_DEBUG,APP_LOG_LEVEL,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_HOST,POSTGRES_PORT,DATABASE_HOST,DATABASE_PORT,DATABASE_NAME,DATABASE_USER,DATABASE_PASSWORD,DATABASE_URL,REDIS_HOST,REDIS_PORT,REDIS_URL,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,S3_ENDPOINT_URL,S3_PUBLIC_ENDPOINT_URL,S3_REGION,S3_ACCESS_KEY,S3_SECRET_KEY,S3_BUCKET_DOCUMENTS,S3_BUCKET_MEDIA,S3_USE_SSL,S3_FORCE_PATH_STYLE,JWT_ISSUER,JWT_AUDIENCE,JWT_SECRET_KEY,JWT_REFRESH_SECRET_KEY,ACCESS_TOKEN_EXPIRE_MINUTES,REFRESH_TOKEN_EXPIRE_DAYS,JWT_ALGORITHM,PASSWORD_BCRYPT_ROUNDS,CORS_ALLOWED_ORIGINS,NEXT_PUBLIC_API_BASE_URL,EMAIL_PROVIDER,EMAIL_FROM,SMTP_HOST,SMTP_PORT,SMTP_USERNAME,SMTP_PASSWORD,SMTP_USE_TLS,QUEUE_DRIVER,WORKER_CONCURRENCY,DEFAULT_PAGE_SIZE,MAX_PAGE_SIZE,OTEL_ENABLED,SENTRY_DSN,REQUEST_ID_HEADER,
+ENVFILE=./.env.production KEY_COUNT=59 KEYS=APP_ENV,APP_NAME,APP_DOMAIN,API_DOMAIN,LETSENCRYPT_EMAIL,APP_HOST,APP_PORT,APP_DEBUG,APP_LOG_LEVEL,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_HOST,POSTGRES_PORT,DATABASE_HOST,DATABASE_PORT,DATABASE_NAME,DATABASE_USER,DATABASE_PASSWORD,DATABASE_URL,REDIS_HOST,REDIS_PORT,REDIS_URL,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,S3_ENDPOINT_URL,S3_PUBLIC_ENDPOINT_URL,S3_REGION,S3_ACCESS_KEY,S3_SECRET_KEY,S3_BUCKET_DOCUMENTS,S3_BUCKET_MEDIA,S3_USE_SSL,S3_FORCE_PATH_STYLE,JWT_ISSUER,JWT_AUDIENCE,JWT_SECRET_KEY,JWT_REFRESH_SECRET_KEY,ACCESS_TOKEN_EXPIRE_MINUTES,REFRESH_TOKEN_EXPIRE_DAYS,JWT_ALGORITHM,PASSWORD_BCRYPT_ROUNDS,CORS_ALLOWED_ORIGINS,NEXT_PUBLIC_API_BASE_URL,EMAIL_PROVIDER,EMAIL_FROM,SMTP_HOST,SMTP_PORT,SMTP_USERNAME,SMTP_PASSWORD,SMTP_USE_TLS,QUEUE_DRIVER,WORKER_CONCURRENCY,DEFAULT_PAGE_SIZE,MAX_PAGE_SIZE,OTEL_ENABLED,SENTRY_DSN,REQUEST_ID_HEADER,REGISTRY_IMAGE_PREFIX,
+ENVFILE=./.env.compose KEY_COUNT=7 KEYS=POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,JWT_REFRESH_SECRET_KEY,JWT_SECRET_KEY,NEXT_PUBLIC_API_BASE_URL,CORS_ALLOWED_ORIGINS,
+ENVFILE=./.env.production.backup.20260908_132807 KEY_COUNT=59 KEYS=APP_ENV,APP_NAME,APP_DOMAIN,API_DOMAIN,LETSENCRYPT_EMAIL,APP_HOST,APP_PORT,APP_DEBUG,APP_LOG_LEVEL,POSTGRES_DB,POSTGRES_USER,POSTGRES_PASSWORD,POSTGRES_HOST,POSTGRES_PORT,DATABASE_HOST,DATABASE_PORT,DATABASE_NAME,DATABASE_USER,DATABASE_PASSWORD,DATABASE_URL,REDIS_HOST,REDIS_PORT,REDIS_URL,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,S3_ENDPOINT_URL,S3_PUBLIC_ENDPOINT_URL,S3_REGION,S3_ACCESS_KEY,S3_SECRET_KEY,S3_BUCKET_DOCUMENTS,S3_BUCKET_MEDIA,S3_USE_SSL,S3_FORCE_PATH_STYLE,JWT_ISSUER,JWT_AUDIENCE,JWT_SECRET_KEY,JWT_REFRESH_SECRET_KEY,ACCESS_TOKEN_EXPIRE_MINUTES,REFRESH_TOKEN_EXPIRE_DAYS,JWT_ALGORITHM,PASSWORD_BCRYPT_ROUNDS,CORS_ALLOWED_ORIGINS,NEXT_PUBLIC_API_BASE_URL,EMAIL_PROVIDER,EMAIL_FROM,SMTP_HOST,SMTP_PORT,SMTP_USERNAME,SMTP_PASSWORD,SMTP_USE_TLS,QUEUE_DRIVER,WORKER_CONCURRENCY,DEFAULT_PAGE_SIZE,MAX_PAGE_SIZE,OTEL_ENABLED,SENTRY_DSN,REQUEST_ID_HEADER,REGISTRY_IMAGE_PREFIX,
+
+===== Q6 AUDIT GATES =====
+./audit-output/p0_03_r37_production_readiness_chain_discovery_gate.txt
+./audit-output/p0_03_r38_production_readiness_normalized_ledger_gate.txt
+./audit-output/p0_03_r39_production_readiness_supersession_ledger_gate.txt
+./audit-output/p0_03_r40_production_readiness_deterministic_ledger_gate.txt
+./audit-output/p0_03_r41_production_readiness_ledger_closure_gate.txt
+./audit-output/p0_03_r42_real_production_readiness_gate.txt
+./audit-output/p0_03_r43_production_gap_classification_gate.txt
+./audit-output/p0_03_r44_unsafe_bind_blocker_locator_gate.txt
+./audit-output/p0_03_r45_application_host_dataflow_locator_gate.txt
+./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt
+./audit-output/p0_03_r47_production_reload_dataflow_gate.txt
+./audit-output/p0_03_r48_production_reload_authority_gate.txt
+./phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+./p0_03_r48_production_reload_authority_gate.txt
+./p0_03_r49_ci_production_deployment_authority_gate.txt
+./p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+./p0_03_r51_production_deployment_safety_authority_gate.txt
+./r75_deployment_identity_decision.sh
+./r75_deployment_identity_20260905_111008.txt
+./audit_final_map.sh
+./audit_final_map_20260905_111659.txt
+./p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+./p0_03_r53_production_recovery_authority_implementation.txt
+./p0_03_r54_release_identity_authority_reconciliation_gate.txt
+./p0_03_r56_release_identity_post_r55_verification.txt
+./r76_deployment_active_gate.sh
+./r76_deployment_active_gate_20260905_111209.txt
+./archived-phase-scripts/phase_p0_01_production_source_boundary.sh
+./archived-phase-scripts/phase_p0_01_r2_production_authority_resolver.sh
+./archived-phase-scripts/phase_p0_01_r3_authority_discriminator.sh
+./archived-phase-scripts/phase_p0_01_r4_legacy_ttl_targeted_review.sh
+./archived-phase-scripts/phase_p0_01_r5_legacy_ttl_authority_closure.sh
+./archived-phase-scripts/phase_p0_01_r6_forensic_execution_proof.sh
+./archived-phase-scripts/phase_p0_01_r7_semantic_execution_proof.sh
+./archived-phase-scripts/phase_p0_01_r8_token_aware_execution_proof.sh
+./archived-phase-scripts/phase_p0_02_r10_secret_cross_authority_closure.sh
+./archived-phase-scripts/phase_p0_02_r11_secret_provenance_lineage_closure.sh
+./archived-phase-scripts/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh
+./archived-phase-scripts/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+./archived-phase-scripts/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+./archived-phase-scripts/phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+./archived-phase-scripts/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+./archived-phase-scripts/phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+./archived-phase-scripts/phase_p0_02_r18_secret_provenance_stability_gate.sh
+./archived-phase-scripts/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+./archived-phase-scripts/phase_p0_02_r1_secret_assignment_semantic_proof.sh
+./archived-phase-scripts/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh
+./archived-phase-scripts/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh
+./archived-phase-scripts/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh
+./archived-phase-scripts/phase_p0_02_r23_secret_provenance_parser_probe.sh
+./archived-phase-scripts/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh
+./archived-phase-scripts/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh
+./archived-phase-scripts/phase_p0_02_r26_secret_provenance_baseline_gate.sh
+./archived-phase-scripts/phase_p0_02_r26_secret_provenance_ground_truth_parser.broken.sh
+./archived-phase-scripts/phase_p0_02_r2_secret_value_token_aware_proof.sh
+./archived-phase-scripts/phase_p0_02_r26_secret_provenance_ground_truth_parser.sh
+./archived-phase-scripts/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh
+./archived-phase-scripts/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+./archived-phase-scripts/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh
+./archived-phase-scripts/phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+./archived-phase-scripts/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh
+./archived-phase-scripts/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh
+./archived-phase-scripts/phase_p0_02_r33_secret_provenance_final_classification_gate.sh
+./archived-phase-scripts/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh
+./archived-phase-scripts/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh
+./archived-phase-scripts/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+./archived-phase-scripts/phase_p0_02_r3_secret_authority_boundary_proof.sh
+./archived-phase-scripts/phase_p0_02_r4_secret_wiring_token_aware_proof.sh
+./archived-phase-scripts/phase_p0_02_r5_secret_wiring_semantic_closure.sh
+./archived-phase-scripts/phase_p0_02_r6_secret_wiring_context_closure.sh
+./archived-phase-scripts/phase_p0_02_r7_compose_secret_token_proof.sh
+./archived-phase-scripts/phase_p0_02_r8_compose_secret_context_closure.sh
+./archived-phase-scripts/phase_p0_02_r9_runtime_secret_authority_closure.sh
+./archived-phase-scripts/phase_p0_02_safety_signed_production_remediation_preflight.sh
+./archived-phase-scripts/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh
+./archived-phase-scripts/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh
+./archived-phase-scripts/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh
+./archived-phase-scripts/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh
+./archived-phase-scripts/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+./archived-phase-scripts/phase_p0_03_r42_real_production_readiness_gate.sh
+./archived-phase-scripts/phase_p0_03_r43_production_gap_classification_gate.sh
+./archived-phase-scripts/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh
+./archived-phase-scripts/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh
+./archived-phase-scripts/phase_p0_03_r48_production_reload_authority_gate.sh
+./archived-phase-scripts/phase_p0_03_r52_rollback_recovery_authority_reconciliation_gate.sh
+./archived-phase-scripts/phase_p0_03_r45_application_host_dataflow_locator_gate.sh
+./archived-phase-scripts/phase_p0_03_r47_production_reload_dataflow_gate.sh
+./archived-phase-scripts/phase_p0_03_r49_ci_production_deployment_authority_gate.sh
+./archived-phase-scripts/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+./archived-phase-scripts/phase_p0_03_r51_production_deployment_safety_authority_gate.sh
+./archived-phase-scripts/phase_p0_03_r53_production_recovery_authority_implementation.sh
+./archived-phase-scripts/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+
+FILE ./audit-output/p0_03_r37_production_readiness_chain_discovery_gate.txt
+RESULT=P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_FAIL
+
+FILE ./audit-output/p0_03_r38_production_readiness_normalized_ledger_gate.txt
+RESULT=P0_03_R38_PRODUCTION_READINESS_NORMALIZED_LEDGER_FAIL
+
+FILE ./audit-output/p0_03_r39_production_readiness_supersession_ledger_gate.txt
+RESULT=P0_03_R39_PRODUCTION_READINESS_SUPERSESSION_LEDGER_REVIEW
+
+FILE ./audit-output/p0_03_r40_production_readiness_deterministic_ledger_gate.txt
+RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+
+FILE ./audit-output/p0_03_r41_production_readiness_ledger_closure_gate.txt
+R40_RESULT=P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW
+RESULT=P0_03_R41_PRODUCTION_READINESS_LEDGER_CLOSURE_PASS
+
+FILE ./audit-output/p0_03_r42_real_production_readiness_gate.txt
+RESULT=P0_03_R42_REAL_PRODUCTION_READINESS_REVIEW
+
+FILE ./audit-output/p0_03_r43_production_gap_classification_gate.txt
+SECURITY_WORKFLOW_COUNT=0
+SECURITY_WORKFLOW_COUNT=0
+RESULT=P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_BLOCKED
+
+FILE ./audit-output/p0_03_r44_unsafe_bind_blocker_locator_gate.txt
+RESULT=P0_03_R44_UNSAFE_BIND_BLOCKER_CLASSIFICATION_REVIEW
+
+FILE ./audit-output/p0_03_r45_application_host_dataflow_locator_gate.txt
+RESULT=P0_03_R45_APPLICATION_HOST_DATAFLOW_REVIEW
+
+FILE ./audit-output/p0_03_r46_application_host_runtime_dataflow_closure_gate.txt
+RESULT=P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_CLOSURE_PASS
+
+FILE ./audit-output/p0_03_r47_production_reload_dataflow_gate.txt
+RESULT=P0_03_R47_PRODUCTION_RELOAD_BLOCKER_CONFIRMED
+
+FILE ./phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh.pre_literal_classifier_fix
+    RESULT="P0_02_R27_SECRET_PROVENANCE_POST_R26_INTEGRITY_FAILED"
+    RESULT="P0_02_R27_SECRET_PROVENANCE_POST_R26_INTEGRITY_REVIEW_REQUIRED"
+    RESULT="P0_02_R27_SECRET_PROVENANCE_POST_R26_INTEGRITY_CLEAN"
+log "RESULT=${RESULT}"
+
+FILE ./p0_03_r48_production_reload_authority_gate.txt
+RESULT=P0_03_R48_PRODUCTION_RELOAD_AUTHORITY_CLOSED
+
+FILE ./p0_03_r49_ci_production_deployment_authority_gate.txt
+CI_WORKFLOW_COUNT=1
+CI_WORKFLOW_COUNT=1
+RESULT=P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_REVIEW
+
+FILE ./p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.txt
+RESULT=P0_03_R50_CI_PRODUCTION_ARCHITECTURAL_SEPARATION_CONFIRMED
+
+FILE ./p0_03_r51_production_deployment_safety_authority_gate.txt
+RESULT=P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_REVIEW
+
+FILE ./r75_deployment_identity_decision.sh
+    echo "VERDICT=DEPLOYMENT_IDENTITY_PRESENT_IN_ACTIVE_PROJECT" | tee -a "$OUT"
+    echo "VERDICT=DEPLOYMENT_IDENTITY_DOCUMENTED_ONLY" | tee -a "$OUT"
+    echo "VERDICT=NO_DEPLOYMENT_IDENTITY_FOUND_IN_ACTIVE_PROJECT" | tee -a "$OUT"
+
+FILE ./r75_deployment_identity_20260905_111008.txt
+VERDICT=DEPLOYMENT_IDENTITY_DOCUMENTED_ONLY
+
+FILE ./audit_final_map_20260905_111659.txt
+P0-01_production_source_boundary.txt -> RESULT=P0_01_PRODUCTION_SOURCE_BOUNDARY_REVIEW_REQUIRED
+P0-01-R2_production_authority_resolver.txt -> RESULT=P0_01_R2_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+P0-01-R3_authority_discriminator.txt -> RESULT=P0_01_R3_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+P0-01-R3_authority_discriminator.txt -> RESULT=P0_01_R3_PRODUCTION_AUTHORITY_REVIEW_REQUIRED
+p0_01_r4_legacy_ttl_targeted_review.txt -> RESULT=P0_01_R4_LEGACY_TTL_RUNTIME_BOUNDARY_CLEAN
+p0_01_r5_legacy_ttl_authority_closure.txt -> RESULT=P0_01_R5_LEGACY_TTL_AUTHORITY_REVIEW_REQUIRED
+p0_01_r6_forensic_execution_proof.txt -> RESULT=P0_01_R6_FORENSIC_EXECUTION_BOUNDARY_REVIEW_REQUIRED
+p0_01_r7_semantic_execution_proof.txt -> RESULT=P0_01_R7_SEMANTIC_EXECUTION_BOUNDARY_REVIEW_REQUIRED
+
+FILE ./p0_03_r52_rollback_recovery_authority_reconciliation_gate.txt
+RESULT=P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_REVIEW
+
+FILE ./p0_03_r53_production_recovery_authority_implementation.txt
+RESULT=P0_03_R53_RECOVERY_AUTHORITY_IMPLEMENTED_BUT_ARTIFACT_ROLLBACK_REQUIRES_VERSIONED_RELEASE_AUTHORITY
+
+FILE ./p0_03_r54_release_identity_authority_reconciliation_gate.txt
+RESULT=P0_03_R54_RELEASE_IDENTITY_AUTHORITY_REQUIRES_IMPLEMENTATION
+
+FILE ./p0_03_r56_release_identity_post_r55_verification.txt
+RESULT=P0_03_R56_RELEASE_IDENTITY_CONTRACT_VALID_CI_DEPLOY_HANDOFF_PENDING
+
+FILE ./r76_deployment_active_gate.sh
+    echo "VERDICT=ACTIVE_DEPLOYMENT_WORKFLOW_FOUND" | tee -a "$OUT"
+    echo "VERDICT=DEPLOY_SCRIPT_PRESENT_BUT_NO_ACTIVE_WORKFLOW_FOUND" | tee -a "$OUT"
+    echo "VERDICT=NO_ACTIVE_DEPLOYMENT_PATH_FOUND" | tee -a "$OUT"
+echo "WORKFLOW_COUNT=$WF_COUNT" | tee -a "$OUT"
+
+FILE ./r76_deployment_active_gate_20260905_111209.txt
+VERDICT=DEPLOY_SCRIPT_PRESENT_BUT_NO_ACTIVE_WORKFLOW_FOUND
+WORKFLOW_COUNT=0
+
+FILE ./archived-phase-scripts/phase_p0_01_production_source_boundary.sh
+    echo "RESULT=P0_01_PRODUCTION_SOURCE_BOUNDARY_COMPLETE" | tee -a "$REPORT"
+    echo "RESULT=P0_01_PRODUCTION_SOURCE_BOUNDARY_REVIEW_REQUIRED" | tee -a "$REPORT"
+    echo "RESULT=P0_01_PRODUCTION_SOURCE_BOUNDARY_FAILED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_01_r2_production_authority_resolver.sh
+    echo "RESULT=P0_01_R2_PRODUCTION_AUTHORITY_RESOLVED" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R2_PRODUCTION_AUTHORITY_REVIEW_REQUIRED" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R2_PRODUCTION_AUTHORITY_RESOLUTION_FAILED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_01_r3_authority_discriminator.sh
+    echo "RESULT=P0_01_R3_PRODUCTION_AUTHORITY_BOUNDARY_CLEAN" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R3_PRODUCTION_AUTHORITY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R3_PRODUCTION_AUTHORITY_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_01_r4_legacy_ttl_targeted_review.sh
+    echo "RESULT=P0_01_R4_LEGACY_TTL_RUNTIME_BOUNDARY_CLEAN" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R4_LEGACY_TTL_RUNTIME_BOUNDARY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R4_LEGACY_TTL_RUNTIME_BOUNDARY_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_01_r5_legacy_ttl_authority_closure.sh
+    echo "RESULT=P0_01_R5_LEGACY_TTL_AUTHORITY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R5_LEGACY_TTL_AUTHORITY_BOUNDARY_CLEAN" | tee -a "$REPORT"
+echo "RESULT=P0_01_R5_LEGACY_TTL_AUTHORITY_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_01_r6_forensic_execution_proof.sh
+    echo "RESULT=P0_01_R6_FORENSIC_EXECUTION_BOUNDARY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_01_R6_FORENSIC_EXECUTION_BOUNDARY_CLEAN" | tee -a "$REPORT"
+echo "RESULT=P0_01_R6_FORENSIC_EXECUTION_BOUNDARY_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_01_r7_semantic_execution_proof.sh
+    echo "RESULT=P0_01_R7_SEMANTIC_EXECUTION_BOUNDARY_FAILURE" |
+    echo "RESULT=P0_01_R7_SEMANTIC_EXECUTION_BOUNDARY_CLEAN" |
+echo "RESULT=P0_01_R7_SEMANTIC_EXECUTION_BOUNDARY_REVIEW_REQUIRED" |
+
+FILE ./archived-phase-scripts/phase_p0_01_r8_token_aware_execution_proof.sh
+    echo "RESULT=P0_01_R8_TOKEN_AWARE_EXECUTION_BOUNDARY_FAILURE" |
+    echo "RESULT=P0_01_R8_TOKEN_AWARE_EXECUTION_BOUNDARY_CLEAN" |
+echo "RESULT=P0_01_R8_TOKEN_AWARE_EXECUTION_BOUNDARY_REVIEW_REQUIRED" |
+
+FILE ./archived-phase-scripts/phase_p0_02_r10_secret_cross_authority_closure.sh
+    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_FAILURE"
+    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R10_SECRET_CROSS_AUTHORITY_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r11_secret_provenance_lineage_closure.sh
+    RESULT="P0_02_R11_SECRET_PROVENANCE_LINEAGE_CLOSURE_FAIL"
+    RESULT="P0_02_R11_SECRET_PROVENANCE_LINEAGE_CLOSURE_REVIEW"
+    RESULT="P0_02_R11_SECRET_PROVENANCE_LINEAGE_CLOSURE_CLEAN"
+echo "RESULT=$RESULT" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r12_secret_provenance_analyzer_hardening.sh
+    RESULT="P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_FAILURE"
+    RESULT="P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_REVIEW_REQUIRED"
+    RESULT="P0_02_R12_SECRET_PROVENANCE_ANALYZER_HARDENING_CLEAN"
+echo "RESULT=$RESULT" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r13_compose_secret_provenance_semantic_proof.sh
+    RESULT="P0_02_R13_COMPOSE_SECRET_PROVENANCE_SEMANTIC_FAILURE"
+    RESULT="P0_02_R13_COMPOSE_SECRET_PROVENANCE_SEMANTIC_REVIEW_REQUIRED"
+    RESULT="P0_02_R13_COMPOSE_SECRET_PROVENANCE_SEMANTIC_CLEAN"
+echo "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r14_secret_provenance_analyzer_consistency_closure.sh
+    RESULT="P0_02_R14_SECRET_PROVENANCE_ANALYZER_CONSISTENCY_FAILURE"
+    RESULT="P0_02_R14_SECRET_PROVENANCE_ANALYZER_CONSISTENCY_REVIEW_REQUIRED"
+    RESULT="P0_02_R14_SECRET_PROVENANCE_ANALYZER_CONSISTENCY_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r15_secret_provenance_expected_count_closure.sh
+    RESULT="P0_02_R15_SECRET_PROVENANCE_EXPECTED_COUNT_CLOSURE_FAILURE"
+    RESULT="P0_02_R15_SECRET_PROVENANCE_EXPECTED_COUNT_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R15_SECRET_PROVENANCE_EXPECTED_COUNT_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r16_secret_provenance_final_lineage_closure.sh
+    RESULT="P0_02_R16_SECRET_PROVENANCE_FINAL_LINEAGE_CLOSURE_FAILURE"
+    RESULT="P0_02_R16_SECRET_PROVENANCE_FINAL_LINEAGE_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R16_SECRET_PROVENANCE_FINAL_LINEAGE_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r17_secret_provenance_false_positive_closure.sh
+    RESULT="P0_02_R17_SECRET_PROVENANCE_FALSE_POSITIVE_CLOSURE_FAILURE"
+    RESULT="P0_02_R17_SECRET_PROVENANCE_FALSE_POSITIVE_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R17_SECRET_PROVENANCE_FALSE_POSITIVE_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r18_secret_provenance_stability_gate.sh
+    RESULT="P0_02_R18_SECRET_PROVENANCE_STABILITY_GATE_FAILURE"
+    RESULT="P0_02_R18_SECRET_PROVENANCE_STABILITY_GATE_REVIEW_REQUIRED"
+    RESULT="P0_02_R18_SECRET_PROVENANCE_STABILITY_GATE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r19_secret_provenance_parser_reconciliation.sh
+    R17_RESULT="$(grep -E '^RESULT=' "$R17_REPORT" 2>/dev/null | tail -1 | cut -d= -f2-)"
+    RESULT="P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_FAILURE"
+    RESULT="P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_REVIEW_REQUIRED"
+    RESULT="P0_02_R19_SECRET_PROVENANCE_PARSER_RECONCILIATION_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r1_secret_assignment_semantic_proof.sh
+    echo "RESULT=P0_02_R1_SECRET_ASSIGNMENT_BOUNDARY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_02_R1_SECRET_ASSIGNMENT_SEMANTIC_BOUNDARY_CLEAN" | tee -a "$REPORT"
+echo "RESULT=P0_02_R1_SECRET_ASSIGNMENT_SEMANTIC_BOUNDARY_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r20_secret_provenance_semantic_reconciliation.sh
+    RESULT="P0_02_R20_SECRET_PROVENANCE_SEMANTIC_RECONCILIATION_FAILURE"
+    RESULT="P0_02_R20_SECRET_PROVENANCE_SEMANTIC_RECONCILIATION_REVIEW_REQUIRED"
+    RESULT="P0_02_R20_SECRET_PROVENANCE_SEMANTIC_RECONCILIATION_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r21_secret_provenance_deterministic_parser_closure.sh
+    RESULT="P0_02_R21_SECRET_PROVENANCE_DETERMINISTIC_PARSER_CLOSURE_FAILURE"
+    RESULT="P0_02_R21_SECRET_PROVENANCE_DETERMINISTIC_PARSER_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R21_SECRET_PROVENANCE_DETERMINISTIC_PARSER_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r22_secret_provenance_semantic_parser_final_closure.sh
+    RESULT="P0_02_R22_SECRET_PROVENANCE_SEMANTIC_PARSER_FINAL_CLOSURE_FAILURE"
+    RESULT="P0_02_R22_SECRET_PROVENANCE_SEMANTIC_PARSER_FINAL_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R22_SECRET_PROVENANCE_SEMANTIC_PARSER_FINAL_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r24_secret_provenance_ground_truth_closure.sh
+    RESULT="P0_02_R24_SECRET_PROVENANCE_GROUND_TRUTH_CLOSURE_FAILURE"
+    RESULT="P0_02_R24_SECRET_PROVENANCE_GROUND_TRUTH_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R24_SECRET_PROVENANCE_GROUND_TRUTH_CLOSURE_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r25_secret_provenance_ground_truth_deterministic.sh
+    RESULT="P0_02_R25_SECRET_PROVENANCE_GROUND_TRUTH_DETERMINISTIC_FAILURE"
+    RESULT="P0_02_R25_SECRET_PROVENANCE_GROUND_TRUTH_DETERMINISTIC_REVIEW_REQUIRED"
+    RESULT="P0_02_R25_SECRET_PROVENANCE_GROUND_TRUTH_DETERMINISTIC_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r26_secret_provenance_baseline_gate.sh
+    RESULT="P0_02_R26_SECRET_PROVENANCE_BASELINE_CLEAN"
+    RESULT="P0_02_R26_SECRET_PROVENANCE_BASELINE_REVIEW"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r26_secret_provenance_ground_truth_parser.broken.sh
+    RESULT="P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_FAILURE"
+    RESULT="P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_REVIEW_REQUIRED"
+    RESULT="P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r2_secret_value_token_aware_proof.sh
+    echo "RESULT=P0_02_R2_SECRET_VALUE_TOKEN_AWARE_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_02_R2_PRODUCTION_SECRET_VALUE_EXPOSURE_DETECTED" | tee -a "$REPORT"
+    echo "RESULT=P0_02_R2_SECRET_VALUE_TOKEN_AWARE_BOUNDARY_CLEAN" | tee -a "$REPORT"
+echo "RESULT=P0_02_R2_SECRET_VALUE_TOKEN_AWARE_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r26_secret_provenance_ground_truth_parser.sh
+    RESULT="P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_FAILURE"
+    RESULT="P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_REVIEW_REQUIRED"
+    RESULT="P0_02_R26_SECRET_PROVENANCE_GROUND_TRUTH_PARSER_CLEAN"
+log "RESULT=$RESULT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r27_secret_provenance_post_r26_integrity_gate.sh
+    RESULT="P0_02_R27_SECRET_PROVENANCE_POST_R26_INTEGRITY_CLEAN"
+    RESULT="P0_02_R27_SECRET_PROVENANCE_POST_R26_INTEGRITY_REVIEW"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r28_secret_provenance_post_r27_regression_gate.sh
+    RESULT="P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_CLEAN"
+    RESULT="P0_02_R28_SECRET_PROVENANCE_POST_R27_REGRESSION_REVIEW"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r29_secret_provenance_cross_file_consistency_gate.sh
+    RESULT="P0_02_R29_SECRET_PROVENANCE_CROSS_FILE_CONSISTENCY_CLEAN"
+    RESULT="P0_02_R29_SECRET_PROVENANCE_CROSS_FILE_CONSISTENCY_REVIEW"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r30_secret_provenance_regression_closure_gate.sh
+    RESULT="P0_02_R30_SECRET_PROVENANCE_REGRESSION_CLOSURE_CLEAN"
+    RESULT="P0_02_R30_SECRET_PROVENANCE_REGRESSION_CLOSURE_REVIEW"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r31_r26_r30_forensic_reconciliation_gate.sh
+    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_CLEAN"
+    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_REVIEW"
+    RESULT="P0_02_R31_R26_R30_FORENSIC_RECONCILIATION_FAIL"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r32_secret_output_false_positive_locator_gate.sh
+    RESULT="P0_02_R32_SECRET_OUTPUT_FALSE_POSITIVE_LOCATOR_FAIL"
+    RESULT="P0_02_R32_SECRET_OUTPUT_FALSE_POSITIVE_LOCATOR_REVIEW"
+    RESULT="P0_02_R32_SECRET_OUTPUT_FALSE_POSITIVE_LOCATOR_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r33_secret_provenance_final_classification_gate.sh
+    RESULT="P0_02_R33_SECRET_PROVENANCE_FINAL_CLASSIFICATION_FAIL"
+    RESULT="P0_02_R33_SECRET_PROVENANCE_FINAL_CLASSIFICATION_REVIEW"
+    RESULT="P0_02_R33_SECRET_PROVENANCE_FINAL_CLASSIFICATION_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r34_secret_provenance_scope_corrected_gate.sh
+    RESULT="P0_02_R34_SECRET_PROVENANCE_SCOPE_CORRECTED_FAIL"
+    RESULT="P0_02_R34_SECRET_PROVENANCE_SCOPE_CORRECTED_REVIEW"
+    RESULT="P0_02_R34_SECRET_PROVENANCE_SCOPE_CORRECTED_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r35_secret_provenance_final_integrity_gate.sh
+    RESULT="P0_02_R35_SECRET_PROVENANCE_FINAL_INTEGRITY_FAIL"
+    RESULT="P0_02_R35_SECRET_PROVENANCE_FINAL_INTEGRITY_REVIEW"
+    RESULT="P0_02_R35_SECRET_PROVENANCE_FINAL_INTEGRITY_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r36_secret_provenance_closure_attestation_gate.sh
+R35_RESULT=""
+    R35_RESULT="$(
+            /^RESULT=/ {
+    log "R35_RESULT=${R35_RESULT}"
+    grep -Ec '^RESULT=' "${R35_REPORT}" 2>/dev/null || true
+    RESULT="P0_02_R36_SECRET_PROVENANCE_CLOSURE_ATTESTATION_FAIL"
+    RESULT="P0_02_R36_SECRET_PROVENANCE_CLOSURE_ATTESTATION_REVIEW"
+    RESULT="P0_02_R36_SECRET_PROVENANCE_CLOSURE_ATTESTATION_PASS"
+
+FILE ./archived-phase-scripts/phase_p0_02_r3_secret_authority_boundary_proof.sh
+    echo "RESULT=P0_02_R3_SECRET_AUTHORITY_BOUNDARY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_02_R3_SECRET_AUTHORITY_BOUNDARY_CLEAN" | tee -a "$REPORT"
+echo "RESULT=P0_02_R3_SECRET_AUTHORITY_BOUNDARY_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r4_secret_wiring_token_aware_proof.sh
+    echo "RESULT=P0_02_R4_SECRET_WIRING_BOUNDARY_FAILURE" | tee -a "$REPORT"
+    echo "RESULT=P0_02_R4_SECRET_WIRING_TOKEN_AWARE_REVIEW_REQUIRED" | tee -a "$REPORT"
+echo "RESULT=P0_02_R4_SECRET_WIRING_TOKEN_AWARE_CLEAN" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r5_secret_wiring_semantic_closure.sh
+    RESULT="P0_02_R5_SECRET_WIRING_SEMANTIC_FAILURE"
+    RESULT="P0_02_R5_SECRET_WIRING_SEMANTIC_REVIEW_REQUIRED"
+    RESULT="P0_02_R5_SECRET_WIRING_SEMANTIC_CLOSURE_CLEAN"
+echo "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_02_r6_secret_wiring_context_closure.sh
+    RESULT="P0_02_R6_SECRET_WIRING_CONTEXT_BOUNDARY_FAILURE"
+    RESULT="P0_02_R6_SECRET_WIRING_CONTEXT_REVIEW_REQUIRED"
+    RESULT="P0_02_R6_SECRET_WIRING_CONTEXT_CLOSURE_CLEAN"
+echo "RESULT=$RESULT" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r7_compose_secret_token_proof.sh
+    RESULT="P0_02_R7_COMPOSE_SECRET_TOKEN_PROOF_FAILURE"
+    RESULT="P0_02_R7_COMPOSE_SECRET_TOKEN_PROOF_REVIEW_REQUIRED"
+    RESULT="P0_02_R7_COMPOSE_SECRET_TOKEN_PROOF_CLEAN"
+echo "RESULT=$RESULT" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r8_compose_secret_context_closure.sh
+    RESULT="P0_02_R8_COMPOSE_SECRET_CONTEXT_BOUNDARY_FAILURE"
+    RESULT="P0_02_R8_COMPOSE_SECRET_CONTEXT_BOUNDARY_REVIEW_REQUIRED"
+    RESULT="P0_02_R8_COMPOSE_SECRET_CONTEXT_BOUNDARY_CLEAN"
+echo "RESULT=$RESULT" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_r9_runtime_secret_authority_closure.sh
+    RESULT="P0_02_R9_RUNTIME_SECRET_AUTHORITY_CLOSURE_FAILURE"
+    RESULT="P0_02_R9_RUNTIME_SECRET_AUTHORITY_CLOSURE_REVIEW_REQUIRED"
+    RESULT="P0_02_R9_RUNTIME_SECRET_AUTHORITY_CLOSURE_CLEAN"
+echo "RESULT=$RESULT" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_02_safety_signed_production_remediation_preflight.sh
+    echo "RESULT=P0_02_SAFETY_SIGNED_REMEDIATION_PREFLIGHT_FAILURE" | tee -a "$REPORT"
+        echo "RESULT=P0_02_SAFETY_SIGNED_PRODUCTION_REMEDIATION_PREFLIGHT_CLEAN" | tee -a "$REPORT"
+    echo "RESULT=P0_02_SAFETY_SIGNED_PRODUCTION_REMEDIATION_PREFLIGHT_REVIEW_REQUIRED" | tee -a "$REPORT"
+echo "RESULT=P0_02_SAFETY_SIGNED_PRODUCTION_REMEDIATION_PREFLIGHT_REVIEW_REQUIRED" | tee -a "$REPORT"
+
+FILE ./archived-phase-scripts/phase_p0_03_r37_production_readiness_chain_discovery_gate.sh
+    RESULT="P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_FAIL"
+    RESULT="P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_REVIEW"
+    RESULT="P0_03_R37_PRODUCTION_READINESS_CHAIN_DISCOVERY_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r38_production_readiness_normalized_ledger_gate.sh
+    RESULT="P0_03_R38_PRODUCTION_READINESS_NORMALIZED_LEDGER_FAIL"
+    RESULT="P0_03_R38_PRODUCTION_READINESS_NORMALIZED_LEDGER_REVIEW"
+    RESULT="P0_03_R38_PRODUCTION_READINESS_NORMALIZED_LEDGER_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r39_production_readiness_supersession_ledger_gate.sh
+    RESULT="P0_03_R39_PRODUCTION_READINESS_SUPERSESSION_LEDGER_FAIL"
+    RESULT="P0_03_R39_PRODUCTION_READINESS_SUPERSESSION_LEDGER_REVIEW"
+    RESULT="P0_03_R39_PRODUCTION_READINESS_SUPERSESSION_LEDGER_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r40_production_readiness_deterministic_ledger_gate.sh
+    RESULT="P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_FAIL"
+    RESULT="P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_REVIEW"
+    RESULT="P0_03_R40_PRODUCTION_READINESS_DETERMINISTIC_LEDGER_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r41_production_readiness_ledger_closure_gate.sh
+R40_RESULT=""
+    R40_RESULT="$(extract_key "${R40_REPORT}" "RESULT")"
+    log "R40_RESULT=${R40_RESULT}"
+    RESULT="P0_03_R41_PRODUCTION_READINESS_LEDGER_CLOSURE_FAIL"
+    RESULT="P0_03_R41_PRODUCTION_READINESS_LEDGER_CLOSURE_REVIEW"
+    RESULT="P0_03_R41_PRODUCTION_READINESS_LEDGER_CLOSURE_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r42_real_production_readiness_gate.sh
+RESULT="P0_03_R42_REAL_PRODUCTION_READINESS_PASS"
+    RESULT="P0_03_R42_REAL_PRODUCTION_READINESS_BLOCKED"
+    RESULT="P0_03_R42_REAL_PRODUCTION_READINESS_REVIEW"
+    RESULT="P0_03_R42_REAL_PRODUCTION_READINESS_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r43_production_gap_classification_gate.sh
+RESULT="P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_PASS"
+SECURITY_WORKFLOW_COUNT=0
+SECURITY_WORKFLOW_COUNT="$(
+log "SECURITY_WORKFLOW_COUNT=${SECURITY_WORKFLOW_COUNT}"
+    RESULT="P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_BLOCKED"
+    RESULT="P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_REVIEW"
+    RESULT="P0_03_R43_PRODUCTION_GAP_CLASSIFICATION_PASS"
+log "SECURITY_WORKFLOW_COUNT=${SECURITY_WORKFLOW_COUNT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r44_unsafe_bind_blocker_locator_gate.sh
+RESULT="P0_03_R44_UNSAFE_BIND_BLOCKER_LOCATOR_PASS"
+    RESULT="P0_03_R44_UNSAFE_BIND_BLOCKER_CONFIRMED"
+    RESULT="P0_03_R44_UNSAFE_BIND_BLOCKER_CLASSIFICATION_REVIEW"
+    RESULT="P0_03_R44_UNSAFE_BIND_BLOCKER_LOCATOR_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r46_application_host_runtime_dataflow_closure_gate.sh
+RESULT="P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_CLOSURE_PASS"
+    RESULT="P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_PRODUCTION_BLOCKER"
+    RESULT="P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_REVIEW"
+    RESULT="P0_03_R46_APPLICATION_HOST_RUNTIME_DATAFLOW_CLOSURE_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r48_production_reload_authority_gate.sh
+    RESULT="P0_03_R48_PRODUCTION_RELOAD_BLOCKER_CONFIRMED"
+    RESULT="P0_03_R48_PRODUCTION_RELOAD_AUTHORITY_GATE_FAILED"
+    RESULT="P0_03_R48_PRODUCTION_RELOAD_AUTHORITY_REVIEW"
+    RESULT="P0_03_R48_PRODUCTION_RELOAD_AUTHORITY_CLOSED"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r52_rollback_recovery_authority_reconciliation_gate.sh
+    RESULT="P0_03_R52_ROLLBACK_RECOVERY_SAFETY_BLOCKER_CONFIRMED"
+    RESULT="P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_GATE_FAILED"
+    RESULT="P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_CLOSED"
+    RESULT="P0_03_R52_ROLLBACK_RECOVERY_AUTHORITY_REVIEW"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r45_application_host_dataflow_locator_gate.sh
+RESULT="P0_03_R45_APPLICATION_HOST_DATAFLOW_LOCATOR_PASS"
+    RESULT="P0_03_R45_APPLICATION_HOST_DATAFLOW_PRODUCTION_BLOCKER"
+    RESULT="P0_03_R45_APPLICATION_HOST_DATAFLOW_REVIEW"
+    RESULT="P0_03_R45_APPLICATION_HOST_DATAFLOW_LOCATOR_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r47_production_reload_dataflow_gate.sh
+RESULT="P0_03_R47_PRODUCTION_RELOAD_DATAFLOW_PASS"
+    RESULT="P0_03_R47_PRODUCTION_RELOAD_BLOCKER_CONFIRMED"
+    RESULT="P0_03_R47_PRODUCTION_RELOAD_PRODUCTION_SCOPE_REVIEW"
+    RESULT="P0_03_R47_PRODUCTION_RELOAD_DATAFLOW_PASS"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r49_ci_production_deployment_authority_gate.sh
+CI_WORKFLOW_COUNT=0
+    CI_WORKFLOW_COUNT=1
+    CI_WORKFLOW_COUNT=0
+log "CI_WORKFLOW_COUNT=${CI_WORKFLOW_COUNT}"
+log "CI_WORKFLOW_COUNT=${CI_WORKFLOW_COUNT}"
+    RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_BLOCKER_CONFIRMED"
+    RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_GATE_FAILED"
+    RESULT="P0_03_R49_CI_PRODUCTION_DEPLOYMENT_AUTHORITY_CLOSED"
+
+FILE ./archived-phase-scripts/phase_p0_03_r50_ci_production_deployment_architecture_reconciliation_gate.sh
+    RESULT="P0_03_R50_REAL_PRODUCTION_DEPLOYMENT_GAP_CONFIRMED"
+    RESULT="P0_03_R50_CI_PRODUCTION_ARCHITECTURE_GATE_FAILED"
+    RESULT="P0_03_R50_CI_PRODUCTION_ARCHITECTURAL_SEPARATION_CONFIRMED"
+    RESULT="P0_03_R50_PRODUCTION_DEPLOYMENT_AUTHORITY_PRESENT_CI_LINKAGE_REVIEW"
+    RESULT="P0_03_R50_CI_PRODUCTION_DEPLOYMENT_ARCHITECTURE_REVIEW"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r51_production_deployment_safety_authority_gate.sh
+    RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_BLOCKER_CONFIRMED"
+    RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_GATE_FAILED"
+    RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_CLOSED"
+    RESULT="P0_03_R51_PRODUCTION_DEPLOYMENT_SAFETY_AUTHORITY_REVIEW"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r53_production_recovery_authority_implementation.sh
+    RESULT="P0_03_R53_PRODUCTION_RECOVERY_AUTHORITY_IMPLEMENTATION_FAILED"
+    RESULT="P0_03_R53_RECOVERY_SCRIPT_NOT_AVAILABLE"
+    RESULT="P0_03_R53_RECOVERY_AUTHORITY_IMPLEMENTED_BUT_ARTIFACT_ROLLBACK_REQUIRES_VERSIONED_RELEASE_AUTHORITY"
+log "RESULT=${RESULT}"
+
+FILE ./archived-phase-scripts/phase_p0_03_r54_release_identity_authority_reconciliation_gate.sh
+    RESULT="P0_03_R54_RELEASE_IDENTITY_AUTHORITY_GATE_FAILED"
+    RESULT="P0_03_R54_RELEASE_IDENTITY_AUTHORITY_ESTABLISHED"
+    RESULT="P0_03_R54_RELEASE_IDENTITY_AUTHORITY_REQUIRES_IMPLEMENTATION"
+log "RESULT=${RESULT}"
+
+
+===== Q7 PACKAGE.JSON =====
+FOUND apps/web/package.json
+  "name": "@cmep/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 0.0.0.0 --port 3001",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0 --port 3001",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.9.0",
+    "@tanstack/react-query": "^5.59.0",
+    "@tanstack/react-query-devtools": "^5.59.0",
+    "clsx": "^2.1.1",
+    "next": "^15.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.53.0",
+    "zod": "^3.23.8"
+  },
+
+===== END =====

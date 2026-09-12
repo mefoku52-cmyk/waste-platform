@@ -9,9 +9,13 @@ from ..application.services import ComplianceRecordService
 from ..infrastructure.repositories import ComplianceRecordRepositoryImpl
 
 
-def get_compliance_repo(session: AsyncSession = Depends(get_db_session)) -> ComplianceRecordRepositoryImpl:
+def get_compliance_repo(
+    session: AsyncSession = Depends(get_db_session),
+) -> ComplianceRecordRepositoryImpl:
     return ComplianceRecordRepositoryImpl(session)
 
 
-def get_compliance_service(repo: ComplianceRecordRepositoryImpl = Depends(get_compliance_repo)) -> ComplianceRecordService:
+def get_compliance_service(
+    repo: ComplianceRecordRepositoryImpl = Depends(get_compliance_repo),
+) -> ComplianceRecordService:
     return ComplianceRecordService(repository=repo)

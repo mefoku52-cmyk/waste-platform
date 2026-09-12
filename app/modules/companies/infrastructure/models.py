@@ -11,7 +11,9 @@ class CompanyModel(Base):
     status: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
     legal_name: Mapped[str] = mapped_column(String(255), nullable=False)
     trading_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    registration_number: Mapped[str] = mapped_column(String(128), nullable=False, unique=True, index=True)
+    registration_number: Mapped[str] = mapped_column(
+        String(128), nullable=False, unique=True, index=True
+    )
     tax_identifier: Mapped[str | None] = mapped_column(String(128), nullable=True)
     company_type: Mapped[str] = mapped_column(String(32), nullable=False)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -27,8 +29,12 @@ class CompanyModel(Base):
     seller_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
     buyer_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
     logistics_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    verification_submitted_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    verification_reviewed_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    verification_submitted_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    verification_reviewed_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     verification_reviewed_by_user_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     verified_at: Mapped[DateTime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     verified_by_user_id: Mapped[str | None] = mapped_column(String(36), nullable=True)

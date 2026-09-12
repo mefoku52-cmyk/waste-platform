@@ -1,8 +1,9 @@
 """Audit + notifications – best-effort."""
+
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 logger = logging.getLogger(__name__)
@@ -14,15 +15,25 @@ def _uuid(v):
     return v if isinstance(v, UUID) else UUID(str(v))
 
 
-async def write_audit(*, session, actor_user_id, action: str, target_type: str, target_id=None, details: str | None = None):
+async def write_audit(
+    *,
+    session,
+    actor_user_id,
+    action: str,
+    target_type: str,
+    target_id=None,
+    details: str | None = None,
+):
     try:
         if not actor_user_id:
             return
         from app.modules.admin.domain.entities import AdminAuditEntryEntity
         from app.modules.admin.domain.enums import AdminAuditEntryStatus
-        from app.modules.admin.infrastructure.repositories import AdminAuditEntryRepositoryImpl
+        from app.modules.admin.infrastructure.repositories import (
+            AdminAuditEntryRepositoryImpl,
+        )
 
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         aid = _uuid(actor_user_id)
         entity = AdminAuditEntryEntity(
             id=uuid4(),
@@ -59,12 +70,14 @@ async def notify_company_members(
             SqlAlchemyCompanyMembershipRepository,
         )
         from app.modules.notifications.domain.entities import NotificationEntity
-        from app.modules.notifications.infrastructure.repositories import NotificationRepositoryImpl
+        from app.modules.notifications.infrastructure.repositories import (
+            NotificationRepositoryImpl,
+        )
 
         cid = _uuid(company_id)
         members = await SqlAlchemyCompanyMembershipRepository(session).list_by_company_id(cid)
         nrepo = NotificationRepositoryImpl(session)
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         rid = _uuid(related_entity_id)
         excl = str(exclude_user_id) if exclude_user_id else None
         for m in members:

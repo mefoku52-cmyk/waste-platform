@@ -1,4 +1,6 @@
-/** @type {import('next').NextConfig} */
+/** @type {
+  allowedDevOrigins: ['127.0.0.1', 'localhost'],
+import('next').NextConfig} */
 const path = require('path');
 
 const nextConfig = {

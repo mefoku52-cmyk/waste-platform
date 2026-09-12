@@ -1,20 +1,23 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel
+
 
 class AdminCreate(BaseModel):
     name: str
-    description: Optional[str] = None
+    description: str | None = None
+
 
 class AdminUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
+
 
 class AdminResponse(BaseModel):
     id: int
     name: str
-    description: Optional[str] = None
+    description: str | None = None
     created_at: datetime
-    
+
     class Config:
         from_attributes = True

@@ -30,7 +30,7 @@ export function AppShell({
         </div>
       </div>
       <div className="mx-auto grid max-w-7xl gap-3 px-3 py-3 sm:px-6 lg:grid-cols-[minmax(0,1fr)_200px]">
-        <div className="min-w-0 space-y-3">{children}</div>
+        <div className="relative z-10 min-w-0 space-y-3 text-amber-50 [text-shadow:0_1px_8px_rgba(0,0,0,.85)]">{children}</div>
         <aside className="hidden space-y-4 lg:block">
           <RailCard title="Sponzori" hint="Logo partnera 200×80" />
           <RailCard title="Reklama" hint="Banner 240×400" />

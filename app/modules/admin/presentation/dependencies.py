@@ -9,9 +9,13 @@ from ..application.services import AdminAuditEntryService
 from ..infrastructure.repositories import AdminAuditEntryRepositoryImpl
 
 
-def get_admin_repo(session: AsyncSession = Depends(get_db_session)) -> AdminAuditEntryRepositoryImpl:
+def get_admin_repo(
+    session: AsyncSession = Depends(get_db_session),
+) -> AdminAuditEntryRepositoryImpl:
     return AdminAuditEntryRepositoryImpl(session)
 
 
-def get_admin_service(repo: AdminAuditEntryRepositoryImpl = Depends(get_admin_repo)) -> AdminAuditEntryService:
+def get_admin_service(
+    repo: AdminAuditEntryRepositoryImpl = Depends(get_admin_repo),
+) -> AdminAuditEntryService:
     return AdminAuditEntryService(repository=repo)

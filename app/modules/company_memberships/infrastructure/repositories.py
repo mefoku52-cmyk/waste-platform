@@ -4,7 +4,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.company_memberships.domain.entities import CompanyMembership
-from app.modules.company_memberships.domain.repositories import CompanyMembershipRepository
+from app.modules.company_memberships.domain.repositories import (
+    CompanyMembershipRepository,
+)
 from app.modules.company_memberships.infrastructure.mappers import to_domain, to_model
 from app.modules.company_memberships.infrastructure.models import CompanyMembershipModel
 
@@ -23,8 +25,12 @@ class SqlAlchemyCompanyMembershipRepository(CompanyMembershipRepository):
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
-    async def list_by_company_id(self, company_id: UUID, status: str | None = None) -> list[CompanyMembership]:
-        stmt = select(CompanyMembershipModel).where(CompanyMembershipModel.company_id == str(company_id))
+    async def list_by_company_id(
+        self, company_id: UUID, status: str | None = None
+    ) -> list[CompanyMembership]:
+        stmt = select(CompanyMembershipModel).where(
+            CompanyMembershipModel.company_id == str(company_id)
+        )
         if status:
             stmt = stmt.where(CompanyMembershipModel.status == status)
         stmt = stmt.order_by(CompanyMembershipModel.created_at.desc())
@@ -48,5 +54,7 @@ class SqlAlchemyCompanyMembershipRepository(CompanyMembershipRepository):
         model.joined_at = membership.joined_at
         model.left_at = membership.left_at
         model.updated_at = membership.updated_at
-        model.updated_by_user_id = str(membership.updated_by_user_id) if membership.updated_by_user_id else None
+        model.updated_by_user_id = (
+            str(membership.updated_by_user_id) if membership.updated_by_user_id else None
+        )
         await self.session.commit()

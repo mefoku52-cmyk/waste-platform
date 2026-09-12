@@ -127,16 +127,20 @@ export default function DashboardPage() {
       }
     >
       <main className="space-y-3">
-        <div className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wider text-slate-500">Notif.</span>
-          <div className="min-w-0 flex-1 text-sm">
+        <div className="grid grid-cols-2 gap-2">
+          <section className="min-w-0">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">IN · Notifikácie</p>
             <NotificationsPanel />
-          </div>
+          </section>
+          <section className="min-w-0">
+            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500">RD · Prijaté</p>
+            <InquiriesTable mode="received" />
+          </section>
         </div>
 
         <SectionCard
           id="ponuky"
-          title="Aktuálne ponuky"
+          title="AP · Aktuálne ponuky"
           action={
             <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => router.push("/dashboard/listings/new")}>
               + Ponuka
@@ -154,16 +158,6 @@ export default function DashboardPage() {
           <MatchesPanel />
         </SectionCard>
 
-        <SectionCard
-          id="prijate"
-          title={
-            <span className="inline-flex items-center gap-2">
-              Prijaté dopyty <OpenInquiriesBadge />
-            </span>
-          }
-        >
-          <InquiriesTable mode="received" />
-        </SectionCard>
 
         <SectionCard id="odoslane" title="Odoslané dopyty">
           <InquiriesTable mode="sent" />

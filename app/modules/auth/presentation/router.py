@@ -1,4 +1,3 @@
-from app.shared.infrastructure.db.session import get_db_session
 from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.modules.auth.presentation.dependencies import (
@@ -19,7 +18,6 @@ from app.modules.auth.presentation.schemas import (
     ResetPasswordRequest,
 )
 from app.modules.users.presentation.mappers import to_user_data
-from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.error_schemas import error_responses
 
@@ -33,6 +31,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 )
 async def login(request: Request, payload: LoginRequest, service=Depends(get_login_service)):
     from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
     ip = client_ip(request)
     check_rate_limit(f"login:{ip}", limit=10, period=60)
     check_rate_limit(f"login:email:{payload.email.lower().strip()}", limit=5, period=60)

@@ -1,8 +1,12 @@
-from app.shared.presentation.auth_dependencies import require_admin
-from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.auth_dependencies import (
+    require_admin,
+    require_current_user,
+)
+
 """admin API router."""
 
-from fastapi import APIRouter, Depends, HTTPException, status as http_status
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi import status as http_status
 
 from app.shared.domain.exceptions import ValidationDomainError
 
@@ -46,7 +50,9 @@ async def list_admin(
     current_user=Depends(require_current_user),
     service: AdminAuditEntryService = Depends(get_admin_service),
 ):
-    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(current_user, "id", None)
+    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(
+        current_user, "id", None
+    )
     items = await service.list_by_actor(uid, page, limit)
     total = await service.count_by_actor(uid)
     return PaginatedAdminAuditEntriesResponse(
@@ -84,7 +90,10 @@ async def list_all_admin(
 async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin_service)):
     entity = await service.get_by_id(id)
     if entity is None:
-        raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail="AdminAuditEntry not found")
+        raise HTTPException(
+            status_code=http_status.HTTP_404_NOT_FOUND,
+            detail="AdminAuditEntry not found",
+        )
     return AdminAuditEntryResponse(data=_to_data(entity))
 
 
@@ -109,5 +118,7 @@ async def create_admin(
     try:
         created = await service.create(entity)
     except ValidationDomainError as exc:
-        raise HTTPException(status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message) from exc
+        raise HTTPException(
+            status_code=http_status.HTTP_422_UNPROCESSABLE_ENTITY, detail=exc.message
+        ) from exc
     return AdminAuditEntryResponse(data=_to_data(created))

@@ -1,7 +1,5 @@
 """admin repository implementations."""
 
-from typing import List, Optional
-
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,31 +16,40 @@ class AdminAuditEntryRepositoryImpl(AdminAuditEntryRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: str) -> Optional[AdminAuditEntryEntity]:
-        result = await self.session.execute(select(AdminAuditEntryModel).where(AdminAuditEntryModel.id == id))
+    async def get_by_id(self, id: str) -> AdminAuditEntryEntity | None:
+        result = await self.session.execute(
+            select(AdminAuditEntryModel).where(AdminAuditEntryModel.id == id)
+        )
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
-    async def list_by_actor(self, actor_user_id, page: int = 1, limit: int = 20):
+    async def list_by_actor(self, actor_id, page: int = 1, limit: int = 20):
         offset = (page - 1) * limit
         result = await self.session.execute(
             select(AdminAuditEntryModel)
-            .where(AdminAuditEntryModel.actor_user_id == actor_user_id)
+            .where(AdminAuditEntryModel.actor_id == actor_id)
             .order_by(AdminAuditEntryModel.created_at.desc())
             .offset(offset)
             .limit(limit)
         )
         return [to_domain(m) for m in result.scalars().all()]
 
-    async def count_by_actor(self, actor_user_id) -> int:
+    async def count_by_actor(self, actor_id) -> int:
         result = await self.session.execute(
-            select(func.count()).select_from(AdminAuditEntryModel).where(AdminAuditEntryModel.actor_user_id == actor_user_id)
+            select(func.count())
+            .select_from(AdminAuditEntryModel)
+            .where(AdminAuditEntryModel.actor_id == actor_id)
         )
         return int(result.scalar_one())
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[AdminAuditEntryEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[AdminAuditEntryEntity]:
         offset = (page - 1) * limit
-        result = await self.session.execute(select(AdminAuditEntryModel).order_by(AdminAuditEntryModel.created_at.desc()).offset(offset).limit(limit))
+        result = await self.session.execute(
+            select(AdminAuditEntryModel)
+            .order_by(AdminAuditEntryModel.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 
@@ -61,7 +68,7 @@ class AdminAuditEntryRepositoryImpl(AdminAuditEntryRepository):
         model = await self.session.get(AdminAuditEntryModel, entity.id)
         if model is None:
             raise ValueError("Entity not found")
-        model.actor_user_id = entity.actor_user_id
+        model.actor_id = entity.actor_user_id
         model.action = entity.action
         model.target_type = entity.target_type
         model.target_id = entity.target_id
@@ -74,5 +81,7 @@ class AdminAuditEntryRepositoryImpl(AdminAuditEntryRepository):
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
-        await self.session.execute(sql_delete(AdminAuditEntryModel).where(AdminAuditEntryModel.id == id))
+        await self.session.execute(
+            sql_delete(AdminAuditEntryModel).where(AdminAuditEntryModel.id == id)
+        )
         await self.session.commit()

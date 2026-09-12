@@ -1,7 +1,5 @@
 """documents application services."""
 
-from typing import List, Optional
-
 from app.shared.domain.exceptions import NotFoundDomainError
 
 from ..domain.entities import DocumentEntity
@@ -14,10 +12,10 @@ class DocumentService:
     def __init__(self, repository: DocumentRepository):
         self.repository = repository
 
-    async def get_by_id(self, id: str) -> Optional[DocumentEntity]:
+    async def get_by_id(self, id: str) -> DocumentEntity | None:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> List[DocumentEntity]:
+    async def list_all(self, page: int = 1, limit: int = 20) -> list[DocumentEntity]:
         return await self.repository.list_all(page, limit)
 
     async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20):

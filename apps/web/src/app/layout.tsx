@@ -1,4 +1,3 @@
-import "@/cmep-dark.css";
 import "./globals.css";
 import { ReactNode } from "react";
 

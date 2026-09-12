@@ -1,7 +1,6 @@
 """notifications domain entities."""
 
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
 from uuid import UUID
 
 from app.shared.domain.base import AuditFields

@@ -1,7 +1,5 @@
 """listings repository implementations."""
 
-from typing import List, Optional
-
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,14 +16,14 @@ class ListingsRepositoryImpl(ListingsRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, id: str) -> Optional[ListingsEntity]:
-        result = await self.session.execute(
-            select(ListingsModel).where(ListingsModel.id == id)
-        )
+    async def get_by_id(self, id: str) -> ListingsEntity | None:
+        result = await self.session.execute(select(ListingsModel).where(ListingsModel.id == id))
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
-    async def list_all(self, page: int = 1, limit: int = 20, company_ids=None) -> list[ListingsEntity]:
+    async def list_all(
+        self, page: int = 1, limit: int = 20, company_ids=None
+    ) -> list[ListingsEntity]:
         offset = (page - 1) * limit
         stmt = select(ListingsModel)
         if company_ids is not None:
@@ -48,7 +46,9 @@ class ListingsRepositoryImpl(ListingsRepository):
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
-    async def list_marketplace(self, page: int = 1, limit: int = 20, exclude_company_ids=None) -> list[ListingsEntity]:
+    async def list_marketplace(
+        self, page: int = 1, limit: int = 20, exclude_company_ids=None
+    ) -> list[ListingsEntity]:
         offset = (page - 1) * limit
         stmt = select(ListingsModel).where(ListingsModel.status == "published")
         if exclude_company_ids:
@@ -61,7 +61,11 @@ class ListingsRepositoryImpl(ListingsRepository):
         return [to_domain(m) for m in models]
 
     async def count_marketplace(self, exclude_company_ids=None) -> int:
-        stmt = select(func.count()).select_from(ListingsModel).where(ListingsModel.status == "published")
+        stmt = (
+            select(func.count())
+            .select_from(ListingsModel)
+            .where(ListingsModel.status == "published")
+        )
         if exclude_company_ids:
             ids = [str(x) for x in exclude_company_ids if x is not None]
             if ids:
@@ -69,9 +73,9 @@ class ListingsRepositoryImpl(ListingsRepository):
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
-
     async def get_company_status(self, company_id) -> str | None:
         from sqlalchemy import text
+
         if company_id is None:
             return None
         result = await self.session.execute(
@@ -109,9 +113,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
-        await self.session.execute(
-            sql_delete(ListingsModel).where(ListingsModel.id == id)
-        )
+        await self.session.execute(sql_delete(ListingsModel).where(ListingsModel.id == id))
         await self.session.commit()
 
     async def find_matches(self, *, material_type: str, exclude_company_ids, limit: int = 20):
@@ -124,4 +126,3 @@ class ListingsRepositoryImpl(ListingsRepository):
         stmt = stmt.order_by(ListingsModel.created_at.desc()).limit(limit)
         rows = (await self.session.execute(stmt)).scalars().all()
         return [to_domain(r) for r in rows]
-

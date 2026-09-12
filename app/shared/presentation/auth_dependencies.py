@@ -14,6 +14,7 @@ async def require_current_user(
 ) -> CurrentUserResponse:
     if credentials is None:
         from app.shared.domain.exceptions import UnauthorizedDomainError
+
         raise UnauthorizedDomainError("Authentication required")
     return await service.execute(credentials.credentials)
 
@@ -26,11 +27,15 @@ def _user_email(current_user) -> str:
 
 
 def _role_codes(current_user) -> list[str]:
-    codes = getattr(current_user, "roleCodes", None) or getattr(current_user, "role_codes", None) or []
+    codes = (
+        getattr(current_user, "roleCodes", None) or getattr(current_user, "role_codes", None) or []
+    )
     return [str(c).lower() for c in codes]
 
 
-async def require_admin(current_user: CurrentUserResponse = Depends(require_current_user)) -> CurrentUserResponse:
+async def require_admin(
+    current_user: CurrentUserResponse = Depends(require_current_user),
+) -> CurrentUserResponse:
     """Platform admin: email in PLATFORM_ADMIN_EMAILS or role code admin."""
     from app.core.config import settings
     from app.shared.domain.exceptions import ForbiddenDomainError

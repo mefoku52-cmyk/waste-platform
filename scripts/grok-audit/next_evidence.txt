@@ -1,0 +1,33 @@
+===== META =====
+DATE=2026-09-09T16:59:40+02:00
+HEAD=9060a88
+BRANCH=chore/auto-fix-baseline-20260909-050735
+
+===== GIT THREE FILES =====
+ M app/core/config.py
+ M app/main.py
+ M app/modules/auth/application/password_reset.py
+
+ app/core/config.py                             | 27 ++++++++++++++++++++++++++
+ app/main.py                                    |  1 -
+ app/modules/auth/application/password_reset.py |  6 +++++-
+ 3 files changed, 32 insertions(+), 2 deletions(-)
+
+===== CONFIG POST_INIT COUNT =====
+21:    def model_post_init(self, __context) -> None:
+49:    def model_post_init(self, __context) -> None:
+161:    def model_post_init(self, __context) -> None:
+HAS_DEAD_GETATTR=0
+HAS_LIVE_REDIS=1
+HEALTH_LEAK=0
+FRONTEND_LINE=
+
+===== CONTAINER SETTINGS + REDIS KEYS =====
+REDIS_URL redis://redis:6379/0
+ENABLED True
+ENV production
+HEALTH_SRC_OK True
+PING True
+PWDRESET_KEY_COUNT 0
+
+===== END =====

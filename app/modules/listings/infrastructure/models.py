@@ -1,7 +1,7 @@
 """listings database models."""
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 
 from sqlalchemy import Column, DateTime, Float, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -25,7 +25,11 @@ class ListingsModel(Base):
     company_id = Column(UUID(as_uuid=True), nullable=False)
     description = Column(Text, nullable=True)
     image_url = Column(String(512), nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    updated_at = Column(
+        DateTime,
+        default=lambda: datetime.now(UTC),
+        onupdate=lambda: datetime.now(UTC),
+    )
     created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
     updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)
