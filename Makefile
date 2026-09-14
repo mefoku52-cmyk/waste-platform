@@ -112,3 +112,6 @@ clean:	## Vycisti cache, pyc, logy
 clean-all: clean	## Vycisti aj Docker volumes (POZOR!)
 	docker compose down -v
 	docker system prune -f
+
+prod:
+	uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4

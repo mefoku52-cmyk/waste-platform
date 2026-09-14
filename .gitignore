@@ -285,3 +285,5 @@ dev.db
 
 # Production proof reports (generated)
 PRODUCTION_PROOF*.txt
+production_answers.txt
+audit_report.txt
