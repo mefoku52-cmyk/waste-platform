@@ -91,12 +91,9 @@ async def upload_file(
 
 @router.get(
     "/{file_id}",
-    responses=error_responses(400, 401, 403, 404, 500),
+    responses=error_responses(400, 404, 500),
 )
-async def get_uploaded_file(
-    file_id: str,
-    current_user=Depends(require_current_user),
-):
+async def get_uploaded_file(file_id: str):
     safe = _validate_file_id(file_id)
     path = UPLOAD_ROOT / safe
     if not path.is_file():
@@ -120,8 +117,5 @@ async def get_uploaded_file(
     "/files/{file_id}",
     include_in_schema=False,
 )
-async def get_uploaded_file_legacy(
-    file_id: str,
-    current_user=Depends(require_current_user),
-):
-    return await get_uploaded_file(file_id=file_id, current_user=current_user)
+async def get_uploaded_file_legacy(file_id: str):
+    return await get_uploaded_file(file_id=file_id)
