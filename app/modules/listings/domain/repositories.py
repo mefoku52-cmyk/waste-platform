@@ -1,14 +1,18 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.listings.infrastructure.models import ListingsModel
+if TYPE_CHECKING:
+    pass
 
 
 class ListingsRepository(ABC):
     def __init__(self, session: AsyncSession):
         self.session = session
-        self.model = ListingsModel
+        from app.modules.listings.infrastructure.models import ListingsModel as _LM
+
+        self.model = _LM
 
     @abstractmethod
     async def get_by_id(self, id: str): ...
@@ -39,3 +43,9 @@ class ListingsRepository(ABC):
 
     @abstractmethod
     async def find_matches(self, *, material_type: str, exclude_company_ids, limit: int = 20): ...
+
+    @abstractmethod
+    async def record_view(self, listing_id, user_id) -> None: ...
+
+    @abstractmethod
+    async def get_listing_stats(self, listing_id) -> dict: ...

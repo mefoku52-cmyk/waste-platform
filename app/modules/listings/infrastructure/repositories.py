@@ -126,3 +126,33 @@ class ListingsRepositoryImpl(ListingsRepository):
         stmt = stmt.order_by(ListingsModel.created_at.desc()).limit(limit)
         rows = (await self.session.execute(stmt)).scalars().all()
         return [to_domain(r) for r in rows]
+
+    async def record_view(self, listing_id, user_id) -> None:
+        import uuid as _uuid
+        from datetime import datetime
+
+        from .models import ListingViewModel
+
+        lid = listing_id if isinstance(listing_id, _uuid.UUID) else _uuid.UUID(str(listing_id))
+        uid = user_id if isinstance(user_id, _uuid.UUID) else _uuid.UUID(str(user_id))
+        v = ListingViewModel(listing_id=lid, user_id=uid, viewed_at=datetime.now())
+        self.session.add(v)
+        await self.session.commit()
+
+    async def get_listing_stats(self, listing_id) -> dict:
+        import uuid as _uuid
+
+        from .models import ListingViewModel
+
+        lid = listing_id if isinstance(listing_id, _uuid.UUID) else _uuid.UUID(str(listing_id))
+        total = await self.session.execute(
+            select(func.count())
+            .select_from(ListingViewModel)
+            .where(ListingViewModel.listing_id == lid)
+        )
+        unique = await self.session.execute(
+            select(func.count(func.distinct(ListingViewModel.user_id))).where(
+                ListingViewModel.listing_id == lid
+            )
+        )
+        return {"views": int(total.scalar_one()), "unique_viewers": int(unique.scalar_one())}

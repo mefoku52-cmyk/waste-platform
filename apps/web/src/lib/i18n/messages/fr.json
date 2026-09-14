@@ -80,6 +80,7 @@
     "dateDaysAgo": "Il y a {n} jours",
     "sectionNote": "Cette section est prête pour un ajout futur de contacts, paramètres précis, disponibilité, certificats et transporteurs recommandés.",
     "titleNoName": "Sans titre",
-    "preview": "aperçu"
+    "preview": "aperçu",
+    "myListings": "Mes annonces"
   }
 }

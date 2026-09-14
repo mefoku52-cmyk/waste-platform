@@ -1,0 +1,38 @@
+"""add_listing_views
+
+Revision ID: a8f3c9d1e5b7
+Revises: 1577dceccd9e
+Create Date: 2026-09-14
+
+"""
+
+from collections.abc import Sequence
+
+import sqlalchemy as sa
+from alembic import op
+
+revision: str = "a8f3c9d1e5b7"
+down_revision: str | Sequence[str] | None = "1577dceccd9e"
+branch_labels: str | Sequence[str] | None = None
+depends_on: str | Sequence[str] | None = None
+
+
+def upgrade() -> None:
+    op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+    op.create_table(
+        "listing_views",
+        sa.Column("id", sa.UUID(), nullable=False, server_default=sa.text("gen_random_uuid()")),
+        sa.Column("listing_id", sa.UUID(), nullable=False),
+        sa.Column("user_id", sa.UUID(), nullable=False),
+        sa.Column("viewed_at", sa.DateTime(), nullable=False, server_default=sa.text("NOW()")),
+        sa.ForeignKeyConstraint(["listing_id"], ["listings.id"], ondelete="CASCADE"),
+        sa.PrimaryKeyConstraint("id"),
+    )
+    op.create_index("ix_listing_views_listing_id", "listing_views", ["listing_id"])
+    op.create_index("ix_listing_views_listing_user", "listing_views", ["listing_id", "user_id"])
+
+
+def downgrade() -> None:
+    op.drop_index("ix_listing_views_listing_user", table_name="listing_views")
+    op.drop_index("ix_listing_views_listing_id", table_name="listing_views")
+    op.drop_table("listing_views")

@@ -17,7 +17,7 @@ install-dev:	## Instaluje dev zavislosti
 
 # --- Development ---
 dev:	## Spusti backend v dev mode (auto-reload)
-	uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+	uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
 
 dev-worker:	## Spusti Celery worker
 	celery -A app.worker worker -l info
@@ -114,4 +114,4 @@ clean-all: clean	## Vycisti aj Docker volumes (POZOR!)
 	docker system prune -f
 
 prod:
-	uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+	uvicorn app.main:app --host 0.0.0.0 --port 8001 --workers 4

@@ -1,6 +1,7 @@
 """listings API router."""
 
 from fastapi import APIRouter, Depends, Query, status
+from fastapi import status as http_status
 
 from app.shared.application.side_effects import write_audit
 from app.shared.domain.exceptions import ConflictDomainError, NotFoundDomainError
@@ -15,6 +16,7 @@ from .schemas import (
     ListingCreateRequest,
     ListingData,
     ListingResponse,
+    ListingStatsResponse,
     ListingUpdateRequest,
     PaginatedListingsResponse,
     PaginationMeta,
@@ -123,6 +125,42 @@ async def list_matches(
         items=[_to_listing_data(e) for e in slice_items],
         meta=PaginationMeta(page=page, pageSize=effective_page_size, total=len(items)),
     )
+
+
+@router.post(
+    "/{id}/view",
+    status_code=http_status.HTTP_204_NO_CONTENT,
+    responses=error_responses(401, 403, 404, 500),
+)
+async def record_listing_view(
+    id: str,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    """Zapise jedno zobrazenie ponuky prihlasenym userom. Pouziva frontend pri otvoreni detailu."""
+    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(
+        current_user, "id", None
+    )
+    if uid is None:
+        return None
+    await service.record_view(id, uid)
+    return None
+
+
+@router.get(
+    "/{id}/stats",
+    response_model=ListingStatsResponse,
+    responses=error_responses(401, 403, 404, 500),
+)
+async def get_listing_stats(
+    id: str,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    """Vrati pocet zobrazeni a unikatnych divakov. Len pre vlastnika."""
+    company_ids = _membership_company_ids(current_user)
+    stats = await service.get_stats(id, owner_company_ids=company_ids)
+    return ListingStatsResponse(**stats)
 
 
 @router.get(

@@ -67,3 +67,8 @@ class PaginationMeta(BaseModel):
 class PaginatedListingsResponse(BaseModel):
     items: list[ListingData]
     meta: PaginationMeta
+
+
+class ListingStatsResponse(BaseModel):
+    views: int
+    uniqueViewers: int

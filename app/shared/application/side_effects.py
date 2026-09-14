@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime
+from datetime import datetime
 from uuid import UUID, uuid4
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ async def write_audit(
             AdminAuditEntryRepositoryImpl,
         )
 
-        now = datetime.now(UTC)
+        now = datetime.now()
         aid = _uuid(actor_user_id)
         entity = AdminAuditEntryEntity(
             id=uuid4(),
@@ -77,7 +77,7 @@ async def notify_company_members(
         cid = _uuid(company_id)
         members = await SqlAlchemyCompanyMembershipRepository(session).list_by_company_id(cid)
         nrepo = NotificationRepositoryImpl(session)
-        now = datetime.now(UTC)
+        now = datetime.now()
         rid = _uuid(related_entity_id)
         excl = str(exclude_user_id) if exclude_user_id else None
         for m in members:

@@ -80,6 +80,7 @@
     "dateDaysAgo": "Vor {n} Tagen",
     "sectionNote": "Dieser Abschnitt ist für eine zukünftige Ergänzung von Kontakten, genauen Parametern, Verfügbarkeit, Zertifikaten und empfohlenen Transporteuren vorbereitet.",
     "titleNoName": "Ohne Titel",
-    "preview": "Vorschau"
+    "preview": "Vorschau",
+    "myListings": "Meine Angebote"
   }
 }

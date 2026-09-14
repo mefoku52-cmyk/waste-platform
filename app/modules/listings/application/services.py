@@ -47,7 +47,7 @@ class ListingsService:
 
     async def publish(self, id: str):
         """draft → published, len ak firma listing-u je verified."""
-        from datetime import UTC, datetime
+        from datetime import datetime
 
         from app.modules.listings.domain.enums import ListingsStatus
         from app.shared.domain.exceptions import (
@@ -67,7 +67,7 @@ class ListingsService:
             )
 
         existing.status = ListingsStatus.PUBLISHED
-        existing.updated_at = datetime.now(UTC)
+        existing.updated_at = datetime.now()
         return await self.repository.update(existing)
 
     async def delete(self, id: str) -> None:
@@ -82,3 +82,23 @@ class ListingsService:
             exclude_company_ids=exclude_company_ids or [],
             limit=limit,
         )
+
+    async def record_view(self, listing_id, user_id) -> None:
+        """Zapise jedno zobrazenie ponuky konkretnym userom."""
+        existing = await self.repository.get_by_id(listing_id)
+        if existing is None:
+            raise NotFoundDomainError(f"Listing {listing_id} not found")
+        await self.repository.record_view(listing_id, user_id)
+
+    async def get_stats(self, listing_id: str, owner_company_ids=None) -> dict:
+        """Vrati {views, unique_viewers}. Iba vlastnik (company v zozname) to smie vidiet."""
+        existing = await self.repository.get_by_id(listing_id)
+        if existing is None:
+            raise NotFoundDomainError(f"Listing {listing_id} not found")
+        owner_ids = {str(x) for x in (owner_company_ids or []) if x is not None}
+        if owner_ids and str(existing.company_id) not in owner_ids:
+            from app.shared.domain.exceptions import ValidationDomainError
+
+            raise ValidationDomainError("Statistiky moze vidiet len vlastnik ponuky.")
+        stats = await self.repository.get_listing_stats(listing_id)
+        return {"views": stats["views"], "uniqueViewers": stats["unique_viewers"]}

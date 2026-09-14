@@ -63,9 +63,9 @@ class InquiryService:
         if not ok:
             raise ValidationDomainError("Nie si predávajúci tejto ponuky")
         existing.status = new_status
-        from datetime import UTC, datetime
+        from datetime import datetime
 
-        existing.updated_at = datetime.now(UTC)
+        existing.updated_at = datetime.now()
         return await self.repository.update(existing)
 
     async def delete(self, id: str) -> None:

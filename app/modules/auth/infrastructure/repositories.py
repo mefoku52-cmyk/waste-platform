@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -34,7 +34,7 @@ class PostgresRefreshSessionRepository(RefreshSessionRepository):
         model = result.scalar_one()
         model.revoked_at = session.revoked_at
         model.reuse_detected_at = session.reuse_detected_at
-        model.updated_at = datetime.now(UTC)
+        model.updated_at = datetime.now()
         await self._session.flush()
 
     async def get_by_jti(self, jti: str) -> RefreshSession | None:

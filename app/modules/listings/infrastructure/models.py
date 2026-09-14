@@ -33,3 +33,12 @@ class ListingsModel(Base):
     )
     created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
     updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)
+
+
+class ListingViewModel(Base):
+    __tablename__ = "listing_views"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    listing_id = Column(UUID(as_uuid=True), nullable=False)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
+    viewed_at = Column(DateTime, nullable=False, default=lambda: datetime.now())

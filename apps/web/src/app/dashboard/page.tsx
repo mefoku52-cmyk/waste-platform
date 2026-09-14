@@ -164,6 +164,9 @@ export default function DashboardPage() {
         </div>
 
         <div className="market-account">
+          <Link href="/dashboard/listings" className="market-account-btn">
+            {t("dashboard.myListings")}
+          </Link>
           <span>admin@cmep.dev</span>
           <span>owner</span>
           <LanguageSwitcher />
@@ -467,6 +470,30 @@ export default function DashboardPage() {
           flex-wrap: wrap;
           color: #5e6c70;
           font-size: 14px;
+        }
+
+        .market-account-btn {
+          padding: 10px 20px;
+          border: 2px solid #d4a017;
+          background: #d4a017;
+          color: #1f2a2d;
+          border-radius: 10px;
+          font-size: 15px;
+          font-weight: 800;
+          letter-spacing: 0.03em;
+          text-transform: uppercase;
+          cursor: pointer;
+          box-shadow: 0 3px 0 #a67c00;
+          transition: transform 0.1s, box-shadow 0.1s;
+        }
+        .market-account-btn:hover {
+          background: #e6b32a;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 0 #a67c00;
+        }
+        .market-account-btn:active {
+          transform: translateY(2px);
+          box-shadow: 0 1px 0 #a67c00;
         }
 
         .market-account button {

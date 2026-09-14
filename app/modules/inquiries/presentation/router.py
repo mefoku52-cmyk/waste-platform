@@ -1,6 +1,6 @@
 """inquiries API router."""
 
-from datetime import UTC, datetime
+from datetime import datetime
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, Query
@@ -139,7 +139,7 @@ async def create_inquiry(
     service: InquiryService = Depends(get_inquiries_service),
     session=Depends(get_db_session),
 ):
-    now = datetime.now(UTC)
+    now = datetime.now()
     entity = InquiryEntity(
         id=uuid4(),
         listing_id=request.listingId,

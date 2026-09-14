@@ -16,7 +16,7 @@ from app.modules.compliance.infrastructure.models import (
 )
 from app.modules.documents.infrastructure.models import DocumentModel  # noqa: F401
 from app.modules.inquiries.infrastructure.models import InquiryModel  # noqa: F401
-from app.modules.listings.infrastructure.models import ListingsModel  # noqa: F401
+from app.modules.listings.infrastructure.models import ListingsModel, ListingViewModel  # noqa: F401
 from app.modules.notifications.infrastructure.models import (
     NotificationModel,  # noqa: F401
 )
