@@ -287,3 +287,5 @@ dev.db
 PRODUCTION_PROOF*.txt
 production_answers.txt
 audit_report.txt
+.repair-backup-*/
+fix-waste-platform-tests.sh
