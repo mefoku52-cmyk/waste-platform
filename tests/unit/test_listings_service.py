@@ -33,11 +33,13 @@ def _entity(**overrides) -> ListingsEntity:
         return ListingsEntity(**data)
     except TypeError:
         data.update(
-            id=str(uuid4()),
-            created_at=_now(),
-            created_by_user_id=None,
-            updated_at=_now(),
-            updated_by_user_id=None,
+            {
+                "id": str(uuid4()),
+                "created_at": _now(),
+                "created_by_user_id": None,
+                "updated_at": _now(),
+                "updated_by_user_id": None,
+            }
         )
         return ListingsEntity(**{k: v for k, v in data.items() if True})
 
