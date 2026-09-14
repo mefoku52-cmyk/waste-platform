@@ -1,6 +1,6 @@
 ════════════════════════════════════════════════════════════════════════
          WASTE-PLATFORM PRODUCTION PROOF
-         Generated: Sat Sep 12 06:04:35 CEST 2026
+         Generated: Sat Sep 12 06:34:32 CEST 2026
 ════════════════════════════════════════════════════════════════════════
 
 ════════════════════════════════════════════════════════════════════════
@@ -10,7 +10,6 @@ Project size (excl. node_modules, .venv, .git):
 162M	.
 
 Top-level structure:
-  .coverage
   .dockerignore
   .env
   .env.compose
@@ -25,7 +24,6 @@ Top-level structure:
   .ruff_cache
   .venv
   Makefile
-  PRODUCTION_PROOF.txt
   README.md
   alembic
   alembic.ini
@@ -33,8 +31,10 @@ Top-level structure:
   apps
   docker-compose.yml
   docs
+  fix_and_run.sh
   infra
   logs
+  manual_up.sh
   migrations
   pyproject.toml
   requirements.txt
@@ -47,7 +47,9 @@ Top-level structure:
 2. STATIC ANALYSIS
 ════════════════════════════════════════════════════════════════════════
 --- ty check (type safety) ---
-All checks passed!
+info: make sure your Python environment is properly configured: https://docs.astral.sh/ty/modules/#python-environment
+
+Found 2 diagnostics
 
 --- ruff format (code style) ---
 296 files already formatted
@@ -104,7 +106,7 @@ No new upgrade operations detected.
 ════════════════════════════════════════════════════════════════════════
 Next.js build artifacts:
 total 288
-drwx------. 8 u0_a388 u0_a388   3452 Sep 12 05:50 .
+drwx------. 8 u0_a388 u0_a388   3452 Sep 12 06:26 .
 drwx------. 6 u0_a388 u0_a388   3452 Sep 12 05:06 ..
 -rw-------. 1 u0_a388 u0_a388     21 Sep 12 05:34 BUILD_ID
 -rw-------. 1 u0_a388 u0_a388   6204 Sep 12 05:34 app-build-manifest.json
@@ -151,10 +153,16 @@ Current branch:
 main
 
 Git status:
+ M PRODUCTION_PROOF.txt
  M scripts/production-proof.sh
-  Uncommitted: 1
+?? fix_and_run.sh
+?? manual_up.sh
+  Uncommitted: 4
 
 Recent commits (last 15):
+512d84b fix: production-proof.sh — fixed filename and cleaner output
+2adc4eb docs: add production proof report
+ebb37cd chore: production-proof.sh always writes PRODUCTION_PROOF.txt
 5988c11 chore: gitignore production proof reports
 57c9a5f chore: add production proof script
 9842a27 chore: add local CI script (scripts/ci-local.sh)
@@ -167,9 +175,6 @@ b9e9a06 test: add tests for users mappers
 cd75e7e chore: remove AI Docker stack and frontend balast
 076f132 chore: remove skeleton tests and placeholder files
 8c32fd4 chore: remove dead legacy service.py placeholders
-4c17e45 test: add unit tests for PasswordService, JwtService, User entity, API health
-f55a050 test: fix testpaths and add SQLite fallback for local tests
-ec0dc4e ci: proper GitHub Actions workflow
 
 Branches:
 * main
@@ -186,8 +191,7 @@ Test files:
 14
 
 Test count:
-TOTAL                                                             3931   2009    49%
-
+app/worker/__init__.py                                               0      0   100%
 Dead code check (unused imports in app):
 7
   (should be low — most are register_models.py)
@@ -209,7 +213,6 @@ Placeholder/TODO in production code:
 .env.example
 
 Hardcoded secrets scan:
-app/shared/infrastructure/email/sender.py:18:    password = getattr(settings, "SMTP_PASSWORD", "")
 
 ════════════════════════════════════════════════════════════════════════
                     END OF PRODUCTION PROOF

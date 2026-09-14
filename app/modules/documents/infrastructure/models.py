@@ -1,6 +1,6 @@
 """Documents SQLAlchemy models."""
 
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -18,11 +18,11 @@ class DocumentModel(Base):
     company_id = Column(UUID(as_uuid=True), nullable=False)
     listing_id = Column(UUID(as_uuid=True), nullable=True)
     status = Column(String(32), nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime, default=lambda: datetime.now())
     updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
     )
     created_by_user_id = Column(UUID(as_uuid=True))
     updated_by_user_id = Column(UUID(as_uuid=True))

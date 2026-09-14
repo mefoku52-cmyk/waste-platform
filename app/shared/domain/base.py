@@ -6,17 +6,12 @@ from uuid import UUID, uuid4
 @dataclass(slots=True, kw_only=True)
 class AuditFields:
     id: UUID = field(default_factory=uuid4)
-    created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    updated_at: datetime = field(default_factory=lambda: datetime.now(UTC))
+    created_at: datetime = field(default_factory=datetime.now)
+    updated_at: datetime = field(default_factory=datetime.now)
     created_by_user_id: UUID | None = None
     updated_by_user_id: UUID | None = None
 
 
 class BaseEntity:
-    """
-    Base domain entity.
-    Parent class for domain dataclasses.
-    """
-
     def touch(self):
         self.updated_at = datetime.now(UTC)

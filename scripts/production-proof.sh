@@ -14,11 +14,13 @@ echo ""
 echo "════════════════════════════════════════════════════════════════════════"
 echo "1. PROJECT STRUCTURE"
 echo "════════════════════════════════════════════════════════════════════════"
+rm -f .coverage 2>/dev/null
+rm -f .coverage 2>/dev/null
 echo "Project size (excl. node_modules, .venv, .git):"
 du -sh --exclude=node_modules --exclude=.venv --exclude=.git . 2>/dev/null | head -1
 echo ""
 echo "Top-level structure:"
-ls -la | grep -vE "^total|^d.*\s\.$|^d.*\s\.\.$" | awk '{print "  " $NF}' | sort
+ls -la | grep -vE "^total|^d.*\s\.$|^d.*\s\.\.$|PRODUCTION_PROOF|\.coverage" | awk '{print "  " $NF}' | sort
 echo ""
 
 echo "════════════════════════════════════════════════════════════════════════"
@@ -135,8 +137,7 @@ echo "Test files:"
 find tests -name "test_*.py" -not -path "*/__pycache__/*" | wc -l
 echo ""
 echo "Test count:"
-python3 -m pytest tests/ --collect-only -q --no-header 2>&1 | grep "test" | tail -1 || python3 -m pytest tests/ --collect-only -q --no-header 2>&1 | tail -1
-echo ""
+python3 -m pytest tests/ --collect-only -q --no-header 2>&1 | tail -3 | head -1
 echo "Dead code check (unused imports in app):"
 grep -rn "from.*import.*# noqa: F401" app/ 2>/dev/null | wc -l
 echo "  (should be low — most are register_models.py)"

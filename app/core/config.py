@@ -93,7 +93,7 @@ class Settings(BaseSettings):
     ENABLE_PUBLIC_DOCS: bool = True
     ENABLE_METRICS: bool = False
     METRICS_ALLOWED_IPS: str = "127.0.0.1,::1,localhost"
-    PLATFORM_ADMIN_EMAILS: str = "admin@cmep-bootstrap.dev"
+    PLATFORM_ADMIN_EMAILS: str = "admin@cmep.dev"
     ROOT_PATH: str = ""
 
     HOST: str = "0.0.0.0"

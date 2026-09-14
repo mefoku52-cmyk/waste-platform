@@ -1,7 +1,7 @@
 """inquiries database models."""
 
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 
 from sqlalchemy import Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -19,11 +19,11 @@ class InquiryModel(Base):
     contact_email = Column(String(255), nullable=False)
     contact_phone = Column(String(64), nullable=True)
     status = Column(String(32), nullable=False, default="open")
-    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime, default=lambda: datetime.now())
     updated_at = Column(
         DateTime,
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
+        default=lambda: datetime.now(),
+        onupdate=lambda: datetime.now(),
     )
     created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
     updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)

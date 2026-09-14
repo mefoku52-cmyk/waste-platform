@@ -87,7 +87,7 @@ async def create_company(
         is_admin = (
             "admin" in [str(r).lower() for r in roles]
             or "platform_admin" in [str(r).lower() for r in roles]
-            or (email and str(email).lower() == "admin@cmep-bootstrap.dev")
+            or (email and str(email).lower() == "admin@cmep.dev")
         )
         if not is_admin:
             from app.shared.domain.exceptions import ForbiddenDomainError
@@ -191,7 +191,7 @@ async def transition_company_status(
         email = ""
         if u is not None:
             email = str(getattr(u, "email", "") or "").lower()
-        raw = getattr(settings, "platform_admin_emails", None) or "admin@cmep-bootstrap.dev"
+        raw = getattr(settings, "platform_admin_emails", None) or "admin@cmep.dev"
         admins = {x.strip().lower() for x in str(raw).split(",") if x.strip()}
         is_admin = email in admins or "admin" in codes or "platform_admin" in codes
         if not is_admin:

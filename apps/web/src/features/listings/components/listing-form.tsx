@@ -17,12 +17,13 @@ export const ListingForm = () => {
   const { mutate: createListing, isPending, error } = useCreateListing();
   const router = useRouter();
 
-  const { data: companiesData } = useQuery({
+  const { data: companiesData, isLoading: isLoadingCompanies } = useQuery({
     queryKey: ['companies'],
     queryFn: () => companiesApi.getCompanies(),
   });
 
   const companies = (companiesData as any)?.items ?? [];
+  const hasCompanies = companies.length > 0;
 
   const {
     register,
@@ -41,6 +42,10 @@ export const ListingForm = () => {
   });
 
   const onSubmit = (data: ListingInput) => {
+    if (!hasCompanies) {
+      return;
+    }
+
     createListing(data as any, {
       onSuccess: () => {
         router.push('/dashboard');
@@ -48,12 +53,67 @@ export const ListingForm = () => {
     });
   };
 
+  if (!isLoadingCompanies && !hasCompanies) {
+    return (
+      <div className="w-full max-w-2xl rounded-2xl border border-slate-700/80 bg-slate-950/95 p-6 shadow-xl shadow-black/30 sm:p-8">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+          Prvý krok
+        </p>
+
+        <h2 className="mt-2 text-xl font-bold text-white">
+          Najprv pridajte firmu
+        </h2>
+
+        <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-300">
+          Každá ponuka musí patriť konkrétnej firme. Po vytvorení firmy sa sem môžete
+          okamžite vrátiť a pridať ponuku materiálu.
+        </p>
+
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Button
+            type="button"
+            className="bg-emerald-600 text-white hover:bg-emerald-500"
+            onClick={() => router.push('/dashboard/companies/new')}
+          >
+            + Pridať firmu
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800"
+            onClick={() => router.push('/dashboard')}
+          >
+            Späť na dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-2xl p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900">Pridať novú ponuku</h2>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="w-full max-w-2xl space-y-4 rounded-2xl border border-slate-700/80 bg-slate-950/95 p-6 shadow-xl shadow-black/30 sm:p-8"
+    >
+      <div className="border-b border-slate-700/70 pb-4">
+        <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+          Nová ponuka
+        </p>
+        <h2 className="mt-1 text-xl font-bold text-white">Pridať novú ponuku</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          Vyplňte údaje o materiáli, ktorý chcete ponúknuť.
+        </p>
+      </div>
+
+      {isLoadingCompanies && (
+        <div className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm text-slate-300">
+          Načítavam firmy…
+        </div>
+      )}
 
       {error && (
-        <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
+        <div className="rounded-xl border border-red-900/70 bg-red-950/40 p-3 text-sm text-red-200">
           {(error as any).message || 'Chyba pri vytváraní ponuky'}
         </div>
       )}
@@ -61,94 +121,154 @@ export const ListingForm = () => {
       <FormField label="Firma" error={errors.companyId?.message}>
         <select
           {...register('companyId')}
-          disabled={isPending}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white"
+          disabled={isPending || isLoadingCompanies}
+          className="h-10 w-full rounded-xl border border-slate-600 bg-slate-900 px-3 text-sm text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="">— vyber firmu —</option>
-          {companies.map((c: any) => (
-            <option key={c.id} value={c.id}>
-              {c.legalName || c.name}
+          <option value="">— vyberte firmu —</option>
+          {companies.map((company: any) => (
+            <option key={company.id} value={company.id}>
+              {company.legalName || company.name}
             </option>
           ))}
         </select>
       </FormField>
 
       <FormField label="Názov ponuky" error={errors.title?.message}>
-        <Input {...register('title')} disabled={isPending} placeholder="Zvyšky železa" />
+        <Input
+          {...register('title')}
+          disabled={isPending || isLoadingCompanies}
+          placeholder="Zvyšky železa"
+          className="rounded-xl"
+        />
       </FormField>
 
       <FormField label="Typ materiálu" error={errors.materialType?.message}>
-        <Input {...register('materialType')} disabled={isPending} placeholder="železo, plast, drevo..." />
+        <Input
+          {...register('materialType')}
+          disabled={isPending || isLoadingCompanies}
+          placeholder="železo, plast, drevo..."
+          className="rounded-xl"
+        />
       </FormField>
 
       <FormField label="Popis" error={errors.description?.message}>
         <textarea
-          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+          className="w-full rounded-xl border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50"
           rows={3}
           {...register('description')}
-          disabled={isPending}
+          disabled={isPending || isLoadingCompanies}
         />
       </FormField>
 
       <FormField label="URL fotky (voliteľné)" error={(errors as any).imageUrl?.message}>
         <Input
-          placeholder="https://... alebo nahraj nižšie"
+          placeholder="https://... alebo nahrajte súbor nižšie"
           {...register('imageUrl')}
-          disabled={isPending}
+          disabled={isPending || isLoadingCompanies}
+          className="rounded-xl"
         />
+
         <input
           type="file"
           accept="image/*,.pdf"
-          className="mt-2 block w-full text-sm text-gray-600"
-          disabled={isPending}
-          onChange={async (e) => {
-            const f = e.target.files?.[0];
-            if (!f) return;
+          className="mt-2 block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-100 hover:file:bg-slate-700"
+          disabled={isPending || isLoadingCompanies}
+          onChange={async (event) => {
+            const file = event.target.files?.[0];
+            if (!file) return;
+
             try {
-              const res = await uploadFile(f);
+              const response = await uploadFile(file);
               const base = config.apiBaseUrl;
-              const full = res.url.startsWith('http') ? res.url : base + res.url;
-              setValue('imageUrl', full as any, { shouldValidate: true });
-            } catch (err: any) {
-              alert(err?.message || 'Upload zlyhal');
+              const url = response.url.startsWith('http')
+                ? response.url
+                : base + response.url;
+
+              setValue('imageUrl', url as any, { shouldValidate: true });
+            } catch (uploadError: any) {
+              alert(uploadError?.message || 'Nahranie súboru zlyhalo');
             }
           }}
         />
       </FormField>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Množstvo" error={errors.quantity?.message}>
-          <Input type="number" step="0.01" {...register('quantity', { valueAsNumber: true })} disabled={isPending} />
+          <Input
+            type="number"
+            step="0.01"
+            {...register('quantity', { valueAsNumber: true })}
+            disabled={isPending || isLoadingCompanies}
+            className="rounded-xl"
+          />
         </FormField>
+
         <FormField label="Jednotka" error={errors.unit?.message}>
-          <Input {...register('unit')} disabled={isPending} placeholder="kg" />
+          <Input
+            {...register('unit')}
+            disabled={isPending || isLoadingCompanies}
+            placeholder="kg"
+            className="rounded-xl"
+          />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <FormField label="Cena (voliteľné)" error={errors.price?.message}>
-          <Input type="number" step="0.01" {...register('price', { valueAsNumber: true })} disabled={isPending} />
+          <Input
+            type="number"
+            step="0.01"
+            {...register('price', { valueAsNumber: true })}
+            disabled={isPending || isLoadingCompanies}
+            className="rounded-xl"
+          />
         </FormField>
+
         <FormField label="Mena" error={errors.currency?.message}>
-          <Input {...register('currency')} disabled={isPending} />
+          <Input
+            {...register('currency')}
+            disabled={isPending || isLoadingCompanies}
+            className="rounded-xl"
+          />
         </FormField>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <FormField label="Stav" error={errors.condition?.message}>
-          <Input {...register('condition')} disabled={isPending} placeholder="nové / použité / odpad" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <FormField label="Stav materiálu" error={errors.condition?.message}>
+          <Input
+            {...register('condition')}
+            disabled={isPending || isLoadingCompanies}
+            placeholder="nové / použité / odpad"
+            className="rounded-xl"
+          />
         </FormField>
+
         <FormField label="Lokalita" error={errors.location?.message}>
-          <Input {...register('location')} disabled={isPending} placeholder="Bratislava" />
+          <Input
+            {...register('location')}
+            disabled={isPending || isLoadingCompanies}
+            placeholder="Bratislava"
+            className="rounded-xl"
+          />
         </FormField>
       </div>
 
-      <div className="flex justify-end gap-4 mt-6">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
+      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-700/70 pt-5">
+        <Button
+          type="button"
+          variant="outline"
+          className="border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800"
+          onClick={() => router.back()}
+        >
           Zrušiť
         </Button>
-        <Button type="submit" disabled={isPending}>
-          {isPending ? 'Ukladám...' : 'Vytvoriť'}
+
+        <Button
+          type="submit"
+          disabled={isPending || isLoadingCompanies || !hasCompanies}
+          className="bg-emerald-600 text-white hover:bg-emerald-500"
+        >
+          {isPending ? 'Ukladám...' : 'Vytvoriť ponuku'}
         </Button>
       </div>
     </form>

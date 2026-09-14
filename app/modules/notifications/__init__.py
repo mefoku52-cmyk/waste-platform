@@ -2,4 +2,4 @@
 Notifications modul pre Waste Platform.
 """
 
-from .router import router
+from .presentation.router import router

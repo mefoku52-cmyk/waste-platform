@@ -106,7 +106,6 @@ async def forgot_password(
     ip = client_ip(request)
     check_rate_limit(f"forgot:{ip}", limit=5, period=60)
     check_rate_limit(f"forgot:email:{payload.email.lower().strip()}", limit=3, period=300)
-
     return await svc.request_reset(payload.email)
 
 

@@ -1,7 +1,5 @@
 """inquiries application services."""
 
-from datetime import UTC
-
 from app.shared.domain.exceptions import NotFoundDomainError
 
 from ..domain.entities import InquiryEntity
@@ -65,7 +63,7 @@ class InquiryService:
         if not ok:
             raise ValidationDomainError("Nie si predávajúci tejto ponuky")
         existing.status = new_status
-        from datetime import datetime
+        from datetime import UTC, datetime
 
         existing.updated_at = datetime.now(UTC)
         return await self.repository.update(existing)

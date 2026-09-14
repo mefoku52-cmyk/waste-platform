@@ -1,7 +1,5 @@
 """listings application services."""
 
-from datetime import UTC
-
 from app.shared.domain.exceptions import NotFoundDomainError
 
 from ..domain.entities import ListingsEntity
@@ -49,7 +47,7 @@ class ListingsService:
 
     async def publish(self, id: str):
         """draft → published, len ak firma listing-u je verified."""
-        from datetime import datetime
+        from datetime import UTC, datetime
 
         from app.modules.listings.domain.enums import ListingsStatus
         from app.shared.domain.exceptions import (

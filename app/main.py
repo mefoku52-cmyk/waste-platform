@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import importlib
 import logging
 from contextlib import asynccontextmanager
 
@@ -80,37 +79,6 @@ def create_app() -> FastAPI:
     except Exception as e:
         logger.exception("Failed to include shared.api_router")
         skipped.append({"module": "shared.api_router", "error": str(e)})
-
-    module_routers = [
-        "app.modules.auth.presentation.router",
-        "app.modules.users.presentation.router",
-        "app.modules.companies.presentation.router",
-        "app.modules.company_memberships.presentation.router",
-        "app.modules.listings.presentation.router",
-        "app.modules.inquiries.presentation.router",
-        "app.modules.documents.presentation.router",
-        "app.modules.compliance.presentation.router",
-        "app.modules.notifications.presentation.router",
-        "app.modules.analytics.presentation.router",
-        "app.modules.admin.presentation.router",
-        "app.modules.uploads.presentation.router",
-    ]
-
-    for mod_path in module_routers:
-        tag = mod_path.split(".")[2]
-        try:
-            mod = importlib.import_module(mod_path)
-            router = getattr(mod, "router", None)
-            if router is None:
-                skipped.append({"module": tag, "error": "router attribute missing"})
-                logger.warning("Router missing for module=%s", tag)
-                continue
-
-            app.include_router(router, prefix="/api/v1")
-            mounted.append(tag)
-        except Exception as ex:
-            logger.exception("Failed to include router module=%s", tag)
-            skipped.append({"module": tag, "error": str(ex)})
 
     app.state.mounted_routers = mounted
     app.state.skipped_routers = skipped
