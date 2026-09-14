@@ -17,8 +17,16 @@ export default function AdminPage() {
 
   if (isLoading) return null;
 
+
   // Ochrana: Iba admin môže pristupovať na túto stránku
-  if (user && user.role !== 'admin') {
+  const roleCodes: string[] = (user as any)?.roleCodes || [];
+  const userEmail = String((user as any)?.email || (user as any)?.user?.email || '').toLowerCase();
+  const isAdmin =
+    roleCodes.includes('admin') ||
+    roleCodes.includes('platform_admin') ||
+    userEmail === 'admin@cmep.dev';
+
+  if (user && !isAdmin) {
     redirect('/dashboard');
   }
 

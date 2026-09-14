@@ -81,6 +81,22 @@
     "sectionNote": "Táto sekcia je pripravená na budúce doplnenie kontaktov, presných parametrov, dostupnosti, certifikátov a odporúčaných dopravcov.",
     "titleNoName": "Bez názvu",
     "preview": "náhľad",
-    "myListings": "Moje ponuky"
+    "myListings": "Moje ponuky",
+    "viewAll": "Zobraziť všetky",
+    "addNewListing": "Pridať novú ponuku",
+    "drafts": "Nezverejnené (draft)",
+    "publishedOnly": "Zverejnené",
+    "stats": "Štatistiky a záujem",
+    "myListingsTitle": "Moje ponuky",
+    "myListingsSubtitle": "Spravuj svoje ponuky. Publikovať môže len firma so statusom verified.",
+    "colTitle": "Názov",
+    "colQty": "Množstvo",
+    "colUnit": "Jednotka",
+    "colStatus": "Status",
+    "colActions": "Akcie",
+    "publish": "Publikovať",
+    "noListings": "Žiadne ponuky neboli nájdené.",
+    "loadingListings": "Načítavam ponuky...",
+    "loadFailed": "Chyba pri načítaní dát."
   }
 }

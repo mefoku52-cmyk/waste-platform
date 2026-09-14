@@ -119,9 +119,11 @@ class TokenRevocationStore:
 
     async def close(self) -> None:
         if self._client is not None:
-            close = getattr(self._client, "close", None)
-            if close:
-                await close()
+            closer = getattr(self._client, "aclose", None) or getattr(self._client, "close", None)
+            if closer:
+                result = closer()
+                if hasattr(result, "__await__"):
+                    await result
             self._client = None
 
 

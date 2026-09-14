@@ -81,6 +81,22 @@
     "sectionNote": "Dieser Abschnitt ist für eine zukünftige Ergänzung von Kontakten, genauen Parametern, Verfügbarkeit, Zertifikaten und empfohlenen Transporteuren vorbereitet.",
     "titleNoName": "Ohne Titel",
     "preview": "Vorschau",
-    "myListings": "Meine Angebote"
+    "myListings": "Meine Angebote",
+    "viewAll": "Alle anzeigen",
+    "addNewListing": "Angebot hinzufügen",
+    "drafts": "Entwürfe",
+    "publishedOnly": "Veröffentlicht",
+    "stats": "Statistiken & Anfragen",
+    "myListingsTitle": "Meine Angebote",
+    "myListingsSubtitle": "Verwalten Sie Ihre Angebote. Nur ein verifiziertes Unternehmen kann veröffentlichen.",
+    "colTitle": "Titel",
+    "colQty": "Menge",
+    "colUnit": "Einheit",
+    "colStatus": "Status",
+    "colActions": "Aktionen",
+    "publish": "Veröffentlichen",
+    "noListings": "Keine Angebote gefunden.",
+    "loadingListings": "Lade Angebote...",
+    "loadFailed": "Daten konnten nicht geladen werden."
   }
 }

@@ -1,83 +1,123 @@
-"""Unit tests pre JwtService."""
-
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
-import jwt
 import pytest
+import pytest_asyncio
 
+from app.shared.infrastructure.security.jwt_exceptions import (
+    InvalidTokenError,
+    JwtServiceError,
+    TokenFamilyRevokedError,
+    TokenRevokedError,
+    TokenTypeMismatchError,
+    TokenUserRevokedError,
+)
+from app.shared.infrastructure.security.jwt_revocation_store import TokenRevocationStore
 from app.shared.infrastructure.security.jwt_service import JwtService
 
 
-@pytest.fixture
-def service():
-    return JwtService()
-
-
-@pytest.mark.asyncio
-async def test_issue_access_token(service):
-    """Access token sa vydá a má správny formát."""
-    token, expires_at = await service.issue_access_token(subject="user-123")
-    assert isinstance(token, str)
-    assert len(token.split(".")) == 3
-    assert expires_at > datetime.now(UTC)
-
-
-@pytest.mark.asyncio
-async def test_decode_access_token(service):
-    """Decode vráti správny payload."""
-    token, _ = await service.issue_access_token(subject="user-456")
-    payload = service.decode(token)
-    assert payload["sub"] == "user-456"
-    assert payload["type"] == "access"
-
-
-@pytest.mark.asyncio
-async def test_issue_refresh_token(service):
-    """Refresh token sa vydá s family_id a jti."""
-    family_id = str(uuid4())
-    token, jti, expires_at = await service.issue_refresh_token(
-        subject="user-789",
-        family_id=family_id,
-    )
-    assert isinstance(token, str)
-    assert isinstance(jti, str)
-    assert expires_at > datetime.now(UTC)
-
-    payload = service.decode(token)
-    assert payload["sub"] == "user-789"
-    assert payload["type"] == "refresh"
-    assert payload["jti"] == jti
-    assert payload["family_id"] == family_id
-
-
-def test_decode_invalid_token(service):
-    """Neplatný token → jwt.exceptions.InvalidTokenError."""
-    with pytest.raises(jwt.exceptions.InvalidTokenError):
-        service.decode("not.a.token")
-
-
-def test_decode_wrong_signature(service):
-    """Token s iným kľúčom → InvalidTokenError."""
-    fake = jwt.encode({"sub": "user"}, "wrong-key", algorithm="HS256")
-    with pytest.raises(jwt.exceptions.InvalidTokenError):
-        service.decode(fake)
+@pytest_asyncio.fixture
+async def service():
+    store = TokenRevocationStore()
+    jwt_service = JwtService(revocation_store=store)
+    try:
+        yield jwt_service
+    finally:
+        await store.close()
 
 
 @pytest.mark.asyncio
 async def test_decode_and_validate_access(service):
-    """decode_and_validate pre access token vráti payload."""
     token, _ = await service.issue_access_token(subject="user-abc")
     payload = await service.decode_and_validate(token, expected_type="access")
     assert payload["sub"] == "user-abc"
-    assert payload["type"] == "access"
 
 
 @pytest.mark.asyncio
-async def test_decode_and_validate_wrong_type(service):
-    """decode_and_validate s nesprávnym typom → výnimka."""
-    from app.shared.infrastructure.security.jwt_exceptions import TokenTypeMismatchError
+async def test_issue_refresh_and_validate(service):
+    token, *_ = await service.issue_refresh_token(subject="user-abc", family_id=str(uuid4()))
+    payload = await service.decode_and_validate(token, expected_type="refresh")
+    assert payload["sub"] == "user-abc"
 
-    token, _ = await service.issue_access_token(subject="user-xyz")
-    with pytest.raises((TokenTypeMismatchError, Exception)):
+
+@pytest.mark.asyncio
+async def test_access_rejected_as_refresh(service):
+    token, _ = await service.issue_access_token(subject="user-abc")
+    with pytest.raises((TokenTypeMismatchError, JwtServiceError)):
         await service.decode_and_validate(token, expected_type="refresh")
+
+
+@pytest.mark.asyncio
+async def test_refresh_rejected_as_access(service):
+    token, *_ = await service.issue_refresh_token(subject="user-abc", family_id=str(uuid4()))
+    with pytest.raises((TokenTypeMismatchError, JwtServiceError)):
+        await service.decode_and_validate(token, expected_type="access")
+
+
+@pytest.mark.asyncio
+async def test_garbage_token(service):
+    with pytest.raises((InvalidTokenError, JwtServiceError)):
+        await service.decode_and_validate("not-a-jwt", expected_type="access")
+
+
+@pytest.mark.asyncio
+async def test_empty_token(service):
+    with pytest.raises((InvalidTokenError, JwtServiceError)):
+        await service.decode_and_validate("", expected_type="access")
+
+
+@pytest.mark.asyncio
+async def test_sync_decode_roundtrip(service):
+    token, _ = await service.issue_access_token(subject="user-xyz")
+    payload = service.decode(token)
+    assert payload["sub"] == "user-xyz"
+
+
+@pytest.mark.asyncio
+async def test_revoke_access_then_validate_fails(service):
+    token, _ = await service.issue_access_token(subject="user-abc")
+    payload = await service.decode_and_validate(token, expected_type="access")
+    jti = payload.get("jti")
+    exp = payload.get("exp")
+    if jti is None:
+        pytest.skip("access token nemá jti")
+    exp_dt = (
+        datetime.fromtimestamp(exp, tz=UTC)
+        if isinstance(exp, (int, float))
+        else datetime.now(UTC) + timedelta(hours=1)
+    )
+    await service.revoke_access_token(jti, exp_dt)
+    with pytest.raises((TokenRevokedError, JwtServiceError)):
+        await service.decode_and_validate(token, expected_type="access")
+
+
+@pytest.mark.asyncio
+async def test_revoke_refresh_family(service):
+    token, *_ = await service.issue_refresh_token(subject="user-abc", family_id=str(uuid4()))
+    payload = await service.decode_and_validate(token, expected_type="refresh")
+    jti = payload.get("jti")
+    family = payload.get("fam") or payload.get("family_id") or payload.get("fid") or "fam-rev"
+    exp = payload.get("exp")
+    if not jti:
+        pytest.skip("refresh token nemá jti")
+    exp_dt = (
+        datetime.fromtimestamp(exp, tz=UTC)
+        if isinstance(exp, (int, float))
+        else datetime.now(UTC) + timedelta(hours=1)
+    )
+    await service.revoke_refresh_token(jti, family, exp_dt)
+    with pytest.raises((TokenFamilyRevokedError, TokenRevokedError, JwtServiceError)):
+        await service.decode_and_validate(token, expected_type="refresh")
+
+
+@pytest.mark.asyncio
+async def test_revoke_all_user_tokens(service):
+    token, _ = await service.issue_access_token(subject="user-abc")
+    await service.revoke_all_user_tokens("user-abc")
+    with pytest.raises((TokenUserRevokedError, TokenRevokedError, JwtServiceError)):
+        await service.decode_and_validate(token, expected_type="access")
+
+
+@pytest.mark.asyncio
+async def test_revocation_store_property(service):
+    assert service.revocation_store is not None

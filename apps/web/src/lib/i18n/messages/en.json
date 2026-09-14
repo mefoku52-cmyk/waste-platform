@@ -81,6 +81,22 @@
     "sectionNote": "This section is ready for a future addition of contacts, exact parameters, availability, certificates and recommended carriers.",
     "titleNoName": "Untitled",
     "preview": "preview",
-    "myListings": "My listings"
+    "myListings": "My listings",
+    "viewAll": "View all",
+    "addNewListing": "Add new listing",
+    "drafts": "Drafts",
+    "publishedOnly": "Published",
+    "stats": "Stats & inquiries",
+    "myListingsTitle": "My listings",
+    "myListingsSubtitle": "Manage your listings. Only a verified company can publish.",
+    "colTitle": "Title",
+    "colQty": "Quantity",
+    "colUnit": "Unit",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "publish": "Publish",
+    "noListings": "No listings found.",
+    "loadingListings": "Loading listings...",
+    "loadFailed": "Failed to load data."
   }
 }

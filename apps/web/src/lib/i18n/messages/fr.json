@@ -81,6 +81,22 @@
     "sectionNote": "Cette section est prête pour un ajout futur de contacts, paramètres précis, disponibilité, certificats et transporteurs recommandés.",
     "titleNoName": "Sans titre",
     "preview": "aperçu",
-    "myListings": "Mes annonces"
+    "myListings": "Mes annonces",
+    "viewAll": "Voir tout",
+    "addNewListing": "Ajouter une annonce",
+    "drafts": "Brouillons",
+    "publishedOnly": "Publiées",
+    "stats": "Stats et demandes",
+    "myListingsTitle": "Mes annonces",
+    "myListingsSubtitle": "Gérez vos annonces. Seule une entreprise vérifiée peut publier.",
+    "colTitle": "Titre",
+    "colQty": "Quantité",
+    "colUnit": "Unité",
+    "colStatus": "Statut",
+    "colActions": "Actions",
+    "publish": "Publier",
+    "noListings": "Aucune annonce trouvée.",
+    "loadingListings": "Chargement...",
+    "loadFailed": "Échec du chargement."
   }
 }

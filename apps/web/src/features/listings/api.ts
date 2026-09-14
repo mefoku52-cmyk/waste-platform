@@ -25,6 +25,12 @@ export const listingsApi = {
   deleteListing: (id: string) =>
     http.delete(`/listings/${id}`),
 
+  recordView: (id: string) =>
+    http.post<{ ok: boolean }>(`/listings/${id}/view`, {}),
+
+  getStats: (id: string) =>
+    http.get<{ views: number; uniqueViewers: number }>(`/listings/${id}/stats`),
+
   getMatches: (materialType: string, params?: Record<string, any>) =>
     http.get<PaginatedResponse<Listing>>(`/listings/matches?materialType=${encodeURIComponent(materialType)}`, { ...params }),
 };

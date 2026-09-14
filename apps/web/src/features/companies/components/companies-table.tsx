@@ -23,7 +23,7 @@ function useIsPlatformAdmin() {
       ''
   ).toLowerCase();
 
-  const adminEmails = ['admin@cmep-bootstrap.dev'];
+  const adminEmails = ['admin@cmep.dev'];
   return (
     roles.includes('admin') ||
     roles.includes('platform_admin') ||

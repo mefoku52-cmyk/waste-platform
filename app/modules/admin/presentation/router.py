@@ -1,3 +1,4 @@
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import (
     require_admin,
     require_current_user,
@@ -79,6 +80,69 @@ async def list_all_admin(
         items=[_to_data(e) for e in items],
         meta=PaginationMeta(page=page, pageSize=limit, total=total),
     )
+
+
+@router.get(
+    "/stats",
+    summary="Platform stats for admin dashboard",
+)
+async def admin_stats(
+    current_user=Depends(require_admin),
+    session=Depends(get_db_session),
+):
+    from sqlalchemy import text
+
+    users = (await session.execute(text("SELECT COUNT(*) FROM users"))).scalar_one()
+    listings = (await session.execute(text("SELECT COUNT(*) FROM listings"))).scalar_one()
+    companies = (await session.execute(text("SELECT COUNT(*) FROM companies"))).scalar_one()
+    pending = (
+        await session.execute(
+            text("SELECT COUNT(*) FROM companies WHERE status = 'verification_submitted'")
+        )
+    ).scalar_one()
+    return {
+        "total_users": int(users),
+        "total_listings": int(listings),
+        "total_companies": int(companies),
+        "pending_verifications": int(pending),
+    }
+
+
+@router.get(
+    "/users",
+    summary="List users for admin dashboard",
+)
+async def admin_list_users(
+    current_user=Depends(require_admin),
+    session=Depends(get_db_session),
+):
+    from sqlalchemy import text
+
+    rows = await session.execute(
+        text(
+            "SELECT id, email, first_name, last_name, status, last_login_at, created_at "
+            "FROM users ORDER BY created_at DESC LIMIT 200"
+        )
+    )
+    items = []
+    for r in rows.mappings():
+        items.append(
+            {
+                "id": str(r["id"]),
+                "email": r["email"],
+                "firstName": r["first_name"],
+                "lastName": r["last_name"],
+                "status": r["status"],
+                "lastLogin": r["last_login_at"].isoformat() if r["last_login_at"] else None,
+                "createdAt": r["created_at"].isoformat() if r["created_at"] else None,
+                "roleCodes": ["admin"] if r["email"] == "admin@cmep.dev" else [],
+            }
+        )
+    return {
+        "items": items,
+        "data": items,
+        "meta": {"total": len(items)},
+    }
 
 
 @router.get(

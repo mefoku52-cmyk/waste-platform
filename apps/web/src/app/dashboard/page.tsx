@@ -158,15 +158,16 @@ export default function DashboardPage() {
   return (
     <main className="market-page">
       <header className="market-top">
-        <div className="market-brand">
-          <p className="market-mini">{t("dashboard.mini")}</p>
-          <h1>{t("dashboard.title")}</h1>
+        <div className="market-brand-wrap">
+          <img src="/rc-logo.png" alt="CMEP" className="cmep-logo" />
+          <div className="market-brand">
+            <p className="market-mini">{t("dashboard.mini")}</p>
+            <h1>{t("dashboard.title")}</h1>
+          </div>
         </div>
 
         <div className="market-account">
-          <Link href="/dashboard/listings" className="market-account-btn">
-            {t("dashboard.myListings")}
-          </Link>
+          <MyListingsMenu label={t("dashboard.myListings")} />
           <span>admin@cmep.dev</span>
           <span>owner</span>
           <LanguageSwitcher />
@@ -187,17 +188,23 @@ export default function DashboardPage() {
       </header>
 
       <nav className="top-nav" aria-label="Hlavná navigácia">
-        {topLinkKeys.map((k) =>
-          k === "listings" ? (
-            <Link key={k} href="/dashboard/listings">
+        {topLinkKeys.map((k) => {
+          const hrefs: Record<string, string> = {
+            listings: "/dashboard/listings",
+            documents: "/dashboard/documents",
+            companies: "/dashboard/companies",
+          };
+          const href = hrefs[k];
+          return href ? (
+            <Link key={k} href={href}>
               {t("dashboard.nav." + k)}
             </Link>
           ) : (
             <a key={k} href="#">
               {t("dashboard.nav." + k)}
             </a>
-          )
-        )}
+          );
+        })}
       </nav>
 
       <section className="search-panel">
@@ -411,8 +418,8 @@ export default function DashboardPage() {
 
         :global(body) {
           margin: 0;
-          background: #eef3f1;
-          color: #1f2a2d;
+          background: #0a0f11;
+          color: #e6eceb;
           font-family: Arial, Helvetica, sans-serif;
         }
 
@@ -449,6 +456,22 @@ export default function DashboardPage() {
           text-transform: uppercase;
         }
 
+        .market-brand-wrap {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .cmep-logo {
+          width: 100px;
+          height: 100px;
+          object-fit: contain;
+          background: transparent;
+          border: 0;
+          padding: 0;
+          flex-shrink: 0;
+          filter: drop-shadow(0 0 3px rgba(212, 160, 23, 0.25));
+        }
+
         .market-brand h1,
         .search-panel h2,
         .listing-row h3,
@@ -472,28 +495,90 @@ export default function DashboardPage() {
           font-size: 14px;
         }
 
-        .market-account-btn {
-          padding: 10px 20px;
-          border: 2px solid #d4a017;
-          background: #d4a017;
+        :global(.mylistings-wrap) {
+          position: relative;
+        }
+        :global(.mylistings-btn) {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          padding: 18px 36px;
+          border: 0;
+          background: linear-gradient(180deg, #f0c14b 0%, #d4a017 100%);
           color: #1f2a2d;
-          border-radius: 10px;
-          font-size: 15px;
-          font-weight: 800;
-          letter-spacing: 0.03em;
+          border-radius: 14px;
+          font-size: 20px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
           text-transform: uppercase;
           cursor: pointer;
-          box-shadow: 0 3px 0 #a67c00;
+          box-shadow: 0 4px 0 #a67c00, 0 6px 20px rgba(212, 160, 23, 0.35);
           transition: transform 0.1s, box-shadow 0.1s;
+          line-height: 1;
+          white-space: nowrap;
         }
-        .market-account-btn:hover {
-          background: #e6b32a;
-          transform: translateY(-1px);
-          box-shadow: 0 4px 0 #a67c00;
+        :global(.mylistings-btn:hover) {
+          background: linear-gradient(180deg, #f7cf5c 0%, #e6b32a 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 0 #a67c00, 0 8px 24px rgba(212, 160, 23, 0.5);
         }
-        .market-account-btn:active {
-          transform: translateY(2px);
+        :global(.mylistings-btn:active) {
+          transform: translateY(3px);
           box-shadow: 0 1px 0 #a67c00;
+        }
+        :global(.mylistings-arrow) {
+          font-size: 14px;
+          opacity: 0.8;
+          transition: transform 0.15s;
+        }
+        :global(.mylistings-btn.open .mylistings-arrow) {
+          transform: rotate(180deg);
+        }
+        :global(.mylistings-menu) {
+          position: absolute;
+          right: 0;
+          top: calc(100% + 8px);
+          min-width: 260px;
+          background: #1a1e21;
+          border: 1px solid rgba(212, 160, 23, 0.5);
+          border-radius: 12px;
+          padding: 8px;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+          z-index: 100;
+        }
+        :global(.mylistings-menu a),
+        :global(.mylistings-menu button) {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          padding: 12px 14px;
+          border: 0;
+          background: transparent;
+          color: #e9eef0;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 600;
+          text-align: left;
+          cursor: pointer;
+          transition: background 0.1s;
+        }
+        :global(.mylistings-menu a:hover),
+        :global(.mylistings-menu button:hover) {
+          background: rgba(212, 160, 23, 0.15);
+          color: #f0c14b;
+        }
+        :global(.mylistings-menu .ico) {
+          width: 20px;
+          text-align: center;
+          font-size: 16px;
+        }
+        :global(.mylistings-menu .danger) {
+          color: #f87171;
+        }
+        :global(.mylistings-menu .danger:hover) {
+          background: rgba(248, 113, 113, 0.12);
+          color: #fca5a5;
         }
 
         .market-account button {
@@ -867,5 +952,48 @@ export default function DashboardPage() {
         }
       `}</style>
     </main>
+  );
+}
+
+function MyListingsMenu({ label }: { label: string }) {
+  const [open, setOpen] = useState(false);
+  const { t } = useT();
+  return (
+    <div className="mylistings-wrap">
+      <button
+        type="button"
+        className={`mylistings-btn ${open ? "open" : ""}`}
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+      >
+        {label}
+        <span className="mylistings-arrow">▼</span>
+      </button>
+      {open && (
+        <div className="mylistings-menu">
+          <Link href="/dashboard/listings" onClick={() => setOpen(false)}>
+            <span className="ico">👁️</span> {t("dashboard.viewAll")}
+          </Link>
+          <Link href="/dashboard/listings/new" onClick={() => setOpen(false)}>
+            <span className="ico">➕</span> {t("dashboard.addNewListing")}
+          </Link>
+          <Link href="/dashboard/listings?filter=draft" onClick={() => setOpen(false)}>
+            <span className="ico">📝</span> {t("dashboard.drafts")}
+          </Link>
+          <Link href="/dashboard/listings?filter=published" onClick={() => setOpen(false)}>
+            <span className="ico">✅</span> {t("dashboard.publishedOnly")}
+          </Link>
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              alert("Štatistiky (views, unikátni diváci, dopyty) – čoskoro v detaile ponuky.");
+            }}
+          >
+            <span className="ico">📊</span> {t("dashboard.stats")}
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
