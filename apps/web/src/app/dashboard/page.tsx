@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 
 type Listing = {
   id: number;
@@ -288,9 +289,9 @@ export default function DashboardPage() {
         </div>
 
         <div className="list-actions">
-          <a href="#">+ Pridať ponuku</a>
-          <a href="#">+ Pridať firmu</a>
-          <a href="#">+ Pridať dokument</a>
+          <Link href="/dashboard/listings/new">+ Pridať ponuku</Link>
+          <Link href="/dashboard/companies/new">+ Pridať firmu</Link>
+          <Link href="/dashboard/documents/new">+ Pridať dokument</Link>
         </div>
       </section>
 
@@ -393,8 +394,7 @@ export default function DashboardPage() {
                     </p>
 
                     <div className="detail-actions">
-                      <button type="button">Kontaktovať firmu</button>
-                      <button type="button" className="ghost">Zobraziť dopravu</button>
+                      <Link href={`/dashboard/listings/${item.id}`}>Kontaktovať firmu</Link>
                     </div>
                   </div>
                 </div>
@@ -763,7 +763,7 @@ export default function DashboardPage() {
           flex-wrap: wrap;
         }
 
-        .detail-actions button {
+        .detail-actions button, .detail-actions a {
           min-height: 42px;
           padding: 10px 14px;
           border: 1px solid #5f8f92;
