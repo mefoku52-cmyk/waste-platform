@@ -2,6 +2,7 @@ import "./globals.css";
 import { ReactNode } from "react";
 
 import { AppProviders } from "@/components/providers/app-providers";
+import { LanguageProvider } from "@/lib/i18n/context";
 
 export const metadata = {
   title: "CMEP · Obehové materiály",
@@ -12,7 +13,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="sk">
       <body>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <LanguageProvider>{children}</LanguageProvider>
+        </AppProviders>
       </body>
     </html>
   );

@@ -1,13 +1,21 @@
+"use client";
+
 import { LoginForm } from "@/features/auth";
+import { useT } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { BrandLogo } from "@/components/brand/logo";
 
 export default function LoginPage() {
+  const { t } = useT();
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-10">
+      <div className="absolute right-4 top-4 z-50">
+        <LanguageSwitcher />
+      </div>
       <div className="mb-8 flex flex-col items-center gap-3 text-center">
         <BrandLogo size="lg" />
         <p className="max-w-xs text-sm text-slate-600">
-          Platforma pre obchod s odpadmi, vedľajšími produktmi a sekundárnymi surovinami
+          {t('login.platformSubtitle')}
         </p>
       </div>
       <LoginForm />

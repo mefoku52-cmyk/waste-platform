@@ -2,9 +2,15 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useMarketplace } from "@/features/listings";
+import { useQuery } from "@tanstack/react-query";
+import { http } from "@/lib/api/http";
+import { useT } from "@/lib/i18n/context";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { useLogout } from "@/features/auth";
 
 type Listing = {
-  id: number;
+  id: string;
   title: string;
   company: string;
   location: string;
@@ -16,166 +22,101 @@ type Listing = {
   images: string[];
 };
 
-const listings: Listing[] = [
-  {
-    id: 1,
-    title: "Piliny z drevovýroby",
-    company: "Drevo SN, s.r.o.",
-    location: "Snina",
-    category: "Drevo",
-    quantity: "120 kg / týždeň",
-    published: "Dnes",
-    note: "Pravidelný odber, vhodné na ďalšie spracovanie.",
-    transport: "Big bag / dodávka",
-    images: [
-      "https://picsum.photos/seed/piliny-1/300/300",
-      "https://picsum.photos/seed/piliny-2/300/300",
-      "https://picsum.photos/seed/piliny-3/300/300",
-    ],
-  },
-  {
-    id: 2,
-    title: "Kovový odpad z výroby",
-    company: "KOVO Prešov, s.r.o.",
-    location: "Prešov",
-    category: "Kov",
-    quantity: "850 kg",
-    published: "Dnes",
-    note: "Dostupné ihneď, opakovaný výskyt každý mesiac.",
-    transport: "Paleta / nákladné vozidlo",
-    images: [
-      "https://picsum.photos/seed/kov-1/300/300",
-      "https://picsum.photos/seed/kov-2/300/300",
-      "https://picsum.photos/seed/kov-3/300/300",
-    ],
-  },
-  {
-    id: 3,
-    title: "Kartónové obaly",
-    company: "Východ Packaging",
-    location: "Humenné",
-    category: "Papier",
-    quantity: "300 kg",
-    published: "Včera",
-    note: "Čistý triedený materiál pripravený na odber.",
-    transport: "Dodávka / zberové auto",
-    images: [
-      "https://picsum.photos/seed/karton-1/300/300",
-      "https://picsum.photos/seed/karton-2/300/300",
-      "https://picsum.photos/seed/karton-3/300/300",
-    ],
-  },
-  {
-    id: 4,
-    title: "LDPE fólie",
-    company: "Recyklo SK",
-    location: "Michalovce",
-    category: "Plasty",
-    quantity: "450 kg",
-    published: "Včera",
-    note: "Vhodné na recykláciu alebo ďalšie dotriedenie.",
-    transport: "Lisovaný balík / dodávka",
-    images: [
-      "https://picsum.photos/seed/folie-1/300/300",
-      "https://picsum.photos/seed/folie-2/300/300",
-      "https://picsum.photos/seed/folie-3/300/300",
-    ],
-  },
-  {
-    id: 5,
-    title: "Použitá drevená štiepka",
-    company: "BioHeat Vranov",
-    location: "Vranov nad Topľou",
-    category: "Drevo",
-    quantity: "1,2 t",
-    published: "Pred 2 dňami",
-    note: "Väčší objem, dlhodobá spolupráca možná.",
-    transport: "Kontajner / sklápacie vozidlo",
-    images: [
-      "https://picsum.photos/seed/stiepka-1/300/300",
-      "https://picsum.photos/seed/stiepka-2/300/300",
-      "https://picsum.photos/seed/stiepka-3/300/300",
-    ],
-  },
-  {
-    id: 6,
-    title: "PET pretlaky a zvyšky",
-    company: "Plastmont",
-    location: "Košice",
-    category: "Plasty",
-    quantity: "220 kg",
-    published: "Pred 3 dňami",
-    note: "Pravidelné zvyšky z výrobných liniek.",
-    transport: "Big bag / paleta",
-    images: [
-      "https://picsum.photos/seed/pet-1/300/300",
-      "https://picsum.photos/seed/pet-2/300/300",
-      "https://picsum.photos/seed/pet-3/300/300",
-    ],
-  },
-  {
-    id: 7,
-    title: "Papierové dutinky",
-    company: "RollPack",
-    location: "Bardejov",
-    category: "Papier",
-    quantity: "180 kg",
-    published: "Pred 4 dňami",
-    note: "Zvyšky po výrobe obalového materiálu.",
-    transport: "Dodávka",
-    images: [
-      "https://picsum.photos/seed/dutinky-1/300/300",
-      "https://picsum.photos/seed/dutinky-2/300/300",
-      "https://picsum.photos/seed/dutinky-3/300/300",
-    ],
-  },
-  {
-    id: 8,
-    title: "Hliníkové odrezky",
-    company: "ALU Tech",
-    location: "Poprad",
-    category: "Kov",
-    quantity: "640 kg",
-    published: "Pred 5 dňami",
-    note: "Triedené odrezky, pravidelný mesačný objem.",
-    transport: "Paleta / nákladné vozidlo",
-    images: [
-      "https://picsum.photos/seed/alu-1/300/300",
-      "https://picsum.photos/seed/alu-2/300/300",
-      "https://picsum.photos/seed/alu-3/300/300",
-    ],
-  },
-  {
-    id: 9,
-    title: "Drevené palety na repas",
-    company: "LogiWood",
-    location: "Trebišov",
-    category: "Drevo",
-    quantity: "75 ks",
-    published: "Pred 6 dňami",
-    note: "Palety vhodné na opravu alebo opätovné použitie.",
-    transport: "Kamión / odvoz po dohode",
-    images: [
-      "https://picsum.photos/seed/palety-1/300/300",
-      "https://picsum.photos/seed/palety-2/300/300",
-      "https://picsum.photos/seed/palety-3/300/300",
-    ],
-  },
-];
 
-const categories = ["Všetko", "Drevo", "Kov", "Papier", "Plasty", "Bioodpad"];
-const topLinks = ["Prehľad", "Ponuky", "Trhovisko", "Zhody", "Firmy", "Dokumenty"];
+
+const categoryKeys = ["all", "wood", "metal", "paper", "plastics", "bio"] as const;
+const categorySkMap: Record<string, string> = {
+  all: "Všetko", wood: "Drevo", metal: "Kov",
+  paper: "Papier", plastics: "Plasty", bio: "Bioodpad",
+};
+const topLinkKeys = ["overview", "listings", "marketplace", "matches", "companies", "documents"] as const;
 const PAGE_SIZE = 6;
 
+
+function fixImageUrl(u: string | null | undefined): string | null {
+  if (!u) return null;
+  let s = String(u).trim();
+  // zlepenec /api/v1/api/v1 -> /api/v1
+  s = s.replace(/\/api\/v1\/api\/v1\//g, "/api/v1/");
+  // ak uz je absolutna, skolabuj /api/v1/api/v1 v strede
+  if (/^https?:\/\//.test(s)) {
+    return s.replace(/\/api\/v1\/api\/v1\//g, "/api/v1/");
+  }
+  // NEXT_PUBLIC_API_BASE_URL je cele http://127.0.0.1:8001/api/v1
+  // image_url z DB je /api/v1/uploads/xxx.png -> chceme http://127.0.0.1:8001/api/v1/uploads/xxx.png
+  const base = "http://127.0.0.1:8001";
+  if (s.startsWith("/api/v1/")) return base + s;
+  if (s.startsWith("/")) return base + "/api/v1" + s;
+  return null;
+}
+
+function makeFormatRelative(t: (k: string, fb?: string) => string) {
+  return (iso: string | null | undefined): string => {
+    if (!iso) return "\u2014";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "\u2014";
+    const diff = Date.now() - d.getTime();
+    const day = 86400000;
+    if (diff < day) return t("dashboard.dateToday");
+    if (diff < 2 * day) return t("dashboard.dateYesterday");
+    const days = Math.floor(diff / day);
+    if (days < 7) return t("dashboard.dateDaysAgo").replace("{n}", String(days));
+    return d.toLocaleDateString();
+  };
+}
+
 export default function DashboardPage() {
+  const { t } = useT();
+  const { mutateAsync: logout, isPending: logoutPending } = useLogout();
+  const formatRelative = useMemo(() => makeFormatRelative(t), [t]);
+
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("Všetko");
+  const [category, setCategory] = useState<string>("all");
   const [location, setLocation] = useState("");
   const [page, setPage] = useState(1);
-  const [openId, setOpenId] = useState<number | null>(1);
-  const [selectedImage, setSelectedImage] = useState<Record<number, string>>(
-    Object.fromEntries(listings.map((item) => [item.id, item.images[0]]))
-  );
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<Record<string, string>>({});
+
+  const { data: apiResp, isLoading, error } = useMarketplace();
+
+  const { data: companiesResp } = useQuery({
+    queryKey: ["companies-for-dashboard"],
+    queryFn: () => http.get<any>("/companies"),
+  });
+
+  const companiesMap = useMemo(() => {
+    const raw: any = companiesResp;
+    const items: any[] = Array.isArray(raw) ? raw : raw?.data ?? raw?.items ?? [];
+    const m: Record<string, string> = {};
+    for (const c of items) {
+      const n = c.tradingName || c.trading_name || c.legalName || c.legal_name || "";
+      if (c.id && n) m[String(c.id)] = n;
+    }
+    return m;
+  }, [companiesResp]);
+
+  const listings: Listing[] = useMemo(() => {
+    const raw: any = apiResp;
+    const items: any[] = Array.isArray(raw)
+      ? raw
+      : raw?.data ?? raw?.items ?? [];
+    return items.map((it: any) => ({
+      id: String(it.id),
+      title: it.title ?? t("dashboard.titleNoName"),
+      company:
+        it.company?.name ??
+        it.companyName ??
+        companiesMap[String(it.companyId ?? it.company_id ?? "")] ??
+        t("dashboard.companyUnknown"),
+      location: it.location ?? "\u2014",
+      category: it.materialType ?? it.material_type ?? "\u2014",
+      quantity: [it.quantity, it.unit].filter(Boolean).join(" ") || "\u2014",
+      published: formatRelative(it.createdAt ?? it.created_at),
+      note: it.description ?? "",
+      transport: it.transport ?? "\u2014",
+      images: [fixImageUrl(it.imageUrl ?? it.image_url)].filter(Boolean) as string[],
+    }));
+  }, [apiResp, companiesMap, t]);
 
   const filtered = useMemo(() => {
     return listings.filter((item) => {
@@ -185,8 +126,8 @@ export default function DashboardPage() {
           .toLowerCase()
           .includes(query.toLowerCase());
 
-      const matchesCategory =
-        category === "Všetko" || item.category === category;
+      const selectedSk = categorySkMap[category] || "Všetko";
+      const matchesCategory = category === "all" || item.category === selectedSk;
 
       const matchesLocation =
         location.trim() === "" ||
@@ -194,7 +135,7 @@ export default function DashboardPage() {
 
       return matchesQuery && matchesCategory && matchesLocation;
     });
-  }, [query, category, location]);
+  }, [query, category, location, listings]);
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
@@ -218,36 +159,55 @@ export default function DashboardPage() {
     <main className="market-page">
       <header className="market-top">
         <div className="market-brand">
-          <p className="market-mini">CMEP · Circular Materials Exchange Platform</p>
-          <h1>Obehové materiály</h1>
+          <p className="market-mini">{t("dashboard.mini")}</p>
+          <h1>{t("dashboard.title")}</h1>
         </div>
 
         <div className="market-account">
           <span>admin@cmep.dev</span>
           <span>owner</span>
-          <button type="button">Odhlásiť</button>
+          <LanguageSwitcher />
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await logout(undefined as any);
+              } finally {
+                window.location.href = "/login";
+              }
+            }}
+            disabled={logoutPending}
+          >
+            {logoutPending ? "..." : t("dashboard.logout")}
+          </button>
         </div>
       </header>
 
       <nav className="top-nav" aria-label="Hlavná navigácia">
-        {topLinks.map((item) => (
-          <a key={item} href="#">
-            {item}
-          </a>
-        ))}
+        {topLinkKeys.map((k) =>
+          k === "listings" ? (
+            <Link key={k} href="/dashboard/listings">
+              {t("dashboard.nav." + k)}
+            </Link>
+          ) : (
+            <a key={k} href="#">
+              {t("dashboard.nav." + k)}
+            </a>
+          )
+        )}
       </nav>
 
       <section className="search-panel">
         <div className="search-panel-main">
           <div>
-            <p className="market-mini">Tržnica</p>
-            <h2>Ponuky firiem a obehových materiálov</h2>
+            <p className="market-mini">{t("dashboard.market")}</p>
+            <h2>{t("dashboard.searchTitle")}</h2>
           </div>
 
           <div className="search-row">
             <input
               type="search"
-              placeholder="Materiál, firma alebo poznámka"
+              placeholder={t("dashboard.searchPlaceholder")}
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
@@ -257,7 +217,7 @@ export default function DashboardPage() {
 
             <input
               type="text"
-              placeholder="Lokalita"
+              placeholder={t("dashboard.locationPlaceholder")}
               value={location}
               onChange={(e) => {
                 setLocation(e.target.value);
@@ -265,19 +225,19 @@ export default function DashboardPage() {
               }}
             />
 
-            <button type="button">Hľadať</button>
+            <button type="button">{t("dashboard.searchBtn")}</button>
           </div>
         </div>
 
         <div className="categories">
-          {categories.map((item) => (
+          {categoryKeys.map((k) => (
             <button
-              key={item}
+              key={k}
               type="button"
-              className={item === category ? "active" : ""}
-              onClick={() => changeCategory(item)}
+              className={k === category ? "active" : ""}
+              onClick={() => changeCategory(k)}
             >
-              {item}
+              {t("dashboard." + k)}
             </button>
           ))}
         </div>
@@ -285,13 +245,23 @@ export default function DashboardPage() {
 
       <section className="list-head">
         <div>
-          <strong>{filtered.length}</strong> aktívnych ponúk
+          {isLoading ? (
+            <span>{t("common.loading")}</span>
+          ) : error ? (
+            <span style={{ color: "#b91c1c" }}>
+              {t("dashboard.loadError")} {(error as any)?.message || t("dashboard.loadErrorUnknown")}
+            </span>
+          ) : (
+            <>
+              <strong>{filtered.length}</strong> {t("dashboard.activeListings")}
+            </>
+          )}
         </div>
 
         <div className="list-actions">
-          <Link href="/dashboard/listings/new">+ Pridať ponuku</Link>
-          <Link href="/dashboard/companies/new">+ Pridať firmu</Link>
-          <Link href="/dashboard/documents/new">+ Pridať dokument</Link>
+          <Link href="/dashboard/listings/new">{t("dashboard.addListing")}</Link>
+          <Link href="/dashboard/companies/new">{t("dashboard.addCompany")}</Link>
+          <Link href="/dashboard/documents/new">{t("dashboard.addDocument")}</Link>
         </div>
       </section>
 
@@ -352,49 +322,46 @@ export default function DashboardPage() {
                             setSelectedImage((prev) => ({ ...prev, [item.id]: image }))
                           }
                         >
-                          <img src={image} alt={`${item.title} náhľad`} width="72" height="72" />
+                          <img src={image} alt={`${item.title} ${t("dashboard.preview")}`} width="72" height="72" />
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <div className="detail-info">
-                    <h4>Detail ponuky</h4>
+                    <h4>{t("dashboard.detail")}</h4>
 
                     <dl>
                       <div>
-                        <dt>Firma</dt>
+                        <dt>{t("dashboard.company")}</dt>
                         <dd>{item.company}</dd>
                       </div>
                       <div>
-                        <dt>Lokalita</dt>
+                        <dt>{t("dashboard.location")}</dt>
                         <dd>{item.location}</dd>
                       </div>
                       <div>
-                        <dt>Kategória</dt>
+                        <dt>{t("dashboard.category")}</dt>
                         <dd>{item.category}</dd>
                       </div>
                       <div>
-                        <dt>Množstvo</dt>
+                        <dt>{t("dashboard.quantity")}</dt>
                         <dd>{item.quantity}</dd>
                       </div>
                       <div>
-                        <dt>Vhodná preprava</dt>
+                        <dt>{t("dashboard.transport")}</dt>
                         <dd>{item.transport}</dd>
                       </div>
                       <div>
-                        <dt>Publikované</dt>
+                        <dt>{t("dashboard.published")}</dt>
                         <dd>{item.published}</dd>
                       </div>
                     </dl>
 
-                    <p>
-                      Táto sekcia je pripravená na budúce doplnenie kontaktov, presných parametrov,
-                      dostupnosti, certifikátov a odporúčaných dopravcov.
-                    </p>
+                    <p>{t("dashboard.sectionNote")}</p>
 
                     <div className="detail-actions">
-                      <Link href={`/dashboard/listings/${item.id}`}>Kontaktovať firmu</Link>
+                      <Link href={`/dashboard/listings/${item.id}`}>{t("dashboard.contactCompany")}</Link>
                     </div>
                   </div>
                 </div>
@@ -405,15 +372,15 @@ export default function DashboardPage() {
 
         {currentPageItems.length === 0 && (
           <div className="empty-state">
-            <h3>Nenašli sa žiadne ponuky</h3>
-            <p>Skús zmeniť hľadaný výraz, kategóriu alebo lokalitu.</p>
+            <h3>{t("dashboard.notFound")}</h3>
+            <p>{t("dashboard.notFoundHint")}</p>
           </div>
         )}
       </section>
 
       <nav className="pagination" aria-label="Stránkovanie">
         <button type="button" onClick={() => changePage(page - 1)} disabled={page === 1}>
-          Predchádzajúca
+          {t("dashboard.prev")}
         </button>
 
         <div className="pages">
@@ -430,7 +397,7 @@ export default function DashboardPage() {
         </div>
 
         <button type="button" onClick={() => changePage(page + 1)} disabled={page === pageCount}>
-          Ďalšia
+          {t("dashboard.next")}
         </button>
       </nav>
 

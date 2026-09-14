@@ -12,6 +12,7 @@ import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useT } from '../../../lib/i18n/context';
 
 declare global {
   interface Window {
@@ -20,6 +21,7 @@ declare global {
 }
 
 export const LoginForm = () => {
+  const { t } = useT();
   const { mutateAsync: login, isPending, error } = useLogin();
   const router = useRouter();
   const googleButtonRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +41,7 @@ export const LoginForm = () => {
       router.refresh();
       router.push('/dashboard');
     } catch (e: any) {
-      alert(e?.message || 'Prihlásenie zlyhalo');
+      alert(e?.message || t('login.errorFailed'));
     }
   };
 
@@ -71,7 +73,7 @@ export const LoginForm = () => {
             router.refresh();
             router.push('/dashboard');
           } catch (e: any) {
-            alert(e?.message || 'Google prihlásenie zlyhalo');
+            alert(e?.message || t('login.errorGoogleFailed'));
           }
         },
       });
@@ -113,27 +115,27 @@ export const LoginForm = () => {
       className="w-full max-w-sm space-y-4 rounded-2xl border border-white/60 bg-white/90 p-6 shadow-xl shadow-slate-900/5 backdrop-blur-md sm:p-8"
     >
       <div className="mb-2 text-center">
-        <h2 className="text-xl font-bold tracking-tight text-slate-900">Prihlásenie</h2>
-        <p className="mt-1 text-xs text-slate-500">Vstup do firemného účtu</p>
+        <h2 className="text-xl font-bold tracking-tight text-slate-900">{t('login.title')}</h2>
+        <p className="mt-1 text-xs text-slate-500">{t('login.subtitle_company')}</p>
       </div>
 
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-          {(error as any).message || 'Nesprávne meno alebo heslo'}
+          {(error as any).message || t('login.errorInvalid')}
         </div>
       )}
 
-      <FormField label="E-mail" error={errors.email?.message}>
+      <FormField label={t('login.emailLabel')} error={errors.email?.message}>
         <Input
           type="email"
-          placeholder="vas@email.sk"
+          placeholder={t('login.emailPlaceholder')}
           {...register('email')}
           disabled={isPending}
           className="rounded-xl"
         />
       </FormField>
 
-      <FormField label="Heslo" error={errors.password?.message}>
+      <FormField label={t('login.passwordLabel')} error={errors.password?.message}>
         <div className="relative">
           <Input
             type={showPassword ? 'text' : 'password'}
@@ -165,15 +167,15 @@ export const LoginForm = () => {
       <div className="flex items-center justify-between text-sm">
         <label className="inline-flex items-center gap-2 text-slate-600">
           <input type="checkbox" {...register('remember')} className="rounded border-slate-300" />
-          Zapamätať si ma
+          {t('login.remember')}
         </label>
         <Link href="/forgot-password" className="text-emerald-700 hover:text-emerald-800">
-          Zabudnuté heslo?
+          {t('login.forgot')}
         </Link>
       </div>
 
       <Button type="submit" className="w-full rounded-xl" disabled={isPending}>
-        {isPending ? 'Prihlasujem...' : 'Prihlásiť sa'}
+        {isPending ? t('login.submitting') : t('login.submit')}
       </Button>
 
       <div className="relative py-2">
@@ -181,16 +183,16 @@ export const LoginForm = () => {
           <span className="w-full border-t border-slate-200" />
         </div>
         <div className="relative flex justify-center text-xs uppercase tracking-[0.2em] text-slate-400">
-          <span className="bg-white px-3">alebo</span>
+          <span className="bg-white px-3">{t('login.or')}</span>
         </div>
       </div>
 
       <div ref={googleButtonRef} className="flex justify-center" />
 
       <p className="text-center text-sm text-slate-500">
-        Nemáte účet?{' '}
+        {t('login.noAccount')}{' '}
         <Link href="/register" className="font-medium text-emerald-700 hover:text-emerald-800">
-          Zaregistrujte sa
+          {t('login.registerLink')}
         </Link>
       </p>
     </form>
