@@ -289,3 +289,8 @@ production_answers.txt
 audit_report.txt
 .repair-backup-*/
 fix-waste-platform-tests.sh
+
+# --- Local dev junk ---
+key
+typescript
+script
