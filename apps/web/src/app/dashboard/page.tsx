@@ -29,7 +29,7 @@ const categorySkMap: Record<string, string> = {
   all: "Všetko", wood: "Drevo", metal: "Kov",
   paper: "Papier", plastics: "Plasty", bio: "Bioodpad",
 };
-const topLinkKeys = ["overview", "listings", "marketplace", "matches", "companies", "documents"] as const;
+const topLinkKeys = ["overview", "listings", "marketplace", "matches", "companies", "documents", "chat"] as const;
 const PAGE_SIZE = 6;
 
 
@@ -193,15 +193,16 @@ export default function DashboardPage() {
             listings: "/dashboard/listings",
             documents: "/dashboard/documents",
             companies: "/dashboard/companies",
+            chat: "/dashboard/chat",
           };
           const href = hrefs[k];
           return href ? (
             <Link key={k} href={href}>
-              {t("dashboard.nav." + k)}
+              {t("dashboard.nav." + k, k === "chat" ? "Chat" : k)}
             </Link>
           ) : (
             <a key={k} href="#">
-              {t("dashboard.nav." + k)}
+              {t("dashboard.nav." + k, k === "chat" ? "Chat" : k)}
             </a>
           );
         })}

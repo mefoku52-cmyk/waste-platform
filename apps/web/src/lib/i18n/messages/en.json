@@ -67,7 +67,8 @@
       "marketplace": "Marketplace",
       "matches": "Matches",
       "companies": "Companies",
-      "documents": "Documents"
+      "documents": "Documents",
+      "chat": "Chat"
     },
     "logout": "Sign out",
     "market": "Marketplace",

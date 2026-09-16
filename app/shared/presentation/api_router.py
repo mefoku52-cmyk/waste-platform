@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.modules.admin.presentation.router import router as admin_router
 from app.modules.analytics.presentation.router import router as analytics_router
 from app.modules.auth.presentation.router import router as auth_router
+from app.modules.chat.presentation.router import router as chat_router
 from app.modules.companies.presentation.router import router as companies_router
 from app.modules.company_memberships.presentation.router import (
     router as memberships_router,
@@ -27,6 +28,7 @@ api_router.include_router(admin_router)
 api_router.include_router(analytics_router)
 api_router.include_router(compliance_router)
 api_router.include_router(documents_router)
+api_router.include_router(chat_router)
 api_router.include_router(inquiries_router)
 api_router.include_router(listings_router)
 api_router.include_router(notifications_router)
