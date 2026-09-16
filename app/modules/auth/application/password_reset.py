@@ -98,11 +98,16 @@ class PasswordResetService:
         token = secrets.token_urlsafe(32)
         self._store_token(token, str(user.id))
 
-        base = str(
-            getattr(settings, "FRONTEND_URL", "")
-            or getattr(settings, "NEXT_PUBLIC_API_URL", "")
-            or "http://127.0.0.1:3001"
+        import os
+
+        base = (
+            os.environ.get("FRONTEND_URL")
+            or getattr(settings, "FRONTEND_URL", "")
+            or "https://waste-platform-web.onrender.com"
         ).rstrip("/")
+        # Bezpecnost: nikdy neposielaj localhost v produkcii
+        if "127.0.0.1" in base or "localhost" in base:
+            base = "https://waste-platform-web.onrender.com"
         nl = chr(10)
         body = (
             "Obnova hesla CMEP"
