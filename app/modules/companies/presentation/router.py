@@ -20,8 +20,29 @@ from app.modules.companies.presentation.schemas import (
 )
 from app.shared.application.side_effects import write_audit
 from app.shared.infrastructure.db.session import get_db_session
-from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.auth_dependencies import (
+    require_current_user,
+)
 from app.shared.presentation.error_schemas import error_responses
+
+
+def _is_admin(current_user) -> bool:
+    from app.core.config import settings
+
+    codes = list(
+        getattr(current_user, "roleCodes", None) or getattr(current_user, "role_codes", None) or []
+    )
+    codes = [str(c).lower() for c in codes]
+    u = getattr(current_user, "user", None)
+    email = ""
+    if u is not None:
+        email = str(getattr(u, "email", "") or "").lower()
+    else:
+        email = str(getattr(current_user, "email", "") or "").lower()
+    raw = getattr(settings, "PLATFORM_ADMIN_EMAILS", None) or "admin@cmep.dev"
+    admins = {x.strip().lower() for x in str(raw).split(",") if x.strip()}
+    return email in admins or "admin" in codes or "platform_admin" in codes
+
 
 router = APIRouter(prefix="/companies", tags=["companies"])
 
@@ -43,11 +64,14 @@ async def list_companies(
     current_user=Depends(require_current_user),
     service=Depends(get_list_companies_service),
 ):
-    company_ids = [
-        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
-        for m in (current_user.memberships or [])
-    ]
-    company_ids = [cid for cid in company_ids if cid is not None]
+    if _is_admin(current_user):
+        company_ids = None
+    else:
+        company_ids = [
+            (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
+            for m in (current_user.memberships or [])
+        ]
+        company_ids = [cid for cid in company_ids if cid is not None]
     items, total = await service.execute(
         status=status,
         company_type=companyType,
