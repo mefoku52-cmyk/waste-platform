@@ -23,7 +23,10 @@ function useIsPlatformAdmin() {
       ''
   ).toLowerCase();
 
-  const adminEmails = ['admin@cmep.dev'];
+  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || 'admin@cmep.dev')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
   return (
     roles.includes('admin') ||
     roles.includes('platform_admin') ||
