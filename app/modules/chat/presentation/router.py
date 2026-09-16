@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends, Query
 
 from app.shared.domain.exceptions import NotFoundDomainError
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.error_schemas import error_responses
 
@@ -158,14 +159,54 @@ async def send_message(
     payload: SendMessageRequest,
     current_user=Depends(require_current_user),
     service=Depends(get_chat_service),
+    session=Depends(get_db_session),
 ):
+    from uuid import uuid4
+
     uid = _user_id(current_user)
+    thread = await service.get_thread(thread_id)
+    if thread is None:
+        raise NotFoundDomainError("Thread not found")
+
     msg = await service.send_message(
         thread_id=thread_id,
         sender_user_id=uid,
         sender_company_id=None,
         body=payload.body,
     )
+
+    # Notifikacia pre prijemcu
+    try:
+        recipient_id = (
+            thread.recipient_user_id
+            if str(thread.initiator_user_id) == str(uid)
+            else thread.initiator_user_id
+        )
+
+        from datetime import datetime as _dt
+
+        from app.modules.notifications.domain.entities import NotificationEntity
+        from app.modules.notifications.infrastructure.repositories import (
+            NotificationRepositoryImpl,
+        )
+
+        notif = NotificationEntity(
+            id=uuid4(),
+            user_id=recipient_id,
+            type="chat_message",
+            title="Nova sprava v chate",
+            message=payload.body[:200],
+            is_read=False,
+            related_entity_id=thread_id,
+            created_at=_dt.now(),
+            updated_at=_dt.now(),
+            created_by_user_id=uid,
+            updated_by_user_id=uid,
+        )
+        await NotificationRepositoryImpl(session).create(notif)
+    except Exception:
+        pass
+
     return ChatMessageResponse(data=_message_data(msg))
 
 

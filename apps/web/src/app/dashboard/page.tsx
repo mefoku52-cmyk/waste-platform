@@ -68,6 +68,8 @@ function makeFormatRelative(t: (k: string, fb?: string) => string) {
 export default function DashboardPage() {
   const { t } = useT();
   const { data: me } = useCurrentUser();
+  const { data: unreadData } = useUnreadNotifications();
+  const unreadChat = Number((unreadData as any)?.unread || 0);
   const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || "admin@cmep.dev")
     .split(",")
     .map((e) => e.trim().toLowerCase())
@@ -222,6 +224,11 @@ export default function DashboardPage() {
           return href ? (
             <Link key={k} href={href}>
               {t("dashboard.nav." + k, k === "chat" ? "Chat" : k)}
+              {k === "chat" && unreadChat > 0 && (
+                <span className="ml-1 inline-flex items-center justify-center rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white">
+                  {unreadChat}
+                </span>
+              )}
             </Link>
           ) : (
             <a key={k} href="#">
@@ -983,6 +990,8 @@ function MyListingsMenu({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
   const { t } = useT();
   const { data: me } = useCurrentUser();
+  const { data: unreadData } = useUnreadNotifications();
+  const unreadChat = Number((unreadData as any)?.unread || 0);
   const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || "admin@cmep.dev")
     .split(",")
     .map((e) => e.trim().toLowerCase())

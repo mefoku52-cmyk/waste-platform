@@ -69,6 +69,19 @@ async def list_notifications(
 
 
 @router.get(
+    "/unread-count",
+    responses=error_responses(401, 500),
+)
+async def unread_count(
+    current_user=Depends(require_current_user),
+    service: NotificationService = Depends(get_notifications_service),
+):
+    uid = _current_user_id(current_user)
+    count = await service.count_unread(uid)
+    return {"unread": count}
+
+
+@router.get(
     "/{id}",
     response_model=NotificationResponse,
     responses=error_responses(401, 403, 404, 500),

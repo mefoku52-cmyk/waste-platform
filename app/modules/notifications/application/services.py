@@ -50,3 +50,6 @@ class NotificationService:
         if existing is None:
             raise NotFoundDomainError(f"Notification {id} not found")
         await self.repository.delete(id)
+
+    async def count_unread(self, user_id) -> int:
+        return await self.repository.count_unread(user_id)

@@ -42,6 +42,15 @@ class NotificationRepositoryImpl(NotificationRepository):
         )
         return int(result.scalar_one())
 
+    async def count_unread(self, user_id) -> int:
+        result = await self.session.execute(
+            select(func.count())
+            .select_from(NotificationModel)
+            .where(NotificationModel.user_id == user_id)
+            .where(NotificationModel.is_read.is_(False))
+        )
+        return int(result.scalar_one())
+
     async def list_all(self, page: int = 1, limit: int = 20) -> list[NotificationEntity]:
         offset = (page - 1) * limit
         result = await self.session.execute(

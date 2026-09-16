@@ -33,3 +33,6 @@ class NotificationRepository(ABC):
 
     @abstractmethod
     async def delete(self, id: str) -> None: ...
+
+    @abstractmethod
+    async def count_unread(self, user_id) -> int: ...
