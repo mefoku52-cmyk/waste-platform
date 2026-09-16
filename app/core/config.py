@@ -131,6 +131,7 @@ class Settings(BaseSettings):
     NEXT_PUBLIC_API_URL: str = "http://127.0.0.1:8001"
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: str = ""
 
+    FRONTEND_URL: str = "https://waste-platform-web.onrender.com"
     EMAIL_FROM: str = ""
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
