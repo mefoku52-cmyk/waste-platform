@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/api/http";
 import { useT } from "@/lib/i18n/context";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { useLogout } from "@/features/auth";
+import { useLogout, useCurrentUser} from "@/features/auth";
 
 type Listing = {
   id: string;
