@@ -68,6 +68,18 @@ function makeFormatRelative(t: (k: string, fb?: string) => string) {
 export default function DashboardPage() {
   const { t } = useT();
   const { data: me } = useCurrentUser();
+  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || "admin@cmep.dev")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  const _myEmail = String((me as any)?.email || (me as any)?.user?.email || "").toLowerCase();
+  const _roleCodes = ((me as any)?.roleCodes || (me as any)?.role_codes || []).map((r: string) =>
+    String(r).toLowerCase()
+  );
+  const isAdmin =
+    _roleCodes.includes("admin") ||
+    _roleCodes.includes("platform_admin") ||
+    adminEmails.includes(_myEmail);
   const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   const { mutateAsync: logout, isPending: logoutPending } = useLogout();
   const formatRelative = useMemo(() => makeFormatRelative(t), [t]);
@@ -172,6 +184,15 @@ export default function DashboardPage() {
           <MyListingsMenu label={t("dashboard.myListings")} />
           <span>{myEmail || "—"}</span>
           <span>{String((me as any)?.role || "user")}</span>
+          {isAdmin && (
+            <Link
+              href="/dashboard/admin"
+              className="rounded-lg border border-amber-500 bg-amber-500/20 px-3 py-1.5 text-sm font-semibold text-amber-300 hover:bg-amber-500/30"
+              title="Admin Panel"
+            >
+              ⚙️ Admin
+            </Link>
+          )}
           <LanguageSwitcher />
           <button
             type="button"
@@ -962,6 +983,18 @@ function MyListingsMenu({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
   const { t } = useT();
   const { data: me } = useCurrentUser();
+  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || "admin@cmep.dev")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+  const _myEmail = String((me as any)?.email || (me as any)?.user?.email || "").toLowerCase();
+  const _roleCodes = ((me as any)?.roleCodes || (me as any)?.role_codes || []).map((r: string) =>
+    String(r).toLowerCase()
+  );
+  const isAdmin =
+    _roleCodes.includes("admin") ||
+    _roleCodes.includes("platform_admin") ||
+    adminEmails.includes(_myEmail);
   const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   return (
     <div className="mylistings-wrap">
