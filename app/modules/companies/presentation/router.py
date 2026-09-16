@@ -198,28 +198,14 @@ async def transition_company_status(
     service=Depends(get_transition_company_status_service),
     session=Depends(get_db_session),
 ):
-    from app.core.config import settings
     from app.shared.domain.exceptions import ForbiddenDomainError
 
     target = str(getattr(payload, "toStatus", None) or getattr(payload, "to_status", "")).lower()
     admin_only = {"verified", "rejected", "suspended", "inactive"}
 
     if target in admin_only:
-        codes = list(
-            getattr(current_user, "roleCodes", None)
-            or getattr(current_user, "role_codes", None)
-            or []
-        )
-        codes = [str(c).lower() for c in codes]
-        u = getattr(current_user, "user", None)
-        email = ""
-        if u is not None:
-            email = str(getattr(u, "email", "") or "").lower()
-        raw = getattr(settings, "platform_admin_emails", None) or "admin@cmep.dev"
-        admins = {x.strip().lower() for x in str(raw).split(",") if x.strip()}
-        is_admin = email in admins or "admin" in codes or "platform_admin" in codes
-        if not is_admin:
-            raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor platformy.")
+        if not _is_admin(current_user):
+            raise ForbiddenDomainError("Overenie firmy moze vykonat len administrator platformy.")
 
     dto = await service.execute(
         company_id=company_id,
