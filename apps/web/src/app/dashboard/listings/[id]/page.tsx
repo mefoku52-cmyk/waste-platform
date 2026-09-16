@@ -7,6 +7,8 @@ import { listingsApi } from '@/features/listings';
 import { inquiriesApi } from '@/features/inquiries';
 import { useAuthRequired } from '@/features/auth';
 import { Button } from '@/components/ui/button';
+import { chatApi } from '@/features/chat';
+import { http } from '@/lib/api/http';
 
 export default function ListingDetailPage() {
   const params = useParams();
@@ -26,6 +28,8 @@ export default function ListingDetailPage() {
   const [message, setMessage] = useState('Mám záujem o túto ponuku.');
   const [phone, setPhone] = useState('');
   const [busy, setBusy] = useState(false);
+  const [chatStarting, setChatStarting] = useState(false);
+  const [chatErr, setChatErr] = useState<string | null>(null);
   const [ok, setOk] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
@@ -63,6 +67,43 @@ export default function ListingDetailPage() {
       setErr(e?.message || 'Odoslanie dopytu zlyhalo');
     } finally {
       setBusy(false);
+    }
+  };
+
+
+  const handleStartChat = async () => {
+    if (!myCompanyId) {
+      setChatErr('Najprv si vytvor firmu – chat ide v mene tvojej firmy.');
+      return;
+    }
+    setChatStarting(true);
+    setChatErr(null);
+    try {
+      // Ziskaj company detail – potrebujeme createdByUserId (vlastnik firmy)
+      const company: any = await http.get<any>(`/companies/${data.companyId}`);
+      const comp = company?.data ?? company;
+      const recipientUserId = comp?.createdByUserId || comp?.created_by_user_id;
+      if (!recipientUserId) {
+        setChatErr('Nepodarilo sa zistit vlastnika firmy.');
+        return;
+      }
+      const thread: any = await chatApi.createThread({
+        recipientUserId: String(recipientUserId),
+        recipientCompanyId: String(data.companyId),
+        initiatorCompanyId: String(myCompanyId),
+        listingId: String(id),
+        subject: `Ponuka: ${data.title}`.slice(0, 255),
+      });
+      const threadId = thread?.data?.id;
+      if (threadId) {
+        router.push(`/dashboard/chat/${threadId}`);
+      } else {
+        setChatErr('Vlakno sa vytvorilo, ale chyba ID.');
+      }
+    } catch (e: any) {
+      setChatErr(e?.message || 'Nepodarilo sa vytvorit chat.');
+    } finally {
+      setChatStarting(false);
     }
   };
 
@@ -159,9 +200,19 @@ export default function ListingDetailPage() {
                   />
                 </div>
                 {err && <div className="text-sm text-red-600">{err}</div>}
-                <Button onClick={handleInquiry} disabled={busy}>
-                  {busy ? 'Odosielam...' : 'Odoslať dopyt'}
-                </Button>
+                <div className="flex flex-wrap gap-2">
+                  <Button onClick={handleInquiry} disabled={busy}>
+                    {busy ? 'Odosielam...' : 'Odoslať dopyt'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={handleStartChat}
+                    disabled={chatStarting}
+                  >
+                    {chatStarting ? 'Otváram chat...' : 'Napísať správu'}
+                  </Button>
+                </div>
+                {chatErr && <div className="text-sm text-red-600">{chatErr}</div>}
               </div>
             )}
           </div>

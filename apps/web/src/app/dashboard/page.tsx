@@ -67,6 +67,8 @@ function makeFormatRelative(t: (k: string, fb?: string) => string) {
 
 export default function DashboardPage() {
   const { t } = useT();
+  const { data: me } = useCurrentUser();
+  const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   const { mutateAsync: logout, isPending: logoutPending } = useLogout();
   const formatRelative = useMemo(() => makeFormatRelative(t), [t]);
 
@@ -168,8 +170,8 @@ export default function DashboardPage() {
 
         <div className="market-account">
           <MyListingsMenu label={t("dashboard.myListings")} />
-          <span>admin@cmep.dev</span>
-          <span>owner</span>
+          <span>{myEmail || "—"}</span>
+          <span>{String((me as any)?.role || "user")}</span>
           <LanguageSwitcher />
           <button
             type="button"
@@ -959,6 +961,8 @@ export default function DashboardPage() {
 function MyListingsMenu({ label }: { label: string }) {
   const [open, setOpen] = useState(false);
   const { t } = useT();
+  const { data: me } = useCurrentUser();
+  const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   return (
     <div className="mylistings-wrap">
       <button
