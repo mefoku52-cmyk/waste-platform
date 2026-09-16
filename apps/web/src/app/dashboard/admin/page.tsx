@@ -3,6 +3,7 @@
 import { useAuthRequired } from "@/features/auth";
 import { useAdminStats } from "@/features/admin";
 import { AdminUsersTable } from "@/features/admin";
+import { CompaniesTable } from "@/features/companies";
 import { redirect } from "next/navigation";
 
 export default function AdminPage() {
@@ -19,12 +20,16 @@ export default function AdminPage() {
 
 
   // Ochrana: Iba admin môže pristupovať na túto stránku
-  const roleCodes: string[] = (user as any)?.roleCodes || [];
+  const roleCodes: string[] = ((user as any)?.roleCodes || []).map((r: string) => String(r).toLowerCase());
   const userEmail = String((user as any)?.email || (user as any)?.user?.email || '').toLowerCase();
+  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || 'admin@cmep.dev')
+    .split(',')
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
   const isAdmin =
     roleCodes.includes('admin') ||
     roleCodes.includes('platform_admin') ||
-    userEmail === 'admin@cmep.dev';
+    adminEmails.includes(userEmail);
 
   if (user && !isAdmin) {
     redirect('/dashboard');
@@ -40,6 +45,15 @@ export default function AdminPage() {
         <StatCard title="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
         <StatCard title="Čakajúce overenia" value={safeStats.pending_verifications} loading={isLoadingStats} color="text-orange-600" />
       </div>
+
+      <section className="space-y-4">
+        <h2 className="text-xl font-semibold text-gray-800">Firmy na overenie</h2>
+        <p className="text-sm text-gray-500">
+          Firmy, ktoré požiadali o overenie. Klikni <strong>Overiť</strong> pre schválenie alebo
+          <strong>Zamietnuť</strong> pre odmietnutie.
+        </p>
+        <CompaniesTable />
+      </section>
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-800">Správa používateľov</h2>
