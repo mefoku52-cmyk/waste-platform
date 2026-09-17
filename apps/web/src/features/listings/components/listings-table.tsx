@@ -7,7 +7,7 @@ import { useListings } from '../hooks/use-listings';
 import { useCompanies } from '../../companies/hooks/use-companies';
 import { listingsApi } from '../api';
 import { cn } from '../../../lib/utils/cn';
-import { useT } from "../../../../lib/i18n/context";
+import { useT } from "@/lib/i18n/context";
 
 export const ListingsTable = () => {
   const { t } = useT();

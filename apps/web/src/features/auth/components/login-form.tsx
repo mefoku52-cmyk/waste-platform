@@ -12,7 +12,7 @@ import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useT } from '../../../lib/i18n/context';
+import { useT } from '@/lib/i18n/context';
 
 declare global {
   interface Window {
