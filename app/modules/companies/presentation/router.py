@@ -212,8 +212,10 @@ async def transition_company_status(
         to_status=payload.toStatus,
         actor_user_id=current_user.user.id,
     )
-    try:
-        actor = getattr(getattr(current_user, "user", None), "id", None)
+    actor = getattr(getattr(current_user, "user", None), "id", None)
+    import contextlib
+
+    with contextlib.suppress(Exception):
         await write_audit(
             session=session,
             actor_user_id=actor,
@@ -222,6 +224,30 @@ async def transition_company_status(
             target_id=company_id,
             details=f"toStatus={payload.toStatus}",
         )
+    try:
+        from app.shared.application.side_effects import notify_company_members
+
+        tl = str(payload.toStatus).lower()
+        if tl == "verified":
+            await notify_company_members(
+                session=session,
+                company_id=company_id,
+                title="Firma overena",
+                message="Vasa firma bola overena administratorom.",
+                notif_type="company_verified",
+                related_entity_id=company_id,
+                exclude_user_id=actor,
+            )
+        elif tl == "rejected":
+            await notify_company_members(
+                session=session,
+                company_id=company_id,
+                title="Firma zamietnuta",
+                message="Overenie vasej firmy bolo zamietnute.",
+                notif_type="company_rejected",
+                related_entity_id=company_id,
+                exclude_user_id=actor,
+            )
     except Exception:
         pass
     return CompanyResponse(data=to_company_data(dto))

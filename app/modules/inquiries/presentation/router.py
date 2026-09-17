@@ -201,6 +201,7 @@ async def update_inquiry_status(
     request: InquiryStatusUpdateRequest,
     current_user=Depends(require_current_user),
     service: InquiryService = Depends(get_inquiries_service),
+    session=Depends(get_db_session),
 ):
     company_ids = {str(x) for x in _user_company_ids(current_user)}
 
@@ -221,6 +222,22 @@ async def update_inquiry_status(
         raise
     except ValidationDomainError:
         raise
+
+    try:
+        from app.shared.application.side_effects import notify_company_members
+
+        t = str(getattr(request.status, "value", request.status)).lower()
+        if t in ("answered", "closed"):
+            await notify_company_members(
+                session=session,
+                company_id=result.company_id,
+                title="Dopyt aktualizovany",
+                message=f"Vas dopyt k ponuke bol oznaceny ako: {t}",
+                notif_type="inquiry_updated",
+                related_entity_id=result.id,
+            )
+    except Exception:
+        pass
 
     return InquiryResponse(data=_to_data(result))
 
