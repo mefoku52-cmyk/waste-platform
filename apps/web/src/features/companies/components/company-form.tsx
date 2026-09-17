@@ -8,6 +8,7 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
+import { useT } from "../../../../lib/i18n/context";
 
 export const CompanyForm = () => {
   const { mutate: createCompany, isPending, error } = useCreateCompany();

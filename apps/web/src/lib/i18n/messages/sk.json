@@ -6,12 +6,15 @@
     "email": "E-mail",
     "password": "Heslo",
     "search": "Hľadať",
-    "loading": "Načítavam…",
+    "loading": "Načítavam...",
     "error": "Chyba",
     "cancel": "Zrušiť",
     "save": "Uložiť",
     "back": "Späť",
-    "language": "Jazyk"
+    "language": "Jazyk",
+    "submit": "Odoslať",
+    "firstName": "Meno",
+    "lastName": "Priezvisko"
   },
   "login": {
     "title": "Prihlásenie",
@@ -99,5 +102,84 @@
     "noListings": "Žiadne ponuky neboli nájdené.",
     "loadingListings": "Načítavam ponuky...",
     "loadFailed": "Chyba pri načítaní dát."
+  },
+  "register": {
+    "title": "Registrácia",
+    "submit": "Vytvoriť účet",
+    "submitAlt": "Registrovať sa",
+    "haveAccount": "Už máte účet?",
+    "loginLink": "Prihláste sa"
+  },
+  "forgot": {
+    "title": "Zabudnuté heslo",
+    "hint": "Zadajte svoj e-mail a pošleme vám odkaz na obnovu hesla.",
+    "submit": "Odoslať odkaz",
+    "back": "Späť na prihlásenie",
+    "sent": "Ak účet existuje, poslali sme inštrukcie na e-mail."
+  },
+  "reset": {
+    "title": "Nové heslo",
+    "newPassword": "Nové heslo",
+    "confirmPassword": "Potvrdiť heslo",
+    "submit": "Uložiť nové heslo",
+    "back": "Späť na prihlásenie"
+  },
+  "listingForm": {
+    "title": "Nová ponuka",
+    "titleAdd": "Pridať novú ponuku",
+    "subtitle": "Vyplňte údaje o materiáli, ktorý chcete ponúknuť.",
+    "companyLabel": "Firma",
+    "nameLabel": "Názov ponuky",
+    "materialLabel": "Typ materiálu",
+    "descriptionLabel": "Popis",
+    "qtyLabel": "Množstvo",
+    "unitLabel": "Jednotka",
+    "priceLabel": "Cena",
+    "currencyLabel": "Mena",
+    "conditionLabel": "Stav materiálu",
+    "locationLabel": "Lokalita",
+    "imageLabel": "URL fotky",
+    "submit": "Vytvoriť ponuku",
+    "saving": "Ukladám..."
+  },
+  "companyForm": {
+    "title": "Nová firma",
+    "titleAdd": "Pridať firmu",
+    "legalNameLabel": "Právny názov",
+    "tradingNameLabel": "Obchodný názov",
+    "icoLabel": "IČO",
+    "dicLabel": "DIČ",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Telefón",
+    "streetLabel": "Ulica",
+    "cityLabel": "Mesto",
+    "pscLabel": "PSČ",
+    "countryLabel": "Krajina",
+    "submit": "Vytvoriť firmu"
+  },
+  "tables": {
+    "name": "Názov",
+    "status": "Status",
+    "actions": "Akcie",
+    "publish": "Publikovať",
+    "quantity": "Množstvo",
+    "unit": "Jednotka",
+    "empty": "Žiadne záznamy.",
+    "loading": "Načítavam...",
+    "error": "Chyba pri načítaní.",
+    "companyName": "Názov firmy",
+    "ico": "IČO",
+    "city": "Mesto",
+    "verify": "Overiť",
+    "requestVerify": "Požiadať o overenie",
+    "awaitingAdmin": "Čaká na administrátora",
+    "adminMode": "Režim administrátora – môžeš schvaľovať firmy.",
+    "adminOnly": "Schválenie môže len administrátor.",
+    "companyMustBeVerified": "Firma musí byť overená (verified).",
+    "publishToMarketplace": "Publikovať na trhovisko"
+  },
+  "docs": {
+    "title": "Dokumenty",
+    "add": "Pridať dokument"
   }
 }

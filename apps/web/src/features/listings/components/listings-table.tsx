@@ -7,8 +7,10 @@ import { useListings } from '../hooks/use-listings';
 import { useCompanies } from '../../companies/hooks/use-companies';
 import { listingsApi } from '../api';
 import { cn } from '../../../lib/utils/cn';
+import { useT } from "../../../../lib/i18n/context";
 
 export const ListingsTable = () => {
+  const { t } = useT();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useListings();
@@ -50,8 +52,8 @@ export const ListingsTable = () => {
     }
   };
 
-  if (isLoading) return <div className="p-4 text-center">Načítavam ponuky...</div>;
-  if (error) return <div className="p-4 text-red-500 text-center">Chyba pri načítaní dát.</div>;
+  if (isLoading) return <div className="p-4 text-center">{t('tables.loading')}</div>;
+  if (error) return <div className="p-4 text-red-500 text-center">{t('tables.error')}</div>;
 
   const listings = (data as any)?.items ?? [];
 
@@ -80,7 +82,7 @@ export const ListingsTable = () => {
           {listings.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                Žiadne ponuky neboli nájdené.
+                {t('tables.empty')}
               </td>
             </tr>
           ) : (
@@ -117,8 +119,8 @@ export const ListingsTable = () => {
                         disabled={busyId === listing.id || !canPublish}
                         title={
                           !canPublish
-                            ? 'Firma musí byť overená (verified)'
-                            : 'Publikovať na trhovisko'
+                            ? t('tables.companyMustBeVerified')
+                            : t('tables.publishToMarketplace')
                         }
                         onClick={(e) => {
                           e.stopPropagation();
@@ -126,7 +128,7 @@ export const ListingsTable = () => {
                         }}
                         className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
                       >
-                        {busyId === listing.id ? '...' : 'Publikovať'}
+                        {busyId === listing.id ? '...' : t('tables.publish')}
                       </button>
                     )}
                   </td>

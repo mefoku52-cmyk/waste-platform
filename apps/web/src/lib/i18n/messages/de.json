@@ -6,12 +6,15 @@
     "email": "E-Mail",
     "password": "Passwort",
     "search": "Suchen",
-    "loading": "Wird geladen…",
+    "loading": "Wird geladen...",
     "error": "Fehler",
     "cancel": "Abbrechen",
     "save": "Speichern",
     "back": "Zurück",
-    "language": "Sprache"
+    "language": "Sprache",
+    "submit": "Senden",
+    "firstName": "Vorname",
+    "lastName": "Nachname"
   },
   "login": {
     "title": "Anmeldung",
@@ -99,5 +102,84 @@
     "noListings": "Keine Angebote gefunden.",
     "loadingListings": "Lade Angebote...",
     "loadFailed": "Daten konnten nicht geladen werden."
+  },
+  "register": {
+    "title": "Registrieren",
+    "submit": "Konto erstellen",
+    "submitAlt": "Registrieren",
+    "haveAccount": "Sie haben bereits ein Konto?",
+    "loginLink": "Anmelden"
+  },
+  "forgot": {
+    "title": "Passwort vergessen",
+    "hint": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Link zum Zurücksetzen.",
+    "submit": "Link senden",
+    "back": "Zurück zur Anmeldung",
+    "sent": "Wenn das Konto existiert, haben wir Anweisungen per E-Mail gesendet."
+  },
+  "reset": {
+    "title": "Neues Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "submit": "Neues Passwort speichern",
+    "back": "Zurück zur Anmeldung"
+  },
+  "listingForm": {
+    "title": "Neues Angebot",
+    "titleAdd": "Angebot hinzufügen",
+    "subtitle": "Füllen Sie die Details des Materials aus, das Sie anbieten möchten.",
+    "companyLabel": "Firma",
+    "nameLabel": "Titel",
+    "materialLabel": "Materialtyp",
+    "descriptionLabel": "Beschreibung",
+    "qtyLabel": "Menge",
+    "unitLabel": "Einheit",
+    "priceLabel": "Preis",
+    "currencyLabel": "Währung",
+    "conditionLabel": "Zustand",
+    "locationLabel": "Ort",
+    "imageLabel": "Foto-URL",
+    "submit": "Angebot erstellen",
+    "saving": "Speichern..."
+  },
+  "companyForm": {
+    "title": "Neue Firma",
+    "titleAdd": "Firma hinzufügen",
+    "legalNameLabel": "Rechtlicher Name",
+    "tradingNameLabel": "Handelsname",
+    "icoLabel": "Handelsregisternummer",
+    "dicLabel": "Steuernummer",
+    "emailLabel": "E-Mail",
+    "phoneLabel": "Telefon",
+    "streetLabel": "Straße",
+    "cityLabel": "Stadt",
+    "pscLabel": "Postleitzahl",
+    "countryLabel": "Land",
+    "submit": "Firma erstellen"
+  },
+  "tables": {
+    "name": "Name",
+    "status": "Status",
+    "actions": "Aktionen",
+    "publish": "Veröffentlichen",
+    "quantity": "Menge",
+    "unit": "Einheit",
+    "empty": "Keine Einträge.",
+    "loading": "Wird geladen...",
+    "error": "Ladefehler.",
+    "companyName": "Firmenname",
+    "ico": "Hdl.-Nr.",
+    "city": "Stadt",
+    "verify": "Verifizieren",
+    "requestVerify": "Verifizierung anfordern",
+    "awaitingAdmin": "Wartet auf Administrator",
+    "adminMode": "Admin-Modus – Sie können Firmen genehmigen.",
+    "adminOnly": "Nur ein Administrator kann genehmigen.",
+    "companyMustBeVerified": "Firma muss verifiziert sein.",
+    "publishToMarketplace": "Im Marktplatz veröffentlichen"
+  },
+  "docs": {
+    "title": "Dokumente",
+    "add": "Dokument hinzufügen"
   }
 }

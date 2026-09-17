@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { authApi } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useT } from "../../../lib/i18n/context";
 
 export default function ForgotPasswordPage() {
+  const { t } = useT();
   const [email, setEmail] = useState('');
   const [msg, setMsg] = useState<string | null>(null);
   const [devToken, setDevToken] = useState<string | null>(null);
@@ -31,7 +33,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 rounded-lg bg-white p-6 shadow-md">
-        <h1 className="text-xl font-bold text-center">Zabudnuté heslo</h1>
+        <h1 className="text-xl font-bold text-center">{t('forgot.title')}</h1>
         <p className="text-sm text-gray-500">Zadaj e-mail. Pošleme odkaz na obnovu (v DEV sa token zobrazí tu).</p>
         <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="vas@email.sk" />
         {msg && <div className="rounded bg-blue-50 p-2 text-sm text-blue-800">{msg}</div>}
@@ -46,7 +48,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
         <Button type="submit" className="w-full" disabled={busy}>{busy ? 'Odosielam...' : 'Odoslať'}</Button>
-        <p className="text-center text-sm"><Link href="/login" className="text-blue-600">Späť na prihlásenie</Link></p>
+        <p className="text-center text-sm"><Link href="/login" className="text-blue-600">{t('forgot.back')}</Link></p>
       </form>
     </div>
   );

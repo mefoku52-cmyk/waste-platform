@@ -6,12 +6,15 @@
     "email": "Эл. почта",
     "password": "Пароль",
     "search": "Поиск",
-    "loading": "Загрузка…",
+    "loading": "Загрузка...",
     "error": "Ошибка",
     "cancel": "Отмена",
     "save": "Сохранить",
     "back": "Назад",
-    "language": "Язык"
+    "language": "Язык",
+    "submit": "Отправить",
+    "firstName": "Имя",
+    "lastName": "Фамилия"
   },
   "login": {
     "title": "Вход",
@@ -99,5 +102,84 @@
     "noListings": "Предложения не найдены.",
     "loadingListings": "Загрузка...",
     "loadFailed": "Ошибка загрузки данных."
+  },
+  "register": {
+    "title": "Регистрация",
+    "submit": "Создать аккаунт",
+    "submitAlt": "Зарегистрироваться",
+    "haveAccount": "Уже есть аккаунт?",
+    "loginLink": "Войти"
+  },
+  "forgot": {
+    "title": "Забыли пароль",
+    "hint": "Введите свой e-mail, и мы отправим вам ссылку для сброса.",
+    "submit": "Отправить ссылку",
+    "back": "Назад ко входу",
+    "sent": "Если аккаунт существует, мы отправили инструкции на e-mail."
+  },
+  "reset": {
+    "title": "Новый пароль",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердить пароль",
+    "submit": "Сохранить новый пароль",
+    "back": "Назад ко входу"
+  },
+  "listingForm": {
+    "title": "Новое предложение",
+    "titleAdd": "Добавить предложение",
+    "subtitle": "Заполните данные о материале, который вы хотите предложить.",
+    "companyLabel": "Компания",
+    "nameLabel": "Название",
+    "materialLabel": "Тип материала",
+    "descriptionLabel": "Описание",
+    "qtyLabel": "Количество",
+    "unitLabel": "Ед. изм.",
+    "priceLabel": "Цена",
+    "currencyLabel": "Валюта",
+    "conditionLabel": "Состояние",
+    "locationLabel": "Местоположение",
+    "imageLabel": "URL фото",
+    "submit": "Создать предложение",
+    "saving": "Сохранение..."
+  },
+  "companyForm": {
+    "title": "Новая компания",
+    "titleAdd": "Добавить компанию",
+    "legalNameLabel": "Юридическое название",
+    "tradingNameLabel": "Торговое название",
+    "icoLabel": "Рег. номер",
+    "dicLabel": "ИНН",
+    "emailLabel": "Эл. почта",
+    "phoneLabel": "Телефон",
+    "streetLabel": "Улица",
+    "cityLabel": "Город",
+    "pscLabel": "Почтовый индекс",
+    "countryLabel": "Страна",
+    "submit": "Создать компанию"
+  },
+  "tables": {
+    "name": "Название",
+    "status": "Статус",
+    "actions": "Действия",
+    "publish": "Опубликовать",
+    "quantity": "Количество",
+    "unit": "Ед. изм.",
+    "empty": "Нет записей.",
+    "loading": "Загрузка...",
+    "error": "Ошибка загрузки.",
+    "companyName": "Название компании",
+    "ico": "Рег. номер",
+    "city": "Город",
+    "verify": "Подтвердить",
+    "requestVerify": "Запросить проверку",
+    "awaitingAdmin": "Ожидает администратора",
+    "adminMode": "Режим администратора – вы можете одобрять компании.",
+    "adminOnly": "Одобрить может только администратор.",
+    "companyMustBeVerified": "Компания должна быть верифицирована.",
+    "publishToMarketplace": "Опубликовать на рынке"
+  },
+  "docs": {
+    "title": "Документы",
+    "add": "Добавить документ"
   }
 }

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useT } from "../../../lib/i18n/context";
 
 function ResetForm() {
   const sp = useSearchParams();
@@ -34,7 +35,7 @@ function ResetForm() {
 
   return (
     <form onSubmit={onSubmit} className="w-full max-w-sm space-y-4 rounded-lg bg-white p-6 shadow-md">
-      <h1 className="text-xl font-bold text-center">Nové heslo</h1>
+      <h1 className="text-xl font-bold text-center">{t('reset.newPassword')}</h1>
       <Input placeholder="Token" value={token} onChange={(e) => setToken(e.target.value)} required />
       <Input type="password" placeholder="Nové heslo (min. 8)" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
       {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-800">{msg}</div>}
@@ -46,6 +47,7 @@ function ResetForm() {
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useT();
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <Suspense fallback={<div>Načítavam...</div>}>

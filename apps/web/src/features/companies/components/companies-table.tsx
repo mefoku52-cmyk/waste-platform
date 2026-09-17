@@ -5,8 +5,10 @@ import { useCompanies } from '../hooks/use-companies';
 import { companiesApi } from '../api';
 import { cn } from '../../../lib/utils/cn';
 import { useCurrentUser } from '../../auth/hooks/use-current-user';
+import { useT } from "../../../../lib/i18n/context";
 
 function useIsPlatformAdmin() {
+  const { t } = useT();
   const { data: me } = useCurrentUser();
   const roles = (
     (me as any)?.roleCodes ||
@@ -45,8 +47,8 @@ export const CompaniesTable = () => {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['companies'] }),
   });
 
-  if (isLoading) return <div className="p-4 text-center">Načítavam firmy...</div>;
-  if (error) return <div className="p-4 text-red-500 text-center">Chyba pri načítaní firiem.</div>;
+  if (isLoading) return <div className="p-4 text-center">{t('tables.loading')}</div>;
+  if (error) return <div className="p-4 text-red-500 text-center">{t('tables.error')}</div>;
 
   const companies = (data as any)?.items ?? [];
 
@@ -55,24 +57,24 @@ export const CompaniesTable = () => {
       {mutation.isError && (
         <div className="bg-red-50 px-4 py-2 text-sm text-red-700">
           {(mutation.error as any)?.message ||
-            'Akcia zlyhala. Schválenie (verified) môže len administrátor.'}
+            t('tables.adminOnly')}
         </div>
       )}
       <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Názov firmy</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">IČO</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Mesto</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Akcie</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.companyName')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.ico')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.city')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.status')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.actions')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {companies.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                Žiadne firmy neboli nájdené.
+                {t('tables.empty')}
               </td>
             </tr>
           ) : (
@@ -113,11 +115,11 @@ export const CompaniesTable = () => {
                       }
                       className="rounded bg-amber-600 px-2 py-1 text-xs text-white hover:bg-amber-700 disabled:opacity-50"
                     >
-                      Požiadať o overenie
+                      {t('tables.requestVerify')}
                     </button>
                   )}
                   {company.status === 'verification_submitted' && !isAdmin && (
-                    <span className="text-xs text-amber-700">Čaká na administrátora</span>
+                    <span className="text-xs text-amber-700">{t('tables.awaitingAdmin')}</span>
                   )}
                   {/* len admin smie Overiť */}
                   {isAdmin && company.status === 'verification_submitted' && (
@@ -140,7 +142,7 @@ export const CompaniesTable = () => {
       </table>
       {isAdmin && (
         <div className="border-t bg-slate-50 px-4 py-2 text-xs text-slate-600">
-          Režim administrátora – môžeš schvaľovať firmy.
+          {t('tables.adminMode')}
         </div>
       )}
     </div>

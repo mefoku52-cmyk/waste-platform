@@ -6,12 +6,15 @@
     "email": "E-mail",
     "password": "Mot de passe",
     "search": "Rechercher",
-    "loading": "Chargement…",
+    "loading": "Chargement...",
     "error": "Erreur",
     "cancel": "Annuler",
     "save": "Enregistrer",
     "back": "Retour",
-    "language": "Langue"
+    "language": "Langue",
+    "submit": "Envoyer",
+    "firstName": "Prénom",
+    "lastName": "Nom"
   },
   "login": {
     "title": "Connexion",
@@ -99,5 +102,84 @@
     "noListings": "Aucune annonce trouvée.",
     "loadingListings": "Chargement...",
     "loadFailed": "Échec du chargement."
+  },
+  "register": {
+    "title": "Inscription",
+    "submit": "Créer un compte",
+    "submitAlt": "S'inscrire",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "loginLink": "Se connecter"
+  },
+  "forgot": {
+    "title": "Mot de passe oublié",
+    "hint": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
+    "submit": "Envoyer le lien",
+    "back": "Retour à la connexion",
+    "sent": "Si le compte existe, nous avons envoyé les instructions par e-mail."
+  },
+  "reset": {
+    "title": "Nouveau mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "submit": "Enregistrer le nouveau mot de passe",
+    "back": "Retour à la connexion"
+  },
+  "listingForm": {
+    "title": "Nouvelle annonce",
+    "titleAdd": "Ajouter une annonce",
+    "subtitle": "Remplissez les détails du matériau que vous souhaitez proposer.",
+    "companyLabel": "Entreprise",
+    "nameLabel": "Titre",
+    "materialLabel": "Type de matériau",
+    "descriptionLabel": "Description",
+    "qtyLabel": "Quantité",
+    "unitLabel": "Unité",
+    "priceLabel": "Prix",
+    "currencyLabel": "Devise",
+    "conditionLabel": "État",
+    "locationLabel": "Localisation",
+    "imageLabel": "URL de la photo",
+    "submit": "Créer l'annonce",
+    "saving": "Enregistrement..."
+  },
+  "companyForm": {
+    "title": "Nouvelle entreprise",
+    "titleAdd": "Ajouter une entreprise",
+    "legalNameLabel": "Raison sociale",
+    "tradingNameLabel": "Nom commercial",
+    "icoLabel": "Numéro d'enregistrement",
+    "dicLabel": "Numéro fiscal",
+    "emailLabel": "E-mail",
+    "phoneLabel": "Téléphone",
+    "streetLabel": "Rue",
+    "cityLabel": "Ville",
+    "pscLabel": "Code postal",
+    "countryLabel": "Pays",
+    "submit": "Créer l'entreprise"
+  },
+  "tables": {
+    "name": "Nom",
+    "status": "Statut",
+    "actions": "Actions",
+    "publish": "Publier",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "empty": "Aucun enregistrement.",
+    "loading": "Chargement...",
+    "error": "Échec du chargement.",
+    "companyName": "Nom de l'entreprise",
+    "ico": "N° d'enr.",
+    "city": "Ville",
+    "verify": "Vérifier",
+    "requestVerify": "Demander la vérification",
+    "awaitingAdmin": "En attente de l'administrateur",
+    "adminMode": "Mode admin – vous pouvez approuver les entreprises.",
+    "adminOnly": "Seul un administrateur peut approuver.",
+    "companyMustBeVerified": "L'entreprise doit être vérifiée.",
+    "publishToMarketplace": "Publier sur le marché"
+  },
+  "docs": {
+    "title": "Documents",
+    "add": "Ajouter un document"
   }
 }

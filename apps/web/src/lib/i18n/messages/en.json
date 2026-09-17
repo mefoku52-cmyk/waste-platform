@@ -6,12 +6,15 @@
     "email": "Email",
     "password": "Password",
     "search": "Search",
-    "loading": "Loading…",
+    "loading": "Loading...",
     "error": "Error",
     "cancel": "Cancel",
     "save": "Save",
     "back": "Back",
-    "language": "Language"
+    "language": "Language",
+    "submit": "Submit",
+    "firstName": "First name",
+    "lastName": "Last name"
   },
   "login": {
     "title": "Sign in",
@@ -99,5 +102,84 @@
     "noListings": "No listings found.",
     "loadingListings": "Loading listings...",
     "loadFailed": "Failed to load data."
+  },
+  "register": {
+    "title": "Register",
+    "submit": "Create account",
+    "submitAlt": "Sign up",
+    "haveAccount": "Already have an account?",
+    "loginLink": "Sign in"
+  },
+  "forgot": {
+    "title": "Forgot password",
+    "hint": "Enter your email and we'll send you a reset link.",
+    "submit": "Send link",
+    "back": "Back to sign in",
+    "sent": "If the account exists, we sent instructions to your email."
+  },
+  "reset": {
+    "title": "New password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "submit": "Save new password",
+    "back": "Back to sign in"
+  },
+  "listingForm": {
+    "title": "New listing",
+    "titleAdd": "Add new listing",
+    "subtitle": "Fill in the details of the material you want to offer.",
+    "companyLabel": "Company",
+    "nameLabel": "Listing title",
+    "materialLabel": "Material type",
+    "descriptionLabel": "Description",
+    "qtyLabel": "Quantity",
+    "unitLabel": "Unit",
+    "priceLabel": "Price",
+    "currencyLabel": "Currency",
+    "conditionLabel": "Material condition",
+    "locationLabel": "Location",
+    "imageLabel": "Photo URL",
+    "submit": "Create listing",
+    "saving": "Saving..."
+  },
+  "companyForm": {
+    "title": "New company",
+    "titleAdd": "Add company",
+    "legalNameLabel": "Legal name",
+    "tradingNameLabel": "Trading name",
+    "icoLabel": "Registration number",
+    "dicLabel": "Tax ID",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "streetLabel": "Street",
+    "cityLabel": "City",
+    "pscLabel": "Postal code",
+    "countryLabel": "Country",
+    "submit": "Create company"
+  },
+  "tables": {
+    "name": "Name",
+    "status": "Status",
+    "actions": "Actions",
+    "publish": "Publish",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "empty": "No records.",
+    "loading": "Loading...",
+    "error": "Failed to load.",
+    "companyName": "Company name",
+    "ico": "Reg. number",
+    "city": "City",
+    "verify": "Verify",
+    "requestVerify": "Request verification",
+    "awaitingAdmin": "Awaiting admin",
+    "adminMode": "Admin mode – you can approve companies.",
+    "adminOnly": "Only an admin can approve.",
+    "companyMustBeVerified": "Company must be verified.",
+    "publishToMarketplace": "Publish to marketplace"
+  },
+  "docs": {
+    "title": "Documents",
+    "add": "Add document"
   }
 }

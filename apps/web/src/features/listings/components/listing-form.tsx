@@ -12,6 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 import { companiesApi } from '../../companies/api';
 import { uploadFile } from '../../uploads/api';
 import { config } from '../../../lib/config';
+import { useT } from "../../../../lib/i18n/context";
 
 export const ListingForm = () => {
   const { mutate: createListing, isPending, error } = useCreateListing();
@@ -100,7 +101,7 @@ export const ListingForm = () => {
         <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
           Nová ponuka
         </p>
-        <h2 className="mt-1 text-xl font-bold text-white">Pridať novú ponuku</h2>
+        <h2 className="mt-1 text-xl font-bold text-white">{t('listingForm.titleAdd')}</h2>
         <p className="mt-1 text-sm text-slate-400">
           Vyplňte údaje o materiáli, ktorý chcete ponúknuť.
         </p>
@@ -133,7 +134,7 @@ export const ListingForm = () => {
         </select>
       </FormField>
 
-      <FormField label="Názov ponuky" error={errors.title?.message}>
+      <FormField label={t('listingForm.nameLabel')} error={errors.title?.message}>
         <Input
           {...register('title')}
           disabled={isPending || isLoadingCompanies}
@@ -142,7 +143,7 @@ export const ListingForm = () => {
         />
       </FormField>
 
-      <FormField label="Typ materiálu" error={errors.materialType?.message}>
+      <FormField label={t('listingForm.materialLabel')} error={errors.materialType?.message}>
         <Input
           {...register('materialType')}
           disabled={isPending || isLoadingCompanies}
@@ -234,7 +235,7 @@ export const ListingForm = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Stav materiálu" error={errors.condition?.message}>
+        <FormField label={t('listingForm.conditionLabel')} error={errors.condition?.message}>
           <Input
             {...register('condition')}
             disabled={isPending || isLoadingCompanies}
