@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { useUnreadNotifications } from "@/features/notifications";
 import { useMarketplace } from "@/features/listings";
 import { useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/api/http";
