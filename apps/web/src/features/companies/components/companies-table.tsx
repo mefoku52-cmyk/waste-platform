@@ -5,10 +5,9 @@ import { useCompanies } from '../hooks/use-companies';
 import { companiesApi } from '../api';
 import { cn } from '../../../lib/utils/cn';
 import { useCurrentUser } from '../../auth/hooks/use-current-user';
-import { useT } from "../../../../lib/i18n/context";
+import { useT } from "@/lib/i18n/context";
 
 function useIsPlatformAdmin() {
-  const { t } = useT();
   const { data: me } = useCurrentUser();
   const roles = (
     (me as any)?.roleCodes ||
@@ -37,6 +36,7 @@ function useIsPlatformAdmin() {
 }
 
 export const CompaniesTable = () => {
+  const { t } = useT();
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useCompanies();
   const isAdmin = useIsPlatformAdmin();
@@ -102,7 +102,6 @@ export const CompaniesTable = () => {
                   </span>
                 </td>
                 <td className="px-4 py-2 space-x-2 whitespace-nowrap">
-                  {/* majiteľ: len požiadať o overenie */}
                   {company.status === 'draft' && (
                     <button
                       type="button"
@@ -121,7 +120,6 @@ export const CompaniesTable = () => {
                   {company.status === 'verification_submitted' && !isAdmin && (
                     <span className="text-xs text-amber-700">{t('tables.awaitingAdmin')}</span>
                   )}
-                  {/* len admin smie Overiť */}
                   {isAdmin && company.status === 'verification_submitted' && (
                     <button
                       type="button"

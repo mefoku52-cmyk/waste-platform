@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { authApi } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useT } from "../../../lib/i18n/context";
+import { useT } from "@/lib/i18n/context";
 
 export default function ForgotPasswordPage() {
   const { t } = useT();

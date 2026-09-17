@@ -6,9 +6,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/features/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useT } from "../../../lib/i18n/context";
+import { useT } from "@/lib/i18n/context";
 
 function ResetForm() {
+  const { t } = useT();
   const sp = useSearchParams();
   const router = useRouter();
   const [token, setToken] = useState(sp.get('token') || '');
@@ -47,7 +48,6 @@ function ResetForm() {
 }
 
 export default function ResetPasswordPage() {
-  const { t } = useT();
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <Suspense fallback={<div>Načítavam...</div>}>

@@ -12,9 +12,10 @@ import { useQuery } from '@tanstack/react-query';
 import { companiesApi } from '../../companies/api';
 import { uploadFile } from '../../uploads/api';
 import { config } from '../../../lib/config';
-import { useT } from "../../../../lib/i18n/context";
+import { useT } from "@/lib/i18n/context";
 
 export const ListingForm = () => {
+  const { t } = useT();
   const { mutate: createListing, isPending, error } = useCreateListing();
   const router = useRouter();
 
