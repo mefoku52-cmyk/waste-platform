@@ -29,14 +29,11 @@ export function AuthShell({
           <div className="w-full max-w-md">
             <div className="text-center">
               <Link href="/" className="inline-block">
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-[color:color-mix(in_srgb,#c9a84c_35%,transparent)] bg-[#12100e] shadow-[0_24px_60px_-28px_rgba(0,0,0,0.7)]">
-                  <span
-                    className="text-2xl"
-                    style={{ fontFamily: 'Fraunces, serif', color: GOLD }}
-                  >
-                    CM
-                  </span>
-                </div>
+                <img
+                  src="/trc-mark.jpg"
+                  alt="TRČ"
+                  className="mx-auto h-20 w-20 rounded-full object-cover shadow-[0_24px_60px_-28px_rgba(0,0,0,0.7)]"
+                />
               </Link>
               <h1
                 className="mt-4 text-4xl font-normal tracking-[-0.03em]"

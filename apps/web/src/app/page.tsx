@@ -53,7 +53,7 @@ export default function LandingPage() {
         <header className="sticky top-0 z-40 border-b border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)] backdrop-blur-md" style={{ background: 'rgba(9,8,7,0.85)' }}>
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
             <Link href="/" className="flex items-center gap-3">
-              <img src="/rc-logo.png" alt="CMEP" className="h-10 w-10 rounded-full object-cover" />
+              <img src="/trc-mark.jpg" alt="CMEP" className="h-10 w-10 rounded-full object-cover" />
               <div className="hidden sm:block">
                 <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>CMEP · BURZA OBEHOVÝCH MATERIÁLOV</p>
                 <p className="ff text-lg leading-none">Obehové materiály</p>
@@ -124,7 +124,7 @@ export default function LandingPage() {
             </div>
 
             <div className="mt-16 flex justify-center">
-              <img src="/rc-mark-trimmed.png" alt="RC" className="max-w-md w-full opacity-90" />
+              <img src="/trc-logo.jpg" alt="RC" className="max-w-md w-full opacity-90" />
             </div>
           </div>
         </section>
@@ -263,7 +263,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-4 py-12">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <img src="/rc-logo.png" alt="CMEP" className="h-12 w-12 rounded-full object-cover" />
+                <img src="/trc-mark.jpg" alt="CMEP" className="h-12 w-12 rounded-full object-cover" />
                 <div>
                   <p className="ff text-2xl">CMEP</p>
                   <p className="text-xs" style={{ color: MUTED }}>Circular Materials Exchange Platform</p>
