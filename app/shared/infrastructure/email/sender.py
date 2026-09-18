@@ -25,7 +25,12 @@ def send_email(*, to: str, subject: str, body: str) -> bool:
             to,
             subject,
         )
-        logger.info("EMAIL_DEV_BODY to=%s\n%s", to, body)
+        # Bezpecnost: telo spravy obsahuje password-reset token. Nikdy ho
+        # nelogujeme mimo development prostredia.
+        if settings.is_development:
+            logger.info("EMAIL_DEV_BODY to=%s\n%s", to, body)
+        else:
+            logger.info("EMAIL body suppressed in non-development environment (to=%s)", to)
         return False
 
     msg = EmailMessage()

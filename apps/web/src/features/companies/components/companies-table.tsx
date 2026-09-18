@@ -4,36 +4,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCompanies } from '../hooks/use-companies';
 import { companiesApi } from '../api';
 import { cn } from '../../../lib/utils/cn';
-import { useCurrentUser } from '../../auth/hooks/use-current-user';
+import { useIsPlatformAdmin } from '../../auth/hooks/use-is-platform-admin';
 import { useT } from "@/lib/i18n/context";
-
-function useIsPlatformAdmin() {
-  const { data: me } = useCurrentUser();
-  const roles = (
-    (me as any)?.roleCodes ||
-    (me as any)?.role_codes ||
-    [(me as any)?.role] ||
-    []
-  )
-    .filter(Boolean)
-    .map((r: string) => String(r).toLowerCase());
-
-  const email = String(
-    (me as any)?.email ||
-      (me as any)?.user?.email ||
-      ''
-  ).toLowerCase();
-
-  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || 'admin@cmep.dev')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return (
-    roles.includes('admin') ||
-    roles.includes('platform_admin') ||
-    adminEmails.includes(email)
-  );
-}
 
 export const CompaniesTable = () => {
   const { t } = useT();

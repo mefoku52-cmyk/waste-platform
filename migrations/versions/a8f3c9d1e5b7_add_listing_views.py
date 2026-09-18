@@ -17,14 +17,42 @@ branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
+def _is_postgresql() -> bool:
+    """CI a lokalne testy bezia na SQLite, produkcia na Postgres.
+
+    `CREATE EXTENSION`, `gen_random_uuid()` a `NOW()` su Postgres-only DDL,
+    takze sa aplikuju vyhradne na PostgreSQL. Na ostatnych dialektoch sa
+    spolieha na Python-side defaulty modelu (`uuid.uuid4`, `datetime.now`).
+    """
+    bind = op.get_bind()
+    return bind is not None and bind.dialect.name == "postgresql"
+
+
 def upgrade() -> None:
-    op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+    is_postgres = _is_postgresql()
+
+    if is_postgres:
+        op.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto")
+
+    id_column = sa.Column(
+        "id",
+        sa.UUID(),
+        nullable=False,
+        server_default=sa.text("gen_random_uuid()") if is_postgres else None,
+    )
+    viewed_at_column = sa.Column(
+        "viewed_at",
+        sa.DateTime(),
+        nullable=False,
+        server_default=sa.text("NOW()") if is_postgres else None,
+    )
+
     op.create_table(
         "listing_views",
-        sa.Column("id", sa.UUID(), nullable=False, server_default=sa.text("gen_random_uuid()")),
+        id_column,
         sa.Column("listing_id", sa.UUID(), nullable=False),
         sa.Column("user_id", sa.UUID(), nullable=False),
-        sa.Column("viewed_at", sa.DateTime(), nullable=False, server_default=sa.text("NOW()")),
+        viewed_at_column,
         sa.ForeignKeyConstraint(["listing_id"], ["listings.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )

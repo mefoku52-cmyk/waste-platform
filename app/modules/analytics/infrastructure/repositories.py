@@ -23,19 +23,29 @@ class AnalyticsEventRepositoryImpl(AnalyticsEventRepository):
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> list[AnalyticsEventEntity]:
+    async def list_all(
+        self, page: int = 1, limit: int = 20, company_ids=None
+    ) -> list[AnalyticsEventEntity]:
         offset = (page - 1) * limit
-        result = await self.session.execute(
-            select(AnalyticsEventModel)
-            .order_by(AnalyticsEventModel.created_at.desc())
-            .offset(offset)
-            .limit(limit)
-        )
+        stmt = select(AnalyticsEventModel)
+        if company_ids is not None:
+            ids = [str(x) for x in company_ids]
+            if not ids:
+                return []
+            stmt = stmt.where(AnalyticsEventModel.company_id.in_(ids))
+        stmt = stmt.order_by(AnalyticsEventModel.created_at.desc()).offset(offset).limit(limit)
+        result = await self.session.execute(stmt)
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 
-    async def count_all(self) -> int:
-        result = await self.session.execute(select(func.count()).select_from(AnalyticsEventModel))
+    async def count_all(self, company_ids=None) -> int:
+        stmt = select(func.count()).select_from(AnalyticsEventModel)
+        if company_ids is not None:
+            ids = [str(x) for x in company_ids]
+            if not ids:
+                return 0
+            stmt = stmt.where(AnalyticsEventModel.company_id.in_(ids))
+        result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
     async def create(self, entity: AnalyticsEventEntity) -> AnalyticsEventEntity:

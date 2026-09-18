@@ -75,10 +75,13 @@ async def logout(payload: LogoutRequest, service=Depends(get_logout_service)):
     responses=error_responses(401, 403, 500),
 )
 async def me(current_user=Depends(require_current_user), service=Depends(get_auth_service)):
+    from app.shared.presentation.authorization import is_platform_admin
+
     context = current_user
     return CurrentUserResponse(
         user=to_user_data(context.user),
         roleCodes=context.role_codes,
+        isPlatformAdmin=is_platform_admin(context),
         memberships=[
             MembershipContext(
                 id=item["id"],

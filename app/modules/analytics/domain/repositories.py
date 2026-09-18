@@ -13,11 +13,13 @@ class AnalyticsEventRepository(ABC):
         pass
 
     @abstractmethod
-    async def list_all(self, page: int = 1, limit: int = 20) -> list[AnalyticsEventEntity]:
+    async def list_all(
+        self, page: int = 1, limit: int = 20, company_ids=None
+    ) -> list[AnalyticsEventEntity]:
         pass
 
     @abstractmethod
-    async def count_all(self) -> int:
+    async def count_all(self, company_ids=None) -> int:
         pass
 
     @abstractmethod

@@ -8,6 +8,15 @@ import os
 os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./var/test.db")
 os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-min-32-chars-long-ok")
 os.environ.setdefault("ENV", "test")
+os.environ.setdefault("APP_ENV", "test")
+
+# Testy musia byt hermetic — nesmu zavisiet od lokalneho `.env` ani od stavu
+# Redis. Rate limiting je stavova (per-IP/per-email okna) a pod ASGI transportom
+# `client_ip()` spadne na jeden zdielany bucket, takze viacero login testov v
+# jednom behu by narazilo na 429 a suite by bola nespravodlivo flaky.
+# Samotne spravanie rate limitera maju vlastne testy (test_rate_limit /
+# test_rate_limiter). Hodnota v os.environ ma prednost pred `.env` suborom.
+os.environ["RATE_LIMIT_ENABLED"] = "false"
 
 from pathlib import Path
 

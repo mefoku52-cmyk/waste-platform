@@ -10,6 +10,10 @@ export interface User extends BaseEntity {
   status?: string;
   memberships?: Membership[];
   roleCodes?: string[];
+  // Server-authoritativny signal platform-admin opravnenia (z /auth/me).
+  // Frontend ho nesmie odvodzovat z roleCodes — tenant rola `admin` nie je
+  // platform admin.
+  isPlatformAdmin?: boolean;
 }
 
 export interface Membership {

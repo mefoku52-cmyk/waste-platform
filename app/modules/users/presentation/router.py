@@ -21,9 +21,20 @@ from app.modules.users.presentation.schemas import (
 )
 from app.shared.application.passwords import PasswordService
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import current_user_id, is_platform_admin
 from app.shared.presentation.error_schemas import error_responses
 
 router = APIRouter(prefix="/users", tags=["users"])
+
+
+def _require_self_or_admin(current_user, user_id) -> None:
+    """Platform admin smie vsetko; bezny user len svoj vlastny zaznam."""
+    from app.shared.domain.exceptions import ForbiddenDomainError
+
+    if is_platform_admin(current_user):
+        return
+    if str(current_user_id(current_user)) != str(user_id):
+        raise ForbiddenDomainError("You do not have access to this user")
 
 
 @router.get(
@@ -40,6 +51,12 @@ async def list_users(
     current_user=Depends(require_current_user),
     service=Depends(get_list_users_service),
 ):
+    # Zoznam vsetkych userov je platform-admin operacia (PII).
+    from app.shared.domain.exceptions import ForbiddenDomainError
+
+    if not is_platform_admin(current_user):
+        raise ForbiddenDomainError("Platform admin access required")
+
     items, total = await service.execute(
         status=status, company_id=companyId, q=q, page=page, page_size=pageSize
     )
@@ -84,6 +101,7 @@ async def get_user(
     current_user=Depends(require_current_user),
     service=Depends(get_get_user_service),
 ):
+    _require_self_or_admin(current_user, user_id)
     dto = await service.execute(user_id)
     return UserResponse(data=to_user_data(dto))
 
@@ -99,6 +117,7 @@ async def update_user(
     current_user=Depends(require_current_user),
     service=Depends(get_update_user_service),
 ):
+    _require_self_or_admin(current_user, user_id)
     dto = await service.execute(
         user_id=user_id,
         first_name=payload.firstName,
@@ -123,6 +142,12 @@ async def transition_user_status(
     current_user=Depends(require_current_user),
     service=Depends(get_transition_user_status_service),
 ):
+    # Zmena stavu (aktivacia/suspendacia) je platform-admin operacia.
+    from app.shared.domain.exceptions import ForbiddenDomainError
+
+    if not is_platform_admin(current_user):
+        raise ForbiddenDomainError("Platform admin access required")
+
     dto = await service.execute(
         user_id=user_id, to_status=payload.toStatus, actor_user_id=current_user.user.id
     )

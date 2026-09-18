@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/api/http";
 import { useT } from "@/lib/i18n/context";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { useLogout, useCurrentUser} from "@/features/auth";
+import { useLogout, useCurrentUser, useIsPlatformAdmin } from "@/features/auth";
 
 type Listing = {
   id: string;
@@ -71,18 +71,8 @@ export default function DashboardPage() {
   const { data: me } = useCurrentUser();
   const { data: unreadData } = useUnreadNotifications();
   const unreadChat = Number((unreadData as any)?.unread || 0);
-  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || "admin@cmep.dev")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  const _myEmail = String((me as any)?.email || (me as any)?.user?.email || "").toLowerCase();
-  const _roleCodes = ((me as any)?.roleCodes || (me as any)?.role_codes || []).map((r: string) =>
-    String(r).toLowerCase()
-  );
-  const isAdmin =
-    _roleCodes.includes("admin") ||
-    _roleCodes.includes("platform_admin") ||
-    adminEmails.includes(_myEmail);
+  // Server-authoritativny platform-admin signal (tenant rola `admin` nestaci).
+  const isAdmin = useIsPlatformAdmin();
   const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   const { mutateAsync: logout, isPending: logoutPending } = useLogout();
   const formatRelative = useMemo(() => makeFormatRelative(t), [t]);
@@ -993,18 +983,8 @@ function MyListingsMenu({ label }: { label: string }) {
   const { data: me } = useCurrentUser();
   const { data: unreadData } = useUnreadNotifications();
   const unreadChat = Number((unreadData as any)?.unread || 0);
-  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || "admin@cmep.dev")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  const _myEmail = String((me as any)?.email || (me as any)?.user?.email || "").toLowerCase();
-  const _roleCodes = ((me as any)?.roleCodes || (me as any)?.role_codes || []).map((r: string) =>
-    String(r).toLowerCase()
-  );
-  const isAdmin =
-    _roleCodes.includes("admin") ||
-    _roleCodes.includes("platform_admin") ||
-    adminEmails.includes(_myEmail);
+  // Server-authoritativny platform-admin signal (tenant rola `admin` nestaci).
+  const isAdmin = useIsPlatformAdmin();
   const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   return (
     <div className="mylistings-wrap">

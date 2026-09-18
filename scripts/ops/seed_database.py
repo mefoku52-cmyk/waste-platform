@@ -17,9 +17,7 @@ async def init():
     print("   [DB] Tabuľky hotové")
 
     async with SessionLocal() as session:
-        result = await session.execute(
-            select(UserModel).where(UserModel.email == "admin@cmep.dev")
-        )
+        result = await session.execute(select(UserModel).where(UserModel.email == "admin@cmep.dev"))
         if result.scalar_one_or_none():
             print("   [DB] Admin už existuje")
             return

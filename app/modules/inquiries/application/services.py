@@ -35,6 +35,10 @@ class InquiryService:
     async def count_received(self, seller_company_ids=None) -> int:
         return await self.repository.count_received(seller_company_ids=seller_company_ids)
 
+    async def seller_owns_inquiry(self, id: str, seller_company_ids=None) -> bool:
+        """True ak listing danej inquiry patri niektorej z `seller_company_ids`."""
+        return await self.repository.seller_owns_inquiry(id, seller_company_ids or [])
+
     async def create(self, entity: InquiryEntity) -> InquiryEntity:
         entity.validate()
         return await self.repository.create(entity)

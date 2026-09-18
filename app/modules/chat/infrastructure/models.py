@@ -19,7 +19,7 @@ class ChatThreadModel(Base):
     recipient_user_id = Column(UUID(as_uuid=True), nullable=False, index=True)
     recipient_company_id = Column(UUID(as_uuid=True), nullable=True)
     subject = Column(String(255), nullable=False)
-    status = Column(String(32), nullable=False, default="open")
+    status = Column(String(32), nullable=False, default="open", server_default="open")
     last_message_at = Column(DateTime, nullable=True, default=lambda: datetime.now())
     created_at = Column(DateTime, default=lambda: datetime.now())
     updated_at = Column(

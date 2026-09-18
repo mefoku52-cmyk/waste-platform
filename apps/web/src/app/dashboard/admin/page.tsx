@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthRequired } from "@/features/auth";
+import { useAuthRequired, useIsPlatformAdmin } from "@/features/auth";
 import { useAdminStats } from "@/features/admin";
 import { AdminUsersTable } from "@/features/admin";
 import { CompaniesTable } from "@/features/companies";
@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 
 export default function AdminPage() {
   const { user, isLoading } = useAuthRequired();
+  const isPlatformAdmin = useIsPlatformAdmin();
   const { data: stats, isLoading: isLoadingStats } = useAdminStats();
   const safeStats = (stats || {}) as {
     total_users?: number;
@@ -18,20 +19,10 @@ export default function AdminPage() {
 
   if (isLoading) return null;
 
-
-  // Ochrana: Iba admin môže pristupovať na túto stránku
-  const roleCodes: string[] = ((user as any)?.roleCodes || []).map((r: string) => String(r).toLowerCase());
-  const userEmail = String((user as any)?.email || (user as any)?.user?.email || '').toLowerCase();
-  const adminEmails = String(process.env.NEXT_PUBLIC_PLATFORM_ADMIN_EMAILS || 'admin@cmep.dev')
-    .split(',')
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  const isAdmin =
-    roleCodes.includes('admin') ||
-    roleCodes.includes('platform_admin') ||
-    adminEmails.includes(userEmail);
-
-  if (user && !isAdmin) {
+  // Ochrana: Iba platform admin môže pristupovať na túto stránku.
+  // Signál je server-authoritativny (isPlatformAdmin z /auth/me); tenant rola
+  // `admin` (firemné členstvo) tu zámerne nepostačuje.
+  if (user && !isPlatformAdmin) {
     redirect('/dashboard');
   }
 

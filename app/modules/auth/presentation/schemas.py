@@ -37,6 +37,10 @@ class CurrentUserResponse(BaseModel):
     user: UserData
     roleCodes: list[str]
     memberships: list[MembershipContext]
+    # Server-authoritativny signal platform-admin opravnenia. Frontend ho pouziva
+    # namiesto lokalneho odvodzovania z roleCodes (tenant rola `admin` NIE je
+    # platform admin).
+    isPlatformAdmin: bool = False
 
 
 class ForgotPasswordRequest(BaseModel):

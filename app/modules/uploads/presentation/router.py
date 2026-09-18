@@ -27,6 +27,7 @@ ALLOWED_MIME = {
     ".pdf": {"application/pdf"},
 }
 MAX_BYTES = 8 * 1024 * 1024  # 8 MB
+CHUNK_BYTES = 64 * 1024  # 64 KB per read — bounds peak memory usage
 
 
 def _validate_file_id(file_id: str) -> str:
@@ -71,20 +72,37 @@ async def upload_file(
                 detail=f"Content type {file.content_type} does not match extension {suffix}",
             )
 
-    data = await file.read()
-    if len(data) > MAX_BYTES:
-        raise HTTPException(status_code=400, detail="File too large (max 8MB)")
-
     UPLOAD_ROOT.mkdir(parents=True, exist_ok=True)
     file_id = f"{uuid.uuid4().hex}{suffix}"
     dest = UPLOAD_ROOT / file_id
-    dest.write_bytes(data)
+
+    # Streamovaný zápis: nikdy nedržíme celý súbor v pamäti a veľkosť
+    # overujeme priebežne, aby sme neprijali viac ako MAX_BYTES.
+    total = 0
+    try:
+        with dest.open("wb") as out:
+            while True:
+                chunk = await file.read(CHUNK_BYTES)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > MAX_BYTES:
+                    raise HTTPException(status_code=400, detail="File too large (max 8MB)")
+                out.write(chunk)
+    except HTTPException:
+        dest.unlink(missing_ok=True)
+        raise
+    except Exception:
+        dest.unlink(missing_ok=True)
+        raise
+    finally:
+        await file.close()
 
     return UploadResponse(
         fileId=file_id,
         url=f"/api/v1/uploads/{file_id}",
         originalName=file.filename,
-        size=len(data),
+        size=total,
         contentType=file.content_type,
     )
 

@@ -23,25 +23,20 @@ from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import (
     require_current_user,
 )
+from app.shared.presentation.authorization import (
+    is_platform_admin,
+    require_company_admin,
+    require_company_member,
+)
 from app.shared.presentation.error_schemas import error_responses
 
 
 def _is_admin(current_user) -> bool:
-    from app.core.config import settings
+    """Platform admin. Deleguje na spolocnu definiciu opravnenia.
 
-    codes = list(
-        getattr(current_user, "roleCodes", None) or getattr(current_user, "role_codes", None) or []
-    )
-    codes = [str(c).lower() for c in codes]
-    u = getattr(current_user, "user", None)
-    email = ""
-    if u is not None:
-        email = str(getattr(u, "email", "") or "").lower()
-    else:
-        email = str(getattr(current_user, "email", "") or "").lower()
-    raw = getattr(settings, "PLATFORM_ADMIN_EMAILS", None) or "admin@cmep.dev"
-    admins = {x.strip().lower() for x in str(raw).split(",") if x.strip()}
-    return email in admins or "admin" in codes or "platform_admin" in codes
+    Pozn.: tenant rola `admin` (firemne clenstvo) NIE je platform admin.
+    """
+    return is_platform_admin(current_user)
 
 
 router = APIRouter(prefix="/companies", tags=["companies"])
@@ -102,21 +97,10 @@ async def create_company(
 ):
     admin_only = {"verified", "rejected", "suspended", "inactive"}
     target = str(getattr(payload, "toStatus", "") or "").lower()
-    if target in admin_only:
-        roles = list(getattr(current_user, "roleCodes", None) or [])
-        u = getattr(current_user, "user", None)
-        email = (getattr(u, "email", None) if u is not None else None) or getattr(
-            current_user, "email", None
-        )
-        is_admin = (
-            "admin" in [str(r).lower() for r in roles]
-            or "platform_admin" in [str(r).lower() for r in roles]
-            or (email and str(email).lower() == "admin@cmep.dev")
-        )
-        if not is_admin:
-            from app.shared.domain.exceptions import ForbiddenDomainError
+    if target in admin_only and not _is_admin(current_user):
+        from app.shared.domain.exceptions import ForbiddenDomainError
 
-            raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor.")
+        raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor.")
 
     dto = await service.execute(
         legal_name=payload.legalName,
@@ -152,6 +136,7 @@ async def get_company(
     current_user=Depends(require_current_user),
     service=Depends(get_get_company_service),
 ):
+    require_company_member(current_user, company_id, action="access")
     dto = await service.execute(company_id)
     return CompanyResponse(data=to_company_data(dto))
 
@@ -167,6 +152,7 @@ async def update_company(
     current_user=Depends(require_current_user),
     service=Depends(get_update_company_service),
 ):
+    require_company_admin(current_user, company_id)
     dto = await service.execute(
         company_id=company_id,
         legal_name=payload.legalName,
@@ -206,6 +192,10 @@ async def transition_company_status(
     if target in admin_only:
         if not _is_admin(current_user):
             raise ForbiddenDomainError("Overenie firmy moze vykonat len administrator platformy.")
+    else:
+        # Neadministrativny prechod (napr. verification_submitted) vyzaduje
+        # tenant opravnenie v ramci danej firmy.
+        require_company_admin(current_user, company_id)
 
     dto = await service.execute(
         company_id=company_id,

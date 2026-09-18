@@ -7,9 +7,19 @@ from fastapi import APIRouter, Depends, Query
 from fastapi import status as http_status
 
 from app.shared.application.side_effects import notify_company_members, write_audit
-from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+from app.shared.domain.exceptions import (
+    ForbiddenDomainError,
+    NotFoundDomainError,
+    ValidationDomainError,
+)
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import (
+    current_user_id,
+    is_platform_admin,
+    membership_company_ids,
+    require_company_member,
+)
 from app.shared.presentation.error_schemas import error_responses
 
 from ..application.services import InquiryService
@@ -45,11 +55,19 @@ def _to_data(entity: InquiryEntity, listing_title: str | None = None) -> Inquiry
 
 
 def _user_company_ids(current_user) -> list:
-    ids = [
-        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
-        for m in (current_user.memberships or [])
-    ]
-    return [cid for cid in ids if cid is not None]
+    """Company IDs clenstva — jedina zdielana definicia."""
+    return membership_company_ids(current_user)
+
+
+async def _require_inquiry_participant(service: InquiryService, entity, current_user) -> None:
+    """Inquiry smie vidiet/upravovat platform admin, kupujuca firma alebo predavajuci."""
+    if is_platform_admin(current_user):
+        return
+    if str(entity.company_id) in {str(x) for x in _user_company_ids(current_user)}:
+        return
+    if await service.seller_owns_inquiry(str(entity.id), _user_company_ids(current_user)):
+        return
+    raise ForbiddenDomainError("You do not have access to this inquiry")
 
 
 @router.get(
@@ -63,6 +81,10 @@ async def list_inquiries(
     current_user=Depends(require_current_user),
     service: InquiryService = Depends(get_inquiries_service),
 ):
+    # Neomezeny zoznam vsetkych dopytov je platform-admin operacia.
+    if not is_platform_admin(current_user):
+        raise ForbiddenDomainError("Platform admin access required")
+
     items = await service.list_all(page, pageSize)
     total = await service.count_all()
     return PaginatedInquiriesResponse(
@@ -124,6 +146,7 @@ async def get_inquiry(
     entity = await service.get_by_id(id)
     if entity is None:
         raise NotFoundDomainError(f"Inquiry {id} not found")
+    await _require_inquiry_participant(service, entity, current_user)
     return InquiryResponse(data=_to_data(entity))
 
 
@@ -139,6 +162,9 @@ async def create_inquiry(
     service: InquiryService = Depends(get_inquiries_service),
     session=Depends(get_db_session),
 ):
+    # Dopyt sa vytvara v mene firmy, ktorej je user clenom.
+    require_company_member(current_user, request.companyId, action="send inquiries for")
+
     now = datetime.now()
     entity = InquiryEntity(
         id=uuid4(),
@@ -156,8 +182,7 @@ async def create_inquiry(
     created = await service.create(entity)
 
     try:
-        u = getattr(current_user, "user", None)
-        actor = getattr(u, "id", None) if u is not None else getattr(current_user, "id", None)
+        actor = current_user_id(current_user)
         await write_audit(
             session=session,
             actor_user_id=actor,
@@ -257,9 +282,15 @@ async def update_inquiry(
     if existing is None:
         raise NotFoundDomainError(f"Inquiry {id} not found")
 
+    await _require_inquiry_participant(service, existing, current_user)
+
+    target_company_id = request.companyId if request.companyId is not None else existing.company_id
+    # Prepis firmy dopytu je mozny len na firmu, ktorej je user clenom.
+    require_company_member(current_user, target_company_id, action="reassign inquiries for")
+
     updated_entity = InquiryEntity(
         listing_id=request.listingId if request.listingId is not None else existing.listing_id,
-        company_id=request.companyId if request.companyId is not None else existing.company_id,
+        company_id=target_company_id,
         message=request.message if request.message is not None else existing.message,
         contact_email=request.contactEmail
         if request.contactEmail is not None
@@ -287,4 +318,8 @@ async def delete_inquiry(
     current_user=Depends(require_current_user),
     service: InquiryService = Depends(get_inquiries_service),
 ):
+    existing = await service.get_by_id(id)
+    if existing is None:
+        raise NotFoundDomainError(f"Inquiry {id} not found")
+    await _require_inquiry_participant(service, existing, current_user)
     await service.delete(id)

@@ -2,9 +2,16 @@
 .git/**
 .gitignore
 
+# Secrets sa nikdy nesmu dostat do image (worker robi `COPY . /srv/app`).
 .env
 .env.*
-!.env.production
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+.env.production
+.env.compose
 
 output/
 *.tar

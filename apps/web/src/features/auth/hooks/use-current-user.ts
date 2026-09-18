@@ -21,6 +21,7 @@ export const useCurrentUser = () => {
             role: me.roleCodes?.[0] || me.user.role,
             memberships: me.memberships || [],
             roleCodes: me.roleCodes || [],
+            isPlatformAdmin: Boolean(me.isPlatformAdmin),
           } as User;
         }
         return me as User;

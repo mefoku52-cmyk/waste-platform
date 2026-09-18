@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from app.modules.company_memberships.presentation.dependencies import (
     get_create_membership_service,
     get_list_memberships_service,
+    get_membership_repo,
     get_transition_membership_status_service,
     get_update_membership_service,
 )
@@ -17,10 +18,23 @@ from app.modules.company_memberships.presentation.schemas import (
     PaginatedCompanyMembershipsResponse,
     PaginationMeta,
 )
+from app.shared.domain.exceptions import NotFoundDomainError
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import (
+    require_company_admin,
+    require_company_member,
+)
 from app.shared.presentation.error_schemas import error_responses
 
 router = APIRouter(tags=["company-memberships"])
+
+
+async def _membership_company_id(repo, membership_id: UUID) -> UUID:
+    """Najdi company_id clenstva, aby sa dalo overit opravnenie voci firme."""
+    membership = await repo.get_by_id(membership_id)
+    if membership is None:
+        raise NotFoundDomainError("Company membership not found")
+    return membership.company_id
 
 
 @router.get(
@@ -36,6 +50,9 @@ async def list_company_memberships(
     current_user=Depends(require_current_user),
     service=Depends(get_list_memberships_service),
 ):
+    # Zoznam clenov firmy vidi len clen danej firmy (alebo platform admin).
+    require_company_member(current_user, company_id, action="access")
+
     items = await service.execute(company_id=company_id, status=status)
     start = (page - 1) * pageSize
     slice_items = items[start : start + pageSize]
@@ -57,6 +74,9 @@ async def create_company_membership(
     current_user=Depends(require_current_user),
     service=Depends(get_create_membership_service),
 ):
+    # Pridavat clenov smie len tenant admin danej firmy (alebo platform admin).
+    require_company_admin(current_user, company_id, action="manage members of")
+
     dto = await service.execute(
         company_id=company_id,
         user_id=payload.userId,
@@ -77,7 +97,11 @@ async def update_company_membership(
     payload: CompanyMembershipUpdateRequest,
     current_user=Depends(require_current_user),
     service=Depends(get_update_membership_service),
+    repo=Depends(get_membership_repo),
 ):
+    company_id = await _membership_company_id(repo, membership_id)
+    require_company_admin(current_user, company_id, action="manage members of")
+
     dto = await service.execute(
         membership_id=membership_id,
         membership_role=payload.membershipRole,
@@ -97,7 +121,11 @@ async def transition_company_membership_status(
     payload: CompanyMembershipStatusTransitionRequest,
     current_user=Depends(require_current_user),
     service=Depends(get_transition_membership_status_service),
+    repo=Depends(get_membership_repo),
 ):
+    company_id = await _membership_company_id(repo, membership_id)
+    require_company_admin(current_user, company_id, action="manage members of")
+
     dto = await service.execute(
         membership_id=membership_id,
         to_status=payload.toStatus,

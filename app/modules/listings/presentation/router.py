@@ -7,6 +7,13 @@ from app.shared.application.side_effects import write_audit
 from app.shared.domain.exceptions import ConflictDomainError, NotFoundDomainError
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import (
+    current_user_id,
+    is_platform_admin,
+    membership_company_ids,
+    require_company_admin,
+    require_company_member,
+)
 from app.shared.presentation.error_schemas import error_responses
 
 from ..application.services import ListingsService
@@ -46,11 +53,8 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
 
 
 def _membership_company_ids(current_user) -> list:
-    company_ids = [
-        (m.get("companyId") if isinstance(m, dict) else getattr(m, "companyId", None))
-        for m in (current_user.memberships or [])
-    ]
-    return [cid for cid in company_ids if cid is not None]
+    """Company IDs clenstva (stringova forma) — jedina zdielana definicia."""
+    return membership_company_ids(current_user)
 
 
 @router.get(
@@ -138,9 +142,7 @@ async def record_listing_view(
     service: ListingsService = Depends(get_listings_service),
 ):
     """Zapise jedno zobrazenie ponuky prihlasenym userom. Pouziva frontend pri otvoreni detailu."""
-    uid = getattr(getattr(current_user, "user", None), "id", None) or getattr(
-        current_user, "id", None
-    )
+    uid = current_user_id(current_user)
     if uid is None:
         return None
     await service.record_view(id, uid)
@@ -166,12 +168,22 @@ async def get_listing_stats(
 @router.get(
     "/{id}",
     response_model=ListingResponse,
-    responses=error_responses(404, 500),
+    responses=error_responses(401, 403, 404, 500),
 )
-async def get_listing(id: str, service: ListingsService = Depends(get_listings_service)):
+async def get_listing(
+    id: str,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
     entity = await service.get_by_id(id)
     if entity is None:
         raise NotFoundDomainError(f"Listing {id} not found")
+
+    # Neverejny (nepublikovany) inzerat vidi len jeho firma alebo platform admin.
+    is_public = str(getattr(entity.status, "value", entity.status)) == "published"
+    if not is_public and not is_platform_admin(current_user):
+        require_company_member(current_user, entity.company_id, action="access")
+
     return ListingResponse(data=_to_listing_data(entity))
 
 
@@ -179,12 +191,14 @@ async def get_listing(id: str, service: ListingsService = Depends(get_listings_s
     "",
     response_model=ListingResponse,
     status_code=status.HTTP_201_CREATED,
-    responses=error_responses(409, 422, 500),
+    responses=error_responses(401, 403, 409, 422, 500),
 )
 async def create_listing(
     request: ListingCreateRequest,
+    current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
 ):
+    require_company_member(current_user, request.companyId, action="create listings for")
     entity = ListingsEntity(
         title=request.title,
         material_type=request.materialType,
@@ -205,16 +219,19 @@ async def create_listing(
 @router.patch(
     "/{id}",
     response_model=ListingResponse,
-    responses=error_responses(404, 409, 422, 500),
+    responses=error_responses(401, 403, 404, 409, 422, 500),
 )
 async def update_listing(
     id: str,
     request: ListingUpdateRequest,
+    current_user=Depends(require_current_user),
     service: ListingsService = Depends(get_listings_service),
 ):
     existing = await service.get_by_id(id)
     if existing is None:
         raise NotFoundDomainError(f"Listing {id} not found")
+
+    require_company_admin(current_user, existing.company_id)
 
     if request.status is not None and request.status.value == "published":
         raise ConflictDomainError("Listing publication must use POST /api/v1/listings/{id}/publish")
@@ -254,6 +271,11 @@ async def publish_listing(
     service: ListingsService = Depends(get_listings_service),
     session=Depends(get_db_session),
 ):
+    existing = await service.get_by_id(id)
+    if existing is None:
+        raise NotFoundDomainError(f"Listing {id} not found")
+    require_company_admin(current_user, existing.company_id)
+
     try:
         result = await service.publish(id)
     except NotFoundDomainError:
@@ -265,8 +287,7 @@ async def publish_listing(
         raise
 
     try:
-        u = getattr(current_user, "user", None)
-        actor = getattr(u, "id", None) if u is not None else getattr(current_user, "id", None)
+        actor = current_user_id(current_user)
         await write_audit(
             session=session,
             actor_user_id=actor,
@@ -284,7 +305,15 @@ async def publish_listing(
 @router.delete(
     "/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    responses=error_responses(404, 500),
+    responses=error_responses(401, 403, 404, 500),
 )
-async def delete_listing(id: str, service: ListingsService = Depends(get_listings_service)):
+async def delete_listing(
+    id: str,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+):
+    existing = await service.get_by_id(id)
+    if existing is None:
+        raise NotFoundDomainError(f"Listing {id} not found")
+    require_company_admin(current_user, existing.company_id)
     await service.delete(id)

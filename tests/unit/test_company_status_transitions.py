@@ -33,12 +33,21 @@ def test_is_admin_email_miss(monkeypatch):
     assert _is_admin(cu) is False
 
 
-def test_is_admin_role_admin(monkeypatch):
+def test_is_admin_tenant_admin_role_is_not_platform_admin(monkeypatch):
+    """Tenant rola `admin` (z firemneho clenstva) NIE je platform admin.
+
+    `roleCodes` sa v tomto modeli odvodzuju vyhradne z
+    `company_memberships.membership_role`, kde je `admin` tenant rola
+    (spravca firmy). `users` nema globalny role stlpec, takze samotny
+    roleCode `admin` nesmie odomknut platform-admin operacie (napr.
+    verifikaciu firiem). Pred opravou tento pripad vracal True, co bol
+    privilege escalation z tenant ADMIN na platform admin.
+    """
     from app.core import config as cfg
 
     monkeypatch.setattr(cfg.settings, "PLATFORM_ADMIN_EMAILS", "admin@x.sk", raising=False)
     cu = _CU(user=_U(email="other@y.sk"), roles=["admin"])
-    assert _is_admin(cu) is True
+    assert _is_admin(cu) is False
 
 
 def test_is_admin_role_platform_admin(monkeypatch):

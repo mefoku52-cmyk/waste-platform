@@ -16,8 +16,9 @@ export const listingsApi = {
   createListing: (data: ListingInput) =>
     http.post<Listing>('/listings', data),
 
+  // Backend vystavuje PATCH /listings/{id} (nie PUT). PUT vracalo 405.
   updateListing: (id: string, data: Partial<ListingInput> & { status?: string }) =>
-    http.put<Listing>(`/listings/${id}`, data),
+    http.patch<Listing>(`/listings/${id}`, data),
 
   publishListing: (id: string) =>
     http.post<{ data: any }>(`/listings/${id}/publish`, {}),

@@ -55,6 +55,12 @@ jobs:
 
       - name: Build web
         working-directory: apps/web
+        env:
+          # Server-side API proxy target is baked into the standalone server at
+          # build time. Override per environment with the repository/environment
+          # variable API_PROXY_TARGET (e.g. the API service internal URL).
+          API_PROXY_TARGET: ${{ vars.API_PROXY_TARGET || 'http://cmep-api:8000' }}
+          NEXT_PUBLIC_API_BASE_URL: ${{ vars.NEXT_PUBLIC_API_BASE_URL || '/api/v1' }}
         run: |
           set -euo pipefail
           npm ci

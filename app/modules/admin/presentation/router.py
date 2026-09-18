@@ -9,7 +9,9 @@ from app.shared.presentation.auth_dependencies import (
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status as http_status
 
-from app.shared.domain.exceptions import ValidationDomainError
+from app.shared.domain.exceptions import ForbiddenDomainError, ValidationDomainError
+from app.shared.presentation.authorization import current_user_id, is_platform_admin
+from app.shared.presentation.error_schemas import error_responses
 
 from ..application.services import AdminAuditEntryService
 from ..domain.entities import AdminAuditEntryEntity
@@ -118,6 +120,14 @@ async def admin_list_users(
 ):
     from sqlalchemy import text
 
+    from app.core.config import settings
+
+    admin_emails = {
+        item.strip().lower()
+        for item in str(settings.PLATFORM_ADMIN_EMAILS or "").split(",")
+        if item.strip()
+    }
+
     rows = await session.execute(
         text(
             "SELECT id, email, first_name, last_name, status, last_login_at, created_at "
@@ -126,6 +136,7 @@ async def admin_list_users(
     )
     items = []
     for r in rows.mappings():
+        email = str(r["email"] or "").lower()
         items.append(
             {
                 "id": str(r["id"]),
@@ -135,7 +146,7 @@ async def admin_list_users(
                 "status": r["status"],
                 "lastLogin": r["last_login_at"].isoformat() if r["last_login_at"] else None,
                 "createdAt": r["created_at"].isoformat() if r["created_at"] else None,
-                "roleCodes": ["admin"] if r["email"] == "admin@cmep.dev" else [],
+                "roleCodes": ["platform_admin"] if email in admin_emails else [],
             }
         )
     return {
@@ -150,8 +161,13 @@ async def admin_list_users(
     response_model=AdminAuditEntryResponse,
     summary="Get audit entry by ID",
     operation_id="getAuditEntryById",
+    responses=error_responses(401, 403, 404, 500),
 )
-async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin_service)):
+async def get_admin(
+    id: str,
+    current_user=Depends(require_admin),
+    service: AdminAuditEntryService = Depends(get_admin_service),
+):
     entity = await service.get_by_id(id)
     if entity is None:
         raise HTTPException(
@@ -167,11 +183,18 @@ async def get_admin(id: str, service: AdminAuditEntryService = Depends(get_admin
     status_code=http_status.HTTP_201_CREATED,
     summary="Create audit entry",
     operation_id="createAuditEntry",
+    responses=error_responses(401, 403, 409, 422, 500),
 )
 async def create_admin(
     request: AdminAuditEntryCreateRequest,
+    current_user=Depends(require_current_user),
     service: AdminAuditEntryService = Depends(get_admin_service),
 ):
+    # Audit zaznam smie vytvorit platform admin, alebo user zaznam len o sebe.
+    actor = current_user_id(current_user)
+    if not is_platform_admin(current_user) and str(request.actorUserId) != str(actor):
+        raise ForbiddenDomainError("You cannot create audit entries for another user")
+
     entity = AdminAuditEntryEntity(
         actor_user_id=request.actorUserId,
         action=request.action,

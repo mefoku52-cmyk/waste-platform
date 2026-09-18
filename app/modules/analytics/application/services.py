@@ -15,11 +15,13 @@ class AnalyticsEventService:
     async def get_by_id(self, id: str) -> AnalyticsEventEntity | None:
         return await self.repository.get_by_id(id)
 
-    async def list_all(self, page: int = 1, limit: int = 20) -> list[AnalyticsEventEntity]:
-        return await self.repository.list_all(page, limit)
+    async def list_all(
+        self, page: int = 1, limit: int = 20, company_ids=None
+    ) -> list[AnalyticsEventEntity]:
+        return await self.repository.list_all(page, limit, company_ids=company_ids)
 
-    async def count_all(self) -> int:
-        return await self.repository.count_all()
+    async def count_all(self, company_ids=None) -> int:
+        return await self.repository.count_all(company_ids=company_ids)
 
     async def create(self, entity: AnalyticsEventEntity) -> AnalyticsEventEntity:
         entity.validate()
