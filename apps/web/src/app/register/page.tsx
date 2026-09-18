@@ -1,9 +1,11 @@
-import { RegisterForm } from "@/features/auth";
+'use client';
+import { RegisterForm } from '@/features/auth';
+import { AuthShell } from '@/components/auth/auth-shell';
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <AuthShell title="Založte si účet" subtitle="Burza, ktorá dýcha.">
       <RegisterForm />
-    </div>
+    </AuthShell>
   );
 }
