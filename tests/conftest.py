@@ -42,3 +42,15 @@ def _prepare_test_db(_ensure_var_dir):
 
     asyncio.run(_create())
     yield
+
+
+@pytest.fixture
+async def db_session():
+    """Per-test AsyncSession. Rollbackne sa po kazdom teste."""
+    from app.shared.infrastructure.db.session import async_session_factory
+
+    async with async_session_factory() as session:
+        try:
+            yield session
+        finally:
+            await session.rollback()

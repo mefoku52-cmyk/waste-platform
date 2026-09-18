@@ -1,3 +1,6 @@
+# TODO: nedokonceny repo - chybaju metody get_active_by_user_id a revoke_family,
+#       mapper pouziva nespravne atributy (family_id vs token_family_id).
+#       Refresh flow ide cez JWT+Redis, tento repo sa nikde nepouziva.
 from datetime import datetime
 
 from sqlalchemy import select
