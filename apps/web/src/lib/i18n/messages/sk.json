@@ -181,5 +181,122 @@
   "docs": {
     "title": "Dokumenty",
     "add": "Pridať dokument"
+  },
+  "admin": {
+    "section": "ADMINISTRÁCIA",
+    "title": "Administrácia systému",
+    "statUsers": "Používatelia",
+    "statListings": "Ponuky",
+    "statCompanies": "Firmy",
+    "statPending": "Čakajúce overenia",
+    "firmsSection": "FIRMY",
+    "firmsTitle": "Firmy na overenie",
+    "firmsHint": "Firmy, ktoré požiadali o overenie. Klikni Overiť pre schválenie alebo Zamietnuť pre odmietnutie.",
+    "usersSection": "POUŽÍVATELIA",
+    "usersTitle": "Správa používateľov",
+    "legalSection": "PRÁVNE"
+  },
+  "chat": {
+    "section": "SPRÁVY",
+    "title": "Chat medzi firmami",
+    "empty": "Zatiaľ žiadne správy",
+    "emptyHint": "Keď niekomu odpovieš na ponuku, tu sa zobrazí konverzácia.",
+    "firm": "Firma",
+    "loading": "Načítavam…",
+    "conversation": "KONVERZÁCIA",
+    "sendPlaceholder": "Napíš správu…",
+    "send": "Odoslať"
+  },
+  "listings": {
+    "mySection": "MOJE PONUKY",
+    "myTitle": "Ponuky",
+    "addButton": "+ Pridať ponuku",
+    "empty": "Zatiaľ žiadne ponuky",
+    "emptyHint": "Pridaj svoju prvú ponuku a oslov zákazníkov.",
+    "detailSection": "PONUKA",
+    "detailTitle": "Ponuka",
+    "newSection": "NOVÁ PONUKA",
+    "newTitle": "Pridať ponuku",
+    "material": "Materiál",
+    "location": "Lokalita",
+    "quantity": "Množstvo",
+    "status": "Status",
+    "transport": "Doprava",
+    "created": "Vytvorené"
+  },
+  "documents": {
+    "section": "DOKUMENTY",
+    "title": "Dokumenty",
+    "addButton": "+ Pridať dokument",
+    "empty": "Zatiaľ žiadne dokumenty",
+    "emptyHint": "Nahraj dokumenty, ktoré chceš zdieľať s firmami.",
+    "newSection": "NOVÝ DOKUMENT",
+    "newTitle": "Pridať dokument",
+    "docTitle": "Dokument"
+  },
+  "companies": {
+    "newSection": "NOVÁ FIRMA",
+    "newTitle": "Pridať firmu"
+  },
+  "about": {
+    "eyebrow": "O PROJEKTE",
+    "title": "Súkromná burza pre obehové materiály",
+    "intro": "CMEP vznikol v Žiline s jednou myšlienkou: odpad je len materiál, ktorý ešte nenašiel kupca. Prepájame firmy, ktoré majú prebytky, s firmami, ktoré ich vedia využiť. Bez aukčného cirkusu, bez zbytočných telefonátov, cez jeden prehľadný digitálny systém.",
+    "firmSection": "O firme",
+    "operator": "Prevádzkovateľ",
+    "seat": "Sídlo",
+    "ico": "IČO",
+    "focus": "Zameranie",
+    "focusText": "Digitálne riešenia pre obehové hospodárstvo",
+    "contactSection": "Kontakt",
+    "email": "E-mail",
+    "phone": "Telefón",
+    "post": "Pošta",
+    "faqSection": "Často kladené otázky",
+    "legalSection": "PRÁVNE",
+    "terms": "Obchodné podmienky",
+    "privacy": "Ochrana údajov",
+    "license": "Licencia",
+    "copyright": "Všetky práva vyhradené.",
+    "faq": {
+      "q1": {
+        "q": "Čo je CMEP?",
+        "a": "CMEP (Circular Materials Exchange Platform) je B2B burza pre obehové materiály. Firmy tu medzi sebou predávajú a vymieňajú druhotné suroviny, prebytky z výroby a vedľajšie produkty."
+      },
+      "q2": {
+        "q": "Pre koho je platforma určená?",
+        "a": "Pre firmy, ktoré majú prebytočný materiál (drevo, kov, papier, plasty, bioodpad) a pre firmy, ktoré tento materiál hľadajú ako vstup do svojej výroby."
+      },
+      "q3": {
+        "q": "Ako overujete firmy?",
+        "a": "Každá firma, ktorá sa chce zapojiť do obchodovania, musí prejsť overením IČO. Overenie zabezpečuje, že na platforme sú len seriózne firmy."
+      },
+      "q4": {
+        "q": "Sú kontakty viditeľné?",
+        "a": "Kontakty (telefón, e-mail) zostávajú skryté, kým sa firmy nedohodnú. Komunikácia prebieha cez interný chat platformy."
+      },
+      "q5": {
+        "q": "Koľko stojí používanie?",
+        "a": "Registrácia a základné používanie platformy sú zdarma. Prémiové funkcie (priorita v zozname, neobmedzené inzeráty, API prístup) budú spoplatnené."
+      },
+      "q6": {
+        "q": "Ako začnem?",
+        "a": "Zaregistrujte sa, vytvorte firmu, pridajte prvú ponuku. Ostatné firmy vás kontaktujú priamo cez platformu."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Súkromná burza. Overené firmy. Skryté kontakty.",
+    "marketSection": "TRH",
+    "marketplace": "Trhovisko",
+    "myListings": "Moje ponuky",
+    "addCompany": "Pridať firmu",
+    "legalSection": "PRÁVNE",
+    "terms": "Obchodné podmienky",
+    "privacy": "Ochrana údajov",
+    "license": "Licencia",
+    "contactSection": "KONTAKT",
+    "address": "Ulič 63, 067 67 Ulič",
+    "country": "Slovenská republika"
   }
 }

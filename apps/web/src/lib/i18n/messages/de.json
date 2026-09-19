@@ -181,5 +181,122 @@
   "docs": {
     "title": "Dokumente",
     "add": "Dokument hinzufügen"
+  },
+  "admin": {
+    "section": "VERWALTUNG",
+    "title": "Systemverwaltung",
+    "statUsers": "Benutzer",
+    "statListings": "Angebote",
+    "statCompanies": "Unternehmen",
+    "statPending": "Ausstehende Überprüfungen",
+    "firmsSection": "UNTERNEHMEN",
+    "firmsTitle": "Unternehmen zur Überprüfung",
+    "firmsHint": "Unternehmen, die eine Überprüfung beantragt haben. Klicken Sie auf Überprüfen oder Ablehnen.",
+    "usersSection": "BENUTZER",
+    "usersTitle": "Benutzerverwaltung",
+    "legalSection": "RECHTLICHES"
+  },
+  "chat": {
+    "section": "NACHRICHTEN",
+    "title": "Chat zwischen Unternehmen",
+    "empty": "Noch keine Nachrichten",
+    "emptyHint": "Wenn Sie auf ein Angebot antworten, erscheint die Unterhaltung hier.",
+    "firm": "Unternehmen",
+    "loading": "Laden…",
+    "conversation": "UNTERHALTUNG",
+    "sendPlaceholder": "Nachricht schreiben…",
+    "send": "Senden"
+  },
+  "listings": {
+    "mySection": "MEINE ANGEBOTE",
+    "myTitle": "Angebote",
+    "addButton": "+ Angebot hinzufügen",
+    "empty": "Noch keine Angebote",
+    "emptyHint": "Fügen Sie Ihr erstes Angebot hinzu.",
+    "detailSection": "ANGEBOT",
+    "detailTitle": "Angebot",
+    "newSection": "NEUES ANGEBOT",
+    "newTitle": "Angebot hinzufügen",
+    "material": "Material",
+    "location": "Standort",
+    "quantity": "Menge",
+    "status": "Status",
+    "transport": "Transport",
+    "created": "Erstellt"
+  },
+  "documents": {
+    "section": "DOKUMENTE",
+    "title": "Dokumente",
+    "addButton": "+ Dokument hinzufügen",
+    "empty": "Noch keine Dokumente",
+    "emptyHint": "Laden Sie Dokumente hoch, die Sie teilen möchten.",
+    "newSection": "NEUES DOKUMENT",
+    "newTitle": "Dokument hinzufügen",
+    "docTitle": "Dokument"
+  },
+  "companies": {
+    "newSection": "NEUES UNTERNEHMEN",
+    "newTitle": "Unternehmen hinzufügen"
+  },
+  "about": {
+    "eyebrow": "ÜBER DAS PROJEKT",
+    "title": "Eine private Börse für Kreislaufmaterialien",
+    "intro": "CMEP entstand in Žilina mit einer Idee: Abfall ist nur Material, das noch keinen Käufer gefunden hat. Wir verbinden Unternehmen mit Überschüssen mit Unternehmen, die sie nutzen können. Ohne Auktionszirkus, ohne unnötige Anrufe, über ein klares digitales System.",
+    "firmSection": "Über das Unternehmen",
+    "operator": "Betreiber",
+    "seat": "Sitz",
+    "ico": "Registrierungsnummer",
+    "focus": "Schwerpunkt",
+    "focusText": "Digitale Lösungen für die Kreislaufwirtschaft",
+    "contactSection": "Kontakt",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "post": "Post",
+    "faqSection": "Häufig gestellte Fragen",
+    "legalSection": "RECHTLICHES",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutz",
+    "license": "Lizenz",
+    "copyright": "Alle Rechte vorbehalten.",
+    "faq": {
+      "q1": {
+        "q": "Was ist CMEP?",
+        "a": "CMEP (Circular Materials Exchange Platform) ist eine B2B-Börse für Kreislaufmaterialien. Unternehmen handeln mit Sekundärrohstoffen, Produktionsüberschüssen und Nebenprodukten."
+      },
+      "q2": {
+        "q": "Für wen ist die Plattform?",
+        "a": "Für Unternehmen mit Materialüberschuss (Holz, Metall, Papier, Kunststoffe, Bioabfall) und für Unternehmen, die dieses Material als Input suchen."
+      },
+      "q3": {
+        "q": "Wie überprüfen Sie Unternehmen?",
+        "a": "Jedes Unternehmen, das handeln möchte, muss eine Registrierungsnummern-Prüfung durchlaufen. Die Prüfung stellt sicher, dass nur seriöse Unternehmen auf der Plattform sind."
+      },
+      "q4": {
+        "q": "Sind Kontakte sichtbar?",
+        "a": "Kontakte (Telefon, E-Mail) bleiben verborgen, bis sich die Unternehmen einigen. Die Kommunikation erfolgt über den internen Plattform-Chat."
+      },
+      "q5": {
+        "q": "Was kostet die Nutzung?",
+        "a": "Registrierung und Basisnutzung sind kostenlos. Premium-Funktionen (Listenpriorität, unbegrenzte Angebote, API-Zugang) werden kostenpflichtig."
+      },
+      "q6": {
+        "q": "Wie fange ich an?",
+        "a": "Registrieren Sie sich, erstellen Sie ein Unternehmen, fügen Sie Ihr erstes Angebot hinzu. Andere Unternehmen kontaktieren Sie direkt über die Plattform."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Private Börse. Verifizierte Unternehmen. Versteckte Kontakte.",
+    "marketSection": "MARKT",
+    "marketplace": "Marktplatz",
+    "myListings": "Meine Angebote",
+    "addCompany": "Unternehmen hinzufügen",
+    "legalSection": "RECHTLICHES",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutz",
+    "license": "Lizenz",
+    "contactSection": "KONTAKT",
+    "address": "Ulič 63, 067 67 Ulič",
+    "country": "Slowakische Republik"
   }
 }

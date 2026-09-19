@@ -18,7 +18,6 @@ type Thread = {
   counterpart_name?: string;
   listing_title?: string;
   last_message?: string;
-  last_message_at?: string;
   unread_count?: number;
 };
 
@@ -43,24 +42,24 @@ export default function ChatPage() {
 
         <main className="mx-auto max-w-4xl px-4 py-10">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-            SPRÁVY
+            {t('chat.section')}
           </p>
           <h1 className="mb-10 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
-            Chat medzi firmami
+            {t('chat.title')}
           </h1>
 
           {isLoading ? (
-            <p style={{ color: MUTED }}>Načítavam…</p>
+            <p style={{ color: MUTED }}>{t('chat.loading')}</p>
           ) : items.length === 0 ? (
             <div
               className="rounded-2xl border py-16 text-center"
               style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)' }}
             >
               <h3 className="text-2xl" style={{ fontFamily: 'Fraunces, serif' }}>
-                Zatiaľ žiadne správy
+                {t('chat.empty')}
               </h3>
               <p className="mt-2 text-sm" style={{ color: MUTED }}>
-                Keď niekomu odpovieš na ponuku, tu sa zobrazí konverzácia.
+                {t('chat.emptyHint')}
               </p>
             </div>
           ) : (
@@ -75,7 +74,7 @@ export default function ChatPage() {
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <p className="text-lg" style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}>
-                          {thread.counterpart_name || 'Firma'}
+                          {thread.counterpart_name || t('chat.firm')}
                         </p>
                         {thread.listing_title && (
                           <p className="mt-1 text-xs" style={{ color: FAINT }}>

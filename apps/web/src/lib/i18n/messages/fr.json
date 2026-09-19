@@ -181,5 +181,122 @@
   "docs": {
     "title": "Documents",
     "add": "Ajouter un document"
+  },
+  "admin": {
+    "section": "ADMINISTRATION",
+    "title": "Administration du système",
+    "statUsers": "Utilisateurs",
+    "statListings": "Annonces",
+    "statCompanies": "Entreprises",
+    "statPending": "Vérifications en attente",
+    "firmsSection": "ENTREPRISES",
+    "firmsTitle": "Entreprises à vérifier",
+    "firmsHint": "Entreprises ayant demandé une vérification. Cliquez sur Vérifier ou Refuser.",
+    "usersSection": "UTILISATEURS",
+    "usersTitle": "Gestion des utilisateurs",
+    "legalSection": "MENTIONS LÉGALES"
+  },
+  "chat": {
+    "section": "MESSAGES",
+    "title": "Chat entre entreprises",
+    "empty": "Aucun message",
+    "emptyHint": "Lorsque vous répondrez à une annonce, la conversation apparaîtra ici.",
+    "firm": "Entreprise",
+    "loading": "Chargement…",
+    "conversation": "CONVERSATION",
+    "sendPlaceholder": "Écrire un message…",
+    "send": "Envoyer"
+  },
+  "listings": {
+    "mySection": "MES ANNONCES",
+    "myTitle": "Annonces",
+    "addButton": "+ Ajouter une annonce",
+    "empty": "Aucune annonce",
+    "emptyHint": "Ajoutez votre première annonce et atteignez des clients.",
+    "detailSection": "ANNONCE",
+    "detailTitle": "Annonce",
+    "newSection": "NOUVELLE ANNONCE",
+    "newTitle": "Ajouter une annonce",
+    "material": "Matériau",
+    "location": "Localisation",
+    "quantity": "Quantité",
+    "status": "Statut",
+    "transport": "Transport",
+    "created": "Créé"
+  },
+  "documents": {
+    "section": "DOCUMENTS",
+    "title": "Documents",
+    "addButton": "+ Ajouter un document",
+    "empty": "Aucun document",
+    "emptyHint": "Téléchargez les documents à partager.",
+    "newSection": "NOUVEAU DOCUMENT",
+    "newTitle": "Ajouter un document",
+    "docTitle": "Document"
+  },
+  "companies": {
+    "newSection": "NOUVELLE ENTREPRISE",
+    "newTitle": "Ajouter une entreprise"
+  },
+  "about": {
+    "eyebrow": "À PROPOS",
+    "title": "Une bourse privée pour les matériaux circulaires",
+    "intro": "CMEP est né à Žilina avec une idée : les déchets ne sont qu'un matériau qui n'a pas encore trouvé d'acheteur. Nous connectons les entreprises ayant des surplus avec celles qui peuvent les utiliser. Sans cirque aux enchères, sans appels inutiles, via un système numérique clair.",
+    "firmSection": "À propos",
+    "operator": "Exploitant",
+    "seat": "Siège social",
+    "ico": "Numéro d'enregistrement",
+    "focus": "Domaine",
+    "focusText": "Solutions numériques pour l'économie circulaire",
+    "contactSection": "Contact",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "post": "Courrier",
+    "faqSection": "Questions fréquentes",
+    "legalSection": "MENTIONS LÉGALES",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Protection des données",
+    "license": "Licence",
+    "copyright": "Tous droits réservés.",
+    "faq": {
+      "q1": {
+        "q": "Qu'est-ce que CMEP ?",
+        "a": "CMEP (Circular Materials Exchange Platform) est une bourse B2B pour les matériaux circulaires. Les entreprises échangent des matières premières secondaires, des surplus de production et des sous-produits."
+      },
+      "q2": {
+        "q": "À qui s'adresse la plateforme ?",
+        "a": "Aux entreprises ayant un surplus de matériaux (bois, métal, papier, plastiques, biodéchets) et à celles qui recherchent ces matériaux comme intrants."
+      },
+      "q3": {
+        "q": "Comment vérifiez-vous les entreprises ?",
+        "a": "Chaque entreprise souhaitant commercer doit passer une vérification du numéro d'enregistrement. La vérification garantit que seules des entreprises sérieuses sont présentes."
+      },
+      "q4": {
+        "q": "Les contacts sont-ils visibles ?",
+        "a": "Les contacts (téléphone, e-mail) restent cachés jusqu'à l'accord des entreprises. La communication se fait via le chat interne de la plateforme."
+      },
+      "q5": {
+        "q": "Combien ça coûte ?",
+        "a": "L'inscription et l'utilisation de base sont gratuites. Les fonctionnalités premium (priorité d'affichage, annonces illimitées, accès API) seront payantes."
+      },
+      "q6": {
+        "q": "Comment commencer ?",
+        "a": "Inscrivez-vous, créez une entreprise, ajoutez votre première annonce. Les autres entreprises vous contacteront directement via la plateforme."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Bourse privée. Entreprises vérifiées. Contacts cachés.",
+    "marketSection": "MARCHÉ",
+    "marketplace": "Marché",
+    "myListings": "Mes annonces",
+    "addCompany": "Ajouter une entreprise",
+    "legalSection": "MENTIONS LÉGALES",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Protection des données",
+    "license": "Licence",
+    "contactSection": "CONTACT",
+    "address": "Ulič 63, 067 67 Ulič",
+    "country": "République slovaque"
   }
 }

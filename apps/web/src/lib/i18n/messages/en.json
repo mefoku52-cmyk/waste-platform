@@ -181,5 +181,122 @@
   "docs": {
     "title": "Documents",
     "add": "Add document"
+  },
+  "admin": {
+    "section": "ADMINISTRATION",
+    "title": "System administration",
+    "statUsers": "Users",
+    "statListings": "Listings",
+    "statCompanies": "Companies",
+    "statPending": "Pending verifications",
+    "firmsSection": "COMPANIES",
+    "firmsTitle": "Companies for verification",
+    "firmsHint": "Companies that requested verification. Click Verify to approve or Reject to decline.",
+    "usersSection": "USERS",
+    "usersTitle": "User management",
+    "legalSection": "LEGAL"
+  },
+  "chat": {
+    "section": "MESSAGES",
+    "title": "Chat between companies",
+    "empty": "No messages yet",
+    "emptyHint": "When you reply to a listing, the conversation will appear here.",
+    "firm": "Company",
+    "loading": "Loading…",
+    "conversation": "CONVERSATION",
+    "sendPlaceholder": "Write a message…",
+    "send": "Send"
+  },
+  "listings": {
+    "mySection": "MY LISTINGS",
+    "myTitle": "Listings",
+    "addButton": "+ Add listing",
+    "empty": "No listings yet",
+    "emptyHint": "Add your first listing and reach customers.",
+    "detailSection": "LISTING",
+    "detailTitle": "Listing",
+    "newSection": "NEW LISTING",
+    "newTitle": "Add listing",
+    "material": "Material",
+    "location": "Location",
+    "quantity": "Quantity",
+    "status": "Status",
+    "transport": "Transport",
+    "created": "Created"
+  },
+  "documents": {
+    "section": "DOCUMENTS",
+    "title": "Documents",
+    "addButton": "+ Add document",
+    "empty": "No documents yet",
+    "emptyHint": "Upload documents you want to share with companies.",
+    "newSection": "NEW DOCUMENT",
+    "newTitle": "Add document",
+    "docTitle": "Document"
+  },
+  "companies": {
+    "newSection": "NEW COMPANY",
+    "newTitle": "Add company"
+  },
+  "about": {
+    "eyebrow": "ABOUT",
+    "title": "A private exchange for circular materials",
+    "intro": "CMEP was born in Žilina with one idea: waste is just material that has not yet found a buyer. We connect companies that have surpluses with companies that can use them. No auction circus, no unnecessary phone calls, through one clear digital system.",
+    "firmSection": "About the company",
+    "operator": "Operator",
+    "seat": "Registered office",
+    "ico": "Company ID",
+    "focus": "Focus",
+    "focusText": "Digital solutions for the circular economy",
+    "contactSection": "Contact",
+    "email": "Email",
+    "phone": "Phone",
+    "post": "Post",
+    "faqSection": "Frequently asked questions",
+    "legalSection": "LEGAL",
+    "terms": "Terms of service",
+    "privacy": "Privacy policy",
+    "license": "License",
+    "copyright": "All rights reserved.",
+    "faq": {
+      "q1": {
+        "q": "What is CMEP?",
+        "a": "CMEP (Circular Materials Exchange Platform) is a B2B exchange for circular materials. Companies trade and exchange secondary raw materials, production surpluses and by-products."
+      },
+      "q2": {
+        "q": "Who is the platform for?",
+        "a": "For companies with surplus material (wood, metal, paper, plastics, bio waste) and companies looking for this material as input to their production."
+      },
+      "q3": {
+        "q": "How do you verify companies?",
+        "a": "Every company that wants to trade must pass a company-ID verification. Verification ensures only serious companies are on the platform."
+      },
+      "q4": {
+        "q": "Are contacts visible?",
+        "a": "Contacts (phone, email) stay hidden until companies agree. Communication happens through the internal platform chat."
+      },
+      "q5": {
+        "q": "How much does it cost?",
+        "a": "Registration and basic use of the platform are free. Premium features (listing priority, unlimited listings, API access) will be paid."
+      },
+      "q6": {
+        "q": "How do I start?",
+        "a": "Register, create a company, add your first listing. Other companies will contact you directly through the platform."
+      }
+    }
+  },
+  "footer": {
+    "tagline": "Private exchange. Verified companies. Hidden contacts.",
+    "marketSection": "MARKET",
+    "marketplace": "Marketplace",
+    "myListings": "My listings",
+    "addCompany": "Add company",
+    "legalSection": "LEGAL",
+    "terms": "Terms of service",
+    "privacy": "Privacy policy",
+    "license": "License",
+    "contactSection": "CONTACT",
+    "address": "Ulič 63, 067 67 Ulič",
+    "country": "Slovak Republic"
   }
 }
