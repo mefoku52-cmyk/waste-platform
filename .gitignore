@@ -294,3 +294,5 @@ fix-waste-platform-tests.sh
 key
 typescript
 script
+
+output/
