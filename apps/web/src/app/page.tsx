@@ -263,6 +263,34 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* ZHODA / KONTAKT PRÍDE AKO SPRÁVA */}
+        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+          <div className="mx-auto max-w-3xl px-4 py-16 md:py-20 text-center">
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>SÚKROMIE</p>
+            <h2 className="ff text-4xl leading-tight md:text-5xl">
+              Kontakt príde ako správa.
+            </h2>
+            <p className="mt-6 text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+              Telefón a e-mail ostanú skryté, kým sa firmy nedohodnú.
+              Žiadny spam, žiadne obvolávanie. Súkromie je súčasť ceny.
+            </p>
+          </div>
+        </section>
+
+        {/* ZHODA / KONTAKT PRÍDE AKO SPRÁVA */}
+        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+          <div className="mx-auto max-w-3xl px-4 py-16 md:py-20 text-center">
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>SÚKROMIE</p>
+            <h2 className="ff text-4xl leading-tight md:text-5xl">
+              Kontakt príde ako správa.
+            </h2>
+            <p className="mt-6 text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+              Telefón a e-mail ostanú skryté, kým sa firmy nedohodnú.
+              Žiadny spam, žiadne obvolávanie. Súkromie je súčasť ceny.
+            </p>
+          </div>
+        </section>
+
         {/* TICHÝ VSTUP */}
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-3xl px-4 py-16 md:py-20">

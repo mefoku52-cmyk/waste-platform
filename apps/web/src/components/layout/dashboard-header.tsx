@@ -45,7 +45,7 @@ export function DashboardHeader() {
               CMEP · OBEHOVÉ MATERIÁLY
             </p>
             <p className="text-lg leading-none" style={{ fontFamily: 'Fraunces, serif' }}>
-              Tržnica
+              Trhovisko
             </p>
           </div>
         </Link>

@@ -36,6 +36,14 @@ const categorySkMap: Record<string, string> = {
   all: "Všetko", wood: "Drevo", metal: "Kov",
   paper: "Papier", plastics: "Plasty", bio: "Bioodpad",
 };
+const DASHBOARD_MATERIALS = [
+  { key: 'wood',     label: 'Drevo',    img: 'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800&q=80',  desc: 'Piliny, odrezky, palety.' },
+  { key: 'metal',    label: 'Kov',      img: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=800&q=80',  desc: 'Šrot, káble, konštrukcie.' },
+  { key: 'paper',    label: 'Papier',   img: 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=800&q=80',  desc: 'Regranulát, kartón.' },
+  { key: 'plastics', label: 'Plasty',   img: 'https://images.unsplash.com/photo-1618363010061-a42f6e39e3d8?w=800&q=80',  desc: 'Regranulát, fólie, PET.' },
+  { key: 'bio',      label: 'Bioodpad', img: 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=800&q=80',  desc: 'Kompost, štiepka.' },
+] as const;
+
 const topLinkKeys = ["overview", "listings", "marketplace", "matches", "companies", "documents", "chat"] as const;
 const PAGE_SIZE = 6;
 
@@ -177,15 +185,20 @@ export default function DashboardPage() {
       <DashboardHeader />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
-        {/* HERO */}
-        <section className="mb-10">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>TRŽNICA</p>
-          <h1 className="text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
-            Ponuky firiem a obehových materiálov
+        {/* MOTTO + HERO */}
+        <section className="mb-12">
+          <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+            PRE NIEKOHO ODPAD · PRE INÉHO DOPYT
+          </p>
+          <h1 className="ff text-4xl leading-[1.05] tracking-[-0.02em] md:text-6xl">
+            Materiál, ktorý ešte čaká na svojho kupca.
           </h1>
+          <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+            Trhovisko firiem a obehových materiálov. Filtruj, hľadaj, dohodni.
+          </p>
         </section>
 
-        {/* FILTER */}
+        {/* FILTER — SEARCH */}
         <section className="mb-8">
           <div className="grid gap-3 md:grid-cols-[1.4fr_0.7fr_auto]">
             <input
@@ -212,27 +225,59 @@ export default function DashboardPage() {
               {t("dashboard.searchBtn")}
             </button>
           </div>
+        </section>
 
-          <div className="mt-4 flex flex-wrap gap-2">
-            {categoryKeys.map((k) => {
-              const active = k === category;
+        {/* DLAŽDICE MATERIÁLOV */}
+        <section className="mb-10">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+            {DASHBOARD_MATERIALS.map((m) => {
+              const active = category === m.key;
               return (
                 <button
-                  key={k}
+                  key={m.key}
                   type="button"
-                  onClick={() => changeCategory(k)}
-                  className="rounded-md border px-4 py-2 text-sm transition-colors"
+                  onClick={() => changeCategory(active ? 'all' : m.key)}
+                  className="group relative overflow-hidden rounded-2xl border text-left transition-colors"
                   style={{
-                    borderColor: active ? GOLD : 'color-mix(in srgb, #c9a84c 30%, transparent)',
-                    background: active ? GOLD : 'transparent',
-                    color: active ? BG : FG,
+                    borderColor: active ? GOLD : 'color-mix(in srgb, #c9a84c 20%, transparent)',
+                    aspectRatio: '4/5',
                   }}
                 >
-                  {t("dashboard." + k)}
+                  <img
+                    src={m.img}
+                    alt={m.label}
+                    className="absolute inset-0 h-full w-full object-cover transition-opacity"
+                    style={{ opacity: active ? 0.85 : 0.5 }}
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        'linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.5) 50%, transparent 100%)',
+                    }}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+                    <p className="ff text-xl md:text-2xl" style={{ color: active ? GOLD : GOLD_BRIGHT }}>
+                      {m.label}
+                    </p>
+                    <p className="mt-1 text-[10px] leading-tight md:text-xs" style={{ color: MUTED }}>
+                      {m.desc}
+                    </p>
+                  </div>
                 </button>
               );
             })}
           </div>
+          {category !== 'all' && (
+            <button
+              type="button"
+              onClick={() => changeCategory('all')}
+              className="mt-3 text-sm underline underline-offset-4"
+              style={{ color: MUTED }}
+            >
+              Zrušiť filter · {categorySkMap[category] || category}
+            </button>
+          )}
         </section>
 
         {/* LIST HEAD */}
