@@ -11,17 +11,17 @@ const FAINT = '#6e6658';
 const DANGER = '#c45c4a';
 
 const MATERIALS = [
-  { key: 'drevo', label: 'Drevo', img: 'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1200&q=80', desc: 'Piliny, odrezky, palety.' },
-  { key: 'kov', label: 'Kov', img: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=1200&q=80', desc: 'Šrot, káble, konštrukcie.' },
-  { key: 'papier', label: 'Papier', img: 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=80', desc: 'Regranulát, kartón.' },
-  { key: 'plasty', label: 'Plasty', img: 'https://images.unsplash.com/photo-1618363010061-a42f6e39e3d8?w=1200&q=80', desc: 'Regranulát, fólie, PET.' },
-  { key: 'bioodpad', label: 'Bioodpad', img: 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=1200&q=80', desc: 'Kompost, štiepka.' },
+  { key: 'drevo', label: 'Drevo', img: 'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1200&q=80', desc: 'Piliny, odrezky, palety. Kým ich niekto spáli, niekto iný ich hľadá na dosky.' },
+  { key: 'kov', label: 'Kov', img: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=1200&q=80', desc: 'Šrot, káble, konštrukcie, spony, obliny, odrezky. Kým z nich bude hrdza, niekto z nich vyrobí nové.' },
+  { key: 'papier', label: 'Papier', img: 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1200&q=80', desc: 'Regranulát, kartón, noviny. Pravidelný odber, nie jednorazový inzerát.' },
+  { key: 'plasty', label: 'Plasty', img: 'https://images.unsplash.com/photo-1618363010061-a42f6e39e3d8?w=1200&q=80', desc: 'Regranulát, fólie, PET fľaše. Namiesto skládky nový život v priemysle.' },
+  { key: 'bioodpad', label: 'Bioodpad', img: 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=1200&q=80', desc: 'Kompost, štiepka, organické zvyšky. Z pôdy vzniká, do pôdy sa vracia.' },
 ];
 
 const STEPS = [
   { n: '01', icon: '◐', title: 'Zverejnite', text: 'Materiál, lokalita, tonáž. Cenu môžete nechať na dohodu. Deväťdesiat sekúnd, nie tendrový spis.' },
-  { n: '02', icon: '◇', title: 'Ozveme sa', text: 'Záujemca vidí overené IČO. Kontakty ostanú skryté, kým sa nedohodnete. Žiadny aukčný cirkus.' },
-  { n: '03', icon: '◆', title: 'Dohodnite', text: 'Cez chat. Bez e-mailov, bez telefónnych čísel v ponuke. Súkromie je súčasť ceny.' },
+  { n: '02', icon: '◇', title: 'Ozveme sa', text: 'Firmy, ktoré hľadajú presne to, čo ponúkate, vás kontaktujú cez interný chat. Žiadne telefonáty, žiadne e-maily, žiadny spam.' },
+  { n: '03', icon: '◆', title: 'Dohodnite', text: 'Cena, doprava, termín — všetko v chate. Bez papierovačiek, bez aukčného cirkusu, bez zbytočných krokov.' },
 ];
 
 export default function LandingPage() {
@@ -207,7 +207,7 @@ export default function LandingPage() {
         <section id="trh" className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>ČO SA TU HÝBE</p>
-            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Päť prúdov. Jeden trh.</h2>
+            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Päť prúdov. Jeden trh. Nekonečné možnosti.</h2>
             <div className="grid gap-4 md:grid-cols-2">
               {MATERIALS.map((m) => (
                 <Link key={m.key} href={`/dashboard?cat=${m.key}`} className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)]">
@@ -230,7 +230,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>STRATA, KTORÚ UŽ POČÍTATE</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
-              Každá tona na skládke odchádza z vašich kníh.
+              Každá tona na skládke je peniaz, o ktorý ste prišli.
             </h2>
             <p className="ff mt-6 text-3xl italic md:text-4xl" style={{ color: GOLD_BRIGHT }}>
               300 t pilín. Žilina. Dnes.
@@ -249,7 +249,7 @@ export default function LandingPage() {
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>AKO TO FUNGUJE</p>
-            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Tri ťahy. Žiadny katalóg na rok dopredu.</h2>
+            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Tri kroky. Od prebytku k obchodu za pár minút.</h2>
             <div className="grid gap-4 md:grid-cols-3">
               {STEPS.map((s) => (
                 <div key={s.n} className="rounded-2xl border p-6 md:p-8" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>

@@ -65,7 +65,7 @@ export default function AboutPage() {
             <div className="space-y-3 text-base" style={{ color: MUTED }}>
               <p>
                 <strong style={{ color: FG }}>{t('about.email')}:</strong>{' '}
-                <a href="mailto:orlovic1611@gmail.com" style={{ color: GOLD_BRIGHT }}>orlovic1611@gmail.com</a>
+                <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a>
               </p>
               <p>
                 <strong style={{ color: FG }}>{t('about.phone')}:</strong>{' '}

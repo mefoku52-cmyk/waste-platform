@@ -51,7 +51,7 @@ export default function LicensePage() {
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
                 <li>IČO: 51745666</li>
                 <li>Sídlo: Ulič 63, 067 67 Ulič, Slovenská republika</li>
-                <li>E-mail: <a href="mailto:orlovic1611@gmail.com" style={{ color: GOLD_BRIGHT }}>orlovic1611@gmail.com</a></li>
+                <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
                 <li>Telefón: <a href="tel:+421910617338" style={{ color: GOLD_BRIGHT }}>+421 910 617 338</a></li>
               </ul>
               <p className="mt-4">
@@ -166,7 +166,7 @@ export default function LicensePage() {
               <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>10. Kontakt pre právne otázky</h2>
               <p>V prípade otázok týkajúcich sa licencie, autorských práv alebo porušenia práv kontaktujte:</p>
               <ul className="mt-3 space-y-1">
-                <li>E-mail: <a href="mailto:orlovic1611@gmail.com" style={{ color: GOLD_BRIGHT }}>orlovic1611@gmail.com</a></li>
+                <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
                 <li>Telefón: <a href="tel:+421910617338" style={{ color: GOLD_BRIGHT }}>+421 910 617 338</a></li>
                 <li>Pošta: Radoslav Čornanič, Ulič 63, 067 67 Ulič, Slovenská republika</li>
               </ul>

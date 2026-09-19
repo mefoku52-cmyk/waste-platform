@@ -39,7 +39,7 @@ export default function PrivacyPage() {
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
                 <li>IČO: 51745666</li>
                 <li>Adresa: Ulič 63, 067 67 Ulič, Slovenská republika</li>
-                <li>E-mail: <a href="mailto:orlovic1611@gmail.com" style={{ color: GOLD_BRIGHT }}>orlovic1611@gmail.com</a></li>
+                <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
               </ul>
             </section>
 
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
                 <li>Právo podať sťažnosť na Úrad na ochranu osobných údajov SR</li>
               </ul>
               <p className="mt-3">
-                Žiadosti posielajte na <a href="mailto:orlovic1611@gmail.com" style={{ color: GOLD_BRIGHT }}>orlovic1611@gmail.com</a>. Odpovieme do 30 dní.
+                Žiadosti posielajte na <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a>. Odpovieme do 30 dní.
               </p>
             </section>
 

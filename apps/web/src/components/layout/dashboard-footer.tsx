@@ -70,8 +70,8 @@ export function DashboardFooter() {
             <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
               {t('footer.contactSection')}
             </p>
-            <a href="mailto:orlovic1611@gmail.com" className="block py-1 text-sm" style={{ color: GOLD_BRIGHT }}>
-              orlovic1611@gmail.com
+            <a href="mailto:trc-cmep@gmail.com" className="block py-1 text-sm" style={{ color: GOLD_BRIGHT }}>
+              trc-cmep@gmail.com
             </a>
             <p className="py-1 text-sm" style={{ color: MUTED }}>
               {t('footer.address')}
