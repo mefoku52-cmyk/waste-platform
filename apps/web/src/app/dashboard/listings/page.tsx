@@ -3,6 +3,8 @@
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { useListings } from '@/features/listings';
+import { useQuery } from '@tanstack/react-query';
+import { http } from '@/lib/api/http';
 import Link from 'next/link';
 
 const GOLD = '#c9a84c';
@@ -11,6 +13,22 @@ const BG = '#090807';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 const FAINT = '#6e6658';
+
+const LISTING_STATUS_LABEL: Record<string, { label: string; color: string; bg: string }> = {
+  draft:     { label: 'Draft',       color: '#9a8f7c', bg: 'rgba(110,102,88,0.15)' },
+  published: { label: 'Zverejnená',  color: '#5fd17a', bg: 'rgba(46,160,67,0.15)' },
+  reserved:  { label: 'Rezervovaná', color: '#e8d48b', bg: 'rgba(201,168,76,0.15)' },
+  completed: { label: 'Dokončená',   color: '#8fa8d0', bg: 'rgba(80,120,180,0.15)' },
+  archived:  { label: 'Archivovaná', color: '#a8a8a8', bg: 'rgba(80,80,80,0.20)' },
+};
+
+const COMPANY_STATUS_WARN: Record<string, string> = {
+  draft: 'Firma je v koncepte. Požiadajte o overenie, aby ste mohli publikovať ponuky.',
+  verification_submitted: 'Firma čaká na overenie administrátorom. Publikovanie bude dostupné po schválení.',
+  rejected: 'Firma bola zamietnutá. Skontrolujte údaje a pošlite novú žiadosť o overenie.',
+  suspended: 'Firma je pozastavená. Kontaktujte administrátora platformy.',
+  inactive: 'Firma je neaktívna. Publikovanie nie je možné.',
+};
 
 type Listing = {
   id: string;
@@ -28,8 +46,24 @@ type Listing = {
 
 export default function MyListingsPage() {
   const { data, isLoading } = useListings();
+  const { data: companiesData } = useQuery({
+    queryKey: ['companies', 'my'],
+    queryFn: () => http.get<any>('/companies'),
+  });
+
   const raw: any = data;
   const items: Listing[] = Array.isArray(raw) ? raw : raw?.data ?? raw?.items ?? [];
+
+  // Prvá firma patriaca používateľovi
+  const myCompany = (() => {
+    const c = (companiesData as any)?.items ?? (companiesData as any)?.data ?? companiesData;
+    if (Array.isArray(c) && c.length > 0) return c[0];
+    return null;
+  })();
+
+  const companyStatus: string = myCompany?.status || 'draft';
+  const isVerified = companyStatus === 'verified';
+  const warningMessage = COMPANY_STATUS_WARN[companyStatus];
 
   return (
     <>
@@ -41,6 +75,32 @@ export default function MyListingsPage() {
         <DashboardHeader />
 
         <main className="mx-auto max-w-6xl px-4 py-10">
+          {!isVerified && warningMessage && (
+            <div
+              className="mb-8 rounded-2xl border p-5"
+              style={{
+                borderColor: 'color-mix(in srgb, #c9a84c 40%, transparent)',
+                background: 'rgba(201,168,76,0.06)',
+              }}
+            >
+              <p className="mb-1 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
+                Stav firmy: {companyStatus}
+              </p>
+              <p className="text-sm leading-relaxed" style={{ color: FG }}>
+                ⚠️ {warningMessage}
+              </p>
+              {companyStatus === 'draft' && (
+                <Link
+                  href="/dashboard/companies/new"
+                  className="mt-3 inline-block text-sm underline underline-offset-4"
+                  style={{ color: GOLD_BRIGHT }}
+                >
+                  Požiadať o overenie firmy →
+                </Link>
+              )}
+            </div>
+          )}
+
           <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
@@ -96,7 +156,15 @@ export default function MyListingsPage() {
                       <span>
                         {item.quantity || '—'} {item.unit || ''}
                       </span>
-                      <span>{item.status || '—'}</span>
+                      <span
+                        className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em]"
+                        style={{
+                          background: LISTING_STATUS_LABEL[item.status || 'draft']?.bg || 'rgba(110,102,88,0.15)',
+                          color: LISTING_STATUS_LABEL[item.status || 'draft']?.color || '#9a8f7c',
+                        }}
+                      >
+                        {LISTING_STATUS_LABEL[item.status || 'draft']?.label || item.status}
+                      </span>
                     </div>
                   </Link>
                 </li>

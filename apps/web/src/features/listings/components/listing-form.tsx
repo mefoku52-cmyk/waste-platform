@@ -27,6 +27,10 @@ export const ListingForm = () => {
   const companies = (companiesData as any)?.items ?? [];
   const hasCompanies = companies.length > 0;
 
+  const myCompany = companies[0];
+  const companyStatus: string = myCompany?.status || 'draft';
+  const isVerified = companyStatus === 'verified';
+
   const {
     register,
     handleSubmit,
@@ -94,6 +98,25 @@ export const ListingForm = () => {
   }
 
   return (
+    <>
+    {hasCompanies && !isVerified && (
+      <div
+        className="mb-4 w-full max-w-2xl rounded-2xl border p-5"
+        style={{
+          borderColor: 'rgba(201,168,76,0.4)',
+          background: 'rgba(201,168,76,0.06)',
+        }}
+      >
+        <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.25em]" style={{ color: '#c9a84c' }}>
+          Stav firmy: {companyStatus}
+        </p>
+        <p className="text-sm leading-relaxed" style={{ color: '#f3ead8' }}>
+          ⚠️ Vaša firma ešte nie je overená. Ponuku môžete vytvoriť, ale
+          publikovať ju bude možné až po schválení administrátorom.
+        </p>
+      </div>
+    )}
+
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="w-full max-w-2xl space-y-4 rounded-2xl border border-slate-700/80 bg-slate-950/95 p-6 shadow-xl shadow-black/30 sm:p-8"
@@ -274,5 +297,6 @@ export const ListingForm = () => {
         </Button>
       </div>
     </form>
+    </>
   );
 };
