@@ -1,6 +1,7 @@
 'use client';
 
 import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { useListings } from '@/features/listings';
 import Link from 'next/link';
 
@@ -103,6 +104,8 @@ export default function MyListingsPage() {
             </ul>
           )}
         </main>
+
+      <DashboardFooter />
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 'use client';
 
 import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { useDocuments } from '@/features/documents';
 import Link from 'next/link';
 
@@ -76,6 +77,8 @@ export default function DocumentsPage() {
             </ul>
           )}
         </main>
+
+      <DashboardFooter />
       </div>
     </>
   );

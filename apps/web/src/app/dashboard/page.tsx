@@ -474,6 +474,8 @@ export default function DashboardPage() {
           </nav>
         )}
       </main>
+
+      <DashboardFooter />
     </div>
   );
 }

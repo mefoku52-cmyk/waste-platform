@@ -5,6 +5,7 @@ import { useAdminStats } from '@/features/admin';
 import { AdminUsersTable } from '@/features/admin';
 import { CompaniesTable } from '@/features/companies';
 import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { redirect } from 'next/navigation';
 
 const GOLD = '#c9a84c';
@@ -116,6 +117,8 @@ export default function AdminPage() {
             </div>
           </section>
         </main>
+
+      <DashboardFooter />
       </div>
     </>
   );

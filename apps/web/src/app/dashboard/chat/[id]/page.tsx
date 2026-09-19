@@ -1,6 +1,7 @@
 'use client';
 
 import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { useQuery } from '@tanstack/react-query';
 import { http } from '@/lib/api/http';
 import { useParams } from 'next/navigation';
@@ -105,6 +106,8 @@ export default function ChatThreadPage() {
             </button>
           </form>
         </main>
+
+      <DashboardFooter />
       </div>
     </>
   );

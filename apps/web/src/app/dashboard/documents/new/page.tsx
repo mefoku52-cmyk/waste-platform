@@ -1,6 +1,7 @@
 'use client';
 
 import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { DocumentForm } from '@/features/documents';
 
 const GOLD = '#c9a84c';
@@ -26,6 +27,8 @@ export default function NewDocumentPage() {
           </h1>
           <DocumentForm />
         </main>
+
+      <DashboardFooter />
       </div>
     </>
   );
