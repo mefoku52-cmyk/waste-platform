@@ -74,15 +74,24 @@ export default function ChatThreadPage() {
         <DashboardHeader />
 
         <main className="mx-auto flex max-w-4xl flex-col px-4 py-10">
-          <div className="mb-6 flex items-center gap-3">
+          {/* BREADCRUMB */}
+          <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm" aria-label="Navigácia">
+            <Link
+              href="/dashboard"
+              className="rounded-md border px-3 py-1.5 transition-colors hover:bg-white/5"
+              style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: GOLD_BRIGHT }}
+            >
+              ← Dashboard
+            </Link>
+            <span style={{ color: MUTED }}>/</span>
             <Link
               href="/dashboard/chat"
-              className="text-sm underline underline-offset-4"
-              style={{ color: MUTED }}
+              className="rounded-md border px-3 py-1.5 transition-colors hover:bg-white/5"
+              style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: GOLD_BRIGHT }}
             >
-              ← Späť
+              Chat
             </Link>
-          </div>
+          </nav>
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
             KONVERZÁCIA
           </p>
