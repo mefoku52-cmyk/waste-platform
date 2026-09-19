@@ -85,12 +85,14 @@ export default function LandingPage() {
           <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 30% 20%, color-mix(in srgb, #c9a84c 8%, transparent), transparent 60%)` }} />
           <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24">
             <p className="mb-6 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-              ŽILINA · STREDNÁ EURÓPA · SÚKROMNÁ BURZA
+              SLOVENSKO · STREDNÁ EURÓPA · SÚKROMNÁ BURZA
             </p>
             <h1 className="ff text-5xl font-normal leading-[1.05] tracking-[-0.02em] md:text-7xl">
               Prebytok nie je odpad.
               <br />
-              <em className="italic" style={{ color: GOLD_BRIGHT }}>Je to ponuka, ktorú ešte nikto nevidel.</em>
+              <em className="italic" style={{ color: GOLD_BRIGHT }}>
+                Odpad je len materiál, ktorý ešte nenašiel svojho kupca. Materiál je hodnota, ktorá ešte nenašla svoj trh. A trh je miesto, kde sa z hodnoty stáva obchod. TRČ je to miesto.
+              </em>
             </h1>
             <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
               Firmy hádžu do kontajnera to, čo iné firmy hľadajú. Drevo. Kov. Papier. Plasty. Bioodpad.
@@ -98,7 +100,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link href="/register" className="rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-                Zverejniť prebytok za 90 s
+                Pridať / zverejniť ponuku
               </Link>
               <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 45%, transparent)', color: FG }}>
                 Pozrieť živý trh
@@ -110,7 +112,6 @@ export default function LandingPage() {
               {[
                 { v: '447,6', l: 'TON NA TRHU' },
                 { v: '8', l: 'OVERENÝCH FIRIEM' },
-                { v: '< 4', l: 'HODÍN NA PRVÚ ODPOVEĎ' },
                 { v: '10', l: 'ŽIVÝCH PONÚK', dot: true },
               ].map((s) => (
                 <div key={s.l}>
@@ -133,8 +134,14 @@ export default function LandingPage() {
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVE TERAZ</p>
-            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Materiál, ktorý ešte dýcha.</h2>
+            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Materiál, ktorý ešte čaká na svojho kupca.</h2>
             <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_25%,transparent)]">
+              <span
+                className="absolute right-4 top-4 z-10 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
+                style={{ borderColor: GOLD, color: GOLD_BRIGHT, background: 'rgba(9,8,7,0.85)' }}
+              >
+                VZOR · takto vyzerá reálna ponuka
+              </span>
               <div className="relative aspect-[16/9] w-full">
                 <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1600&q=80" alt="Piloviny" className="h-full w-full object-cover opacity-70 transition group-hover:opacity-90" />
                 <div className="grad absolute inset-0" />
@@ -154,20 +161,45 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PREČO CMEP</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
-              Nie sme nástenka. Sme súkromný salón pre zvyšky, ktoré ešte majú cenu.
+              CMEP — Circular Materials Exchange Platform.
             </h2>
-            <p className="mt-8 max-w-3xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
-              Značka RC vznikla v Žiline. Platforma drží jednu vetu: odpad je drahé slovo pre materiál,
-              ktorý ešte nenašiel kupca. Vizuál je tmavý zámerne — toto nie je zberný dvor. Je to burza,
-              na ktorú pošlete obchodného riaditeľa, nie brigádnika s fúrou.
-            </p>
-            <div className="mt-10 grid gap-3 md:grid-cols-3">
-              {['Overené IČO', 'Skryté kontakty', 'Súkromná burza'].map((t) => (
-                <div key={t} className="rounded-2xl border px-6 py-5" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
-                  <p className="ff text-xl" style={{ color: FG }}>{t}</p>
-                </div>
-              ))}
+
+            <div className="mt-8 max-w-3xl space-y-5 text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+              <p>
+                Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu
+                materiálu, ktorý by iný dokázal využiť. <strong style={{ color: FG }}>My to meníme.</strong>
+              </p>
+              <p>
+                <strong style={{ color: FG }}>CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú.</strong>
+                Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.
+              </p>
             </div>
+
+            {/* TRI PILIERE */}
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
+              <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>Pre firmy</p>
+                <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
+                  Nižšie náklady, nové príjmy, jednoduchšie hľadanie surovín.
+                </p>
+              </div>
+              <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>Pre ľudí</p>
+                <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
+                  Čistejšie prostredie, menej skládok, lepšia budúcnosť.
+                </p>
+              </div>
+              <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>Pre planétu</p>
+                <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
+                  Menej odpadu, viac obehu, viac času.
+                </p>
+              </div>
+            </div>
+
+            <p className="ff mt-10 text-2xl italic leading-tight md:text-3xl" style={{ color: GOLD_BRIGHT }}>
+              CMEP — pretože čistota nie je luxus. Je to zodpovednosť.
+            </p>
           </div>
         </section>
 
