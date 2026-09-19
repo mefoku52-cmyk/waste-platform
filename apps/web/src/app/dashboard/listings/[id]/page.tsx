@@ -1,229 +1,74 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { listingsApi } from '@/features/listings';
-import { inquiriesApi } from '@/features/inquiries';
-import { useAuthRequired } from '@/features/auth';
-import { Button } from '@/components/ui/button';
-import { chatApi } from '@/features/chat';
-import { http } from '@/lib/api/http';
+import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { useListing } from '@/features/listings';
+import { useParams } from 'next/navigation';
+
+const GOLD = '#c9a84c';
+const GOLD_BRIGHT = '#e8d48b';
+const BG = '#090807';
+const FG = '#f3ead8';
+const MUTED = '#9a8f7c';
 
 export default function ListingDetailPage() {
   const params = useParams();
   const id = String(params?.id || '');
-  const router = useRouter();
-  const { user } = useAuthRequired();
+  const { data, isLoading } = useListing(id) as any;
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['listing', id],
-    queryFn: async () => {
-      const res: any = await listingsApi.getListing(id);
-      return res?.data ?? res;
-    },
-    enabled: !!id,
-  });
-
-  const [message, setMessage] = useState('Mám záujem o túto ponuku.');
-  const [phone, setPhone] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [chatStarting, setChatStarting] = useState(false);
-  const [chatErr, setChatErr] = useState<string | null>(null);
-  const [ok, setOk] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  const memberships = (user as any)?.memberships || [];
-  const myCompanyId = memberships[0]?.companyId || memberships[0]?.company_id || null;
-  const email = (user as any)?.email || (user as any)?.user?.email || '';
-
-  const isOwn =
-    data?.companyId &&
-    memberships.some(
-      (m: any) => String(m.companyId || m.company_id) === String(data.companyId)
-    );
-
-  const handleInquiry = async () => {
-    if (!myCompanyId) {
-      setErr('Najprv si vytvor firmu – dopyt ide v mene tvojej firmy.');
-      return;
-    }
-    if (!message.trim()) {
-      setErr('Správa je povinná.');
-      return;
-    }
-    setBusy(true);
-    setErr(null);
-    try {
-      await inquiriesApi.create({
-        listingId: id,
-        companyId: String(myCompanyId),
-        message: message.trim(),
-        contactEmail: email || 'unknown@example.com',
-        contactPhone: phone || undefined,
-      });
-      setOk(true);
-    } catch (e: any) {
-      setErr(e?.message || 'Odoslanie dopytu zlyhalo');
-    } finally {
-      setBusy(false);
-    }
-  };
-
-
-  const handleStartChat = async () => {
-    if (!myCompanyId) {
-      setChatErr('Najprv si vytvor firmu – chat ide v mene tvojej firmy.');
-      return;
-    }
-    setChatStarting(true);
-    setChatErr(null);
-    try {
-      // Ziskaj company detail – potrebujeme createdByUserId (vlastnik firmy)
-      const company: any = await http.get<any>(`/companies/${data.companyId}`);
-      const comp = company?.data ?? company;
-      const recipientUserId = comp?.createdByUserId || comp?.created_by_user_id;
-      if (!recipientUserId) {
-        setChatErr('Nepodarilo sa zistit vlastnika firmy.');
-        return;
-      }
-      const thread: any = await chatApi.createThread({
-        recipientUserId: String(recipientUserId),
-        recipientCompanyId: String(data.companyId),
-        initiatorCompanyId: String(myCompanyId),
-        listingId: String(id),
-        subject: `Ponuka: ${data.title}`.slice(0, 255),
-      });
-      const threadId = thread?.data?.id;
-      if (threadId) {
-        router.push(`/dashboard/chat/${threadId}`);
-      } else {
-        setChatErr('Vlakno sa vytvorilo, ale chyba ID.');
-      }
-    } catch (e: any) {
-      setChatErr(e?.message || 'Nepodarilo sa vytvorit chat.');
-    } finally {
-      setChatStarting(false);
-    }
-  };
-
-  if (isLoading) return <div className="p-8 text-center">Načítavam detail...</div>;
-  if (error || !data) {
-    return (
-      <div className="p-8 text-center text-red-500">
-        Ponuku sa nepodarilo načítať.
-        <div className="mt-4">
-          <Button variant="outline" onClick={() => router.push('/dashboard')}>Späť</Button>
-        </div>
-      </div>
-    );
-  }
+  const item: any = data ?? {};
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="mx-auto max-w-2xl space-y-6">
-        <Button variant="outline" size="sm" onClick={() => router.push('/dashboard')}>
-          ← Späť na dashboard
-        </Button>
+    <>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+      <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
+        <DashboardHeader />
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="mb-2 text-sm text-gray-500 uppercase tracking-wide">{data.status}</div>
-          <h1 className="text-2xl font-bold text-gray-900">{data.title}</h1>
-          {data.imageUrl ? (
-            <div className="mt-4 overflow-hidden rounded-lg border border-gray-200">
-              <img
-                src={data.imageUrl}
-                alt={data.title}
-                className="max-h-80 w-full object-cover"
-              />
-            </div>
-          ) : null}
-          <p className="mt-2 text-gray-600 whitespace-pre-wrap">{data.description || 'Bez popisu'}</p>
+        <main className="mx-auto max-w-4xl px-4 py-10">
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+            PONUKA
+          </p>
 
-          <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <dt className="text-gray-500">Materiál</dt>
-              <dd className="font-medium text-gray-900">{data.materialType}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Množstvo</dt>
-              <dd className="font-medium text-gray-900">
-                {data.quantity} {data.unit}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Cena</dt>
-              <dd className="font-medium text-gray-900">
-                {data.price != null ? `${data.price} ${data.currency || 'EUR'}` : '—'}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Stav materiálu</dt>
-              <dd className="font-medium text-gray-900">{data.condition || '—'}</dd>
-            </div>
-            <div>
-              <dt className="text-gray-500">Lokalita</dt>
-              <dd className="font-medium text-gray-900">{data.location || '—'}</dd>
-            </div>
-          </dl>
-        </div>
+          {isLoading ? (
+            <p style={{ color: MUTED }}>Načítavam…</p>
+          ) : (
+            <>
+              <h1 className="mb-4 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
+                {item.title || 'Ponuka'}
+              </h1>
+              <p className="mb-8 text-base" style={{ color: MUTED }}>
+                {item.description || '—'}
+              </p>
 
-        {!isOwn && data.status === 'published' && (
-          <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-900">Mám záujem</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Pošli dopyt predávajúcej firme. Uvidí správu, e-mail a telefón.
-            </p>
-
-            {ok ? (
-              <div className="mt-4 rounded bg-green-50 p-3 text-sm text-green-800">
-                Dopyt odoslaný. Predávajúci ho uvidí v zozname dopytov.
-              </div>
-            ) : (
-              <div className="mt-4 space-y-3">
-                <div>
-                  <label className="block text-sm text-gray-700">Správa</label>
-                  <textarea
-                    className="mt-1 w-full rounded border border-gray-300 p-2 text-sm"
-                    rows={3}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-700">Telefón (voliteľné)</label>
-                  <input
-                    className="mt-1 w-full rounded border border-gray-300 p-2 text-sm"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="09xx xxx xxx"
-                  />
-                </div>
-                {err && <div className="text-sm text-red-600">{err}</div>}
-                <div className="flex flex-wrap gap-2">
-                  <Button onClick={handleInquiry} disabled={busy}>
-                    {busy ? 'Odosielam...' : 'Odoslať dopyt'}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={handleStartChat}
-                    disabled={chatStarting}
+              <dl className="grid gap-4 md:grid-cols-2">
+                {[
+                  ['Materiál', item.material_type ?? item.materialType ?? '—'],
+                  ['Lokalita', item.location ?? '—'],
+                  ['Množstvo', `${item.quantity ?? '—'} ${item.unit ?? ''}`],
+                  ['Status', item.status ?? '—'],
+                  ['Doprava', item.transport ?? '—'],
+                  ['Vytvorené', item.created_at ?? item.createdAt ?? '—'],
+                ].map(([k, v]) => (
+                  <div
+                    key={String(k)}
+                    className="rounded-xl border p-4"
+                    style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)' }}
                   >
-                    {chatStarting ? 'Otváram chat...' : 'Napísať správu'}
-                  </Button>
-                </div>
-                {chatErr && <div className="text-sm text-red-600">{chatErr}</div>}
-              </div>
-            )}
-          </div>
-        )}
-
-        {isOwn && (
-          <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 text-sm text-blue-800">
-            Toto je tvoja ponuka – dopyt tu neodosielaš.
-          </div>
-        )}
+                    <dt className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
+                      {k}
+                    </dt>
+                    <dd className="mt-1 text-base" style={{ color: FG }}>
+                      {String(v)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </>
+          )}
+        </main>
       </div>
-    </div>
+    </>
   );
 }

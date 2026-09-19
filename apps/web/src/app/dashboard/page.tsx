@@ -7,7 +7,8 @@ import { useMarketplace } from "@/features/listings";
 import { useQuery } from "@tanstack/react-query";
 import { http } from "@/lib/api/http";
 import { useT } from "@/lib/i18n/context";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { DashboardFooter } from "@/components/layout/dashboard-footer";
 import { useLogout, useCurrentUser, useIsPlatformAdmin } from "@/features/auth";
 
 type Listing = {
@@ -173,69 +174,7 @@ export default function DashboardPage() {
       />
 
       {/* HEADER */}
-      <header className="sticky top-0 z-40 border-b backdrop-blur-md" style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)', background: 'rgba(9,8,7,0.85)' }}>
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <Link href="/" className="flex items-center gap-3">
-            <img src="/trc-mark.jpg" alt="TRČ" className="h-10 w-10 rounded-full object-cover" />
-            <div className="hidden sm:block">
-              <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>CMEP · OBEHOVÉ MATERIÁLY</p>
-              <p className="text-lg leading-none" style={{ fontFamily: 'Fraunces, serif' }}>Tržnica</p>
-            </div>
-          </Link>
-          <div className="flex items-center gap-3">
-            <MyListingsMenu label={t("dashboard.myListings")} />
-            <span className="hidden text-sm md:inline" style={{ color: MUTED }}>{myEmail || "—"}</span>
-            {isAdmin && (
-              <Link
-                href="/dashboard/admin"
-                className="rounded-md border px-3 py-1.5 text-xs font-semibold"
-                style={{ borderColor: GOLD, color: GOLD_BRIGHT }}
-              >
-                ⚙ Admin
-              </Link>
-            )}
-            <LanguageSwitcher />
-            <button
-              type="button"
-              onClick={async () => {
-                try {
-                  await logout(undefined as any);
-                } finally {
-                  window.location.href = "/login";
-                }
-              }}
-              disabled={logoutPending}
-              className="text-sm underline underline-offset-4"
-              style={{ color: MUTED }}
-            >
-              {logoutPending ? "..." : t("dashboard.logout")}
-            </button>
-          </div>
-        </div>
-
-        {/* NAV */}
-        <nav className="mx-auto flex max-w-6xl flex-wrap gap-5 px-4 pb-3">
-          {topLinkKeys.map((k) => {
-            const href = navHrefs[k];
-            const label = t("dashboard.nav." + k, k === "chat" ? "Chat" : k);
-            if (href) {
-              return (
-                <Link key={k} href={href} className="text-sm transition-colors hover:opacity-80" style={{ color: FG }}>
-                  {label}
-                  {k === "chat" && unreadChat > 0 && (
-                    <span className="ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold" style={{ background: '#c45c4a', color: FG }}>
-                      {unreadChat}
-                    </span>
-                  )}
-                </Link>
-              );
-            }
-            return (
-              <span key={k} className="text-sm" style={{ color: MUTED }}>{label}</span>
-            );
-          })}
-        </nav>
-      </header>
+      <DashboardHeader />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
         {/* HERO */}

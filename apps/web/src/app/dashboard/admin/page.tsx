@@ -1,15 +1,23 @@
 'use client';
 
-import { useAuthRequired, useIsPlatformAdmin } from "@/features/auth";
-import { useAdminStats } from "@/features/admin";
-import { AdminUsersTable } from "@/features/admin";
-import { CompaniesTable } from "@/features/companies";
-import { redirect } from "next/navigation";
+import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
+import { useAdminStats } from '@/features/admin';
+import { AdminUsersTable } from '@/features/admin';
+import { CompaniesTable } from '@/features/companies';
+import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { redirect } from 'next/navigation';
+
+const GOLD = '#c9a84c';
+const GOLD_BRIGHT = '#e8d48b';
+const BG = '#090807';
+const FG = '#f3ead8';
+const MUTED = '#9a8f7c';
 
 export default function AdminPage() {
   const { user, isLoading } = useAuthRequired();
   const isPlatformAdmin = useIsPlatformAdmin();
   const { data: stats, isLoading: isLoadingStats } = useAdminStats();
+
   const safeStats = (stats || {}) as {
     total_users?: number;
     total_listings?: number;
@@ -17,49 +25,134 @@ export default function AdminPage() {
     pending_verifications?: number;
   };
 
-  if (isLoading) return null;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen" style={{ background: BG, color: FG }}>
+        <DashboardHeader />
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center" style={{ color: MUTED }}>
+          Načítavam…
+        </div>
+      </div>
+    );
+  }
 
-  // Ochrana: Iba platform admin môže pristupovať na túto stránku.
-  // Signál je server-authoritativny (isPlatformAdmin z /auth/me); tenant rola
-  // `admin` (firemné členstvo) tu zámerne nepostačuje.
   if (user && !isPlatformAdmin) {
     redirect('/dashboard');
   }
 
   return (
-    <div className="p-8 space-y-8">
-      <h1 className="text-3xl font-bold text-gray-900">Administrácia systému</h1>
+    <>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+      <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
+        <DashboardHeader />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <StatCard title="Používatelia" value={safeStats.total_users} loading={isLoadingStats} />
-        <StatCard title="Ponuky" value={safeStats.total_listings} loading={isLoadingStats} />
-        <StatCard title="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
-        <StatCard title="Čakajúce overenia" value={safeStats.pending_verifications} loading={isLoadingStats} color="text-orange-600" />
+        <main className="mx-auto max-w-6xl px-4 py-10">
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+            ADMINISTRÁCIA
+          </p>
+          <h1 className="mb-10 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
+            Administrácia systému
+          </h1>
+
+          {/* ŠTATISTIKY */}
+          <section className="mb-12 grid grid-cols-2 gap-4 md:grid-cols-4">
+            <StatCard label="Používatelia" value={safeStats.total_users} loading={isLoadingStats} />
+            <StatCard label="Ponuky" value={safeStats.total_listings} loading={isLoadingStats} />
+            <StatCard label="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
+            <StatCard label="Čakajúce overenia" value={safeStats.pending_verifications} loading={isLoadingStats} accent />
+          </section>
+
+          {/* FIRMY NA OVERENIE */}
+          <section className="mb-12">
+            <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+              FIRMY
+            </p>
+            <h2 className="mb-3 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
+              Firmy na overenie
+            </h2>
+            <p className="mb-6 text-sm" style={{ color: MUTED }}>
+              Firmy, ktoré požiadali o overenie. Klikni <strong style={{ color: GOLD_BRIGHT }}>Overiť</strong> pre schválenie alebo <strong style={{ color: GOLD_BRIGHT }}>Zamietnuť</strong> pre odmietnutie.
+            </p>
+            <div
+              className="rounded-2xl border p-5"
+              style={{
+                borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)',
+                background: 'rgba(201,168,76,0.03)',
+              }}
+            >
+              <CompaniesTable />
+            </div>
+          </section>
+
+          {/* POUŽÍVATELIA */}
+          <section className="mb-12">
+            <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+              POUŽÍVATELIA
+            </p>
+            <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
+              Správa používateľov
+            </h2>
+            <div
+              className="rounded-2xl border p-5"
+              style={{
+                borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)',
+                background: 'rgba(201,168,76,0.03)',
+              }}
+            >
+              <AdminUsersTable />
+            </div>
+          </section>
+
+          {/* ODKAZY */}
+          <section className="border-t pt-8" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)' }}>
+            <p className="text-xs uppercase tracking-[0.25em]" style={{ color: GOLD }}>PRÁVNE</p>
+            <div className="mt-3 flex flex-wrap gap-6 text-sm">
+              <a href="/terms" className="transition-colors" style={{ color: GOLD_BRIGHT }}>Obchodné podmienky</a>
+              <a href="/privacy" className="transition-colors" style={{ color: GOLD_BRIGHT }}>Ochrana údajov</a>
+              <a href="/license" className="transition-colors" style={{ color: GOLD_BRIGHT }}>Licencia</a>
+            </div>
+          </section>
+        </main>
       </div>
-
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-800">Firmy na overenie</h2>
-        <p className="text-sm text-gray-500">
-          Firmy, ktoré požiadali o overenie. Klikni <strong>Overiť</strong> pre schválenie alebo
-          <strong>Zamietnuť</strong> pre odmietnutie.
-        </p>
-        <CompaniesTable />
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-800">Správa používateľov</h2>
-        <AdminUsersTable />
-      </section>
-    </div>
+    </>
   );
 }
 
-function StatCard({ title, value, loading, color = "text-blue-600" }: { title: string, value?: number, loading: boolean, color?: string }) {
+function StatCard({
+  label,
+  value,
+  loading,
+  accent = false,
+}: {
+  label: string;
+  value?: number;
+  loading: boolean;
+  accent?: boolean;
+}) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-      <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">{title}</p>
-      <p className={`mt-2 text-3xl font-bold ${color}`}>
-        {loading ? '...' : value ?? 0}
+    <div
+      className="rounded-2xl border p-5"
+      style={{
+        borderColor: accent
+          ? 'color-mix(in srgb, #c45c4a 40%, transparent)'
+          : 'color-mix(in srgb, #c9a84c 25%, transparent)',
+        background: accent ? 'rgba(196,92,74,0.05)' : 'rgba(201,168,76,0.03)',
+      }}
+    >
+      <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: MUTED }}>
+        {label}
+      </p>
+      <p
+        className="mt-2 text-3xl md:text-4xl"
+        style={{
+          fontFamily: 'Fraunces, serif',
+          color: accent ? '#e8a598' : GOLD_BRIGHT,
+        }}
+      >
+        {loading ? '…' : (value ?? 0)}
       </p>
     </div>
   );

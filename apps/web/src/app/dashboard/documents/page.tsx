@@ -1,35 +1,82 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { DocumentsTable } from "@/features/documents";
+import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { useDocuments } from '@/features/documents';
+import Link from 'next/link';
+
+const GOLD = '#c9a84c';
+const GOLD_BRIGHT = '#e8d48b';
+const BG = '#090807';
+const FG = '#f3ead8';
+const MUTED = '#9a8f7c';
 
 export default function DocumentsPage() {
+  const { data, isLoading } = useDocuments() as any;
+  const raw: any = data;
+  const items: any[] = Array.isArray(raw) ? raw : raw?.data ?? raw?.items ?? [];
+
   return (
-    <main className="mx-auto max-w-5xl p-6">
-      <Link
-        href="/dashboard"
-        className="mb-4 inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm font-semibold text-slate-100 hover:bg-slate-800"
-      >
-        ← Späť na dashboard
-      </Link>
+    <>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
+        rel="stylesheet"
+      />
+      <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
+        <DashboardHeader />
 
-      <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold">Dokumenty</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Certifikáty, povolenia a ďalšie dokumenty tvojich firiem.
-          </p>
-        </div>
+        <main className="mx-auto max-w-6xl px-4 py-10">
+          <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+                DOKUMENTY
+              </p>
+              <h1 className="text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
+                Dokumenty
+              </h1>
+            </div>
+            <Link
+              href="/dashboard/documents/new"
+              className="rounded-md px-6 py-3 text-sm font-semibold"
+              style={{ background: GOLD, color: BG }}
+            >
+              + Pridať dokument
+            </Link>
+          </div>
 
-        <Link
-          href="/dashboard/documents/new"
-          className="rounded-lg border border-emerald-600 bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
-        >
-          + Pridať dokument
-        </Link>
-      </header>
-
-      <DocumentsTable />
-    </main>
+          {isLoading ? (
+            <p style={{ color: MUTED }}>Načítavam…</p>
+          ) : items.length === 0 ? (
+            <div
+              className="rounded-2xl border py-16 text-center"
+              style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)' }}
+            >
+              <h3 className="text-2xl" style={{ fontFamily: 'Fraunces, serif' }}>
+                Zatiaľ žiadne dokumenty
+              </h3>
+              <p className="mt-2 text-sm" style={{ color: MUTED }}>
+                Nahraj dokumenty, ktoré chceš zdieľať s firmami.
+              </p>
+            </div>
+          ) : (
+            <ul className="grid gap-3 md:grid-cols-2">
+              {items.map((d) => (
+                <li
+                  key={d.id}
+                  className="rounded-2xl border p-5"
+                  style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
+                >
+                  <p className="text-lg" style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}>
+                    {d.title || d.name || 'Dokument'}
+                  </p>
+                  <p className="mt-1 text-sm" style={{ color: MUTED }}>
+                    {d.document_type || d.documentType || '—'}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </main>
+      </div>
+    </>
   );
 }
