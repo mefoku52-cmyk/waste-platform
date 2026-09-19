@@ -107,15 +107,6 @@ export default function AdminPage() {
             </div>
           </section>
 
-          {/* ODKAZY */}
-          <section className="border-t pt-8" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)' }}>
-            <p className="text-xs uppercase tracking-[0.25em]" style={{ color: GOLD }}>PRÁVNE</p>
-            <div className="mt-3 flex flex-wrap gap-6 text-sm">
-              <a href="/terms" className="transition-colors" style={{ color: GOLD_BRIGHT }}>Obchodné podmienky</a>
-              <a href="/privacy" className="transition-colors" style={{ color: GOLD_BRIGHT }}>Ochrana údajov</a>
-              <a href="/license" className="transition-colors" style={{ color: GOLD_BRIGHT }}>Licencia</a>
-            </div>
-          </section>
         </main>
 
       <DashboardFooter />

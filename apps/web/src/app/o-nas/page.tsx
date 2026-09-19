@@ -54,7 +54,6 @@ export default function AboutPage() {
             <h2 className="mb-4 text-2xl" style={{ fontFamily: 'Fraunces, serif' }}>{t('about.firmSection')}</h2>
             <div className="space-y-3 text-base" style={{ color: MUTED }}>
               <p><strong style={{ color: FG }}>{t('about.operator')}:</strong> Radoslav Čornanič</p>
-              <p><strong style={{ color: FG }}>{t('about.seat')}:</strong> Ulič 63, 067 67 Ulič, Slovenská republika</p>
               <p><strong style={{ color: FG }}>{t('about.ico')}:</strong> 51745666</p>
               <p><strong style={{ color: FG }}>{t('about.focus')}:</strong> {t('about.focusText')}</p>
             </div>
@@ -71,7 +70,6 @@ export default function AboutPage() {
                 <strong style={{ color: FG }}>{t('about.phone')}:</strong>{' '}
                 <a href="tel:+421910617338" style={{ color: GOLD_BRIGHT }}>+421 910 617 338</a>
               </p>
-              <p><strong style={{ color: FG }}>{t('about.post')}:</strong> Ulič 63, 067 67 Ulič, Slovenská republika</p>
             </div>
           </section>
 

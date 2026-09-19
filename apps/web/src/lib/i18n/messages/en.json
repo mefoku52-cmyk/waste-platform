@@ -101,7 +101,40 @@
     "publish": "Publish",
     "noListings": "No listings found.",
     "loadingListings": "Loading listings...",
-    "loadFailed": "Failed to load data."
+    "loadFailed": "Failed to load data.",
+    "welcome": {
+      "eyebrow": "Welcome to the platform",
+      "title": "TRČ · CMEP",
+      "desc": "A private exchange for circular materials. Verified companies, hidden contacts, no spam. Filter, search, agree — all in one place."
+    },
+    "motto": {
+      "eyebrow": "Waste for one · Demand for another",
+      "headline": "Material still waiting for its buyer.",
+      "subline": "A marketplace of companies and circular materials. Filter, search, agree."
+    },
+    "materials": {
+      "drevo": {
+        "label": "Wood",
+        "desc": "Sawdust, offcuts, pallets."
+      },
+      "kov": {
+        "label": "Metal",
+        "desc": "Scrap, cables, structures."
+      },
+      "papier": {
+        "label": "Paper",
+        "desc": "Recyclate, cardboard."
+      },
+      "plasty": {
+        "label": "Plastics",
+        "desc": "Recyclate, films, PET."
+      },
+      "bioodpad": {
+        "label": "Bio waste",
+        "desc": "Compost, wood chips."
+      }
+    },
+    "clearFilter": "Clear filter"
   },
   "register": {
     "title": "Register",
@@ -296,7 +329,8 @@
     "privacy": "Privacy policy",
     "license": "License",
     "contactSection": "CONTACT",
-    "address": "Ulič 63, 067 67 Ulič",
-    "country": "Slovak Republic"
+    "address": "",
+    "country": "Slovak Republic",
+    "about": "About"
   }
 }

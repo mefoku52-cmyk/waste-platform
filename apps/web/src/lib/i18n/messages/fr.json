@@ -101,7 +101,40 @@
     "publish": "Publier",
     "noListings": "Aucune annonce trouvée.",
     "loadingListings": "Chargement...",
-    "loadFailed": "Échec du chargement."
+    "loadFailed": "Échec du chargement.",
+    "welcome": {
+      "eyebrow": "Bienvenue sur la plateforme",
+      "title": "TRČ · CMEP",
+      "desc": "Bourse privée pour matériaux circulaires. Entreprises vérifiées, contacts cachés, aucun spam. Filtrez, cherchez, convenez — tout au même endroit."
+    },
+    "motto": {
+      "eyebrow": "Déchet pour l'un · Demande pour l'autre",
+      "headline": "Matériau qui attend encore son acheteur.",
+      "subline": "Marché d'entreprises et de matériaux circulaires. Filtrez, cherchez, convenez."
+    },
+    "materials": {
+      "drevo": {
+        "label": "Bois",
+        "desc": "Sciure, chutes, palettes."
+      },
+      "kov": {
+        "label": "Métal",
+        "desc": "Ferraille, câbles, structures."
+      },
+      "papier": {
+        "label": "Papier",
+        "desc": "Regranulat, carton."
+      },
+      "plasty": {
+        "label": "Plastiques",
+        "desc": "Regranulat, films, PET."
+      },
+      "bioodpad": {
+        "label": "Biodéchets",
+        "desc": "Compost, copeaux."
+      }
+    },
+    "clearFilter": "Effacer le filtre"
   },
   "register": {
     "title": "Inscription",
@@ -296,7 +329,8 @@
     "privacy": "Protection des données",
     "license": "Licence",
     "contactSection": "CONTACT",
-    "address": "Ulič 63, 067 67 Ulič",
-    "country": "République slovaque"
+    "address": "",
+    "country": "République slovaque",
+    "about": "À propos"
   }
 }

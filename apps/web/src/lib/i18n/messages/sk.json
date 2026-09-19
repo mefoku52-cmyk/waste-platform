@@ -101,7 +101,40 @@
     "publish": "Publikovať",
     "noListings": "Žiadne ponuky neboli nájdené.",
     "loadingListings": "Načítavam ponuky...",
-    "loadFailed": "Chyba pri načítaní dát."
+    "loadFailed": "Chyba pri načítaní dát.",
+    "welcome": {
+      "eyebrow": "Vitajte na platforme",
+      "title": "TRČ · CMEP",
+      "desc": "Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty, žiadny spam. Filtruj, hľadaj, dohodni — všetko na jednom mieste."
+    },
+    "motto": {
+      "eyebrow": "Pre niekoho odpad · Pre iného dopyt",
+      "headline": "Materiál, ktorý ešte čaká na svojho kupca.",
+      "subline": "Trhovisko firiem a obehových materiálov. Filtruj, hľadaj, dohodni."
+    },
+    "materials": {
+      "drevo": {
+        "label": "Drevo",
+        "desc": "Piliny, odrezky, palety."
+      },
+      "kov": {
+        "label": "Kov",
+        "desc": "Šrot, káble, konštrukcie."
+      },
+      "papier": {
+        "label": "Papier",
+        "desc": "Regranulát, kartón."
+      },
+      "plasty": {
+        "label": "Plasty",
+        "desc": "Regranulát, fólie, PET."
+      },
+      "bioodpad": {
+        "label": "Bioodpad",
+        "desc": "Kompost, štiepka."
+      }
+    },
+    "clearFilter": "Zrušiť filter"
   },
   "register": {
     "title": "Registrácia",
@@ -296,7 +329,8 @@
     "privacy": "Ochrana údajov",
     "license": "Licencia",
     "contactSection": "KONTAKT",
-    "address": "Ulič 63, 067 67 Ulič",
-    "country": "Slovenská republika"
+    "address": "",
+    "country": "Slovenská republika",
+    "about": "O nás"
   }
 }

@@ -37,11 +37,11 @@ const categorySkMap: Record<string, string> = {
   paper: "Papier", plastics: "Plasty", bio: "Bioodpad",
 };
 const DASHBOARD_MATERIALS = [
-  { key: 'wood',     label: 'Drevo',    img: 'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800&q=80',  desc: 'Piliny, odrezky, palety.' },
-  { key: 'metal',    label: 'Kov',      img: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=800&q=80',  desc: 'Šrot, káble, konštrukcie.' },
-  { key: 'paper',    label: 'Papier',   img: 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=800&q=80',  desc: 'Regranulát, kartón.' },
-  { key: 'plastics', label: 'Plasty',   img: 'https://images.unsplash.com/photo-1618363010061-a42f6e39e3d8?w=800&q=80',  desc: 'Regranulát, fólie, PET.' },
-  { key: 'bio',      label: 'Bioodpad', img: 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=800&q=80',  desc: 'Kompost, štiepka.' },
+  { key: 'drevo',    img: 'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=800&q=80' },
+  { key: 'kov',      img: 'https://images.unsplash.com/photo-1567095761054-7a02e69e5c43?w=800&q=80' },
+  { key: 'papier',   img: 'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=800&q=80' },
+  { key: 'plasty',   img: 'https://images.unsplash.com/photo-1618363010061-a42f6e39e3d8?w=800&q=80' },
+  { key: 'bioodpad', img: 'https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=800&q=80' },
 ] as const;
 
 const topLinkKeys = ["overview", "listings", "marketplace", "matches", "companies", "documents", "chat"] as const;
@@ -189,14 +189,13 @@ export default function DashboardPage() {
         <section className="mb-14">
           <div className="rounded-3xl border p-6 md:p-10" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', background: 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(9,8,7,0) 60%)' }}>
             <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-              VITAJTE NA PLATFORME
+              {t("dashboard.welcome.eyebrow")}
             </p>
             <h2 className="ff mb-4 text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl" style={{ color: GOLD_BRIGHT }}>
-              TRČ · CMEP
+              {t("dashboard.welcome.title")}
             </h2>
             <p className="max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
-              Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty, žiadny spam.
-              Filtruj, hľadaj, dohodni — všetko na jednom mieste.
+              {t("dashboard.welcome.desc")}
             </p>
           </div>
         </section>
@@ -204,13 +203,13 @@ export default function DashboardPage() {
         {/* MOTTO + HERO */}
         <section className="mb-12">
           <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-            PRE NIEKOHO ODPAD · PRE INÉHO DOPYT
+            {t("dashboard.motto.eyebrow")}
           </p>
           <h1 className="ff text-5xl leading-[1.05] tracking-[-0.02em] md:text-7xl">
-            Materiál, ktorý ešte čaká na svojho kupca.
+            {t("dashboard.motto.headline")}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
-            Trhovisko firiem a obehových materiálov. Filtruj, hľadaj, dohodni.
+            {t("dashboard.motto.subline")}
           </p>
         </section>
 
@@ -261,7 +260,7 @@ export default function DashboardPage() {
                 >
                   <img
                     src={m.img}
-                    alt={m.label}
+                    alt={t(`dashboard.materials.${m.key}.label`)}
                     className="absolute inset-0 h-full w-full object-cover transition-opacity"
                     style={{ opacity: active ? 0.85 : 0.5 }}
                   />
@@ -274,10 +273,10 @@ export default function DashboardPage() {
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
                     <p className="ff text-2xl md:text-3xl" style={{ color: active ? GOLD : GOLD_BRIGHT }}>
-                      {m.label}
+                      {t(`dashboard.materials.${m.key}.label`)}
                     </p>
                     <p className="mt-1.5 text-xs leading-snug md:text-sm" style={{ color: MUTED }}>
-                      {m.desc}
+                      {t(`dashboard.materials.${m.key}.desc`)}
                     </p>
                   </div>
                 </button>
@@ -291,7 +290,7 @@ export default function DashboardPage() {
               className="mt-3 text-sm underline underline-offset-4"
               style={{ color: MUTED }}
             >
-              Zrušiť filter · {categorySkMap[category] || category}
+              {t("dashboard.clearFilter")} · {categorySkMap[category] || category}
             </button>
           )}
         </section>
@@ -316,15 +315,6 @@ export default function DashboardPage() {
             <Link href="/dashboard/companies/new" style={{ color: GOLD_BRIGHT }}>+ Pridať firmu</Link>
             <Link href="/dashboard/documents/new" style={{ color: GOLD_BRIGHT }}>+ Pridať dokument</Link>
           </div>
-        </section>
-
-        {/* PRÁVNE ODKAZY */}
-        <section className="mb-8 flex flex-wrap items-center gap-5 text-sm" style={{ color: MUTED }}>
-          <span className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PRÁVNE:</span>
-          <Link href="/terms" style={{ color: GOLD_BRIGHT }} className="hover:underline">Obchodné podmienky</Link>
-          <Link href="/privacy" style={{ color: GOLD_BRIGHT }} className="hover:underline">Ochrana údajov</Link>
-          <Link href="/license" style={{ color: GOLD_BRIGHT }} className="hover:underline">Licencia</Link>
-          <Link href="/o-nas" style={{ color: GOLD_BRIGHT }} className="hover:underline">O nás</Link>
         </section>
 
         {/* LISTING GRID */}
@@ -353,7 +343,14 @@ export default function DashboardPage() {
                       {/* image */}
                       {heroImage ? (
                         <div className="relative aspect-[16/10] w-full">
-                          <img src={heroImage} alt={item.title} className="h-full w-full object-cover opacity-90" />
+                          <img
+                            src={heroImage}
+                            alt={item.title}
+                            className="h-full w-full object-cover opacity-90"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
                           <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.3) 40%, transparent 75%)' }} />
                           <div className="absolute bottom-0 left-0 right-0 p-5">
                             <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{item.category}</p>

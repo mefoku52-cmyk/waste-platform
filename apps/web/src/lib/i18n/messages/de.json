@@ -101,7 +101,40 @@
     "publish": "Veröffentlichen",
     "noListings": "Keine Angebote gefunden.",
     "loadingListings": "Lade Angebote...",
-    "loadFailed": "Daten konnten nicht geladen werden."
+    "loadFailed": "Daten konnten nicht geladen werden.",
+    "welcome": {
+      "eyebrow": "Willkommen auf der Plattform",
+      "title": "TRČ · CMEP",
+      "desc": "Private Börse für Kreislaufmaterialien. Verifizierte Unternehmen, versteckte Kontakte, kein Spam. Filtern, suchen, vereinbaren — alles an einem Ort."
+    },
+    "motto": {
+      "eyebrow": "Abfall für den einen · Nachfrage für den anderen",
+      "headline": "Material, das noch auf seinen Käufer wartet.",
+      "subline": "Marktplatz für Unternehmen und Kreislaufmaterialien. Filtern, suchen, vereinbaren."
+    },
+    "materials": {
+      "drevo": {
+        "label": "Holz",
+        "desc": "Sägespäne, Reste, Paletten."
+      },
+      "kov": {
+        "label": "Metall",
+        "desc": "Schrott, Kabel, Konstruktionen."
+      },
+      "papier": {
+        "label": "Papier",
+        "desc": "Regranulat, Karton."
+      },
+      "plasty": {
+        "label": "Kunststoffe",
+        "desc": "Regranulat, Folien, PET."
+      },
+      "bioodpad": {
+        "label": "Bioabfall",
+        "desc": "Kompost, Hackschnitzel."
+      }
+    },
+    "clearFilter": "Filter löschen"
   },
   "register": {
     "title": "Registrieren",
@@ -296,7 +329,8 @@
     "privacy": "Datenschutz",
     "license": "Lizenz",
     "contactSection": "KONTAKT",
-    "address": "Ulič 63, 067 67 Ulič",
-    "country": "Slowakische Republik"
+    "address": "",
+    "country": "Slowakische Republik",
+    "about": "Über uns"
   }
 }

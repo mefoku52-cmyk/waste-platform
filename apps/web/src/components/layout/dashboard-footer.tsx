@@ -64,6 +64,9 @@ export function DashboardFooter() {
             <Link href="/license" className="block py-1 text-sm" style={{ color: GOLD_BRIGHT }}>
               {t('footer.license')}
             </Link>
+            <Link href="/o-nas" className="block py-1 text-sm" style={{ color: GOLD_BRIGHT }}>
+              {t('footer.about')}
+            </Link>
           </div>
 
           <div>
@@ -73,12 +76,16 @@ export function DashboardFooter() {
             <a href="mailto:trc-cmep@gmail.com" className="block py-1 text-sm" style={{ color: GOLD_BRIGHT }}>
               trc-cmep@gmail.com
             </a>
-            <p className="py-1 text-sm" style={{ color: MUTED }}>
-              {t('footer.address')}
-            </p>
-            <p className="py-1 text-sm" style={{ color: MUTED }}>
-              {t('footer.country')}
-            </p>
+            {!!t('footer.address') && (
+              <p className="py-1 text-sm" style={{ color: MUTED }}>
+                {t('footer.address')}
+              </p>
+            )}
+            {!!t('footer.country') && (
+              <p className="py-1 text-sm" style={{ color: MUTED }}>
+                {t('footer.country')}
+              </p>
+            )}
           </div>
         </div>
 
