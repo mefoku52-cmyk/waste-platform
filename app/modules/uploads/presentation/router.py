@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import mimetypes
+import os
 import uuid
 from pathlib import Path
 
@@ -16,7 +17,9 @@ from .schemas import UploadResponse
 
 router = APIRouter(prefix="/uploads", tags=["uploads"])
 
-UPLOAD_ROOT = Path("var/uploads")
+APP_DATA_DIR = os.getenv("APP_DATA_DIR", "/var/data")
+UPLOAD_ROOT = Path(APP_DATA_DIR) / "uploads"
+
 ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"}
 ALLOWED_MIME = {
     ".jpg": {"image/jpeg"},
@@ -26,8 +29,8 @@ ALLOWED_MIME = {
     ".gif": {"image/gif"},
     ".pdf": {"application/pdf"},
 }
-MAX_BYTES = 8 * 1024 * 1024  # 8 MB
-CHUNK_BYTES = 64 * 1024  # 64 KB per read — bounds peak memory usage
+MAX_BYTES = 8 * 1024 * 1024
+CHUNK_BYTES = 64 * 1024
 
 
 def _validate_file_id(file_id: str) -> str:
@@ -76,8 +79,6 @@ async def upload_file(
     file_id = f"{uuid.uuid4().hex}{suffix}"
     dest = UPLOAD_ROOT / file_id
 
-    # Streamovaný zápis: nikdy nedržíme celý súbor v pamäti a veľkosť
-    # overujeme priebežne, aby sme neprijali viac ako MAX_BYTES.
     total = 0
     try:
         with dest.open("wb") as out:
