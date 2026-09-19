@@ -1,24 +1,26 @@
+'use client';
+
 import { useQuery } from '@tanstack/react-query';
-import { chatApi } from '../api';
+import { http } from '@/lib/api/http';
 
 export const useThreads = () =>
   useQuery({
     queryKey: ['chat-threads'],
-    queryFn: () => chatApi.listThreads(),
+    queryFn: () => http.get<any>('/chat/threads'),
     refetchInterval: 5000,
   });
 
 export const useThread = (id: string) =>
   useQuery({
     queryKey: ['chat-thread', id],
-    queryFn: () => chatApi.getThread(id),
+    queryFn: () => http.get<any>(`/chat/threads/${id}`),
     enabled: !!id,
   });
 
 export const useMessages = (threadId: string) =>
   useQuery({
     queryKey: ['chat-messages', threadId],
-    queryFn: () => chatApi.listMessages(threadId),
+    queryFn: () => http.get<any>(`/chat/threads/${threadId}/messages`),
     enabled: !!threadId,
     refetchInterval: 3000,
   });
@@ -26,6 +28,6 @@ export const useMessages = (threadId: string) =>
 export const useUnreadCount = () =>
   useQuery({
     queryKey: ['chat-unread'],
-    queryFn: () => chatApi.unreadCount(),
+    queryFn: () => http.get<any>('/chat/unread-count'),
     refetchInterval: 10000,
   });

@@ -66,6 +66,29 @@ class ChatRepositoryImpl(ChatRepository):
         )
         return int(r.scalar_one())
 
+    async def get_last_message(self, thread_id) -> ChatMessageEntity | None:
+        """Vrati poslednu spravu v threade (alebo None)."""
+        r = await self.session.execute(
+            select(ChatMessageModel)
+            .where(ChatMessageModel.thread_id == _uid(thread_id))
+            .order_by(ChatMessageModel.created_at.desc())
+            .limit(1)
+        )
+        m = r.scalar_one_or_none()
+        return message_to_domain(m) if m else None
+
+    async def unread_count_in_thread(self, thread_id, user_id) -> int:
+        """Pocet neprecitanych sprav v konkretnom threade pre daneho pouzivatela."""
+        u = _uid(user_id)
+        r = await self.session.execute(
+            select(func.count())
+            .select_from(ChatMessageModel)
+            .where(ChatMessageModel.thread_id == _uid(thread_id))
+            .where(ChatMessageModel.sender_user_id != u)
+            .where(ChatMessageModel.read_at.is_(None))
+        )
+        return int(r.scalar_one())
+
     async def update_thread(self, entity: ChatThreadEntity) -> ChatThreadEntity:
         m = await self.session.get(ChatThreadModel, _uid(entity.id))
         if m is None:

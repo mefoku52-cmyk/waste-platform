@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useThreads } from '../hooks/use-threads';
+import { useThreads } from '../hooks/use-chat-queries';
 
 export const ThreadList = ({ activeId }: { activeId?: string }) => {
   const { data, isLoading } = useThreads();

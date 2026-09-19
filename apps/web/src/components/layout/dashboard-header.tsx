@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUnreadNotifications } from '@/features/notifications';
+import { useUnreadCount } from '@/features/chat';
 import { useLogout, useCurrentUser, useIsPlatformAdmin } from '@/features/auth';
 import { useT } from '@/lib/i18n/context';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -26,7 +26,7 @@ export function DashboardHeader() {
   const pathname = usePathname();
   const { t } = useT();
   const { data: me } = useCurrentUser();
-  const { data: unreadData } = useUnreadNotifications();
+  const { data: unreadData } = useUnreadCount();
   const unreadChat = Number((unreadData as any)?.unread || 0);
   const isAdmin = useIsPlatformAdmin();
   const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');

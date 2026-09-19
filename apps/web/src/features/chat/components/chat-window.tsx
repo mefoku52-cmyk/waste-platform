@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMessages, useThread } from '../hooks/use-threads';
+import { useMessages, useThread } from '../hooks/use-chat-queries';
 import { chatApi } from '../api';
 import { useCurrentUser } from '../../auth/hooks/use-current-user';
 

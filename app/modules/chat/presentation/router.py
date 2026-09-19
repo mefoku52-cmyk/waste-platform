@@ -95,10 +95,17 @@ async def list_threads(
     service=Depends(get_chat_service),
 ):
     uid = _user_id(current_user)
-    items = await service.list_threads(uid, page, pageSize)
+    detailed = await service.list_threads_detailed(uid, page, pageSize)
     total = await service.count_threads(uid)
+    items = []
+    for d in detailed:
+        base = _thread_data(d["thread"])
+        base.lastMessage = d["last_message"]
+        base.unreadCount = d["unread_count"]
+        base.counterpartUserId = d["counterpart_user_id"]
+        items.append(base)
     return PaginatedThreadsResponse(
-        items=[_thread_data(t) for t in items],
+        items=items,
         meta=PaginationMeta(page=page, pageSize=pageSize, total=total),
     )
 

@@ -30,6 +30,10 @@ class ChatThreadData(BaseModel):
     lastMessageAt: datetime | None
     createdAt: datetime
     updatedAt: datetime
+    # Rozsirene polia (nullable pre spatnu kompatibilitu)
+    lastMessage: str | None = None
+    unreadCount: int = 0
+    counterpartUserId: UUID | None = None
 
 
 class ChatMessageData(BaseModel):

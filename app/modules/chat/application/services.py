@@ -61,6 +61,30 @@ class ChatService:
     async def count_threads(self, user_id) -> int:
         return await self.repo.count_threads_for_user(user_id)
 
+    async def list_threads_detailed(self, user_id, page: int = 1, limit: int = 50):
+        """Vrati thready s doplnenymi polami (lastMessage, unreadCount, counterpartUserId)."""
+        threads = await self.repo.list_threads_for_user(user_id, page, limit)
+        result = []
+        for t in threads:
+            # Counterpart = druha strana
+            if str(t.initiator_user_id) == str(user_id):
+                counterpart_id = t.recipient_user_id
+            else:
+                counterpart_id = t.initiator_user_id
+
+            last_msg = await self.repo.get_last_message(t.id)
+            unread = await self.repo.unread_count_in_thread(t.id, user_id)
+
+            result.append(
+                {
+                    "thread": t,
+                    "last_message": last_msg.body if last_msg else None,
+                    "unread_count": unread,
+                    "counterpart_user_id": counterpart_id,
+                }
+            )
+        return result
+
     async def send_message(
         self,
         *,
