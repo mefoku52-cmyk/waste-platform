@@ -222,7 +222,7 @@ export default function DashboardPage() {
               placeholder={t("dashboard.searchPlaceholder")}
               value={query}
               onChange={(e) => { setQuery(e.target.value); setPage(1); }}
-              className="h-12 rounded-md border bg-transparent px-4 outline-none"
+              className="h-14 rounded-md border bg-transparent px-5 text-base outline-none"
               style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }}
             />
             <input
@@ -230,12 +230,12 @@ export default function DashboardPage() {
               placeholder={t("dashboard.locationPlaceholder")}
               value={location}
               onChange={(e) => { setLocation(e.target.value); setPage(1); }}
-              className="h-12 rounded-md border bg-transparent px-4 outline-none"
+              className="h-14 rounded-md border bg-transparent px-5 text-base outline-none"
               style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }}
             />
             <button
               type="button"
-              className="h-12 rounded-md px-6 font-semibold"
+              className="h-14 rounded-md px-8 text-base font-semibold"
               style={{ background: GOLD, color: BG }}
             >
               {t("dashboard.searchBtn")}
@@ -273,10 +273,10 @@ export default function DashboardPage() {
                     }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
-                    <p className="ff text-xl md:text-2xl" style={{ color: active ? GOLD : GOLD_BRIGHT }}>
+                    <p className="ff text-2xl md:text-3xl" style={{ color: active ? GOLD : GOLD_BRIGHT }}>
                       {m.label}
                     </p>
-                    <p className="mt-1 text-[10px] leading-tight md:text-xs" style={{ color: MUTED }}>
+                    <p className="mt-1.5 text-xs leading-snug md:text-sm" style={{ color: MUTED }}>
                       {m.desc}
                     </p>
                   </div>
@@ -297,7 +297,7 @@ export default function DashboardPage() {
         </section>
 
         {/* LIST HEAD */}
-        <section className="mb-4 flex flex-wrap items-center justify-between gap-4 border-t pt-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)' }}>
+        <section className="mb-6 flex flex-wrap items-center justify-between gap-4 border-t pt-8" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)' }}>
           <div style={{ color: MUTED }}>
             {isLoading ? (
               <span>{t("common.loading")}</span>
@@ -311,11 +311,20 @@ export default function DashboardPage() {
               </>
             )}
           </div>
-          <div className="flex flex-wrap gap-4 text-sm">
+          <div className="flex flex-wrap gap-4 text-base">
             <Link href="/dashboard/listings/new" style={{ color: GOLD_BRIGHT }}>+ Pridať ponuku</Link>
             <Link href="/dashboard/companies/new" style={{ color: GOLD_BRIGHT }}>+ Pridať firmu</Link>
             <Link href="/dashboard/documents/new" style={{ color: GOLD_BRIGHT }}>+ Pridať dokument</Link>
           </div>
+        </section>
+
+        {/* PRÁVNE ODKAZY */}
+        <section className="mb-8 flex flex-wrap items-center gap-5 text-sm" style={{ color: MUTED }}>
+          <span className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PRÁVNE:</span>
+          <Link href="/terms" style={{ color: GOLD_BRIGHT }} className="hover:underline">Obchodné podmienky</Link>
+          <Link href="/privacy" style={{ color: GOLD_BRIGHT }} className="hover:underline">Ochrana údajov</Link>
+          <Link href="/license" style={{ color: GOLD_BRIGHT }} className="hover:underline">Licencia</Link>
+          <Link href="/o-nas" style={{ color: GOLD_BRIGHT }} className="hover:underline">O nás</Link>
         </section>
 
         {/* LISTING GRID */}
