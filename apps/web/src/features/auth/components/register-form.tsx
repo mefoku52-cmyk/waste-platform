@@ -18,7 +18,8 @@ export function RegisterForm() {
     setErr(null);
     try {
       await register.mutateAsync({ email, password, name } as never);
-      router.push('/login');
+      // Presmeruj na stranku "Skontrolujte e-mail"
+      router.push(`/verify-email-sent?email=${encodeURIComponent(email)}`);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Registrácia zlyhala';
       setErr(msg);
