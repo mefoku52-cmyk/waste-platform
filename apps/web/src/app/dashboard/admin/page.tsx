@@ -2,7 +2,7 @@
 
 import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
 import { useAdminStats } from '@/features/admin';
-import { AdminUsersTable } from '@/features/admin';
+import { AdminUsersTable, AuditTable } from '@/features/admin';
 import { CompaniesTable } from '@/features/companies';
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
@@ -105,6 +105,20 @@ export default function AdminPage() {
             >
               <AdminUsersTable />
             </div>
+          </section>
+
+          {/* AUDIT HISTÓRIA */}
+          <section className="mb-12">
+            <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+              HISTÓRIA
+            </p>
+            <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
+              Audit zmien
+            </h2>
+            <p className="mb-6 text-sm" style={{ color: MUTED }}>
+              Posledné akcie administrátorov — kto, kedy, čo zmenil.
+            </p>
+            <AuditTable />
           </section>
 
         </main>
