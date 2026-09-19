@@ -35,7 +35,7 @@ class CreateUserService:
         now = self.clock.now()
         user = User(
             id=self.uuid_generator.new(),
-            status=UserStatus.ACTIVE,
+            status=UserStatus.PENDING_VERIFICATION,
             email=email.lower().strip(),
             password_hash=password_hash,
             first_name=first_name.strip(),

@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.auth.application.email_verification import EmailVerificationService
 from app.modules.auth.application.password_reset import PasswordResetService
 from app.modules.auth.application.services import (
     GetCurrentAuthContextService,
@@ -67,6 +68,13 @@ def get_password_reset_service(
         password_service=password_service,
         jwt_service=jwt_service,
     )
+
+
+def get_email_verification_service(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> EmailVerificationService:
+    user_repo = SqlAlchemyUserRepository(session=session)
+    return EmailVerificationService(user_repo=user_repo)
 
 
 def get_refresh_token_service(

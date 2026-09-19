@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, Request, Response, status
 
 from app.modules.auth.presentation.dependencies import (
     get_auth_service,
+    get_email_verification_service,
     get_login_service,
     get_logout_service,
     get_password_reset_service,
@@ -15,7 +16,9 @@ from app.modules.auth.presentation.schemas import (
     LogoutRequest,
     MembershipContext,
     RefreshTokenRequest,
+    ResendVerificationRequest,
     ResetPasswordRequest,
+    VerifyEmailRequest,
 )
 from app.modules.users.presentation.mappers import to_user_data
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -122,3 +125,31 @@ async def reset_password(
 ):
     await svc.reset_password(payload.token, payload.newPassword)
     return {"ok": True, "message": "Heslo bolo zmenené."}
+
+
+@router.post(
+    "/verify-email",
+    responses=error_responses(400, 422, 500),
+)
+async def verify_email(
+    payload: VerifyEmailRequest,
+    svc=Depends(get_email_verification_service),
+):
+    return await svc.verify(payload.token)
+
+
+@router.post(
+    "/resend-verification",
+    responses=error_responses(400, 422, 429, 500),
+)
+async def resend_verification(
+    request: Request,
+    payload: ResendVerificationRequest,
+    svc=Depends(get_email_verification_service),
+):
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    ip = client_ip(request)
+    check_rate_limit(f"resend-verify:{ip}", limit=5, period=60)
+    check_rate_limit(f"resend-verify:email:{payload.email.lower().strip()}", limit=3, period=300)
+    return await svc.request_verification(payload.email)

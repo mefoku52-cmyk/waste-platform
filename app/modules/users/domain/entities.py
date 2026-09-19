@@ -30,7 +30,15 @@ class User(AuditFields):
 
     def transition_status(self, to_status: UserStatus) -> None:
         allowed = {
-            UserStatus.INVITED: {UserStatus.ACTIVE, UserStatus.DEACTIVATED},
+            UserStatus.INVITED: {
+                UserStatus.PENDING_VERIFICATION,
+                UserStatus.ACTIVE,
+                UserStatus.DEACTIVATED,
+            },
+            UserStatus.PENDING_VERIFICATION: {
+                UserStatus.ACTIVE,
+                UserStatus.DEACTIVATED,
+            },
             UserStatus.ACTIVE: {UserStatus.SUSPENDED, UserStatus.DEACTIVATED},
             UserStatus.SUSPENDED: {UserStatus.ACTIVE, UserStatus.DEACTIVATED},
             UserStatus.DEACTIVATED: set(),

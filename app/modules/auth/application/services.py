@@ -35,6 +35,17 @@ class LoginService:
         if not user or not self.password_service.verify_password(password, user.password_hash):
             raise UnauthorizedDomainError("Invalid credentials")
 
+        # Blokuj prihlasenie, ak este nie je overeny e-mail
+        from app.modules.users.domain.enums import UserStatus as _UserStatus
+
+        if (
+            str(getattr(user.status, "value", user.status))
+            == _UserStatus.PENDING_VERIFICATION.value
+        ):
+            raise UnauthorizedDomainError(
+                "E-mail nie je overený. Skontrolujte si schránku a kliknite na verifikačný odkaz."
+            )
+
         subject = str(user.id)
         family_id = str(uuid4())
         access_token, access_expires_at = await self.jwt_service.issue_access_token(subject=subject)

@@ -2,6 +2,9 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
+from app.modules.auth.presentation.dependencies import (
+    get_email_verification_service,
+)
 from app.modules.users.presentation.dependencies import (
     get_create_user_service,
     get_get_user_service,
@@ -76,6 +79,7 @@ async def create_user(
     payload: UserCreateRequest,
     service=Depends(get_create_user_service),
     password_service: PasswordService = Depends(get_password_service),
+    verification_service=Depends(get_email_verification_service),
 ):
     dto = await service.execute(
         email=payload.email,
@@ -88,6 +92,18 @@ async def create_user(
         timezone=payload.timezone,
         actor_user_id=None,
     )
+
+    # Best-effort: posli verifikacny mail. Ak SMTP nie je nastaveny, mail sa
+    # neposle, ale user sa vytvori. Pouzivatel moze pouzit resend endpoint.
+    try:
+        await verification_service.request_verification(payload.email)
+    except Exception:
+        import logging
+
+        logging.getLogger(__name__).exception(
+            "Failed to send verification email to %s", payload.email
+        )
+
     return UserResponse(data=to_user_data(dto))
 
 

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from app.modules.users.presentation.schemas import UserData
 
@@ -50,3 +50,11 @@ class ForgotPasswordRequest(BaseModel):
 class ResetPasswordRequest(BaseModel):
     token: str
     newPassword: str
+
+
+class VerifyEmailRequest(BaseModel):
+    token: str = Field(min_length=10, max_length=512)
+
+
+class ResendVerificationRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=255)
