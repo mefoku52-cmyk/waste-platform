@@ -185,12 +185,28 @@ export default function DashboardPage() {
       <DashboardHeader />
 
       <main className="mx-auto max-w-6xl px-4 py-10">
+        {/* UVÍTANIE */}
+        <section className="mb-14">
+          <div className="rounded-3xl border p-6 md:p-10" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', background: 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(9,8,7,0) 60%)' }}>
+            <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+              VITAJTE NA PLATFORME
+            </p>
+            <h2 className="ff mb-4 text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl" style={{ color: GOLD_BRIGHT }}>
+              TRČ · CMEP
+            </h2>
+            <p className="max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+              Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty, žiadny spam.
+              Filtruj, hľadaj, dohodni — všetko na jednom mieste.
+            </p>
+          </div>
+        </section>
+
         {/* MOTTO + HERO */}
         <section className="mb-12">
           <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
             PRE NIEKOHO ODPAD · PRE INÉHO DOPYT
           </p>
-          <h1 className="ff text-4xl leading-[1.05] tracking-[-0.02em] md:text-6xl">
+          <h1 className="ff text-5xl leading-[1.05] tracking-[-0.02em] md:text-7xl">
             Materiál, ktorý ešte čaká na svojho kupca.
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
