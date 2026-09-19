@@ -301,7 +301,7 @@ export default function LandingPage() {
                   <p className="text-xs" style={{ color: MUTED }}>Circular Materials Exchange Platform</p>
                 </div>
               </div>
-              <p className="text-sm" style={{ color: MUTED }}>Súkromná burza. Overené firmy. Skryté kontakty.</p>
+              <p className="text-sm" style={{ color: MUTED }}>Súkromná burza. Overené firmy. Kontakty, ktoré patria vám.</p>
             </div>
             <div className="mt-8 grid grid-cols-2 gap-6">
               <div>
@@ -318,7 +318,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="mt-10 flex items-center justify-between border-t pt-6 text-xs" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)', color: FAINT }}>
-              <span>© CMEP · Žilina</span>
+              <span>© CMEP · Circular Materials Exchange Platform · Slovensko</span>
               <span>JAZYK: SK</span>
             </div>
           </div>
