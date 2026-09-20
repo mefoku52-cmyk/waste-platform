@@ -44,6 +44,9 @@ FAMILIES = {
 }
 
 
+HAZARDOUS_PREFIXES = ("13", "14", "16 02", "20 01 21", "20 01 23", "20 01 35")
+
+
 def _norm(value: str) -> str:
     return " ".join(value.casefold().replace(";", " ").replace(",", " ").replace("-", " ").split())
 
@@ -82,7 +85,14 @@ def expand_material(raw: str | None) -> set[str]:
     for token in list(tokens):
         for family, spec in FAMILIES.items():
             aliases = {item.casefold() for item in spec["aliases"]}
-            if token in aliases:
+            if token in aliases or any(
+                len(alias) >= 4 and (token.startswith(alias) or alias.startswith(token))
+                for alias in aliases
+            ):
                 out.add(family)
                 out |= aliases
+    for prefix in HAZARDOUS_PREFIXES:
+        if text == prefix or text.startswith(prefix + " "):
+            out.add("hazardous")
+            break
     return out

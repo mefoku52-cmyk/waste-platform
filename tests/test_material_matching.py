@@ -51,3 +51,12 @@ def test_fuzzy_edge_cases():
     unknown = expand_material("xyzzy")
     assert "xyzzy" in unknown
     assert "kov" not in unknown
+
+
+def test_bio_waste_and_hazardous():
+    assert "bio" in expand_material("biowaste")
+    assert "bio" in expand_material("200108")
+    assert "bio" in expand_material("20 01 08")
+    assert "hazardous" in expand_material("13 02 05")
+    assert "hazardous" in expand_material("160213")
+    assert "hazardous" not in expand_material("170405")
