@@ -33,6 +33,8 @@ class RecommendationsService:
                 company_lat=company.latitude,
                 company_lng=company.longitude,
             )
+            if score <= 0:
+                continue
             items.append(
                 {
                     "companyId": UUID(str(company.id)),

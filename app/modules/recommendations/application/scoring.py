@@ -40,6 +40,8 @@ def score_company(
 
     accepted = _material_tokens(accepted_material_types)
     material = (listing_material or "").strip().casefold()
+    if accepted and material and material not in accepted:
+        return 0, ["material_mismatch"]
     if material and material in accepted:
         score += 40
         reasons.append("material_accepted")
