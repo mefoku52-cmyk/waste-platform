@@ -173,7 +173,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: BG, color: FG }}>
+    <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: "Outfit, sans-serif" }}>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link
@@ -191,7 +191,7 @@ export default function DashboardPage() {
             <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
               {t("dashboard.welcome.eyebrow")}
             </p>
-            <h2 className="ff mb-4 text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl" style={{ color: GOLD_BRIGHT }}>
+            <h2 className="mb-4 text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl" style={{ color: GOLD_BRIGHT, fontFamily: "Fraunces, serif" }}>
               {t("dashboard.welcome.title")}
             </h2>
             <p className="max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
@@ -205,7 +205,7 @@ export default function DashboardPage() {
           <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
             {t("dashboard.motto.eyebrow")}
           </p>
-          <h1 className="ff text-5xl leading-[1.05] tracking-[-0.02em] md:text-7xl">
+          <h1 className="text-5xl leading-[1.05] tracking-[-0.02em] md:text-7xl" style={{ fontFamily: "Fraunces, serif" }}>
             {t("dashboard.motto.headline")}
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
@@ -241,6 +241,15 @@ export default function DashboardPage() {
             </button>
           </div>
         </section>
+
+          <div className="flex flex-wrap gap-4 text-base">
+            <section className="grid gap-3">
+              <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t("dashboard.actions")}</p>
+              <Link href="/dashboard/companies/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addCompany")}</Link>
+              <Link href="/dashboard/listings/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addListing")}</Link>
+              <Link href="/dashboard/documents/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addDocument")}</Link>
+            </section>
+          </div>
 
         {/* DLAŽDICE MATERIÁLOV */}
         <section className="mb-10">
@@ -310,14 +319,6 @@ export default function DashboardPage() {
               </>
             )}
           </div>
-          <div className="flex flex-wrap gap-4 text-base">
-            <section className="grid gap-3">
-              <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t("dashboard.actions")}</p>
-              <Link href="/dashboard/companies/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addCompany")}</Link>
-              <Link href="/dashboard/listings/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addListing")}</Link>
-              <Link href="/dashboard/documents/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addDocument")}</Link>
-            </section>
-          </div>
         </section>
 
         {/* LISTING GRID */}
@@ -356,12 +357,12 @@ export default function DashboardPage() {
                           />
                           <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.3) 40%, transparent 75%)' }} />
                           <div className="absolute bottom-0 left-0 right-0 p-5">
-                            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{item.category}</p>
+                            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{heroImage ? item.category : "Fotka čoskoro · " + item.category}</p>
                             <h3 className="mt-1 text-2xl leading-tight" style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}>{item.title}</h3>
                           </div>
                         </div>
                       ) : (
-                        <div className="relative aspect-[16/10] w-full" style={{ background: '#12100e' }}>
+                        <div className="relative min-h-[88px] w-full" style={{ background: '#12100e' }}>
                           <div className="absolute bottom-0 left-0 right-0 p-5">
                             <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{item.category}</p>
                             <h3 className="mt-1 text-2xl leading-tight" style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}>{item.title}</h3>

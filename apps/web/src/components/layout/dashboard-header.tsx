@@ -38,14 +38,16 @@ export function DashboardHeader() {
       style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)', background: 'rgba(9,8,7,0.85)' }}
     >
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <img src="/trc-mark.jpg" alt="TRČ" className="h-10 w-10 rounded-full object-cover" />
-          <div className="hidden sm:block">
-            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
-              {t('header.brand')}
+        <Link href="/dashboard" className="flex max-w-xl items-start gap-3">
+          <img src="/trc-mark.jpg" alt="TRČ" className="h-16 w-16 rounded-2xl object-cover" />
+          <div className="rounded-2xl border px-3 py-2" style={{ borderColor: "color-mix(in srgb, #c9a84c 35%, transparent)" }}>
+            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PREČO CMEP</p>
+            <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "Fraunces, serif", color: GOLD_BRIGHT }}>
+              CMEP — Circular Materials Exchange Platform.
             </p>
-            <p className="text-lg leading-none" style={{ fontFamily: 'Fraunces, serif' }}>
-              Trhovisko
+            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: MUTED }}>
+              Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu materiálu, ktorý by iný dokázal využiť. My to meníme.
+              CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú. Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.
             </p>
           </div>
         </Link>
@@ -89,7 +91,7 @@ export function DashboardHeader() {
         </div>
       </div>
 
-      <nav className="mx-auto flex max-w-6xl flex-wrap gap-5 px-4 pb-3">
+      <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 pb-3">
         {NAV_KEYS.map((k) => {
           const href = NAV_HREFS[k];
           const label = t('dashboard.nav.' + k, k === 'chat' ? 'Chat' : k);
@@ -120,6 +122,10 @@ export function DashboardHeader() {
             </span>
           );
         })}
+
+        <Link href="/dashboard/listings/new" className="text-sm" style={{ color: GOLD_BRIGHT }}>Pridať ponuku</Link>
+        <Link href="/dashboard/companies/new" className="text-sm" style={{ color: GOLD_BRIGHT }}>Pridať firmu</Link>
+        <Link href="/dashboard/documents/new" className="text-sm" style={{ color: GOLD_BRIGHT }}>Pridať dokument</Link>
       </nav>
     </header>
   );
