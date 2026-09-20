@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { config } from '../../../../lib/config';
 import { RecommendationsPanel } from '../../../../features/recommendations/components/recommendations-panel';
 import { TransportPanel } from '../../../../features/recommendations/components/transport-panel';
+import { FreightPanel } from '../../../../features/recommendations/components/freight-panel';
 
 type ListingData = {
   id: string;
@@ -71,6 +72,7 @@ export default function ListingDetailPage() {
         onPickDestination={setDestination}
       />
       <TransportPanel origin={data?.location} destination={destination} />
+      <FreightPanel />
     </main>
   );
 }
