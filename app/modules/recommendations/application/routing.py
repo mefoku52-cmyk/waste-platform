@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from urllib.error import URLError
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -15,8 +15,11 @@ VIGNETTE_EUR = 8.1
 
 def _get_json(url: str) -> dict | list:
     req = Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urlopen(req, timeout=12) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    try:
+        with urlopen(req, timeout=12) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+    except HTTPError as exc:
+        raise ValueError(exc.read().decode("utf-8", "replace")[:200] or str(exc)) from exc
 
 
 def geocode(query: str) -> dict:
