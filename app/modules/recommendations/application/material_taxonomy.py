@@ -32,10 +32,24 @@ def _norm(value: str) -> str:
     return " ".join(value.casefold().replace(";", " ").replace(",", " ").replace("-", " ").split())
 
 
+def _spaced_ewc(value: str) -> str:
+    digits = "".join(ch for ch in value if ch.isdigit())
+    if len(digits) == 6:
+        return digits[0:2] + " " + digits[2:4] + " " + digits[4:6]
+    if len(digits) == 4:
+        return digits[0:2] + " " + digits[2:4]
+    if len(digits) == 2:
+        return digits
+    return ""
+
+
 def expand_material(raw: str | None) -> set[str]:
     text = _norm(raw or "")
     if not text:
         return set()
+    spaced = _spaced_ewc(text)
+    if spaced:
+        text = spaced
     out: set[str] = set()
     ranked: list[tuple[int, str, str]] = []
     for family, spec in FAMILIES.items():
