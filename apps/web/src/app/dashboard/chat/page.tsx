@@ -38,8 +38,8 @@ export default function ChatPage() {
         rel="stylesheet"
       />
       <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
-        <ChatDraftBanner />
-      <DashboardHeader />
+        <DashboardHeader />
+      <ChatDraftBanner />
 
         <main className="mx-auto max-w-4xl px-4 py-10">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>

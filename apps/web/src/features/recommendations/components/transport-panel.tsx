@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type Props = { origin?: string; destination?: string };
 
@@ -8,6 +8,10 @@ export function TransportPanel({ origin, destination }: Props) {
   const [dest, setDest] = useState(destination || '');
   const [km, setKm] = useState('80');
   const [rate, setRate] = useState('1.35');
+
+  useEffect(() => {
+    if (destination) setDest(destination);
+  }, [destination]);
 
   const result = useMemo(() => {
     const distance = Number(km);
@@ -18,7 +22,7 @@ export function TransportPanel({ origin, destination }: Props) {
     return { freight, handling, total: freight + handling };
   }, [km, rate]);
 
-  const mapQ = encodeURIComponent((origin || 'Slovensko') + ' to ' + (dest || 'Slovensko'));
+  const mapQ = encodeURIComponent((origin || 'Slovensko') + '/' + (dest || ''));
   const mapSrc = 'https://www.openstreetmap.org/search?query=' + encodeURIComponent(dest || origin || 'Slovensko');
 
   return (
