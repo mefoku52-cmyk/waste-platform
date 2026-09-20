@@ -1,8 +1,10 @@
+from app.modules.recommendations.application.routing import calculate_route, search_carriers
+
 """recommendations API router."""
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.modules.recommendations.application.service import RecommendationsService
 from app.modules.recommendations.presentation.schemas import (
@@ -61,3 +63,36 @@ async def get_listing_recommendations(
         location=payload["location"],
         items=[RecommendationCandidate(**item) for item in payload["items"]],
     )
+
+
+@router.get("/route")
+async def get_route(
+    origin: str = Query(...),
+    destination: str = Query(...),
+    consumption: float = Query(28.0),
+    fuel_price: float = Query(1.49),
+    roundtrip: bool = Query(False),
+    current_user: object = Depends(require_current_user),
+) -> dict:
+    del current_user
+    try:
+        return calculate_route(
+            origin_text=origin,
+            destination_text=destination,
+            consumption=consumption,
+            fuel_price=fuel_price,
+            roundtrip=roundtrip,
+        )
+    except ValueError as exc:
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/carriers")
+async def get_carriers(
+    near: str = Query(...),
+    current_user: object = Depends(require_current_user),
+) -> dict:
+    del current_user
+    return {"near": near, "items": search_carriers(near)}

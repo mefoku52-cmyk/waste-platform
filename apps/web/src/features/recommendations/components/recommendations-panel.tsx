@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecommendations } from '../hooks/use-recommendations';
 
 const REASON_LABEL: Record<string, string> = {
@@ -29,6 +29,11 @@ export function RecommendationsPanel({
 }: Props) {
   const { data, isLoading, error } = useRecommendations(listingId);
   const [draft, setDraft] = useState('');
+
+  useEffect(() => {
+    const first = data?.items?.[0];
+    if (first && onPickDestination && first.city) onPickDestination(first.city);
+  }, [data, onPickDestination]);
 
   function makeDraft(name: string, city: string) {
     setDraft(

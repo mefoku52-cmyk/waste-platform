@@ -72,7 +72,7 @@ export default function ListingDetailPage() {
         onPickDestination={setDestination}
       />
       <TransportPanel origin={data?.location} destination={destination} />
-      <FreightPanel />
+      <FreightPanel near={destination || data?.location} />
     </main>
   );
 }
