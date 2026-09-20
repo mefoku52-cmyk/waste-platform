@@ -17,6 +17,7 @@ class CompanyCreateRequest(BaseModel):
     sellerCapability: bool
     buyerCapability: bool
     logisticsCapability: bool
+    acceptedMaterialTypes: str | None = None
     tradingName: str | None = None
     taxIdentifier: str | None = None
     email: str | None = None
@@ -25,6 +26,7 @@ class CompanyCreateRequest(BaseModel):
     addressLine2: str | None = None
     latitude: float | None = None
     longitude: float | None = None
+    acceptedMaterialTypes: str | None = None
 
 
 class CompanyUpdateRequest(BaseModel):
@@ -63,6 +65,7 @@ class CompanyData(BaseModel):
     sellerCapability: bool
     buyerCapability: bool
     logisticsCapability: bool
+    acceptedMaterialTypes: str | None = None
     verificationSubmittedAt: datetime | None
     verificationReviewedAt: datetime | None
     verificationReviewedByUserId: UUID | None

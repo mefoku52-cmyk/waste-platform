@@ -29,6 +29,7 @@ class CompanyModel(Base):
     seller_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
     buyer_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
     logistics_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    accepted_material_types: Mapped[str | None] = mapped_column(String(512), nullable=True)
     verification_submitted_at: Mapped[DateTime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
