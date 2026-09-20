@@ -31,3 +31,10 @@ def test_match_and_mismatch():
     assert reasons == ["material_mismatch"]
     score, reasons = _score("PET", None)
     assert score == 40
+
+
+def test_compact_ewc_metal_not_construction():
+    assert "kov" in expand_material("170405")
+    assert "kov" in expand_material("17-04-05")
+    assert "stavebne" not in expand_material("170405")
+    assert "stavebne" in expand_material("170101")
