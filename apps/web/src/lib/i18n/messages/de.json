@@ -42,9 +42,9 @@
     "searchPlaceholder": "Material, Firma oder Notiz",
     "locationPlaceholder": "Ort",
     "activeListings": "aktive Angebote",
-    "addListing": "+ Angebot hinzufügen",
-    "addCompany": "+ Firma hinzufügen",
-    "addDocument": "+ Dokument hinzufügen",
+    "addListing": "Angebot hinzufügen",
+    "addCompany": "Firma hinzufügen",
+    "addDocument": "Dokument hinzufügen",
     "notFound": "Keine Angebote gefunden",
     "notFoundHint": "Ändern Sie Suchbegriff, Kategorie oder Ort.",
     "prev": "Zurück",
@@ -134,7 +134,8 @@
         "desc": "Kompost, Hackschnitzel."
       }
     },
-    "clearFilter": "Filter löschen"
+    "clearFilter": "Filter löschen",
+    "actions": "Optionen"
   },
   "register": {
     "title": "Registrieren",

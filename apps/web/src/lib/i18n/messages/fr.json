@@ -42,9 +42,9 @@
     "searchPlaceholder": "Matériau, entreprise ou note",
     "locationPlaceholder": "Localisation",
     "activeListings": "annonces actives",
-    "addListing": "+ Ajouter une annonce",
-    "addCompany": "+ Ajouter une entreprise",
-    "addDocument": "+ Ajouter un document",
+    "addListing": "Ajouter une offre",
+    "addCompany": "Ajouter une entreprise",
+    "addDocument": "Ajouter un document",
     "notFound": "Aucune annonce trouvée",
     "notFoundHint": "Essayez de modifier le terme, la catégorie ou le lieu.",
     "prev": "Précédent",
@@ -134,7 +134,8 @@
         "desc": "Compost, copeaux."
       }
     },
-    "clearFilter": "Effacer le filtre"
+    "clearFilter": "Effacer le filtre",
+    "actions": "Actions"
   },
   "register": {
     "title": "Inscription",

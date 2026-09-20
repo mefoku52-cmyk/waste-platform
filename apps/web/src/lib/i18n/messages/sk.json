@@ -42,9 +42,9 @@
     "searchPlaceholder": "Materiál, firma alebo poznámka",
     "locationPlaceholder": "Lokalita",
     "activeListings": "aktívnych ponúk",
-    "addListing": "+ Pridať ponuku",
-    "addCompany": "+ Pridať firmu",
-    "addDocument": "+ Pridať dokument",
+    "addListing": "Pridať ponuku",
+    "addCompany": "Pridať firmu",
+    "addDocument": "Pridať dokument",
     "notFound": "Nenašli sa žiadne ponuky",
     "notFoundHint": "Skús zmeniť hľadaný výraz, kategóriu alebo lokalitu.",
     "prev": "Predchádzajúca",
@@ -134,7 +134,8 @@
         "desc": "Kompost, štiepka."
       }
     },
-    "clearFilter": "Zrušiť filter"
+    "clearFilter": "Zrušiť filter",
+    "actions": "Možnosti"
   },
   "register": {
     "title": "Registrácia",

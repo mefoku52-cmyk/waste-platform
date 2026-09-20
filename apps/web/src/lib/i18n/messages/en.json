@@ -42,9 +42,9 @@
     "searchPlaceholder": "Material, company or note",
     "locationPlaceholder": "Location",
     "activeListings": "active listings",
-    "addListing": "+ Add listing",
-    "addCompany": "+ Add company",
-    "addDocument": "+ Add document",
+    "addListing": "Add listing",
+    "addCompany": "Add company",
+    "addDocument": "Add document",
     "notFound": "No listings found",
     "notFoundHint": "Try changing the search term, category or location.",
     "prev": "Previous",
@@ -134,7 +134,8 @@
         "desc": "Compost, wood chips."
       }
     },
-    "clearFilter": "Clear filter"
+    "clearFilter": "Clear filter",
+    "actions": "Actions"
   },
   "register": {
     "title": "Register",

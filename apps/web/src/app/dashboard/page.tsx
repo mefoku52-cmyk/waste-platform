@@ -311,9 +311,12 @@ export default function DashboardPage() {
             )}
           </div>
           <div className="flex flex-wrap gap-4 text-base">
-            <Link href="/dashboard/listings/new" style={{ color: GOLD_BRIGHT }}>+ Pridať ponuku</Link>
-            <Link href="/dashboard/companies/new" style={{ color: GOLD_BRIGHT }}>+ Pridať firmu</Link>
-            <Link href="/dashboard/documents/new" style={{ color: GOLD_BRIGHT }}>+ Pridať dokument</Link>
+            <section className="grid gap-3">
+              <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t("dashboard.actions")}</p>
+              <Link href="/dashboard/companies/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addCompany")}</Link>
+              <Link href="/dashboard/listings/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addListing")}</Link>
+              <Link href="/dashboard/documents/new" className="rounded-2xl border px-4 py-3 text-sm" style={{ borderColor: GOLD, color: GOLD_BRIGHT }}>{t("dashboard.addDocument")}</Link>
+            </section>
           </div>
         </section>
 
