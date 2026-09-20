@@ -64,6 +64,7 @@ function ActionButton({
   );
 }
 
+import { AcceptedMaterialsCell } from './accepted-materials-cell';
 export const CompaniesTable = () => {
   const { t } = useT();
   const queryClient = useQueryClient();
@@ -95,6 +96,7 @@ export const CompaniesTable = () => {
             <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.companyName')}</th>
             <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.ico')}</th>
             <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.city')}</th>
+            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>Material</th>
             <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.status')}</th>
             <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.actions')}</th>
           </tr>
@@ -102,7 +104,7 @@ export const CompaniesTable = () => {
         <tbody>
           {companies.length === 0 ? (
             <tr>
-              <td colSpan={5} className="px-4 py-10 text-center text-sm" style={{ color: MUTED }}>
+              <td colSpan={6} className="px-4 py-10 text-center text-sm" style={{ color: MUTED }}>
                 {t('tables.empty')}
               </td>
             </tr>
@@ -118,6 +120,7 @@ export const CompaniesTable = () => {
                     {company.registrationNumber || company.registration_number}
                   </td>
                   <td className="px-4 py-3" style={{ color: MUTED }}>{company.city}</td>
+                  <td className="px-4 py-3"><AcceptedMaterialsCell id={company.id} value={company.acceptedMaterialTypes || company.accepted_material_types} /></td>
                   <td className="px-4 py-3">
                     <StatusBadge status={status} />
                   </td>
