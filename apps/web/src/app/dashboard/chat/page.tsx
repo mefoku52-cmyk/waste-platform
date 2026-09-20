@@ -1,4 +1,5 @@
 'use client';
+import { ChatDraftBanner } from '@/features/recommendations/components/chat-draft-banner';
 
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
@@ -30,13 +31,15 @@ export default function ChatPage() {
     : raw?.items ?? raw?.data?.items ?? raw?.data ?? [];
 
   return (
+
     <>
       <link
         href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
         rel="stylesheet"
       />
       <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
-        <DashboardHeader />
+        <ChatDraftBanner />
+      <DashboardHeader />
 
         <main className="mx-auto max-w-4xl px-4 py-10">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
