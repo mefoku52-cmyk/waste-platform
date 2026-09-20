@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from functools import lru_cache
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
@@ -22,6 +23,7 @@ def _get_json(url: str) -> dict | list:
         raise ValueError(exc.read().decode("utf-8", "replace")[:200] or str(exc)) from exc
 
 
+@lru_cache(maxsize=256)
 def geocode(query: str) -> dict:
     q = (query or "").strip()
     if len(q) < 2:
