@@ -7,6 +7,7 @@ import { CompaniesTable } from '@/features/companies';
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { redirect } from 'next/navigation';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -18,6 +19,7 @@ export default function AdminPage() {
   const { user, isLoading } = useAuthRequired();
   const isPlatformAdmin = useIsPlatformAdmin();
   const { data: stats, isLoading: isLoadingStats } = useAdminStats();
+  const { t } = useT();
 
   const safeStats = (stats || {}) as {
     total_users?: number;
@@ -31,7 +33,7 @@ export default function AdminPage() {
       <div className="min-h-screen" style={{ background: BG, color: FG }}>
         <DashboardHeader />
         <div className="mx-auto max-w-6xl px-4 py-16 text-center" style={{ color: MUTED }}>
-          Načítavam…
+          {t('admin.loading')}
         </div>
       </div>
     );
@@ -52,10 +54,10 @@ export default function AdminPage() {
 
         <main className="mx-auto max-w-6xl px-4 py-10">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-            ADMINISTRÁCIA
+            {t('admin.kicker')}
           </p>
           <h1 className="mb-10 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
-            Administrácia systému
+            {t('admin.title')}
           </h1>
 
           {/* ŠTATISTIKY */}
@@ -63,16 +65,16 @@ export default function AdminPage() {
             <StatCard label="Používatelia" value={safeStats.total_users} loading={isLoadingStats} />
             <StatCard label="Ponuky" value={safeStats.total_listings} loading={isLoadingStats} />
             <StatCard label="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
-            <StatCard label="Čakajúce overenia" value={safeStats.pending_verifications} loading={isLoadingStats} accent />
+            <StatCard label="{t('admin.pending')}" value={safeStats.pending_verifications} loading={isLoadingStats} accent />
           </section>
 
-          {/* FIRMY NA OVERENIE */}
+          {/* {t('admin.firmsKicker')} NA OVERENIE */}
           <section className="mb-12">
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-              FIRMY
+              {t('admin.firmsKicker')}
             </p>
             <h2 className="mb-3 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
-              Firmy na overenie
+              {t('admin.firmsTitle')}
             </h2>
             <p className="mb-6 text-sm" style={{ color: MUTED }}>
               Firmy, ktoré požiadali o overenie. Klikni <strong style={{ color: GOLD_BRIGHT }}>Overiť</strong> pre schválenie alebo <strong style={{ color: GOLD_BRIGHT }}>Zamietnuť</strong> pre odmietnutie.
@@ -88,13 +90,13 @@ export default function AdminPage() {
             </div>
           </section>
 
-          {/* POUŽÍVATELIA */}
+          {/* {t('admin.usersKicker')} */}
           <section className="mb-12">
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-              POUŽÍVATELIA
+              {t('admin.usersKicker')}
             </p>
             <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
-              Správa používateľov
+              {t('admin.usersTitle')}
             </h2>
             <div
               className="rounded-2xl border p-5"
@@ -107,16 +109,16 @@ export default function AdminPage() {
             </div>
           </section>
 
-          {/* AUDIT HISTÓRIA */}
+          {/* AUDIT {t('admin.historyKicker')} */}
           <section className="mb-12">
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-              HISTÓRIA
+              {t('admin.historyKicker')}
             </p>
             <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
-              Audit zmien
+              {t('admin.historyTitle')}
             </h2>
             <p className="mb-6 text-sm" style={{ color: MUTED }}>
-              Posledné akcie administrátorov — kto, kedy, čo zmenil.
+              {t('admin.historyHint')}
             </p>
             <AuditTable />
           </section>

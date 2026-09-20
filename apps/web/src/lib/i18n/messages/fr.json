@@ -227,7 +227,20 @@
     "firmsHint": "Entreprises ayant demandé une vérification. Cliquez sur Vérifier ou Refuser.",
     "usersSection": "UTILISATEURS",
     "usersTitle": "Gestion des utilisateurs",
-    "legalSection": "MENTIONS LÉGALES"
+    "legalSection": "MENTIONS LÉGALES",
+    "kicker": "ADMINISTRATION",
+    "loading": "Chargement…",
+    "users": "Utilisateurs",
+    "listings": "Offres",
+    "companies": "Entreprises",
+    "pending": "Vérifications en attente",
+    "firmsKicker": "ENTREPRISES",
+    "usersKicker": "UTILISATEURS",
+    "historyKicker": "HISTORIQUE",
+    "historyTitle": "Audit des changements",
+    "historyHint": "Dernières actions des administrateurs.",
+    "saveMaterials": "Enregistrer les matériaux",
+    "materialsPlaceholder": "bio, bois, métal"
   },
   "chat": {
     "section": "MESSAGES",

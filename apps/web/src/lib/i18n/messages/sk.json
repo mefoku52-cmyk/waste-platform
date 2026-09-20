@@ -227,7 +227,20 @@
     "firmsHint": "Firmy, ktoré požiadali o overenie. Klikni Overiť pre schválenie alebo Zamietnuť pre odmietnutie.",
     "usersSection": "POUŽÍVATELIA",
     "usersTitle": "Správa používateľov",
-    "legalSection": "PRÁVNE"
+    "legalSection": "PRÁVNE",
+    "kicker": "ADMINISTRÁCIA",
+    "loading": "Načítavam…",
+    "users": "Používatelia",
+    "listings": "Ponuky",
+    "companies": "Firmy",
+    "pending": "Čakajúce overenia",
+    "firmsKicker": "FIRMY",
+    "usersKicker": "POUŽÍVATELIA",
+    "historyKicker": "HISTÓRIA",
+    "historyTitle": "Audit zmien",
+    "historyHint": "Posledné akcie administrátorov — kto, kedy, čo zmenil.",
+    "saveMaterials": "Uložiť materiál",
+    "materialsPlaceholder": "bio, drevo, kov"
   },
   "chat": {
     "section": "SPRÁVY",

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { companiesApi } from '../api';
+import { useT } from '@/lib/i18n/context';
 
 export function AcceptedMaterialsCell({
   id,
@@ -13,6 +14,7 @@ export function AcceptedMaterialsCell({
   const [text, setText] = useState(value || '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const { t } = useT();
 
   async function save() {
     setSaving(true);
@@ -33,7 +35,7 @@ export function AcceptedMaterialsCell({
       <input
         value={text}
         onChange={(e) => setText(e.target.value.slice(0, 120))}
-        placeholder="bio, drevo, kov"
+        placeholder={t('admin.materialsPlaceholder')}
         className="w-full rounded border border-[#c9a84c]/30 bg-black px-2 py-1 text-xs text-[#f3ead8]"
       />
       <button
@@ -42,7 +44,7 @@ export function AcceptedMaterialsCell({
         onClick={() => void save()}
         className="mt-1 text-[10px] uppercase tracking-[0.15em] text-[#c9a84c]"
       >
-        {saving ? '…' : 'Ulozit material'}
+        {saving ? '…' : t('admin.saveMaterials')}
       </button>
       {error && <p className="text-[10px] text-red-300">{error}</p>}
     </div>
