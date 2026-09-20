@@ -1,8 +1,9 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export function ChatDraftBanner() {
+function ChatDraftBannerInner() {
   const params = useSearchParams();
   const draft = params.get('draft') || '';
   if (!draft) return null;
@@ -18,5 +19,13 @@ export function ChatDraftBanner() {
         Kopirovat do spravy
       </button>
     </div>
+  );
+}
+
+export function ChatDraftBanner() {
+  return (
+    <Suspense fallback={null}>
+      <ChatDraftBannerInner />
+    </Suspense>
   );
 }
