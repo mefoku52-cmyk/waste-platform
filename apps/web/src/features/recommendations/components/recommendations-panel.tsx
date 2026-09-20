@@ -17,6 +17,7 @@ type Props = {
   listingTitle?: string;
   listingLocation?: string;
   materialType?: string;
+  onPickDestination?: (city: string) => void;
 };
 
 export function RecommendationsPanel({
@@ -24,22 +25,24 @@ export function RecommendationsPanel({
   listingTitle,
   listingLocation,
   materialType,
+  onPickDestination,
 }: Props) {
   const { data, isLoading, error } = useRecommendations(listingId);
   const [draft, setDraft] = useState('');
 
-  function makeDraft(name: string) {
-    const text =
+  function makeDraft(name: string, city: string) {
+    setDraft(
       'Dobry den, ' +
-      name +
-      '. Mam zaujem overit odber ponuky "' +
-      (listingTitle || listingId) +
-      '" (' +
-      (materialType || 'material') +
-      ', ' +
-      (listingLocation || 'lokalita neuvedena') +
-      '). Ide o dopyt, nie o uzavrety obchod. Prosim o kratke potvrdenie zaujmu.';
-    setDraft(text);
+        name +
+        '. Mam zaujem overit odber ponuky "' +
+        (listingTitle || listingId) +
+        '" (' +
+        (materialType || 'material') +
+        ', ' +
+        (listingLocation || 'lokalita neuvedena') +
+        '). Ide o dopyt, nie o uzavrety obchod. Prosim o kratke potvrdenie zaujmu.',
+    );
+    if (onPickDestination && city) onPickDestination(city);
   }
 
   async function copyDraft() {
@@ -49,24 +52,14 @@ export function RecommendationsPanel({
 
   return (
     <section className="mt-6 rounded-2xl border border-[#d4af37]/35 bg-black p-6">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">
-        Odporucania
-      </p>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">Odporucania</p>
       <h2 className="mt-1 font-serif text-2xl text-[#f3e6c4]">Mozni odberatelia</h2>
-      <p className="mt-1 text-sm text-[#cbb98a]">
-        Overeni odberatelia z existujucich dat. Obchod sa neuzatvara.
-      </p>
-
+      <p className="mt-1 text-sm text-[#cbb98a]">Overeni odberatelia z existujucich dat. Obchod sa neuzatvara.</p>
       {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">Nacitavam…</p>}
-      {error && (
-        <p className="mt-4 text-sm text-red-300">
-          {(error as Error).message || 'Odporucania sa nepodarilo nacitat'}
-        </p>
-      )}
+      {error && <p className="mt-4 text-sm text-red-300">{(error as Error).message}</p>}
       {data && data.items.length === 0 && (
         <p className="mt-4 text-sm text-[#cbb98a]">Ziadni overeni odberatelia.</p>
       )}
-
       {data && data.items.length > 0 && (
         <ul className="mt-4 space-y-3">
           {data.items.map((item) => (
@@ -75,24 +68,21 @@ export function RecommendationsPanel({
                 <p className="font-semibold text-[#f3e6c4]">{item.legalName}</p>
                 <p className="text-sm text-[#d4af37]">skore {item.score}</p>
               </div>
-              <p className="mt-1 text-sm text-[#9a8b63]">
-                {item.city}, {item.countryCode}
-              </p>
+              <p className="mt-1 text-sm text-[#9a8b63]">{item.city}, {item.countryCode}</p>
               <p className="mt-2 text-xs text-[#9a8b63]">
                 {item.reasons.map((reason) => REASON_LABEL[reason] || reason).join(' · ')}
               </p>
               <button
                 type="button"
-                onClick={() => makeDraft(item.legalName)}
+                onClick={() => makeDraft(item.legalName, item.city)}
                 className="mt-3 rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]"
               >
-                Navrhnut spravu
+                Navrhnut spravu a prepravu
               </button>
             </li>
           ))}
         </ul>
       )}
-
       {draft && (
         <div className="mt-4 rounded-xl border border-[#d4af37]/25 p-4">
           <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">Navrh spravy do chatu</p>
@@ -102,18 +92,14 @@ export function RecommendationsPanel({
             className="mt-2 h-28 w-full rounded-lg border border-[#d4af37]/20 bg-black p-3 text-sm text-[#f3e6c4]"
           />
           <div className="mt-2 flex gap-2">
-            <button
-              type="button"
-              onClick={copyDraft}
-              className="rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]"
-            >
+            <button type="button" onClick={copyDraft} className="rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]">
               Kopirovat
             </button>
             <a
-              href="/dashboard/chat"
+              href={'/dashboard/chat?draft=' + encodeURIComponent(draft)}
               className="rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]"
             >
-              Otvorit chat
+              Otvorit chat s draftom
             </a>
           </div>
         </div>
