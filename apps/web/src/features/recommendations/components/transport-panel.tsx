@@ -28,6 +28,8 @@ export function TransportPanel({ origin, destination }: Props) {
 
   useEffect(() => {
     if (!origin || !destination) return;
+    const from = origin;
+    const to = destination;
     let cancelled = false;
     async function run() {
       setLoading(true);
@@ -35,8 +37,8 @@ export function TransportPanel({ origin, destination }: Props) {
       try {
         const token = localStorage.getItem('accessToken');
         const q =
-          'origin=' + encodeURIComponent(origin) +
-          '&destination=' + encodeURIComponent(destination) +
+          'origin=' + encodeURIComponent(from) +
+          '&destination=' + encodeURIComponent(to) +
           '&consumption=28&fuel_price=1.49&roundtrip=true';
         const res = await fetch(config.apiBaseUrl + '/recommendations/route?' + q, {
           headers: {
