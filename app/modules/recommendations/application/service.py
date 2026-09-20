@@ -24,8 +24,14 @@ class RecommendationsService:
         for company in companies:
             score, reasons = score_company(
                 listing_location=listing.location,
+                listing_material=listing.material_type,
+                listing_lat=getattr(listing, "latitude", None),
+                listing_lng=getattr(listing, "longitude", None),
                 city=company.city,
                 logistics_capability=bool(company.logistics_capability),
+                accepted_material_types=getattr(company, "accepted_material_types", None),
+                company_lat=company.latitude,
+                company_lng=company.longitude,
             )
             items.append(
                 {
