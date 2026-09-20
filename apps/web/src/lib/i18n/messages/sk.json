@@ -269,7 +269,16 @@
   },
   "companies": {
     "newSection": "NOVÁ FIRMA",
-    "newTitle": "Pridať firmu"
+    "newTitle": "Pridať firmu",
+    "kicker": "Firmy",
+    "title": "Firmy na platforme",
+    "add": "Pridať firmu",
+    "filter": "Filter podľa materiálu",
+    "loading": "Načítavam…",
+    "materials": "Materiály",
+    "empty": "nevyplnené",
+    "prev": "Predchádzajúca",
+    "next": "Ďalšia"
   },
   "about": {
     "eyebrow": "O PROJEKTE",
@@ -332,5 +341,10 @@
     "address": "",
     "country": "Slovenská republika",
     "about": "O nás"
+  },
+  "header": {
+    "brand": "CMEP · OBEHOVÉ MATERIÁLY",
+    "market": "Trhovisko",
+    "myListings": "Moje ponuky"
   }
 }

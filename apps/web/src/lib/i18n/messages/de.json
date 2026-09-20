@@ -269,7 +269,16 @@
   },
   "companies": {
     "newSection": "NEUES UNTERNEHMEN",
-    "newTitle": "Unternehmen hinzufügen"
+    "newTitle": "Unternehmen hinzufügen",
+    "kicker": "Firmen",
+    "title": "Firmen auf der Plattform",
+    "add": "Firma hinzufügen",
+    "filter": "Nach Material filtern",
+    "loading": "Laden…",
+    "materials": "Materialien",
+    "empty": "nicht gesetzt",
+    "prev": "Zurück",
+    "next": "Weiter"
   },
   "about": {
     "eyebrow": "ÜBER DAS PROJEKT",
@@ -332,5 +341,10 @@
     "address": "",
     "country": "Slowakische Republik",
     "about": "Über uns"
+  },
+  "header": {
+    "brand": "CMEP · KREISLAUFMATERIALIEN",
+    "market": "Marktplatz",
+    "myListings": "Meine Angebote"
   }
 }

@@ -269,7 +269,16 @@
   },
   "companies": {
     "newSection": "NEW COMPANY",
-    "newTitle": "Add company"
+    "newTitle": "Add company",
+    "kicker": "Companies",
+    "title": "Companies on the platform",
+    "add": "Add company",
+    "filter": "Filter by material",
+    "loading": "Loading…",
+    "materials": "Materials",
+    "empty": "not set",
+    "prev": "Previous",
+    "next": "Next"
   },
   "about": {
     "eyebrow": "ABOUT",
@@ -332,5 +341,10 @@
     "address": "",
     "country": "Slovak Republic",
     "about": "About"
+  },
+  "header": {
+    "brand": "CMEP · CIRCULAR MATERIALS",
+    "market": "Marketplace",
+    "myListings": "My listings"
   }
 }

@@ -269,7 +269,16 @@
   },
   "companies": {
     "newSection": "NOUVELLE ENTREPRISE",
-    "newTitle": "Ajouter une entreprise"
+    "newTitle": "Ajouter une entreprise",
+    "kicker": "Entreprises",
+    "title": "Entreprises de la plateforme",
+    "add": "Ajouter une entreprise",
+    "filter": "Filtrer par matériau",
+    "loading": "Chargement…",
+    "materials": "Matériaux",
+    "empty": "non renseigné",
+    "prev": "Précédent",
+    "next": "Suivant"
   },
   "about": {
     "eyebrow": "À PROPOS",
@@ -332,5 +341,10 @@
     "address": "",
     "country": "République slovaque",
     "about": "À propos"
+  },
+  "header": {
+    "brand": "CMEP · MATÉRIAUX CIRCULAIRES",
+    "market": "Marché",
+    "myListings": "Mes offres"
   }
 }

@@ -12,7 +12,7 @@ const GOLD_BRIGHT = '#e8d48b';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 
-const NAV_KEYS = ['overview', 'listings', 'marketplace', 'matches', 'companies', 'documents', 'chat'] as const;
+const NAV_KEYS = ['overview', 'listings', 'companies', 'documents', 'chat'] as const;
 
 const NAV_HREFS: Record<string, string | undefined> = {
   overview: '/dashboard',
@@ -42,7 +42,7 @@ export function DashboardHeader() {
           <img src="/trc-mark.jpg" alt="TRČ" className="h-10 w-10 rounded-full object-cover" />
           <div className="hidden sm:block">
             <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
-              CMEP · OBEHOVÉ MATERIÁLY
+              {t('header.brand')}
             </p>
             <p className="text-lg leading-none" style={{ fontFamily: 'Fraunces, serif' }}>
               Trhovisko
@@ -56,7 +56,7 @@ export function DashboardHeader() {
             className="hidden rounded-md border px-4 py-2 text-sm font-semibold sm:inline-flex"
             style={{ borderColor: GOLD, color: GOLD_BRIGHT }}
           >
-            Moje ponuky
+            {t('header.myListings')}
           </Link>
           <span className="hidden text-sm md:inline" style={{ color: MUTED }}>
             {myEmail || '—'}
