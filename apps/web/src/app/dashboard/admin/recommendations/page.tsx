@@ -1,8 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { config } from '../../../../../lib/config';
-import { getListingRecommendations } from '../../../../../features/recommendations/api';
+import { config } from '@/lib/config';
+import { getListingRecommendations } from '@/features/recommendations/api';
 
 type ListingRow = { id: string; title: string; materialType?: string; location?: string };
 
@@ -16,7 +16,8 @@ async function fetchListings(): Promise<ListingRow[]> {
   });
   const body = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error('Listings request failed');
-  return (body.items || body.data || body) as ListingRow[];
+  const rows = (body.items || body.data || body) as ListingRow[];
+  return Array.isArray(rows) ? rows : [];
 }
 
 export default function AdminRecommendationsPage() {
