@@ -11,6 +11,24 @@ def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     return 2 * r * asin(sqrt(a))
 
 
+MATERIAL_ALIASES = {
+    "bio": {"bio", "kompost", "organic", "organicke"},
+    "drevo": {"drevo", "wood", "piliny", "pilovina", "piloviny"},
+    "kov": {"kov", "zelezo", "železo", "metal", "spony"},
+    "pet": {"pet", "plast", "plastove", "granule"},
+    "papier": {"papier", "paper", "karton"},
+}
+
+
+def _expand(tokens: set[str]) -> set[str]:
+    out = set(tokens)
+    for token in tokens:
+        for group in MATERIAL_ALIASES.values():
+            if token in group:
+                out |= group
+    return out
+
+
 def _material_tokens(raw: str | None) -> set[str]:
     if not raw:
         return set()
@@ -38,11 +56,11 @@ def score_company(
         score += 20
         reasons.append("city_in_listing_location")
 
-    accepted = _material_tokens(accepted_material_types)
-    material = (listing_material or "").strip().casefold()
-    if accepted and material and material not in accepted:
+    accepted = _expand(_material_tokens(accepted_material_types))
+    material_tokens = _expand(_material_tokens(listing_material))
+    if accepted and material_tokens and accepted.isdisjoint(material_tokens):
         return 0, ["material_mismatch"]
-    if material and material in accepted:
+    if accepted and material_tokens and not accepted.isdisjoint(material_tokens):
         score += 40
         reasons.append("material_accepted")
 
