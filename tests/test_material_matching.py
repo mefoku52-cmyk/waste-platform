@@ -38,3 +38,16 @@ def test_compact_ewc_metal_not_construction():
     assert "kov" in expand_material("17-04-05")
     assert "stavebne" not in expand_material("170405")
     assert "stavebne" in expand_material("170101")
+
+
+def test_fuzzy_edge_cases():
+    assert expand_material("") == set()
+    assert expand_material(None) == set()
+    assert "kov" in expand_material("  17 04 05  ")
+    assert "kov" in expand_material("17.04.05")
+    assert "sklo" in expand_material("150107")
+    assert "eeo" in expand_material("elektroodpad")
+    assert "bio" in expand_material("Bio, kompost")
+    unknown = expand_material("xyzzy")
+    assert "xyzzy" in unknown
+    assert "kov" not in unknown

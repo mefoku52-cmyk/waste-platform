@@ -25,6 +25,22 @@ FAMILIES = {
         "aliases": {"stavebne", "sut", "suť", "beton", "betón", "construction"},
         "ewc_prefixes": ("17 01", "17 03", "17 05", "17 08", "17 09"),
     },
+    "sklo": {
+        "aliases": {"sklo", "glass"},
+        "ewc_prefixes": ("15 01 07", "17 02 02", "20 01 02"),
+    },
+    "textil": {
+        "aliases": {"textil", "textile", "odev"},
+        "ewc_prefixes": ("04 02", "20 01 10", "20 01 11"),
+    },
+    "olej": {
+        "aliases": {"olej", "oil", "mazivo"},
+        "ewc_prefixes": ("13"),
+    },
+    "eeo": {
+        "aliases": {"eeo", "weee", "elektro", "elektroodpad"},
+        "ewc_prefixes": ("16 02", "20 01 21", "20 01 23", "20 01 35", "20 01 36"),
+    },
 }
 
 
