@@ -3,7 +3,7 @@
 from datetime import datetime
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi import status as http_status
 
 from app.shared.application.side_effects import notify_company_members, write_audit
@@ -164,6 +164,17 @@ async def create_inquiry(
 ):
     # Dopyt sa vytvara v mene firmy, ktorej je user clenom.
     require_company_member(current_user, request.companyId, action="send inquiries for")
+
+    from sqlalchemy import text
+
+    listing_row = (
+        await session.execute(
+            text("SELECT company_id FROM listings WHERE id = :id"),
+            {"id": str(request.listingId)},
+        )
+    ).first()
+    if listing_row and str(listing_row[0]) == str(request.companyId):
+        raise HTTPException(status_code=400, detail="Nemozes poslat dopyt na vlastnu ponuku.")
 
     now = datetime.now()
     entity = InquiryEntity(

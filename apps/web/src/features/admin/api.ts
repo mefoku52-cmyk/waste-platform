@@ -8,5 +8,5 @@ export const adminApi = {
     http.get<AdminUsersResponse>('/admin/users'),
 
   listAudit: (params?: Record<string, unknown>) =>
-    http.get<{ items: unknown[]; meta: Record<string, unknown> }>('/admin', { ...params }),
+    http.get<{ items: unknown[]; meta: Record<string, unknown> }>('/admin/all', { ...params }),
 };
