@@ -12,13 +12,14 @@ const GOLD_BRIGHT = '#e8d48b';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 
-const NAV_KEYS = ['overview', 'listings', 'companies', 'documents', 'chat'] as const;
+const NAV_KEYS = ['overview', 'listings', 'companies', 'documents', 'inquiries', 'chat'] as const;
 
 const NAV_HREFS: Record<string, string | undefined> = {
   overview: '/dashboard',
   listings: '/dashboard/listings',
   companies: '/dashboard/companies',
   documents: '/dashboard/documents',
+  inquiries: '/dashboard/inquiries',
   chat: '/dashboard/chat',
 };
 
@@ -94,7 +95,7 @@ export function DashboardHeader() {
       <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 pb-3">
         {NAV_KEYS.map((k) => {
           const href = NAV_HREFS[k];
-          const label = t('dashboard.nav.' + k, k === 'chat' ? 'Chat' : k);
+          const label = t('dashboard.nav.' + k, k === 'chat' ? 'Chat' : k === 'inquiries' ? 'Dopyty' : k);
           const active = href && pathname === href;
           if (href) {
             return (
