@@ -8,7 +8,6 @@ import { PasswordInput } from '@/components/auth/password-input';
 
 export function RegisterForm() {
   const { t } = useT();
-
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -20,11 +19,15 @@ export function RegisterForm() {
     e.preventDefault();
     setErr(null);
     try {
-      await register.mutateAsync({ email, password, name } as never);
-      // Presmeruj na stranku "Skontrolujte e-mail"
-      router.push(`/verify-email-sent?email=${encodeURIComponent(email)}`);
+      await register.mutateAsync({ email, password, name });
+      router.push('/verify-email-sent?email=' + encodeURIComponent(email));
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Registrácia zlyhala';
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === 'object' && e && 'message' in e
+            ? String((e as { message: unknown }).message)
+            : t('register.submit') + ' failed';
       setErr(msg);
     }
   };
@@ -32,7 +35,7 @@ export function RegisterForm() {
   return (
     <form onSubmit={onSubmit} className="grid gap-3">
       <AuthInput
-        placeholder="Meno"
+        placeholder={t('register.name')}
         value={name}
         onChange={(e) => setName(e.target.value)}
         autoComplete="name"
@@ -40,7 +43,7 @@ export function RegisterForm() {
       <AuthInput
         type="email"
         required
-        placeholder="E-mail"
+        placeholder={t('register.email')}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         autoComplete="email"
@@ -51,11 +54,11 @@ export function RegisterForm() {
         required
         minLength={8}
         autoComplete="new-password"
-        placeholder="{t('register.password')}"
+        placeholder={t('register.password')}
       />
       {err ? <p className="text-sm text-[#c45c4a]">{err}</p> : null}
       <AuthButton type="submit" disabled={register.isPending}>
-        {register.isPending ? 'Zakladám…' : '{t('register.submit')}'}
+        {register.isPending ? t('register.submit') + '…' : t('register.submit')}
       </AuthButton>
       <AuthLink href="/login">{t('register.login')}</AuthLink>
     </form>

@@ -1,22 +1,31 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import { RegisterInput } from '../schemas';
-import { config } from '@/lib/config';
+import { http } from '@/lib/api/http';
 
-async function registerUser(data: RegisterInput) {
-  const res = await fetch(`${config.apiBaseUrl}/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
-  });
+type RegisterBody = {
+  email: string;
+  password: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+};
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || err.detail || 'Registrácia zlyhala');
-  }
+function splitName(data: RegisterBody) {
+  const raw = (data.name || '').trim();
+  const parts = raw.split(/\s+/).filter(Boolean);
+  const firstName = data.firstName || parts[0] || 'User';
+  const lastName = data.lastName || (parts.slice(1).join(' ') || firstName);
+  return {
+    email: data.email,
+    password: data.password,
+    firstName,
+    lastName,
+  };
+}
 
-  return res.json();
+async function registerUser(data: RegisterBody) {
+  return http.post('/users', splitName(data));
 }
 
 export function useRegister() {
