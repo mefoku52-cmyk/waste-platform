@@ -10,6 +10,7 @@ from app.modules.company_memberships.presentation.router import (
 )
 from app.modules.compliance.presentation.router import router as compliance_router
 from app.modules.documents.presentation.router import router as documents_router
+from app.modules.events.presentation.router import router as events_router
 from app.modules.inquiries.presentation.router import router as inquiries_router
 from app.modules.listings.presentation.router import router as listings_router
 from app.modules.notifications.presentation.router import router as notifications_router
@@ -35,3 +36,4 @@ api_router.include_router(listings_router)
 api_router.include_router(notifications_router)
 api_router.include_router(uploads_router)
 api_router.include_router(recommendations_router)
+api_router.include_router(events_router)
