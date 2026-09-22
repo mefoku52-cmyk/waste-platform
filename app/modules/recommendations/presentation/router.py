@@ -1,4 +1,4 @@
-from app.modules.recommendations.application.routing import calculate_route, search_carriers
+from app.modules.recommendations.application.routing import calculate_route
 
 """recommendations API router."""
 
@@ -92,7 +92,10 @@ async def get_route(
 @router.get("/carriers")
 async def get_carriers(
     near: str = Query(...),
-    current_user: object = Depends(require_current_user),
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
 ) -> dict:
     del current_user
-    return {"near": near, "items": search_carriers(near)}
+    service = RecommendationsService(session)
+    items = await service.logistics_candidates(near)
+    return {"near": near, "items": items, "source": "companies"}

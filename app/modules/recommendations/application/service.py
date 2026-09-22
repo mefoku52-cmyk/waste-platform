@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.companies.domain.enums import CompanyStatus
 from app.modules.companies.infrastructure.models import CompanyModel
+from app.modules.events.infrastructure.models import ActivityEventModel
 from app.modules.listings.infrastructure.models import ListingsModel
 from app.modules.recommendations.application.scoring import score_company
 from app.shared.domain.exceptions import NotFoundDomainError
@@ -20,6 +21,19 @@ class RecommendationsService:
         listing = await self._get_listing(listing_id)
         companies = await self._buyer_candidates(exclude_company_id=str(listing.company_id))
 
+        hits_by_company: dict[str, int] = {}
+        try:
+            result = await self._session.execute(
+                select(ActivityEventModel.company_id).where(
+                    ActivityEventModel.listing_id == str(listing.id),
+                    ActivityEventModel.company_id.is_not(None),
+                )
+            )
+            for cid in result.scalars().all():
+                key = str(cid)
+                hits_by_company[key] = hits_by_company.get(key, 0) + 1
+        except Exception:
+            hits_by_company = {}
         items: list[dict] = []
         for company in companies:
             score, reasons = score_company(
@@ -32,6 +46,7 @@ class RecommendationsService:
                 accepted_material_types=getattr(company, "accepted_material_types", None),
                 company_lat=company.latitude,
                 company_lng=company.longitude,
+                event_hits=hits_by_company.get(str(company.id), 0),
             )
             if score <= 0:
                 continue
@@ -74,3 +89,29 @@ class RecommendationsService:
             )
         )
         return list(result.scalars().all())
+
+    async def logistics_candidates(self, near: str = "") -> list[dict]:
+        needle = (near or "").strip().casefold()
+        companies = await self._buyer_candidates(exclude_company_id="")
+        items: list[dict] = []
+        for company in companies:
+            if not bool(company.logistics_capability):
+                continue
+            city = company.city or ""
+            if (
+                needle
+                and needle not in city.casefold()
+                and needle not in (company.legal_name or "").casefold()
+            ):
+                continue
+            items.append(
+                {
+                    "name": company.legal_name,
+                    "city": company.city,
+                    "lat": company.latitude,
+                    "lon": company.longitude,
+                    "source": "companies",
+                    "osmId": str(company.id),
+                }
+            )
+        return items

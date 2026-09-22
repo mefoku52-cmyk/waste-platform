@@ -31,7 +31,7 @@ async function fetchCarriers(near: string): Promise<Carrier[]> {
 export function FreightPanel({ near }: { near?: string }) {
   const enabled = !!near;
   const { data, isLoading, error } = useQuery({
-    queryKey: ['osm-carriers', near],
+    queryKey: ['company-carriers', near],
     queryFn: () => fetchCarriers(near as string),
     enabled,
   });
@@ -41,12 +41,12 @@ export function FreightPanel({ near }: { near?: string }) {
       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">Spedicia</p>
       <h2 className="mt-1 font-serif text-2xl">Dopravcovia v okoli</h2>
       <p className="mt-1 text-sm text-[#cbb98a]">
-        OSM vyhladavanie „doprava {near || ''}“. Nie objednavka.
+        Firmy s logistikou pri {near || 'destinacii'}. Nie objednavka.
       </p>
       {!near && <p className="mt-4 text-sm text-[#cbb98a]">Caka na mesto odberatela.</p>}
       {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">Hladam dopravcov…</p>}
       {error && <p className="mt-4 text-sm text-red-300">{(error as Error).message}</p>}
-      {data && data.length === 0 && <p className="mt-4 text-sm text-[#cbb98a]">OSM nenasiel dopravcu.</p>}
+      {data && data.length === 0 && <p className="mt-4 text-sm text-[#cbb98a]">V databaze nie je firma s logistikou pre toto miesto.</p>}
       <ul className="mt-4 space-y-2">
         {(data || []).map((row) => (
           <li key={row.name + row.lat} className="rounded-xl border border-[#d4af37]/25 p-3">

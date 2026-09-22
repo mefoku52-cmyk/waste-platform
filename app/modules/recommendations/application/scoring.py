@@ -21,6 +21,7 @@ def score_company(
     listing_lng: float | None,
     city: str | None,
     logistics_capability: bool,
+    event_hits: int = 0,
     accepted_material_types: str | None,
     company_lat: float | None,
     company_lng: float | None,
@@ -57,4 +58,8 @@ def score_company(
     if logistics_capability:
         score += 10
         reasons.append("logistics_capability")
+    hits = max(0, int(event_hits or 0))
+    if hits:
+        score += min(15, hits * 5)
+        reasons.append("listing_interest")
     return score, reasons
