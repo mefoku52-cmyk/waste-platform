@@ -8,6 +8,7 @@ import { RecommendationsPanel } from '../../../../features/recommendations/compo
 import { TransportPanel } from '../../../../features/recommendations/components/transport-panel';
 import { FreightPanel } from '../../../../features/recommendations/components/freight-panel';
 import { postListingViewed } from '../../../../features/recommendations/api';
+import { ListingInquiryButton } from '../../../../features/inquiries/components/listing-inquiry-button';
 
 type ListingData = {
   id: string;
@@ -68,6 +69,7 @@ export default function ListingDetailPage() {
           <p>Lokalita: {data.location}</p>
           <p>Stav: {data.status}</p>
           {data.description ? <p className="mt-2 text-[#cbb98a]">{data.description}</p> : null}
+          <ListingInquiryButton listingId={listingId} listingTitle={data.title} />
         </div>
       )}
       <RecommendationsPanel
