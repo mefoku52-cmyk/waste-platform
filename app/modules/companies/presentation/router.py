@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
+from app.modules.companies.application.rpo import lookup_ico
 from app.modules.companies.presentation.dependencies import (
     get_create_company_service,
     get_get_company_service,
@@ -40,6 +41,11 @@ def _is_admin(current_user) -> bool:
 
 
 router = APIRouter(prefix="/companies", tags=["companies"])
+
+
+@router.get("/rpo-check")
+async def rpo_check(ico: str, current_user=Depends(require_current_user)):
+    return lookup_ico(ico)
 
 
 @router.get(
