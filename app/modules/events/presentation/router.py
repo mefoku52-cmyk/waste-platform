@@ -4,7 +4,11 @@ from app.modules.events.infrastructure.models import ActivityEventModel
 from app.modules.events.presentation.schemas import EventIn, EventOut
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
-from app.shared.presentation.authorization import current_user_id, membership_company_ids
+from app.shared.presentation.authorization import (
+    current_user_id,
+    is_platform_admin,
+    membership_company_ids,
+)
 from app.shared.presentation.error_schemas import error_responses
 
 ALLOWED = {
@@ -49,3 +53,40 @@ async def create_event(
         if hasattr(result, "__await__"):
             await result
     return EventOut(id=str(row.id), eventType=row.event_type)
+
+
+@router.get(
+    "/reports",
+)
+async def list_reports(
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+    event_type: str = "user_reported",
+):
+    if not is_platform_admin(current_user):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    from sqlalchemy import desc, select
+
+    from app.modules.events.infrastructure.models import ActivityEventModel
+
+    q = await session.execute(
+        select(ActivityEventModel)
+        .where(ActivityEventModel.event_type == event_type)
+        .order_by(desc(ActivityEventModel.created_at))
+        .limit(100)
+    )
+    rows = q.scalars().all()
+    return {
+        "items": [
+            {
+                "id": str(r.id),
+                "eventType": r.event_type,
+                "actorUserId": r.actor_user_id,
+                "companyId": r.company_id,
+                "listingId": r.listing_id,
+                "payload": r.payload,
+                "createdAt": r.created_at.isoformat() if r.created_at else None,
+            }
+            for r in rows
+        ]
+    }

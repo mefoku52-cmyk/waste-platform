@@ -1,4 +1,33 @@
 'use client';
+import { useEffect, useState } from 'react';
+import { config } from '@/lib/config';
+import { tokenStore } from '@/lib/auth/token-store';
+
+function AdminReports() {
+  const [items, setItems] = useState<any[]>([]);
+  useEffect(() => {
+    const token = tokenStore.getAccessToken?.() || tokenStore.getToken?.();
+    fetch(`${config.apiBaseUrl}/events/reports`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((r) => r.json())
+      .then((d) => setItems(d.items || []))
+      .catch(() => setItems([]));
+  }, []);
+  if (!items.length) return <p className="mt-2 text-sm text-[#9a8f7c]">Ziadne nahlasenia.</p>;
+  return (
+    <ul className="mt-3 space-y-2 text-sm text-[#f3ead8]">
+      {items.map((it) => (
+        <li key={it.id} className="rounded-xl border border-[#d4af37]/20 p-3">
+          <p>{it.payload || it.eventType}</p>
+          <p className="text-xs text-[#9a8f7c]">{it.createdAt} · user {it.actorUserId}</p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+'use client';
 
 import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
 import { useAdminStats } from '@/features/admin';
@@ -123,7 +152,12 @@ export default function AdminPage() {
             <AuditTable />
           </section>
 
-        </main>
+        
+      <section className="mt-8 rounded-2xl border border-[#d4af37]/25 p-4">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">Nahlasenia</p>
+        <AdminReports />
+      </section>
+    </main>
 
       <DashboardFooter />
       </div>
