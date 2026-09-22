@@ -36,6 +36,10 @@ class RecommendationsService:
             hits_by_company = {}
         items: list[dict] = []
         for company in companies:
+            city = (company.city or "").strip()
+            materials = (getattr(company, "accepted_material_types", None) or "").strip()
+            if not city or not materials:
+                continue
             score, reasons = score_company(
                 listing_location=listing.location,
                 listing_material=listing.material_type,
