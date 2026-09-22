@@ -43,3 +43,16 @@ export async function getListingRecommendations(listingId: string): Promise<Reco
   }
   return body as RecommendationsResponse;
 }
+
+export async function postListingViewed(listingId: string): Promise<void> {
+  const token = localStorage.getItem('accessToken');
+  const res = await fetch(config.apiBaseUrl + '/events', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: 'Bearer ' + token } : {}),
+    },
+    body: JSON.stringify({ eventType: 'listing_viewed', listingId }),
+  });
+  if (!res.ok) return;
+}

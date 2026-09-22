@@ -1,12 +1,13 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { config } from '../../../../lib/config';
 import { RecommendationsPanel } from '../../../../features/recommendations/components/recommendations-panel';
 import { TransportPanel } from '../../../../features/recommendations/components/transport-panel';
 import { FreightPanel } from '../../../../features/recommendations/components/freight-panel';
+import { postListingViewed } from '../../../../features/recommendations/api';
 
 type ListingData = {
   id: string;
@@ -38,6 +39,11 @@ async function fetchListing(listingId: string): Promise<ListingData> {
 export default function ListingDetailPage() {
   const params = useParams<{ id: string }>();
   const listingId = params?.id;
+  useEffect(() => {
+    if (listingId) {
+      void postListingViewed(listingId);
+    }
+  }, [listingId]);
   const [destination, setDestination] = useState('');
   const { data, isLoading, error } = useQuery({
     queryKey: ['listing', listingId],
