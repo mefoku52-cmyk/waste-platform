@@ -24,11 +24,22 @@ async def lifespan(app: FastAPI):
 
 
 def _cors_origins() -> list[str]:
-    if isinstance(settings.CORS_ORIGINS, list):
-        return settings.CORS_ORIGINS
-    if isinstance(settings.CORS_ORIGINS, str) and settings.CORS_ORIGINS.strip():
-        return [settings.CORS_ORIGINS.strip()]
-    return ["http://127.0.0.1:3001", "http://localhost:3001"]
+    raw = settings.CORS_ORIGINS
+    if isinstance(raw, list):
+        origins = [str(item).strip() for item in raw if str(item).strip()]
+    elif isinstance(raw, str) and raw.strip():
+        origins = [part.strip() for part in raw.split(",") if part.strip()]
+    else:
+        origins = []
+    for extra in (
+        "http://127.0.0.1:3001",
+        "http://localhost:3001",
+        "https://trc-cmep.sk",
+        "https://www.trc-cmep.sk",
+    ):
+        if extra not in origins:
+            origins.append(extra)
+    return origins
 
 
 def create_app() -> FastAPI:
