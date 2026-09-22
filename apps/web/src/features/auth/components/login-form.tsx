@@ -32,7 +32,7 @@ export function LoginForm() {
       <AuthInput
         type="email"
         required
-        placeholder="E-mail"
+        placeholder={t("login.email")}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         autoComplete="email"
@@ -40,6 +40,7 @@ export function LoginForm() {
       <PasswordInput
         value={password}
         onChange={setPassword}
+        placeholder={t("login.password")}
         required
         minLength={8}
         autoComplete="current-password"
@@ -48,8 +49,8 @@ export function LoginForm() {
       <AuthButton type="submit" disabled={login.isPending}>
         {login.isPending ? t('login.pending') : t('login.submit')}
       </AuthButton>
-      <AuthLink href="/forgot-password">Zabudli ste heslo?</AuthLink>
-      <AuthLink href="/register">Nemáte účet? Založte ho.</AuthLink>
+      <AuthLink href="/forgot-password">{t('login.forgot')}</AuthLink>
+      <AuthLink href="/register">{t('login.register')}</AuthLink>
     </form>
   );
 }

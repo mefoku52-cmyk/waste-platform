@@ -1,10 +1,13 @@
 'use client';
+import { useT } from '@/lib/i18n/context';
 import { useState } from 'react';
 
 export function PasswordInput({
+  const { t } = useT();
+
   value,
   onChange,
-  placeholder = 'Heslo',
+  placeholder = 'Password',
   required,
   minLength,
   autoComplete,
