@@ -17,12 +17,12 @@
     "lastName": "Priezvisko"
   },
   "login": {
-    "title": "Prihlásenie",
-    "subtitle": "Prihláste sa do platformy",
+    "title": "Vstup na burzu",
+    "subtitle": "E-mailom. Žiadny zelený lístok.",
     "emailPlaceholder": "vas@email.sk",
     "passwordPlaceholder": "Vaše heslo",
-    "submit": "Prihlásiť sa",
-    "forgot": "Zabudnuté heslo?",
+    "submit": "Prihlásiť e-mailom",
+    "forgot": "Zabudli ste heslo?",
     "noAccount": "Nemáte účet?",
     "registerLink": "Zaregistrujte sa",
     "subtitle_company": "Vstup do firemného účtu",
@@ -34,7 +34,11 @@
     "errorInvalid": "Nesprávne meno alebo heslo",
     "errorFailed": "Prihlásenie zlyhalo",
     "errorGoogleFailed": "Google prihlásenie zlyhalo",
-    "platformSubtitle": "Platforma pre obchod s odpadmi, vedľajšími produktmi a sekundárnymi surovinami"
+    "platformSubtitle": "Platforma pre obchod s odpadmi, vedľajšími produktmi a sekundárnymi surovinami",
+    "email": "E-mail",
+    "password": "Heslo",
+    "pending": "Prihlasujem…",
+    "register": "Nemáte účet? Založte ho."
   },
   "dashboard": {
     "title": "Obehové materiály",
@@ -138,11 +142,16 @@
     "actions": "Možnosti"
   },
   "register": {
-    "title": "Registrácia",
-    "submit": "Vytvoriť účet",
+    "title": "Založte si účet",
+    "submit": "Založiť účet",
     "submitAlt": "Registrovať sa",
     "haveAccount": "Už máte účet?",
-    "loginLink": "Prihláste sa"
+    "loginLink": "Prihláste sa",
+    "subtitle": "Burza, ktorá dýcha.",
+    "name": "Meno",
+    "email": "E-mail",
+    "password": "Heslo (min. 8 znakov)",
+    "login": "Už máte účet? Prihláste sa."
   },
   "forgot": {
     "title": "Zabudnuté heslo",

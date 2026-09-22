@@ -17,11 +17,11 @@
     "lastName": "Last name"
   },
   "login": {
-    "title": "Sign in",
-    "subtitle": "Sign in to the platform",
+    "title": "Enter the exchange",
+    "subtitle": "By email. No green ticket.",
     "emailPlaceholder": "you@email.com",
     "passwordPlaceholder": "Your password",
-    "submit": "Sign in",
+    "submit": "Sign in with email",
     "forgot": "Forgot password?",
     "noAccount": "No account?",
     "registerLink": "Sign up",
@@ -34,7 +34,11 @@
     "errorInvalid": "Invalid email or password",
     "errorFailed": "Sign-in failed",
     "errorGoogleFailed": "Google sign-in failed",
-    "platformSubtitle": "Platform for trading waste, by-products and secondary raw materials"
+    "platformSubtitle": "Platform for trading waste, by-products and secondary raw materials",
+    "email": "Email",
+    "password": "Password",
+    "pending": "Signing in…",
+    "register": "No account? Create one."
   },
   "dashboard": {
     "title": "Circular Materials",
@@ -138,11 +142,16 @@
     "actions": "Actions"
   },
   "register": {
-    "title": "Register",
+    "title": "Create an account",
     "submit": "Create account",
     "submitAlt": "Sign up",
     "haveAccount": "Already have an account?",
-    "loginLink": "Sign in"
+    "loginLink": "Sign in",
+    "subtitle": "An exchange that breathes.",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password (min. 8 characters)",
+    "login": "Already have an account? Sign in."
   },
   "forgot": {
     "title": "Forgot password",

@@ -1,4 +1,5 @@
 'use client';
+import { useT } from '@/lib/i18n/context';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRegister } from '../hooks/use-register';
@@ -6,6 +7,8 @@ import { AuthButton, AuthInput, AuthLink } from '@/components/auth/auth-shell';
 import { PasswordInput } from '@/components/auth/password-input';
 
 export function RegisterForm() {
+  const { t } = useT();
+
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -48,13 +51,13 @@ export function RegisterForm() {
         required
         minLength={8}
         autoComplete="new-password"
-        placeholder="Heslo (min. 8 znakov)"
+        placeholder="{t('register.password')}"
       />
       {err ? <p className="text-sm text-[#c45c4a]">{err}</p> : null}
       <AuthButton type="submit" disabled={register.isPending}>
-        {register.isPending ? 'Zakladám…' : 'Založiť účet'}
+        {register.isPending ? 'Zakladám…' : '{t('register.submit')}'}
       </AuthButton>
-      <AuthLink href="/login">Už máte účet? Prihláste sa.</AuthLink>
+      <AuthLink href="/login">{t('register.login')}</AuthLink>
     </form>
   );
 }

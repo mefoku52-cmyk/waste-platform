@@ -17,11 +17,11 @@
     "lastName": "Nachname"
   },
   "login": {
-    "title": "Anmeldung",
-    "subtitle": "Melden Sie sich an",
+    "title": "Zur Börse",
+    "subtitle": "Per E-Mail. Kein grünes Ticket.",
     "emailPlaceholder": "sie@email.de",
     "passwordPlaceholder": "Ihr Passwort",
-    "submit": "Anmelden",
+    "submit": "Mit E-Mail anmelden",
     "forgot": "Passwort vergessen?",
     "noAccount": "Kein Konto?",
     "registerLink": "Registrieren",
@@ -34,7 +34,11 @@
     "errorInvalid": "Ungültige E-Mail oder Passwort",
     "errorFailed": "Anmeldung fehlgeschlagen",
     "errorGoogleFailed": "Google-Anmeldung fehlgeschlagen",
-    "platformSubtitle": "Plattform für den Handel mit Abfällen, Nebenprodukten und Sekundärrohstoffen"
+    "platformSubtitle": "Plattform für den Handel mit Abfällen, Nebenprodukten und Sekundärrohstoffen",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "pending": "Anmeldung…",
+    "register": "Kein Konto? Jetzt anlegen."
   },
   "dashboard": {
     "title": "Kreislaufmaterialien",
@@ -138,11 +142,16 @@
     "actions": "Optionen"
   },
   "register": {
-    "title": "Registrieren",
+    "title": "Konto anlegen",
     "submit": "Konto erstellen",
     "submitAlt": "Registrieren",
     "haveAccount": "Sie haben bereits ein Konto?",
-    "loginLink": "Anmelden"
+    "loginLink": "Anmelden",
+    "subtitle": "Eine Börse, die atmet.",
+    "name": "Name",
+    "email": "E-Mail",
+    "password": "Passwort (min. 8 Zeichen)",
+    "login": "Schon ein Konto? Anmelden."
   },
   "forgot": {
     "title": "Passwort vergessen",

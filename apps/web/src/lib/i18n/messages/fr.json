@@ -17,11 +17,11 @@
     "lastName": "Nom"
   },
   "login": {
-    "title": "Connexion",
-    "subtitle": "Connectez-vous à la plateforme",
+    "title": "Accéder à la bourse",
+    "subtitle": "Par e-mail. Pas de ticket vert.",
     "emailPlaceholder": "vous@email.fr",
     "passwordPlaceholder": "Votre mot de passe",
-    "submit": "Se connecter",
+    "submit": "Se connecter par e-mail",
     "forgot": "Mot de passe oublié ?",
     "noAccount": "Pas de compte ?",
     "registerLink": "S'inscrire",
@@ -34,7 +34,11 @@
     "errorInvalid": "E-mail ou mot de passe incorrect",
     "errorFailed": "Échec de la connexion",
     "errorGoogleFailed": "Échec de la connexion Google",
-    "platformSubtitle": "Plateforme d'échange de déchets, sous-produits et matières premières secondaires"
+    "platformSubtitle": "Plateforme d'échange de déchets, sous-produits et matières premières secondaires",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "pending": "Connexion…",
+    "register": "Pas de compte ? Créez-en un."
   },
   "dashboard": {
     "title": "Matériaux circulaires",
@@ -138,11 +142,16 @@
     "actions": "Actions"
   },
   "register": {
-    "title": "Inscription",
-    "submit": "Créer un compte",
+    "title": "Créer un compte",
+    "submit": "Créer le compte",
     "submitAlt": "S'inscrire",
     "haveAccount": "Vous avez déjà un compte ?",
-    "loginLink": "Se connecter"
+    "loginLink": "Se connecter",
+    "subtitle": "Une bourse qui respire.",
+    "name": "Nom",
+    "email": "E-mail",
+    "password": "Mot de passe (min. 8 caractères)",
+    "login": "Déjà un compte ? Connectez-vous."
   },
   "forgot": {
     "title": "Mot de passe oublié",

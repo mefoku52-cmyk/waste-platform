@@ -1,4 +1,5 @@
 'use client';
+import { useT } from '@/lib/i18n/context';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLogin } from '../hooks/use-login';
@@ -6,6 +7,8 @@ import { AuthButton, AuthInput, AuthLink } from '@/components/auth/auth-shell';
 import { PasswordInput } from '@/components/auth/password-input';
 
 export function LoginForm() {
+  const { t } = useT();
+
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,7 +46,7 @@ export function LoginForm() {
       />
       {err ? <p className="text-sm text-[#c45c4a]">{err}</p> : null}
       <AuthButton type="submit" disabled={login.isPending}>
-        {login.isPending ? 'Prihlasujem…' : 'Prihlásiť e-mailom'}
+        {login.isPending ? t('login.pending') : t('login.submit')}
       </AuthButton>
       <AuthLink href="/forgot-password">Zabudli ste heslo?</AuthLink>
       <AuthLink href="/register">Nemáte účet? Založte ho.</AuthLink>
