@@ -65,6 +65,8 @@ class ListingsService:
             raise ValidationDomainError(
                 "Publikovať môže len overená firma (status verified). Najprv over firmu."
             )
+        if not (getattr(existing, "location", None) or "").strip():
+            raise ValidationDomainError("Publikovať môžeš len ponuku s lokalitou.")
 
         existing.status = ListingsStatus.PUBLISHED
         existing.updated_at = datetime.now()
