@@ -91,7 +91,7 @@ export const CompaniesTable = () => {
   const isAdmin = useIsPlatformAdmin();
 
   const mutation = useMutation({
-    mutationFn: ({ id, toStatus }: { id: string; toStatus: string }) =>
+    mutationFn: ({ id, toStatus, ico }: { id: string; toStatus: string; ico?: string | null }) =>
       (async () => {
         if (toStatus === 'verified') {
           const msg = await checkRpoBeforeVerify(ico);
