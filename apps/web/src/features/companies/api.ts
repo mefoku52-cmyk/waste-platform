@@ -18,4 +18,14 @@ export const companiesApi = {
 
   transitionStatus: (id: string, toStatus: string) =>
     http.patch<Company>(`/companies/${id}/status`, { toStatus }),
+
+  rpoCheck: (ico: string) =>
+    http.get<{
+      ok: boolean;
+      exists: boolean;
+      ico: string | null;
+      legalName: string | null;
+      city: string | null;
+      reason: string;
+    }>(`/companies/rpo-check?ico=${encodeURIComponent(ico)}`),
 };

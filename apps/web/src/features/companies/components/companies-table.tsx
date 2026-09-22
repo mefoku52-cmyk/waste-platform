@@ -1,3 +1,22 @@
+
+async function checkRpoBeforeVerify(ico?: string | null) {
+  const raw = (ico || "").trim();
+  if (!raw) return "IČO chýba. RPO sa neda overit.";
+  try {
+    const mod = await import("../api");
+    const api = (mod as any).companiesApi || (mod as any).companyApi;
+    const res = await api.rpoCheck(raw);
+    if (!res.exists) {
+      if (res.reason === "ico_invalid") return "IČO je neplatné (musi mat 8 cislic). RPO: neexistuje.";
+      if (res.reason === "not_found") return "IČO " + (res.ico || raw) + " v RPO neexistuje.";
+      return "RPO overenie zlyhalo (" + res.reason + ").";
+    }
+    return "RPO OK: " + (res.legalName || "") + (res.city ? " · " + res.city : "");
+  } catch (e: any) {
+    return "RPO sa nepodarilo overit.";
+  }
+}
+
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -73,7 +92,13 @@ export const CompaniesTable = () => {
 
   const mutation = useMutation({
     mutationFn: ({ id, toStatus }: { id: string; toStatus: string }) =>
-      companiesApi.transitionStatus(id, toStatus),
+      (async () => {
+        if (toStatus === 'verified') {
+          const msg = await checkRpoBeforeVerify(ico);
+          window.alert(msg);
+        }
+        return companiesApi.transitionStatus(id, toStatus);
+      })(),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['companies'] }),
   });
 
@@ -143,7 +168,7 @@ export const CompaniesTable = () => {
                           <ActionButton
                             variant="primary"
                             disabled={mutation.isPending}
-                            onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified' })}
+                            onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified', ico: company.taxIdentifier || company.tax_identifier })}
                           >
                             Overiť
                           </ActionButton>
@@ -171,7 +196,7 @@ export const CompaniesTable = () => {
                         <ActionButton
                           variant="primary"
                           disabled={mutation.isPending}
-                          onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified' })}
+                          onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified', ico: company.taxIdentifier || company.tax_identifier })}
                         >
                           Reaktivovať
                         </ActionButton>
@@ -191,7 +216,7 @@ export const CompaniesTable = () => {
                         <ActionButton
                           variant="primary"
                           disabled={mutation.isPending}
-                          onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified' })}
+                          onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified', ico: company.taxIdentifier || company.tax_identifier })}
                         >
                           Aktivovať
                         </ActionButton>
