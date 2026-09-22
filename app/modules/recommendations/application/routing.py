@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import time
 from functools import lru_cache
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -18,9 +19,16 @@ def _get_json(url: str) -> dict | list:
     req = Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
     try:
         with urlopen(req, timeout=12) as resp:
-            return json.loads(resp.read().decode("utf-8"))
+            raw = resp.read().decode("utf-8", "replace")
     except HTTPError as exc:
-        raise ValueError(exc.read().decode("utf-8", "replace")[:200] or str(exc)) from exc
+        if exc.code == 429:
+            raise ValueError("Geokodovanie pretazene. Skus o minutu.") from exc
+        raise ValueError("Externy sluzba vratila HTTP " + str(exc.code)) from exc
+    except URLError as exc:
+        raise ValueError("Siet k mape zlyhala") from exc
+    if raw.lstrip().startswith("<"):
+        raise ValueError("Geokodovanie pretazene. Skus o minutu.")
+    return json.loads(raw)
 
 
 @lru_cache(maxsize=256)
@@ -83,6 +91,7 @@ def calculate_route(
 ) -> dict:
     try:
         origin = geocode(origin_text)
+        time.sleep(1.1)
         dest = geocode(destination_text)
         highway = osrm_route(origin, dest, exclude_motorway=False)
         try:
