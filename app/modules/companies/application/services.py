@@ -2,6 +2,7 @@ from uuid import UUID
 
 from app.modules.companies.application.dto import CompanyDTO
 from app.modules.companies.application.mappers import to_company_dto
+from app.modules.companies.application.rpo import lookup_ico
 from app.modules.companies.domain.entities import Company
 from app.modules.companies.domain.enums import CompanyStatus, CompanyType
 from app.modules.companies.domain.repositories import CompanyRepository
@@ -35,6 +36,7 @@ class CreateCompanyService:
         trading_name: str | None,
         registration_number: str,
         tax_identifier: str | None,
+        vat_identifier: str | None = None,
         company_type: str,
         email: str | None,
         phone: str | None,
@@ -52,6 +54,9 @@ class CreateCompanyService:
         actor_user_id: UUID | None,
     ) -> CompanyDTO:
         now = self.clock.now()
+        rpo = lookup_ico(tax_identifier)
+        if not rpo.get("exists"):
+            raise ValueError("ICO_NOT_FOUND")
         company = Company(
             id=self.uuid_generator.new(),
             status=CompanyStatus.DRAFT,
@@ -59,6 +64,7 @@ class CreateCompanyService:
             trading_name=trading_name,
             registration_number=registration_number,
             tax_identifier=tax_identifier,
+            vat_identifier=vat_identifier,
             company_type=CompanyType(company_type),
             email=email,
             phone=phone,
@@ -164,6 +170,7 @@ class UpdateCompanyService:
         legal_name: str | None,
         trading_name: str | None,
         tax_identifier: str | None,
+        vat_identifier: str | None = None,
         email: str | None,
         phone: str | None,
         website_url: str | None,
@@ -184,6 +191,8 @@ class UpdateCompanyService:
             company.trading_name = trading_name
         if tax_identifier is not None:
             company.tax_identifier = tax_identifier
+        if vat_identifier is not None:
+            company.vat_identifier = vat_identifier
         if email is not None:
             company.email = email
         if phone is not None:

@@ -15,6 +15,7 @@ class CompanyModel(Base):
         String(128), nullable=False, unique=True, index=True
     )
     tax_identifier: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    vat_identifier: Mapped[str | None] = mapped_column(String(32), nullable=True)
     company_type: Mapped[str] = mapped_column(String(32), nullable=False)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(64), nullable=True)

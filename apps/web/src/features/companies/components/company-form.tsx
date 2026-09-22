@@ -35,6 +35,7 @@ export const CompanyForm = () => {
       email: data.email || null,
       tradingName: data.tradingName || null,
       taxIdentifier: data.taxIdentifier || null,
+      vatIdentifier: data.vatIdentifier || null,
       phone: data.phone || null,
     };
     createCompany(payload as any, {
@@ -61,11 +62,14 @@ export const CompanyForm = () => {
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="IČO" error={errors.registrationNumber?.message}>
+        <FormField label="Registracne cislo" error={errors.registrationNumber?.message}>
           <Input {...register('registrationNumber')} disabled={isPending} />
         </FormField>
-        <FormField label="DIČ" error={errors.taxIdentifier?.message}>
-          <Input {...register('taxIdentifier')} disabled={isPending} />
+        <FormField label="IČO" error={errors.taxIdentifier?.message}>
+          <Input {...register('taxIdentifier')} disabled={isPending} placeholder="8 cislic" />
+        </FormField>
+        <FormField label="DIČ" error={errors.vatIdentifier?.message}>
+          <Input {...register('vatIdentifier')} disabled={isPending} />
         </FormField>
       </div>
 

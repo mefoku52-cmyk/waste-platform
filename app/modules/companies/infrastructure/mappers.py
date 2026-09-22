@@ -13,6 +13,7 @@ def to_domain(model: CompanyModel) -> Company:
         trading_name=model.trading_name,
         registration_number=model.registration_number,
         tax_identifier=model.tax_identifier,
+        vat_identifier=getattr(model, "vat_identifier", None),
         company_type=CompanyType(model.company_type),
         email=model.email,
         phone=model.phone,

@@ -15,6 +15,7 @@ class Company(AuditFields):
     trading_name: str | None
     registration_number: str
     tax_identifier: str | None
+    vat_identifier: str | None
     company_type: CompanyType
     email: str | None
     phone: str | None

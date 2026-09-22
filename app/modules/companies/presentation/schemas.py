@@ -20,6 +20,7 @@ class CompanyCreateRequest(BaseModel):
     acceptedMaterialTypes: str | None = None
     tradingName: str | None = None
     taxIdentifier: str | None = None
+    vatIdentifier: str | None = None
     email: str | None = None
     phone: str | None = None
     websiteUrl: HttpUrl | None = None
@@ -33,6 +34,7 @@ class CompanyUpdateRequest(BaseModel):
     legalName: str | None = None
     tradingName: str | None = None
     taxIdentifier: str | None = None
+    vatIdentifier: str | None = None
     email: str | None = None
     phone: str | None = None
     websiteUrl: HttpUrl | None = None
@@ -51,6 +53,7 @@ class CompanyData(BaseModel):
     tradingName: str | None
     registrationNumber: str
     taxIdentifier: str | None
+    vatIdentifier: str | None = None
     companyType: CompanyType
     email: str | None
     phone: str | None

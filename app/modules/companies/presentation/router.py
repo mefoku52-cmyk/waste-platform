@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.modules.companies.application.rpo import lookup_ico
 from app.modules.companies.presentation.dependencies import (
@@ -108,27 +108,33 @@ async def create_company(
 
         raise ForbiddenDomainError("Overenie firmy môže vykonať len administrátor.")
 
-    dto = await service.execute(
-        legal_name=payload.legalName,
-        trading_name=payload.tradingName,
-        registration_number=payload.registrationNumber,
-        tax_identifier=payload.taxIdentifier,
-        company_type=payload.companyType,
-        email=payload.email,
-        phone=payload.phone,
-        website_url=str(payload.websiteUrl) if payload.websiteUrl else None,
-        country_code=payload.countryCode,
-        address_line_1=payload.addressLine1,
-        address_line_2=payload.addressLine2,
-        city=payload.city,
-        postal_code=payload.postalCode,
-        latitude=payload.latitude,
-        longitude=payload.longitude,
-        seller_capability=payload.sellerCapability,
-        buyer_capability=payload.buyerCapability,
-        logistics_capability=payload.logisticsCapability,
-        actor_user_id=current_user.user.id,
-    )
+    try:
+        dto = await service.execute(
+            legal_name=payload.legalName,
+            trading_name=payload.tradingName,
+            registration_number=payload.registrationNumber,
+            tax_identifier=payload.taxIdentifier,
+            vat_identifier=getattr(payload, "vatIdentifier", None),
+            company_type=payload.companyType,
+            email=payload.email,
+            phone=payload.phone,
+            website_url=str(payload.websiteUrl) if payload.websiteUrl else None,
+            country_code=payload.countryCode,
+            address_line_1=payload.addressLine1,
+            address_line_2=payload.addressLine2,
+            city=payload.city,
+            postal_code=payload.postalCode,
+            latitude=payload.latitude,
+            longitude=payload.longitude,
+            seller_capability=payload.sellerCapability,
+            buyer_capability=payload.buyerCapability,
+            logistics_capability=payload.logisticsCapability,
+            actor_user_id=current_user.user.id,
+        )
+    except ValueError as exc:
+        if str(exc) == "ICO_NOT_FOUND":
+            raise HTTPException(status_code=400, detail="IČO v RPO neexistuje") from exc
+        raise
     return CompanyResponse(data=to_company_data(dto))
 
 
@@ -164,6 +170,7 @@ async def update_company(
         legal_name=payload.legalName,
         trading_name=payload.tradingName,
         tax_identifier=payload.taxIdentifier,
+        vat_identifier=getattr(payload, "vatIdentifier", None),
         email=payload.email,
         phone=payload.phone,
         website_url=str(payload.websiteUrl) if payload.websiteUrl else None,
