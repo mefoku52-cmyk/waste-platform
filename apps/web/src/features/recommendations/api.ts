@@ -13,6 +13,7 @@ export type RecommendationCandidate = {
   prediction_score?: number | null;
   prediction_status?: 'active' | 'disabled' | 'unavailable' | 'locked' | string | null;
   prediction_applied?: boolean | null;
+  combined_score?: number | null;
 };
 
 export type RecommendationsResponse = {

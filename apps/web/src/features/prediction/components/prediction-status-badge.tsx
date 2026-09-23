@@ -16,19 +16,19 @@ type Props = {
 const COPY: Record<string, { label: string; hint: string }> = {
   active: {
     label: "Prediction active",
-    hint: "Structured prediction is attached to this recommendation.",
+    hint: "Structured prediction is attached to this match.",
   },
   locked: {
     label: "Prediction locked",
-    hint: "Available with PRO. Current match uses the existing rule score.",
+    hint: "Available with PRO. Current match uses the rule score.",
   },
   disabled: {
     label: "Prediction disabled",
-    hint: "The service is turned off. Current match uses the existing rule score.",
+    hint: "The service is turned off. Current match uses the rule score.",
   },
   unavailable: {
     label: "Prediction unavailable",
-    hint: "Temporarily unavailable. Current match uses the existing rule score.",
+    hint: "Temporarily unavailable. Current match uses the rule score.",
   },
 };
 
@@ -39,10 +39,12 @@ export function PredictionStatusBadge({ status, score, applied }: Props) {
     key === "active" && applied === true && typeof score === "number";
 
   return (
-    <div data-prediction-status={key}>
-      <strong>{copy.label}</strong>
+    <div className="mt-2 text-xs text-[#9a8b63]" data-prediction-status={key}>
+      <p className="font-semibold text-[#d4af37]">{copy.label}</p>
       <p>{copy.hint}</p>
-      {showScore ? <p>Predicted interest {Math.round(score * 100)}%</p> : null}
+      {showScore ? (
+        <p>Predicted interest {Math.round(score * 100)}%</p>
+      ) : null}
     </div>
   );
 }
