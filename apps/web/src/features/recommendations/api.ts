@@ -9,6 +9,10 @@ export type RecommendationCandidate = {
   logisticsCapability: boolean;
   score: number;
   reasons: string[];
+  rule_score?: number | null;
+  prediction_score?: number | null;
+  prediction_status?: 'active' | 'disabled' | 'unavailable' | 'locked' | string | null;
+  prediction_applied?: boolean | null;
 };
 
 export type RecommendationsResponse = {
@@ -29,17 +33,24 @@ function errorDetail(body: unknown, fallback: string): string {
   return fallback;
 }
 
-export async function getListingRecommendations(listingId: string): Promise<RecommendationsResponse> {
+export async function getListingRecommendations(
+  listingId: string,
+): Promise<RecommendationsResponse> {
   const token = localStorage.getItem('accessToken');
-  const res = await fetch(config.apiBaseUrl + '/recommendations/listings/' + listingId, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: 'Bearer ' + token } : {}),
+  const res = await fetch(
+    config.apiBaseUrl + '/recommendations/listings/' + listingId,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: 'Bearer ' + token } : {}),
+      },
     },
-  });
+  );
   const body = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(errorDetail(body, 'HTTP ' + res.status + ' Recommendations request failed'));
+    throw new Error(
+      errorDetail(body, 'HTTP ' + res.status + ' Recommendations request failed'),
+    );
   }
   return body as RecommendationsResponse;
 }
