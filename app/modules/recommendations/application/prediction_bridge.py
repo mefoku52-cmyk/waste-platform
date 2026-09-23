@@ -19,7 +19,7 @@ from app.modules.prediction.application.recommendation_composer import (
 
 class _FixedScorer:
     def __init__(self, score: float) -> None:
-        self._score = score
+        self._score = score / 100.0 if score > 1.0 else score
 
     def __call__(self, candidate: Any) -> float:
         return self._score
