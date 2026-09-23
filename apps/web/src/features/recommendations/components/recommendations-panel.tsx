@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRecommendations } from '../hooks/use-recommendations';
+import { RecommendationPredictionSlot } from "@/features/recommendations/components/recommendation-prediction-slot";
 
 const REASON_LABEL: Record<string, string> = {
   verified_buyer: 'overeny odberatel',
@@ -69,6 +70,8 @@ export function RecommendationsPanel({
         <ul className="mt-4 space-y-3">
           {data.items.map((item) => (
             <li key={item.companyId} className="rounded-xl border border-[#d4af37]/25 bg-[#0b0b0b] p-4">
+            <RecommendationPredictionSlot item={item} />
+
               <div className="flex items-baseline justify-between gap-3">
                 <p className="font-semibold text-[#f3e6c4]">{item.legalName}</p>
                 <p className="text-sm text-[#d4af37]">skore {item.score}</p>
