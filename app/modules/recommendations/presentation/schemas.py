@@ -18,6 +18,7 @@ class RecommendationCandidate(BaseModel):
     rule_score: float | None = None
     prediction_score: float | None = None
     prediction_status: str | None = None
+    combined_score: float | None = None
     prediction_applied: bool | None = None
 
 
