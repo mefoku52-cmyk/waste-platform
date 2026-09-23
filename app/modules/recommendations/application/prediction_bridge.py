@@ -21,10 +21,7 @@ class _FixedScorer:
     def __init__(self, score: float) -> None:
         self._score = score
 
-    def score_company(self, candidate: Any) -> float:
-        return self._score
-
-    def score(self, candidate: Any) -> float:
+    def __call__(self, candidate: Any) -> float:
         return self._score
 
 
@@ -67,9 +64,7 @@ def _from_combined(result: Any, rule_score: float) -> dict[str, Any]:
         combined = getattr(result, "combined_score", None)
     if combined is None:
         combined = getattr(result, "score", None)
-    status = "unavailable"
-    if applied:
-        status = "active"
+    status = "active" if applied else "unavailable"
     pred_out = float(pred) if isinstance(pred, (int, float)) else None
     if pred_out == 0.0 and not applied:
         pred_out = None
@@ -84,16 +79,13 @@ def _from_combined(result: Any, rule_score: float) -> dict[str, Any]:
 
 
 async def predict_one(rule_score: float, item: Mapping[str, Any]) -> dict[str, Any]:
-    try:
-        adapter = RecommendationPredictionAdapter(
-            base_scorer=_FixedScorer(rule_score),
-            prediction_provider=BaselinePredictionProvider(),
-            composer=RecommendationScoreComposer(),
-        )
-        result = await adapter.score(item, prediction_context=_context(item))
-        return _from_combined(result, rule_score)
-    except Exception:
-        return _empty(rule_score)
+    adapter = RecommendationPredictionAdapter(
+        base_scorer=_FixedScorer(rule_score),
+        prediction_provider=BaselinePredictionProvider(),
+        composer=RecommendationScoreComposer(),
+    )
+    result = await adapter.score(item, prediction_context=_context(item))
+    return _from_combined(result, rule_score)
 
 
 async def enrich_recommendation_item(item: Mapping[str, Any]) -> dict[str, Any]:
