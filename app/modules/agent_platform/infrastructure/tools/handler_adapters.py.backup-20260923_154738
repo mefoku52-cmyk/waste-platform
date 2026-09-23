@@ -1,0 +1,55 @@
+"""Adapters from Agent Platform tools to existing CMEP services."""
+
+from collections.abc import Awaitable, Callable
+from typing import Any
+
+from ...application.tools.tool_handler import ToolHandler
+from ...domain.tools.tool_request import ToolRequest
+from ...domain.tools.tool_result import ToolResult
+
+
+class CallableToolHandler(ToolHandler):
+    """Adapts an injected async application-service callable."""
+
+    def __init__(
+        self,
+        tool_name: str,
+        callback: Callable[[ToolRequest], Awaitable[Any]],
+    ) -> None:
+        self.tool_name = tool_name
+        self.callback = callback
+
+    async def handle(self, request: ToolRequest) -> ToolResult:
+        if request.tool_name != self.tool_name:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="handler_tool_mismatch",
+                error_message="Handler is registered for another tool",
+            )
+
+        data = await self.callback(request)
+
+        return ToolResult(
+            request_id=request.request_id,
+            tool_name=request.tool_name,
+            success=True,
+            data=data,
+        )
+
+
+class UnwiredToolHandler(ToolHandler):
+    """Safe placeholder until an existing CMEP service is injected."""
+
+    def __init__(self, tool_name: str) -> None:
+        self.tool_name = tool_name
+
+    async def handle(self, request: ToolRequest) -> ToolResult:
+        return ToolResult(
+            request_id=request.request_id,
+            tool_name=request.tool_name,
+            success=False,
+            error_code="tool_not_wired",
+            error_message="Tool handler is not connected to a CMEP service",
+        )

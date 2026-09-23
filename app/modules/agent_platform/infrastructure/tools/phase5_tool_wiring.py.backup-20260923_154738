@@ -1,0 +1,40 @@
+"""Phase 5 tool wiring."""
+
+from collections.abc import Mapping
+
+from .cmep_tool_dispatcher import CMEPToolDispatcher
+from .dispatcher_tool_executor import DispatcherToolExecutor
+from .handler_adapters import UnwiredToolHandler
+from .in_memory_tool_handler_registry import InMemoryToolHandlerRegistry
+from .in_memory_tool_registry import InMemoryToolRegistry
+from .registry_tool_guard import RegistryToolGuard
+from .safe_tool_registry import SafeToolRegistry
+from .tool_catalog import build_initial_tool_catalog
+
+
+def build_phase5_executor(*, handler_overrides: Mapping[str, object] | None = None):
+    """Build registry -> guard -> dispatcher -> executor."""
+
+    raw_registry = InMemoryToolRegistry()
+    tool_catalog = build_initial_tool_catalog()
+
+    for definition in tool_catalog:
+        raw_registry.register(definition)
+
+    registry = SafeToolRegistry(raw_registry)
+    handlers = InMemoryToolHandlerRegistry()
+    overrides = dict(handler_overrides or {})
+
+    for definition in tool_catalog:
+        handler = overrides.get(definition.name)
+        if handler is None:
+            handler = UnwiredToolHandler(definition.name)
+        handlers.register(definition.name, handler)
+
+    dispatcher = CMEPToolDispatcher(
+        registry=registry,
+        guard=RegistryToolGuard(registry),
+        handlers=handlers,
+    )
+
+    return DispatcherToolExecutor(dispatcher)

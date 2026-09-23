@@ -1,0 +1,292 @@
+"""Phase 5 wiring tests."""
+
+from datetime import UTC
+
+import pytest
+
+from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
+from app.modules.agent_platform.infrastructure.tools.phase5_tool_wiring import (
+    build_phase5_executor,
+)
+
+EXPECTED_TOOLS = {
+    "cmep.user.get_profile",
+    "cmep.company.search",
+    "cmep.listing.search",
+    "cmep.inquiry.prepare",
+    "cmep.inquiry.send",
+    "cmep.notifications.read",
+    "cmep.prediction.read",
+    "cmep.recommendations.read",
+    "external.web.search",
+}
+
+
+@pytest.mark.asyncio
+async def test_all_catalog_tools_have_safe_handlers():
+    executor = build_phase5_executor()
+
+    for index, tool_name in enumerate(sorted(EXPECTED_TOOLS)):
+        result = await executor.execute(
+            ToolRequest(
+                request_id=f"phase5-{index}",
+                tool_name=tool_name,
+                actor_id="user-1",
+                actor_type="user",
+                arguments={},
+                reason="phase5 wiring test",
+            )
+        )
+
+        assert result.success is False
+        assert result.error_code == "tool_not_wired"
+
+
+@pytest.mark.asyncio
+async def test_missing_service_never_becomes_fake_success():
+    executor = build_phase5_executor()
+
+    result = await executor.execute(
+        ToolRequest(
+            request_id="phase5-safe",
+            tool_name="cmep.company.search",
+            actor_id="user-1",
+            actor_type="user",
+            arguments={"q": "test"},
+            reason="phase5 safety test",
+        )
+    )
+
+    assert result.success is False
+    assert result.error_code == "tool_not_wired"
+
+
+@pytest.mark.asyncio
+async def test_company_search_tool_success():
+    from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
+    from app.modules.agent_platform.infrastructure.tools.handler_adapters import (
+        CompanySearchToolHandler,
+    )
+
+    class FakeCompanyService:
+        def __init__(self):
+            self.calls = []
+
+        async def execute(self, **kwargs):
+            self.calls.append(kwargs)
+            return [{"id": "company-1", "legal_name": "Acme"}], 1
+
+    service = FakeCompanyService()
+    handler = CompanySearchToolHandler(
+        service=service,
+        is_platform_admin=False,
+        company_ids=("company-1", "company-2"),
+    )
+
+    result = await handler(
+        ToolRequest(
+            request_id="req-company-success",
+            tool_name="cmep.company.search",
+            actor_id="user-1",
+            actor_type="user",
+            arguments={
+                "q": "Acme",
+                "page": 1,
+                "page_size": 25,
+            },
+            reason="company search",
+        )
+    )
+
+    assert result.success is True
+    assert result.data["total"] == 1
+    assert result.data["items"] == [{"id": "company-1", "legal_name": "Acme"}]
+
+    assert service.calls[0]["company_ids"] == ["company-1", "company-2"]
+    assert service.calls[0]["q"] == "Acme"
+
+
+@pytest.mark.asyncio
+async def test_company_search_tool_empty_result():
+    from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
+    from app.modules.agent_platform.infrastructure.tools.handler_adapters import (
+        CompanySearchToolHandler,
+    )
+
+    class FakeCompanyService:
+        async def execute(self, **kwargs):
+            return [], 0
+
+    handler = CompanySearchToolHandler(
+        service=FakeCompanyService(),
+        is_platform_admin=False,
+        company_ids=("company-1",),
+    )
+
+    result = await handler(
+        ToolRequest(
+            request_id="req-company-empty",
+            tool_name="cmep.company.search",
+            actor_id="user-1",
+            actor_type="user",
+            arguments={"q": "does-not-exist"},
+            reason="company search",
+        )
+    )
+
+    assert result.success is True
+    assert result.data["items"] == []
+    assert result.data["total"] == 0
+
+
+@pytest.mark.asyncio
+async def test_company_search_tool_denies_missing_company_scope():
+    from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
+    from app.modules.agent_platform.infrastructure.tools.handler_adapters import (
+        CompanySearchToolHandler,
+    )
+
+    class FakeCompanyService:
+        async def execute(self, **kwargs):
+            raise AssertionError("service must not be called")
+
+    handler = CompanySearchToolHandler(
+        service=FakeCompanyService(),
+        is_platform_admin=False,
+        company_ids=(),
+    )
+
+    result = await handler(
+        ToolRequest(
+            request_id="req-company-denied",
+            tool_name="cmep.company.search",
+            actor_id="user-1",
+            actor_type="user",
+            arguments={"q": "Acme"},
+            reason="company search",
+        )
+    )
+
+    assert result.success is False
+    assert result.error_code == "company_access_denied"
+
+
+@pytest.mark.asyncio
+async def test_company_search_tool_cannot_override_authorized_scope():
+    from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
+    from app.modules.agent_platform.infrastructure.tools.handler_adapters import (
+        CompanySearchToolHandler,
+    )
+
+    class FakeCompanyService:
+        def __init__(self):
+            self.calls = []
+
+        async def execute(self, **kwargs):
+            self.calls.append(kwargs)
+            return [], 0
+
+    service = FakeCompanyService()
+
+    handler = CompanySearchToolHandler(
+        service=service,
+        is_platform_admin=False,
+        company_ids=("authorized-company",),
+    )
+
+    result = await handler(
+        ToolRequest(
+            request_id="req-company-scope",
+            tool_name="cmep.company.search",
+            actor_id="user-1",
+            actor_type="user",
+            arguments={
+                "q": "Acme",
+                # Deliberately hostile model argument.
+                "company_ids": ["unauthorized-company"],
+            },
+            reason="company search",
+        )
+    )
+
+    assert result.success is False
+    assert result.error_code == "invalid_arguments"
+    assert service.calls == []
+
+
+def test_company_search_phase5_factory_registers_existing_capability():
+    from app.modules.agent_platform.infrastructure.tools.phase5_tool_wiring import (
+        build_company_search_phase5_executor,
+    )
+
+    class FakeHandler:
+        async def __call__(self, request):
+            raise AssertionError("not executed in registration test")
+
+    executor = build_company_search_phase5_executor(company_search_handler=FakeHandler())
+
+    assert executor is not None
+
+
+@pytest.mark.asyncio
+async def test_cmep_company_search_adapter_maps_existing_service_result():
+    from datetime import datetime
+    from uuid import uuid4
+
+    from app.modules.agent_platform.infrastructure.tools.cmep_company_search import (
+        CMEPCompanySearchAdapter,
+    )
+
+    company_id = uuid4()
+
+    class FakeCompanyService:
+        def __init__(self):
+            self.calls = []
+
+        async def execute(self, **kwargs):
+            self.calls.append(kwargs)
+
+            class Company:
+                id = company_id
+                legal_name = "Acme"
+                trading_name = "Acme Trading"
+                registration_number = "REG-1"
+                company_type = "company"
+                status = "active"
+                created_at = datetime.now(UTC)
+
+            return [Company()], 1
+
+    service = FakeCompanyService()
+    adapter = CMEPCompanySearchAdapter(service=service)
+
+    result = await adapter.search(
+        status="active",
+        company_type="company",
+        seller_capability=True,
+        buyer_capability=None,
+        logistics_capability=None,
+        q="Acme",
+        page=1,
+        page_size=25,
+        company_ids=("company-1", "company-2"),
+    )
+
+    assert result.total == 1
+    assert result.page == 1
+    assert result.page_size == 25
+    assert len(result.items) == 1
+
+    item = result.items[0]
+    assert item.id == str(company_id)
+    assert item.legal_name == "Acme"
+    assert item.trading_name == "Acme Trading"
+    assert item.registration_number == "REG-1"
+    assert item.company_type == "company"
+    assert item.status == "active"
+
+    assert service.calls[0]["company_ids"] == [
+        "company-1",
+        "company-2",
+    ]
+    assert service.calls[0]["q"] == "Acme"

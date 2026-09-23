@@ -1,0 +1,7 @@
+"""Audit infrastructure boundaries."""
+
+from .audit_store import AuditStore
+
+__all__ = [
+    "AuditStore",
+]
