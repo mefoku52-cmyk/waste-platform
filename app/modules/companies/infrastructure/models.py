@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, DateTime, Float, String
+from sqlalchemy import Boolean, DateTime, Float, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.shared.infrastructure.db.base import Base
@@ -30,7 +30,7 @@ class CompanyModel(Base):
     seller_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
     buyer_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
     logistics_capability: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    accepted_material_types: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    accepted_material_types: Mapped[str | None] = mapped_column(Text, nullable=True)
     verification_submitted_at: Mapped[DateTime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )

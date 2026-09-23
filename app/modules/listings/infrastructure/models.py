@@ -3,6 +3,7 @@
 import uuid
 from datetime import datetime
 
+import sqlalchemy as sa
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 
@@ -41,7 +42,7 @@ class ListingsModel(Base):
 class ListingViewModel(Base):
     __tablename__ = "listing_views"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = Column(UUID(as_uuid=True), primary_key=True, server_default=sa.text("gen_random_uuid()"))
     listing_id = Column(
         UUID(as_uuid=True),
         ForeignKey("listings.id", ondelete="CASCADE"),
@@ -49,6 +50,6 @@ class ListingViewModel(Base):
         index=True,
     )
     user_id = Column(UUID(as_uuid=True), nullable=False)
-    viewed_at = Column(DateTime, nullable=False, default=lambda: datetime.now())
+    viewed_at = Column(DateTime, nullable=False, server_default=sa.text("now()"))
 
     __table_args__ = (Index("ix_listing_views_listing_user", "listing_id", "user_id"),)

@@ -16,6 +16,7 @@ from app.modules.compliance.infrastructure.models import (
     ComplianceRecordModel,  # noqa: F401
 )
 from app.modules.documents.infrastructure.models import DocumentModel  # noqa: F401
+from app.modules.events.infrastructure.models import ActivityEventModel  # noqa: F401
 from app.modules.inquiries.infrastructure.models import InquiryModel  # noqa: F401
 from app.modules.listings.infrastructure.models import ListingsModel, ListingViewModel  # noqa: F401
 from app.modules.notifications.infrastructure.models import (

@@ -51,6 +51,21 @@ class FakeMembershipRepo:
         self.items.append(membership)
 
 
+@pytest.fixture(autouse=True)
+def mock_rpo_lookup(monkeypatch):
+    monkeypatch.setattr(
+        "app.modules.companies.application.services.lookup_ico",
+        lambda _tax_identifier: {
+            "ok": True,
+            "exists": True,
+            "ico": "12345678",
+            "legalName": "Test Company",
+            "city": "Bratislava",
+            "reason": "test",
+        },
+    )
+
+
 def _create_kwargs(**overrides):
     data = {
         "legal_name": "Waste s.r.o.",

@@ -16,4 +16,6 @@ class ActivityEventModel(Base):
     company_id = Column(String(36), nullable=True)
     listing_id = Column(String(36), nullable=True)
     payload = Column(Text, nullable=True)
-    created_at = Column(DateTime, nullable=False, default=lambda: datetime.now(UTC))
+    created_at = Column(
+        DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None)
+    )

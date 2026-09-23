@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, String
+from sqlalchemy import Column, DateTime, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.shared.infrastructure.db.base import Base
@@ -16,7 +16,7 @@ class ComplianceRecordModel(Base):
     regulation_type = Column(String(120), nullable=False)
     document_ref = Column(String(255), nullable=True)
     valid_until = Column(DateTime, nullable=True)
-    notes = Column(String, nullable=True)
+    notes = Column(Text, nullable=True)
     status = Column(String(32), nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now())
     updated_at = Column(
