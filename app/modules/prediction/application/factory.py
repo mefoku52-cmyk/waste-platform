@@ -5,7 +5,7 @@ from app.modules.prediction.application.baseline_provider import (
 )
 from app.modules.prediction.application.config import PredictionConfig
 from app.modules.prediction.application.entitlements import (
-    DisabledPredictionEntitlementProvider,
+    EnvironmentPredictionEntitlementProvider,
 )
 from app.modules.prediction.application.service import PredictionService
 
@@ -27,7 +27,7 @@ def create_prediction_service() -> PredictionService:
     config = PredictionConfig.from_environment()
 
     provider = BaselinePredictionProvider()
-    entitlement_provider = DisabledPredictionEntitlementProvider()
+    entitlement_provider = EnvironmentPredictionEntitlementProvider()
 
     return PredictionService(
         provider=provider,
