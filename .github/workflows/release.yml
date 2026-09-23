@@ -55,9 +55,6 @@ jobs:
 
       - name: Build web
         working-directory: apps/web
-        env:
-          API_PROXY_TARGET: http://cmep-api:8000
-          NEXT_PUBLIC_API_BASE_URL: /api/v1
         run: |
           set -euo pipefail
           npm ci
