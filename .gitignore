@@ -296,3 +296,12 @@ typescript
 script
 
 output/
+# Local audit/runtime artifacts
+/reports/
+/ngrok
+/ngrok-v3-stable-linux-arm64.tgz
+/redis.conf
+/setup-redis.sh
+/cmep-implement.sh
+/suv.check
+*.before_schema_sync_*
