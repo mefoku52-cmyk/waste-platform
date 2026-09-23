@@ -15,6 +15,11 @@ class RecommendationCandidate(BaseModel):
     score: int
     reasons: list[str]
 
+    rule_score: float | None = None
+    prediction_score: float | None = None
+    prediction_status: str | None = None
+    prediction_applied: bool | None = None
+
 
 class RecommendationsResponse(BaseModel):
     listingId: UUID

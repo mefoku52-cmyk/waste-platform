@@ -9,6 +9,9 @@ from app.modules.companies.domain.enums import CompanyStatus
 from app.modules.companies.infrastructure.models import CompanyModel
 from app.modules.events.infrastructure.models import ActivityEventModel
 from app.modules.listings.infrastructure.models import ListingsModel
+from app.modules.recommendations.application.prediction_bridge import (
+    enrich_recommendation_items,
+)
 from app.modules.recommendations.application.scoring import score_company
 from app.shared.domain.exceptions import NotFoundDomainError
 
@@ -118,4 +121,5 @@ class RecommendationsService:
                     "osmId": str(company.id),
                 }
             )
+        items = await enrich_recommendation_items(items)
         return items
