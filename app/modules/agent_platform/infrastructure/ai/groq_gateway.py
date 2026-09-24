@@ -49,13 +49,9 @@ class GroqModelGateway(ModelGateway):
             content = str(choices[0].get("message", {}).get("content") or "")
         if not content:
             raise RuntimeError("groq empty content")
-        fields = getattr(ModelResponse, "__dataclass_fields__", {}) or getattr(
-            ModelResponse, "__annotations__", {}
+        return ModelResponse(
+            request_id=request.request_id,
+            text=content,
+            finish_reason="stop",
+            provider_metadata={"provider": "groq"},
         )
-        kwargs: dict[str, object] = {}
-        for name in fields:
-            if name in {"text", "content", "message", "output", "reply"}:
-                kwargs[name] = content
-            elif name in {"provider", "provider_name"}:
-                kwargs[name] = "groq"
-        return ModelResponse(**kwargs)

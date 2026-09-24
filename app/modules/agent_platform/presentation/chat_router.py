@@ -1,8 +1,13 @@
+import uuid
+
 from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
-from app.modules.agent_platform.infrastructure.ai.model_request import ModelRequest
+from app.modules.agent_platform.infrastructure.ai.model_request import (
+    ModelMessage,
+    ModelRequest,
+)
 
 router = APIRouter(prefix="/agent-platform", tags=["agent-platform"])
 
@@ -18,14 +23,11 @@ class UserAiChatResponse(BaseModel):
 
 
 def _request(text: str) -> ModelRequest:
-    fields = getattr(ModelRequest, "__dataclass_fields__", {}) or getattr(
-        ModelRequest, "__annotations__", {}
+    return ModelRequest(
+        request_id=str(uuid.uuid4()),
+        model="llama-3.1-8b-instant",
+        messages=(ModelMessage(role="user", content=text),),
     )
-    kwargs: dict[str, object] = {}
-    for name in fields:
-        if name in {"prompt", "content", "message", "input", "text"}:
-            kwargs[name] = text
-    return ModelRequest(**kwargs)
 
 
 @router.post("/chat", response_model=UserAiChatResponse)
