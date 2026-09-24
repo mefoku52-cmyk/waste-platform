@@ -305,3 +305,17 @@ output/
 /cmep-implement.sh
 /suv.check
 *.before_schema_sync_*
+
+# local leftovers
+*.backup
+*.backup-*
+*.bak
+app/main.py.backup-*
+backups/
+cmep-ui-audit.sh
+cmep-ui-audit.txt
+cmep-ui-flow.sh
+cmep-ui-i18n-fix.py
+cmep-typecheck-fix.sh
+apply_company_search_phase5.py
+patch_company_search_phase5.py
