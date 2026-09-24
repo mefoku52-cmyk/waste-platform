@@ -1,6 +1,10 @@
 from fastapi import APIRouter
 
 from app.modules.admin.presentation.router import router as admin_router
+from app.modules.agent_platform.presentation.chat_router import router as agent_platform_chat_router
+from app.modules.agent_platform.presentation.control_router import (
+    router as agent_platform_control_router,
+)
 from app.modules.agent_platform.presentation.router import router as agent_platform_router
 from app.modules.analytics.presentation.router import router as analytics_router
 from app.modules.auth.presentation.router import router as auth_router
@@ -37,3 +41,5 @@ api_router.include_router(uploads_router)
 api_router.include_router(recommendations_router)
 api_router.include_router(events_router)
 api_router.include_router(agent_platform_router)
+api_router.include_router(agent_platform_control_router)
+api_router.include_router(agent_platform_chat_router)
