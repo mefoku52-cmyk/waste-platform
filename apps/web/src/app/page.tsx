@@ -134,7 +134,7 @@ export default function LandingPage() {
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVE TERAZ</p>
-            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Materiál, ktorý ešte čaká na svojho kupca.</h2>
+            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Materiál, ktorý ešte čaká na svojho kupca.</h2>
             <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_25%,transparent)]">
               <span
                 className="absolute right-4 top-4 z-10 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
@@ -207,7 +207,7 @@ export default function LandingPage() {
         <section id="trh" className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>ČO SA TU HÝBE</p>
-            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Päť prúdov. Jeden trh. Nekonečné možnosti.</h2>
+            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Päť prúdov. Jeden trh. Nekonečné možnosti.</h2>
             <div className="grid gap-4 md:grid-cols-2">
               {MATERIALS.map((m) => (
                 <Link key={m.key} href={`/dashboard?cat=${m.key}`} className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)]">
@@ -249,7 +249,7 @@ export default function LandingPage() {
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>AKO TO FUNGUJE</p>
-            <h2 className="ff mb-10 text-4xl leading-tight md:text-5xl">Tri kroky. Od prebytku k obchodu za pár minút.</h2>
+            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Tri kroky. Od prebytku k obchodu za pár minút.</h2>
             <div className="grid gap-4 md:grid-cols-3">
               {STEPS.map((s) => (
                 <div key={s.n} className="rounded-2xl border p-6 md:p-8" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
