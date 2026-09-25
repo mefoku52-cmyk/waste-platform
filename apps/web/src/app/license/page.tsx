@@ -50,9 +50,7 @@ export default function LicensePage() {
               <ul className="mt-4 space-y-1">
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
                 <li>IČO: 51745666</li>
-                <li>Sídlo: Ulič 63, 067 67 Ulič, Slovenská republika</li>
                 <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
-                <li>Telefón: <a href="tel:+421910617338" style={{ color: GOLD_BRIGHT }}>+421 910 617 338</a></li>
               </ul>
               <p className="mt-4">
                 Všetky práva, ktoré nie sú výslovne udelené touto licenciou, zostávajú vyhradené prevádzkovateľovi.
@@ -167,8 +165,6 @@ export default function LicensePage() {
               <p>V prípade otázok týkajúcich sa licencie, autorských práv alebo porušenia práv kontaktujte:</p>
               <ul className="mt-3 space-y-1">
                 <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
-                <li>Telefón: <a href="tel:+421910617338" style={{ color: GOLD_BRIGHT }}>+421 910 617 338</a></li>
-                <li>Pošta: Radoslav Čornanič, Ulič 63, 067 67 Ulič, Slovenská republika</li>
               </ul>
             </section>
 
