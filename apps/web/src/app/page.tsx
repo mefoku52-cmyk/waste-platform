@@ -83,48 +83,55 @@ export default function LandingPage() {
         {/* HERO */}
         <section className="relative overflow-hidden">
           <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 30% 20%, color-mix(in srgb, #c9a84c 8%, transparent), transparent 60%)` }} />
-          <div className="relative mx-auto max-w-6xl px-4 py-16 md:py-24">
-            <p className="mb-6 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-              SLOVENSKO · STREDNÁ EURÓPA · SÚKROMNÁ BURZA
-            </p>
-            <h1 className="ff text-5xl font-normal leading-[1.05] tracking-[-0.02em] md:text-7xl">
-              Prebytok nie je odpad.
-              <br />
-              <em className="italic" style={{ color: GOLD_BRIGHT }}>
-                Odpad je len materiál, ktorý ešte nenašiel svojho kupca. Materiál je hodnota, ktorá ešte nenašla svoj trh. A trh je miesto, kde sa z hodnoty stáva obchod. TRČ je to miesto.
-              </em>
-            </h1>
-            <p className="mt-8 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
-              Firmy hádžu do kontajnera to, čo iné firmy hľadajú. Drevo. Kov. Papier. Plasty. Bioodpad.
-              CMEP je tichá burza, kde sa z toho stane obchod — overené IČO, skryté kontakty, bez aukčného cirkusu.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link href="/register" className="rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-                Pridať / zverejniť ponuku
-              </Link>
-              <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 45%, transparent)', color: FG }}>
-                Pozrieť živý trh
-              </Link>
+          <div className="relative mx-auto max-w-6xl px-4 py-12 md:py-20">
+            <div
+              className="rounded-3xl border p-6 md:p-10"
+              style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)' }}
+            >
+              <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+                VITAJTE NA PLATFORME
+              </p>
+              <h1 className="ff text-4xl font-normal leading-[1.05] tracking-[-0.02em] md:text-6xl">
+                TRČ · CMEP
+              </h1>
+              <p className="ff mt-4 text-2xl italic leading-snug md:text-3xl" style={{ color: GOLD_BRIGHT }}>
+                Menej bordelu. Viac obchodu.
+              </p>
+              <p className="mt-3 text-base md:text-lg" style={{ color: GOLD_BRIGHT }}>
+                Trhovisko firiem a obehových materiálov — filtruj, hľadaj, dohodni.
+              </p>
+              <p className="mt-4 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+                Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty,
+                žiadny spam. Filtruj, hľadaj, dohodni — všetko na jednom mieste.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link href="/register" className="rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
+                  Pridať / zverejniť ponuku
+                </Link>
+                <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 45%, transparent)', color: FG }}>
+                  Pozrieť živý trh
+                </Link>
+              </div>
+
+              <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
+                {[
+                  { v: '447,6', l: 'TON NA TRHU' },
+                  { v: '8', l: 'OVERENÝCH FIRIEM' },
+                  { v: '10', l: 'ŽIVÝCH PONÚK', dot: true },
+                ].map((s) => (
+                  <div key={s.l}>
+                    <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>
+                      {s.dot ? <span className="mr-2 inline-block h-2 w-2 rounded-full align-middle" style={{ background: '#6ee7a7' }} /> : null}
+                      {s.v}
+                    </p>
+                    <p className="mt-1 text-[10px] uppercase tracking-[0.2em]" style={{ color: FAINT }}>{s.l}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* STATS */}
-            <div className="mt-16 grid grid-cols-2 gap-6 md:grid-cols-4">
-              {[
-                { v: '447,6', l: 'TON NA TRHU' },
-                { v: '8', l: 'OVERENÝCH FIRIEM' },
-                { v: '10', l: 'ŽIVÝCH PONÚK', dot: true },
-              ].map((s) => (
-                <div key={s.l}>
-                  <p className="ff text-4xl md:text-5xl" style={{ color: GOLD_BRIGHT }}>
-                    {s.dot ? <span className="mr-2 inline-block h-2 w-2 rounded-full align-middle" style={{ background: '#6ee7a7' }} /> : null}
-                    {s.v}
-                  </p>
-                  <p className="mt-1 text-[10px] uppercase tracking-[0.2em]" style={{ color: FAINT }}>{s.l}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-16 flex justify-center">
+            <div className="mt-12 flex justify-center">
               <img src="/trc-logo.jpg" alt="RC" className="max-w-md w-full opacity-90" />
             </div>
           </div>
@@ -208,10 +215,10 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>ČO SA TU HÝBE</p>
             <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Päť prúdov. Jeden trh. Nekonečné možnosti.</h2>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="flex flex-col gap-5">
               {MATERIALS.map((m) => (
                 <Link key={m.key} href={`/dashboard?cat=${m.key}`} className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)]">
-                  <div className="relative aspect-[16/10] w-full">
+                  <div className="relative aspect-[21/9] w-full">
                     <img src={m.img} alt={m.label} className="h-full w-full object-cover opacity-60 transition group-hover:opacity-80 group-hover:scale-[1.02]" />
                     <div className="grad absolute inset-0" />
                     <div className="absolute bottom-0 left-0 right-0 p-6">
