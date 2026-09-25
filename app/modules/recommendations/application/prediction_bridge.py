@@ -143,6 +143,10 @@ async def enrich_recommendation_item(item: Mapping[str, Any]) -> dict[str, Any]:
     rule_score = _pick_score(out)
     extra = await predict_one(rule_score, out) if rule_score is not None else _empty(None)
     out.update(extra)
+    out["prediction_explanation"] = build_prediction_explanation(
+        out.get("prediction_status"),
+        out.get("reasons") or out.get("reason_codes") or out.get("prediction_reasons"),
+    )
     if rule_score is not None:
         out["score"] = rule_score
         out["rule_score"] = rule_score
