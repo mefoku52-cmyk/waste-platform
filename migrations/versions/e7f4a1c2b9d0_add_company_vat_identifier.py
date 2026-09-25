@@ -7,6 +7,7 @@ Create Date: 2026-09-23
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy import inspect
 
 revision = "e7f4a1c2b9d0"
 down_revision = "d4e7b2c1a9f0"
@@ -15,11 +16,19 @@ depends_on = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "companies",
-        sa.Column("vat_identifier", sa.String(length=32), nullable=True),
-    )
+    conn = op.get_bind()
+    inspector = inspect(conn)
+    columns = [c["name"] for c in inspector.get_columns("companies")]
+    if "vat_identifier" not in columns:
+        op.add_column(
+            "companies",
+            sa.Column("vat_identifier", sa.String(length=32), nullable=True),
+        )
 
 
 def downgrade() -> None:
-    op.drop_column("companies", "vat_identifier")
+    conn = op.get_bind()
+    inspector = inspect(conn)
+    columns = [c["name"] for c in inspector.get_columns("companies")]
+    if "vat_identifier" in columns:
+        op.drop_column("companies", "vat_identifier")
