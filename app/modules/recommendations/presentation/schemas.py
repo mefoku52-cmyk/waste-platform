@@ -20,6 +20,7 @@ class RecommendationCandidate(BaseModel):
     prediction_status: str | None = None
     combined_score: float | None = None
     prediction_applied: bool | None = None
+    prediction_explanation: str | None = None
 
 
 class RecommendationsResponse(BaseModel):

@@ -11,6 +11,6 @@ export function RecommendationPredictionSlot({ item }: Props) {
       status={item.prediction_status}
       score={item.prediction_score}
       applied={item.prediction_applied}
-    />
+     explanation={item.prediction_explanation} />
   );
 }

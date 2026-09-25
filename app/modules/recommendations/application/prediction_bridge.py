@@ -17,6 +17,23 @@ from app.modules.prediction.application.recommendation_composer import (
 )
 
 
+def build_prediction_explanation(
+    status: str | None,
+    reasons: list[str] | tuple[str, ...] | None,
+) -> str | None:
+    """Short text beside the rule score. Never a fake percent. Inactive -> None."""
+    if status != "active":
+        return None
+    parts: list[str] = []
+    for raw in reasons or ():
+        text = str(raw).strip().replace("_", " ")
+        if text:
+            parts.append(text)
+    if not parts:
+        return "Predikcia je aktivna. Rule skore sa nemeni."
+    return "Predikcia je aktivna. " + "; ".join(parts[:4]) + "."
+
+
 class _FixedScorer:
     def __init__(self, score: float) -> None:
         self._score = score / 100.0 if score > 1.0 else score

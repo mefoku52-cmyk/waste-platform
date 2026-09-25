@@ -11,6 +11,7 @@ type Props = {
   status?: PredictionStatus;
   score?: number | null;
   applied?: boolean | null;
+  explanation?: string | null;
 };
 
 const COPY: Record<string, { label: string; hint: string }> = {
@@ -32,7 +33,7 @@ const COPY: Record<string, { label: string; hint: string }> = {
   },
 };
 
-export function PredictionStatusBadge({ status, score, applied }: Props) {
+export function PredictionStatusBadge({ status, score, applied, explanation }: Props) {
   const key = String(status ?? "unavailable").toLowerCase();
   const copy = COPY[key] ?? COPY.unavailable;
   const showScore =
@@ -42,6 +43,9 @@ export function PredictionStatusBadge({ status, score, applied }: Props) {
     <div className="mt-2 text-xs text-[#9a8b63]" data-prediction-status={key}>
       <p className="font-semibold text-[#d4af37]">{copy.label}</p>
       <p>{copy.hint}</p>
+      {explanation && key === "active" ? (
+        <p>{explanation}</p>
+      ) : null}
       {showScore ? (
         <p>Predicted interest {Math.round(score * 100)}%</p>
       ) : null}
