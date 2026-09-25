@@ -9,7 +9,6 @@ import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 import { RecommendationsPanel } from '@/features/recommendations/components/recommendations-panel';
-import { AiChatWidget } from '@/features/agent-platform/components/ai-chat-widget';
 import { TransportPanel } from '@/features/recommendations/components/transport-panel';
 import { FreightPanel } from '@/features/recommendations/components/freight-panel';
 import { postListingViewed } from '@/features/recommendations/api';
@@ -248,13 +247,7 @@ export default function ListingDetailPage() {
           </>
         ) : null}
       </div>
-
-      <AiChatWidget
-        listingId={listingId}
-        listingTitle={data?.title || undefined}
-      />
-
-      {selectedPhoto ? (
+{selectedPhoto ? (
         <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
           role="dialog"
