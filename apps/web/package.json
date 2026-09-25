@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint:fix": "eslint . --fix",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
