@@ -23,6 +23,21 @@ const NAV_HREFS: Record<string, string | undefined> = {
   chat: '/dashboard/chat',
 };
 
+const NAV_LABELS: Record<string, string> = {
+  overview: 'Prehľad',
+  listings: 'Ponuky',
+  companies: 'Firmy',
+  documents: 'Dokumenty',
+  inquiries: 'Dopyty',
+  chat: 'Chat',
+};
+
+const ACTIONS = [
+  { href: '/dashboard/listings/new', label: '+ Pridať ponuku' },
+  { href: '/dashboard/companies/new', label: '+ Pridať firmu' },
+  { href: '/dashboard/documents/new', label: '+ Pridať dokument' },
+];
+
 export function DashboardHeader() {
   const pathname = usePathname();
   const { t } = useT();
@@ -38,42 +53,36 @@ export function DashboardHeader() {
       className="z-40 border-b backdrop-blur-md"
       style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)', background: 'rgba(9,8,7,0.85)' }}
     >
+      {/* Horná lišta: logo + user info */}
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link href="/dashboard" className="flex max-w-xl items-start gap-3">
-          <img src="/trc-mark.jpg" alt="TRČ" className="h-16 w-16 rounded-2xl object-cover" />
-          <div className="rounded-2xl border px-3 py-2" style={{ borderColor: "color-mix(in srgb, #c9a84c 35%, transparent)" }}>
-            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PREČO CMEP</p>
-            <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "Fraunces, serif", color: GOLD_BRIGHT }}>
-              CMEP — Circular Materials Exchange Platform.
+        <Link href="/dashboard" className="flex items-center gap-3">
+          <img src="/trc-mark.jpg" alt="TRČ" className="h-12 w-12 rounded-xl object-cover" />
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
+              CMEP
             </p>
-            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: MUTED }}>
-              Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu materiálu, ktorý by iný dokázal využiť. My to meníme.
-              CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú. Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.
+            <p className="text-sm font-semibold" style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}>
+              Circular Materials Exchange
             </p>
           </div>
         </Link>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/dashboard/listings"
-            className="hidden rounded-md border px-4 py-2 text-sm font-semibold sm:inline-flex"
-            style={{ borderColor: GOLD, color: GOLD_BRIGHT }}
-          >
-            {t('header.myListings')}
-          </Link>
-          <span className="hidden text-sm md:inline" style={{ color: MUTED }}>
-            {myEmail || '—'}
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
           {isAdmin && (
             <Link
               href="/dashboard/admin"
-              className="rounded-md border px-3 py-1.5 text-xs font-semibold"
+              className="rounded-full border px-3 py-1.5 text-xs font-semibold"
               style={{ borderColor: GOLD, color: GOLD_BRIGHT }}
             >
               ⚙ Admin
             </Link>
           )}
           <LanguageSwitcher />
+          {myEmail ? (
+            <span className="hidden text-xs sm:inline" style={{ color: MUTED }}>
+              {myEmail}
+            </span>
+          ) : null}
           <button
             type="button"
             onClick={async () => {
@@ -84,31 +93,37 @@ export function DashboardHeader() {
               }
             }}
             disabled={logoutPending}
-            className="text-sm underline underline-offset-4"
-            style={{ color: MUTED }}
+            className="rounded-full border px-3 py-1.5 text-xs"
+            style={{ borderColor: 'color-mix(in srgb, #9a8f7c 40%, transparent)', color: MUTED }}
           >
             {logoutPending ? '...' : t('dashboard.logout')}
           </button>
         </div>
       </div>
 
-      <nav className="mx-auto flex max-w-6xl flex-col gap-1 px-4 pb-3">
-        {NAV_KEYS.map((k) => {
-          const href = NAV_HREFS[k];
-          const label = t('dashboard.nav.' + k, k === 'chat' ? 'Chat' : k === 'inquiries' ? 'Dopyty' : k);
-          const active = href && pathname === href;
-          if (href) {
+      {/* Navigácia: horizontálne tlačidlá (pills) */}
+      <nav className="mx-auto max-w-6xl px-4 pb-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {NAV_KEYS.map((k) => {
+            const href = NAV_HREFS[k];
+            if (!href) return null;
+            const label = NAV_LABELS[k] || k;
+            const active = pathname === href || pathname.startsWith(href + '/');
             return (
               <Link
                 key={k}
                 href={href}
-                className="text-sm transition-colors hover:opacity-80"
-                style={{ color: active ? GOLD_BRIGHT : FG }}
+                className="inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-all hover:opacity-90"
+                style={{
+                  borderColor: active ? GOLD : 'color-mix(in srgb, #c9a84c 30%, transparent)',
+                  background: active ? 'color-mix(in srgb, #c9a84c 15%, transparent)' : 'transparent',
+                  color: active ? GOLD_BRIGHT : FG,
+                }}
               >
                 {label}
                 {k === 'chat' && unreadChat > 0 && (
                   <span
-                    className="ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                    className="inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold"
                     style={{ background: '#c45c4a', color: FG }}
                   >
                     {unreadChat}
@@ -116,17 +131,22 @@ export function DashboardHeader() {
                 )}
               </Link>
             );
-          }
-          return (
-            <span key={k} className="text-sm" style={{ color: MUTED }}>
-              {label}
-            </span>
-          );
-        })}
+          })}
+        </div>
 
-        <Link href="/dashboard/listings/new" className="text-sm" style={{ color: GOLD_BRIGHT }}>Pridať ponuku</Link>
-        <Link href="/dashboard/companies/new" className="text-sm" style={{ color: GOLD_BRIGHT }}>Pridať firmu</Link>
-        <Link href="/dashboard/documents/new" className="text-sm" style={{ color: GOLD_BRIGHT }}>Pridať dokument</Link>
+        {/* Akčné tlačidlá - výraznejšie (zlaté) */}
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          {ACTIONS.map((a) => (
+            <Link
+              key={a.href}
+              href={a.href}
+              className="inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold transition-all hover:opacity-90"
+              style={{ background: GOLD, color: '#090807' }}
+            >
+              {a.label}
+            </Link>
+          ))}
+        </div>
       </nav>
     </header>
   );
