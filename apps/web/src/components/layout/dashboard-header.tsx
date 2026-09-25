@@ -32,12 +32,6 @@ const NAV_LABELS: Record<string, string> = {
   chat: 'Chat',
 };
 
-const ACTIONS = [
-  { href: '/dashboard/listings/new', label: '+ Pridať ponuku' },
-  { href: '/dashboard/companies/new', label: '+ Pridať firmu' },
-  { href: '/dashboard/documents/new', label: '+ Pridať dokument' },
-];
-
 export function DashboardHeader() {
   const pathname = usePathname();
   const { t } = useT();
@@ -53,16 +47,18 @@ export function DashboardHeader() {
       className="z-40 border-b backdrop-blur-md"
       style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)', background: 'rgba(9,8,7,0.85)' }}
     >
-      {/* Horná lišta: logo + user info */}
+      {/* Horná lišta: logo + PREČO CMEP text (VRÁTENÉ) */}
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link href="/dashboard" className="flex items-center gap-3">
-          <img src="/trc-mark.jpg" alt="TRČ" className="h-12 w-12 rounded-xl object-cover" />
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>
-              CMEP
+        <Link href="/dashboard" className="flex max-w-xl items-start gap-3">
+          <img src="/trc-mark.jpg" alt="TRČ" className="h-16 w-16 rounded-2xl object-cover" />
+          <div className="rounded-2xl border px-3 py-2" style={{ borderColor: "color-mix(in srgb, #c9a84c 35%, transparent)" }}>
+            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PREČO CMEP</p>
+            <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "Fraunces, serif", color: GOLD_BRIGHT }}>
+              CMEP — Circular Materials Exchange Platform.
             </p>
-            <p className="text-sm font-semibold" style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}>
-              Circular Materials Exchange
+            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: MUTED }}>
+              Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu materiálu, ktorý by iný dokázal využiť. My to meníme.
+              CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú. Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.
             </p>
           </div>
         </Link>
@@ -101,7 +97,7 @@ export function DashboardHeader() {
         </div>
       </div>
 
-      {/* Navigácia: horizontálne tlačidlá (pills) */}
+      {/* Navigácia: LEN pills (bez akčných tlačidiel, tie sú už dole) */}
       <nav className="mx-auto max-w-6xl px-4 pb-3">
         <div className="flex flex-wrap items-center gap-2">
           {NAV_KEYS.map((k) => {
@@ -132,20 +128,6 @@ export function DashboardHeader() {
               </Link>
             );
           })}
-        </div>
-
-        {/* Akčné tlačidlá - výraznejšie (zlaté) */}
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          {ACTIONS.map((a) => (
-            <Link
-              key={a.href}
-              href={a.href}
-              className="inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold transition-all hover:opacity-90"
-              style={{ background: GOLD, color: '#090807' }}
-            >
-              {a.label}
-            </Link>
-          ))}
         </div>
       </nav>
     </header>
