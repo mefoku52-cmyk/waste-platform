@@ -3,179 +3,107 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #f0f4f1;
-  --color-text: #0f172a;
-  --brand: #059669;
-  --brand-dark: #047857;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  color: var(--color-text);
-  background-color: var(--color-bg);
-  background-image:
-    radial-gradient(ellipse 120% 80% at 10% -20%, rgba(16, 185, 129, 0.18), transparent 50%),
-    radial-gradient(ellipse 100% 60% at 100% 0%, rgba(15, 118, 110, 0.12), transparent 45%),
-    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(5, 150, 105, 0.08), transparent 50%);
-  background-attachment: fixed;
+  --cmep-bg: #090807;
+  --cmep-panel: #100f0c;
+  --cmep-panel-soft: rgba(18, 16, 11, 0.92);
+  --cmep-text: #f3ead8;
+  --cmep-muted: #9a8f7c;
+  --cmep-gold: #c9a84c;
+  --cmep-gold-bright: #e8d48b;
+  --cmep-line: rgba(201, 168, 76, 0.24);
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* jemný pattern (bodky) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.35;
-  background-image: radial-gradient(rgba(15, 23, 42, 0.06) 1px, transparent 1px);
-  background-size: 24px 24px;
+html {
+  min-height: 100%;
+  background: var(--cmep-bg);
+  scroll-behavior: smooth;
 }
 
-body > * {
-  position: relative;
-  z-index: 1;
+body {
+  min-width: 320px;
+  min-height: 100dvh;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  color: var(--cmep-text);
+  background:
+    radial-gradient(circle at 10% -10%, rgba(201, 168, 76, 0.08), transparent 30rem),
+    radial-gradient(circle at 100% 10%, rgba(201, 168, 76, 0.04), transparent 28rem),
+    var(--cmep-bg);
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* CMEP-GLASS-FRAME-V3 */
-
-/* Hlavný obsah zostáva nad logom/obrázkom */
-main {
-  position: relative !important;
-  z-index: 2 !important;
+button,
+a,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
 }
 
-/*
-  PANELY A OBĹŽNIKOVÉ RÁMČEKY:
-  nízka krycia vrstva = logo pod nimi ostane viditeľné.
-*/
-main > div,
-main section,
-main article,
-main [class*="card"],
-main [class*="rounded"] {
-  background: rgba(10, 8, 5, 0.17) !important;
-  border-color: rgba(255, 218, 100, 0.72) !important;
-  box-shadow:
-    0 2px 9px rgba(0, 0, 0, 0.35),
-    inset 0 0 0 1px rgba(255, 243, 185, 0.10) !important;
+button,
+a {
+  touch-action: manipulation;
 }
 
-/*
-  Tabuľky a ich okolie sú takmer priehľadné.
-  Na pozadí bude viditeľné logo, aj písmená v strede.
-*/
-main table,
-main form,
-main [class*="border"] {
-  background-color: rgba(7, 6, 4, 0.13) !important;
-  border-color: rgba(255, 222, 116, 0.68) !important;
+img {
+  max-width: 100%;
 }
 
-/* Hlavičky tabuľky: jemný odtieň, nie nepriehľadný pás */
-main thead,
-main tr:first-child,
-main th {
-  background: rgba(10, 8, 5, 0.28) !important;
-  color: #fff4bd !important;
-  border-color: rgba(255, 226, 135, 0.82) !important;
-  font-weight: 900 !important;
-  text-shadow:
-    0 1px 2px #000,
-    0 0 6px #000 !important;
+.cmep-page {
+  min-height: 100dvh;
+  overflow: visible;
+  background: transparent;
 }
 
-/*
-  Silný svetlý text vo všetkých rámčekoch.
-  Čierny tieň zachová čitateľnosť priamo cez logo.
-*/
-main h1,
-main h2,
-main h3,
-main h4,
-main p,
-main label,
-main span,
-main td,
-main th,
-main strong,
-main small,
-main li {
-  color: #fffdf2 !important;
-  font-weight: 700 !important;
-  text-shadow:
-    -1px -1px 0 rgba(0, 0, 0, 0.88),
-     1px -1px 0 rgba(0, 0, 0, 0.88),
-    -1px  1px 0 rgba(0, 0, 0, 0.88),
-     1px  1px 0 rgba(0, 0, 0, 0.88),
-     0 0 7px rgba(0, 0, 0, 1) !important;
+.cmep-main {
+  min-height: auto;
+  overflow: visible;
 }
 
-/* Názvy blokov: „Odporúčané zhody“, „Registrované firmy“ atď. */
-main h2,
-main h3,
-main h4 {
-  color: #fff8cf !important;
-  font-weight: 900 !important;
-  letter-spacing: 0.02em !important;
+.cmep-panel {
+  border: 1px solid var(--cmep-line);
+  background: var(--cmep-panel-soft);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
 }
 
-/* Text „Žiadne záznamy...“ a bunky tabuliek */
-main td,
-main td[colspan],
-main tbody p,
-main tbody span {
-  color: #ffffff !important;
-  font-weight: 800 !important;
+.cmep-card {
+  border: 1px solid var(--cmep-line);
+  background: rgba(14, 13, 10, 0.95);
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease,
+    background 160ms ease;
 }
 
-/*
-  Inputy: presvitné, ale jasný zlatý okraj.
-  Logo cez plochu inputu stále jemne presvitá.
-*/
-main input,
-main textarea,
-main select {
-  background: rgba(5, 4, 3, 0.20) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 220, 105, 0.92) !important;
-  box-shadow:
-    inset 0 0 6px rgba(0, 0, 0, 0.30),
-    0 0 5px rgba(255, 211, 85, 0.20) !important;
-  font-weight: 800 !important;
-  text-shadow:
-    0 1px 3px #000,
-    0 0 5px #000 !important;
+.cmep-card:hover {
+  border-color: rgba(232, 212, 139, 0.62);
+  background: rgba(22, 20, 14, 0.98);
 }
 
-main input::placeholder,
-main textarea::placeholder {
-  color: #fff0b8 !important;
-  opacity: 1 !important;
-  font-weight: 700 !important;
+.cmep-card:active {
+  transform: scale(0.995);
 }
 
-/* Tlačidlá nech sú dobre viditeľné, ale nie sú úplne čierne */
-main button {
-  background: rgba(20, 15, 7, 0.38) !important;
-  color: #fff7d1 !important;
-  border: 1px solid rgba(255, 220, 105, 0.90) !important;
-  font-weight: 900 !important;
-  text-shadow:
-    0 1px 2px #000,
-    0 0 4px #000 !important;
+.cmep-muted {
+  color: var(--cmep-muted);
 }
 
-/* Riadky tabuliek: maximálna priehľadnosť */
-main tbody,
-main tbody tr,
-main tbody td {
-  background: rgba(6, 5, 3, 0.08) !important;
-  border-color: rgba(255, 222, 120, 0.34) !important;
+.cmep-gold {
+  color: var(--cmep-gold-bright);
+}
+
+@media (max-width: 767px) {
+  .cmep-page,
+  .cmep-main {
+    min-height: auto;
+  }
+
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }

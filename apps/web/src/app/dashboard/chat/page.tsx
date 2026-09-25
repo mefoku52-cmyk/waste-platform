@@ -1,19 +1,16 @@
 'use client';
-import { ReportButton } from '@/features/recommendations/components/report-button';
-import { ChatDraftBanner } from '@/features/recommendations/components/chat-draft-banner';
 
-import { DashboardHeader } from '@/components/layout/dashboard-header';
-import { DashboardFooter } from '@/components/layout/dashboard-footer';
-import { useT } from '@/lib/i18n/context';
-import { useThreads } from '@/features/chat';
 import Link from 'next/link';
+
+import { AppShell } from '@/components/layout/app-shell';
+import { ChatDraftBanner } from '@/features/recommendations/components/chat-draft-banner';
+import { ReportButton } from '@/features/recommendations/components/report-button';
+import { useThreads } from '@/features/chat';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
-const BG = '#090807';
-const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
-const FAINT = '#6e6658';
 
 type Thread = {
   id: string;
@@ -24,88 +21,60 @@ type Thread = {
 
 export default function ChatPage() {
   const { t } = useT();
-  const { data, isLoading, error } = useThreads();
-
-  const raw: any = data;
-  const items: Thread[] = Array.isArray(raw)
+  const query = useThreads() as { data?: unknown; isLoading?: boolean; error?: unknown };
+  const raw = query.data as { items?: Thread[]; data?: Thread[] | { items?: Thread[] } } | Thread[] | undefined;
+  const items = Array.isArray(raw)
     ? raw
-    : raw?.items ?? raw?.data?.items ?? raw?.data ?? [];
+    : raw?.items ?? (Array.isArray(raw?.data) ? raw.data : raw?.data?.items ?? []);
 
   return (
+    <AppShell>
+      <div className="mx-auto w-full max-w-4xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
+        <ChatDraftBanner />
 
-    <>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
-        rel="stylesheet"
-      />
-      <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
-        <DashboardHeader />
-      <ChatDraftBanner />
-      <ReportButton />
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+              {t('chat.section')}
+            </p>
+            <h1 className="mt-2 font-serif text-3xl sm:text-4xl" style={{ color: GOLD_BRIGHT }}>
+              {t('chat.title')}
+            </h1>
+          </div>
+          <ReportButton />
+        </div>
 
-        <main className="mx-auto max-w-4xl px-4 py-10">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-            {t('chat.section')}
-          </p>
-          <h1
-            className="mb-10 text-4xl leading-tight tracking-[-0.02em] md:text-5xl"
-            style={{ fontFamily: 'Fraunces, serif' }}
-          >
-            {t('chat.title')}
-          </h1>
-
-          {isLoading ? (
-            <p style={{ color: MUTED }}>{t('chat.loading')}</p>
-          ) : error ? (
-            <div
-              className="rounded-2xl border p-5 text-sm"
-              style={{ borderColor: '#c45c4a', color: '#e8a598' }}
-            >
-              Chyba pri načítaní konverzácií.
-            </div>
+        <div className="mt-7">
+          {query.isLoading ? (
+            <p className="text-sm" style={{ color: MUTED }}>{t('chat.loading')}</p>
+          ) : query.error ? (
+            <p className="rounded-2xl border border-[#c45c4a]/60 bg-[#c45c4a]/10 p-4 text-sm text-red-200">
+              {t('chat.loadError')}
+            </p>
           ) : items.length === 0 ? (
-            <div
-              className="rounded-2xl border py-16 text-center"
-              style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)' }}
-            >
-              <h3 className="text-2xl" style={{ fontFamily: 'Fraunces, serif' }}>
-                {t('chat.empty')}
-              </h3>
-              <p className="mt-2 text-sm" style={{ color: MUTED }}>
-                {t('chat.emptyHint')}
-              </p>
-            </div>
+            <section className="cmep-panel rounded-2xl px-5 py-14 text-center">
+              <h2 className="font-serif text-2xl" style={{ color: GOLD_BRIGHT }}>{t('chat.empty')}</h2>
+              <p className="mt-2 text-sm" style={{ color: MUTED }}>{t('chat.emptyHint')}</p>
+            </section>
           ) : (
             <ul className="space-y-3">
               {items.map((thread) => {
                 const unread = Number(thread.unreadCount || 0);
                 return (
                   <li key={thread.id}>
-                    <Link
-                      href={`/dashboard/chat/${thread.id}`}
-                      className="block rounded-2xl border p-5 transition-colors hover:bg-white/5"
-                      style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
-                    >
+                    <Link href={`/dashboard/chat/${thread.id}`} className="cmep-card block rounded-2xl p-4 sm:p-5">
                       <div className="flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <p
-                            className="text-lg"
-                            style={{ fontFamily: 'Fraunces, serif', color: GOLD_BRIGHT }}
-                          >
+                        <div className="min-w-0">
+                          <h2 className="truncate font-serif text-xl" style={{ color: GOLD_BRIGHT }}>
                             {thread.subject || t('chat.firm')}
-                          </p>
-                          <p className="mt-2 line-clamp-1 text-sm" style={{ color: MUTED }}>
+                          </h2>
+                          <p className="mt-2 line-clamp-2 text-sm leading-5" style={{ color: MUTED }}>
                             {thread.lastMessage || '—'}
                           </p>
                         </div>
-                        {unread > 0 && (
-                          <span
-                            className="rounded-full px-2 py-0.5 text-xs font-bold"
-                            style={{ background: '#c45c4a', color: FG }}
-                          >
-                            {unread}
-                          </span>
-                        )}
+                        {unread > 0 ? (
+                          <span className="rounded-full bg-[#c45c4a] px-2 py-0.5 text-xs font-bold text-white">{unread}</span>
+                        ) : null}
                       </div>
                     </Link>
                   </li>
@@ -113,10 +82,8 @@ export default function ChatPage() {
               })}
             </ul>
           )}
-        </main>
-
-        <DashboardFooter />
+        </div>
       </div>
-    </>
+    </AppShell>
   );
 }

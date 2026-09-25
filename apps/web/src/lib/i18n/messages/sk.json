@@ -14,7 +14,8 @@
     "language": "Jazyk",
     "submit": "Odoslať",
     "firstName": "Meno",
-    "lastName": "Priezvisko"
+    "lastName": "Priezvisko",
+    "close": "Zavrieť"
   },
   "login": {
     "title": "Vstup na burzu",
@@ -139,7 +140,8 @@
       }
     },
     "clearFilter": "Zrušiť filter",
-    "actions": "Možnosti"
+    "actions": "Možnosti",
+    "subline": "Prehľad trhu, aktívnych ponúk a kontaktov na jednom mieste."
   },
   "register": {
     "title": "Založte si účet",
@@ -261,7 +263,9 @@
     "loading": "Načítavam…",
     "conversation": "KONVERZÁCIA",
     "sendPlaceholder": "Napíš správu…",
-    "send": "Odoslať"
+    "send": "Odoslať",
+    "loadError": "Konverzácie sa nepodarilo načítať.",
+    "sending": "Odosielam…"
   },
   "listings": {
     "mySection": "MOJE PONUKY",
@@ -369,5 +373,18 @@
     "brand": "CMEP · OBEHOVÉ MATERIÁLY",
     "market": "Trhovisko",
     "myListings": "Moje ponuky"
+  },
+  "inquiries": {
+    "section": "DOPYTY",
+    "title": "Dopyty",
+    "received": "Prijaté",
+    "sent": "Odoslané"
+  },
+  "listingMedia": {
+    "noPhoto": "Bez fotografie",
+    "gallery": "Fotogaléria",
+    "openPhoto": "Otvoriť fotografiu",
+    "companySection": "Firma",
+    "acceptedMaterials": "Akceptované materiály"
   }
 }

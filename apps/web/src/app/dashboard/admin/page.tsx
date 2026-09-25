@@ -6,7 +6,7 @@ import { tokenStore } from '@/lib/auth/token-store';
 function AdminReports() {
   const [items, setItems] = useState<any[]>([]);
   useEffect(() => {
-    const token = tokenStore.getAccessToken?.() || tokenStore.getToken?.();
+    const token = tokenStore.getToken();
     fetch(`${config.apiBaseUrl}/events/reports`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
@@ -27,7 +27,6 @@ function AdminReports() {
   );
 }
 
-'use client';
 
 import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
 import { useAdminStats } from '@/features/admin';

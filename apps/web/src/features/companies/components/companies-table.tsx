@@ -1,3 +1,4 @@
+'use client';
 
 async function checkRpoBeforeVerify(ico?: string | null) {
   const raw = (ico || "").trim();
@@ -17,7 +18,6 @@ async function checkRpoBeforeVerify(ico?: string | null) {
   }
 }
 
-'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCompanies } from '../hooks/use-companies';

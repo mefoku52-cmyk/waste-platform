@@ -1,17 +1,22 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { DashboardHeader } from '@/components/layout/dashboard-header';
+
+import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 
 const PAGE_SIZE = 10;
+const GOLD = '#c9a84c';
+const GOLD_BRIGHT = '#e8d48b';
+const MUTED = '#9a8f7c';
 
 type Company = {
   id: string;
   legalName?: string;
+  tradingName?: string;
   city?: string;
   status?: string;
   acceptedMaterialTypes?: string | null;
@@ -23,73 +28,96 @@ function cleanFilter(raw: string): string {
 
 async function fetchCompanies(page: number): Promise<{ items: Company[]; total: number }> {
   const token = localStorage.getItem('accessToken');
-  const res = await fetch(config.apiBaseUrl + '/companies?page=' + page + '&pageSize=' + PAGE_SIZE, {
+  const res = await fetch(`${config.apiBaseUrl}/companies?page=${page}&pageSize=${PAGE_SIZE}`, {
     headers: {
       'Content-Type': 'application/json',
-      ...(token ? { Authorization: 'Bearer ' + token } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   });
   const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(typeof body.detail === 'string' ? body.detail : 'HTTP ' + res.status);
+
+  if (!res.ok) {
+    throw new Error(typeof body.detail === 'string' ? body.detail : `HTTP ${res.status}`);
+  }
+
   const items = (body.items || body.data || []) as Company[];
-  const total = Number(body.meta?.total ?? body.total ?? items.length);
-  return { items: Array.isArray(items) ? items : [], total };
+  return {
+    items: Array.isArray(items) ? items : [],
+    total: Number(body.meta?.total ?? body.total ?? items.length),
+  };
 }
 
 export default function CompaniesPage() {
   const { t } = useT();
   const [page, setPage] = useState(1);
   const [material, setMaterial] = useState('');
-  const { data, error, isLoading } = useQuery({
+
+  const query = useQuery({
     queryKey: ['companies', page],
     queryFn: () => fetchCompanies(page),
   });
+
   const filter = cleanFilter(material).trim().toLowerCase();
-  const items = (data?.items || []).filter((row) =>
+  const items = (query.data?.items || []).filter((row) =>
     filter ? (row.acceptedMaterialTypes || '').toLowerCase().includes(filter) : true,
   );
-  const total = data?.total || 0;
+  const total = query.data?.total || 0;
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
-    <main className="min-h-screen bg-[#090807] text-[#f3ead8]">
-      <DashboardHeader />
-      <div className="mx-auto max-w-4xl p-6">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#c9a84c]">{t('companies.kicker')}</p>
-        <h1 className="mt-1 font-serif text-3xl">{t('companies.title')}</h1>
-        <Link href="/dashboard/companies/new" className="mt-3 inline-block text-sm text-[#c9a84c]">
-          {t('companies.add')}
-        </Link>
+    <AppShell>
+      <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+              {t('companies.kicker')}
+            </p>
+            <h1 className="mt-2 font-serif text-3xl sm:text-4xl" style={{ color: GOLD_BRIGHT }}>
+              {t('companies.title')}
+            </h1>
+          </div>
+          <Link href="/dashboard/companies/new" className="rounded-full border px-4 py-2 text-sm" style={{ borderColor: 'rgba(201,168,76,0.48)', color: GOLD_BRIGHT }}>
+            + {t('companies.add')}
+          </Link>
+        </div>
+
         <input
           value={material}
-          onChange={(e) => setMaterial(cleanFilter(e.target.value))}
+          onChange={(event) => setMaterial(cleanFilter(event.target.value))}
           placeholder={t('companies.filter')}
           maxLength={64}
-          className="mt-4 w-full rounded-lg border border-[#c9a84c]/25 bg-black p-2 text-sm"
+          className="mt-6 w-full rounded-xl border border-[rgba(201,168,76,0.28)] bg-[#100f0c] px-4 py-3 text-sm text-[#f3ead8] outline-none"
         />
-        {isLoading && <p className="mt-4 text-sm text-[#9a8f7c]">{t('companies.loading')}</p>}
-        {error && <p className="mt-4 text-sm text-red-300">{(error as Error).message}</p>}
+
+        {query.isLoading ? <p className="mt-5 text-sm" style={{ color: MUTED }}>{t('companies.loading')}</p> : null}
+        {query.error ? <p className="mt-5 text-sm text-red-300">{query.error instanceof Error ? query.error.message : t('common.error')}</p> : null}
+
         <ul className="mt-6 space-y-3">
           {items.map((row) => (
-            <li key={row.id} className="rounded-2xl border border-[#c9a84c]/25 p-4">
-              <p className="font-semibold">{row.legalName || row.id}</p>
-              <p className="text-sm text-[#9a8f7c]">{row.city} · {row.status}</p>
-              <p className="text-xs text-[#9a8f7c]">
+            <li key={row.id} className="cmep-card rounded-2xl p-4">
+              <p className="font-serif text-xl" style={{ color: GOLD_BRIGHT }}>
+                {row.tradingName || row.legalName || row.id}
+              </p>
+              <p className="mt-1 text-sm" style={{ color: MUTED }}>
+                {[row.city, row.status].filter(Boolean).join(' · ') || '—'}
+              </p>
+              <p className="mt-3 text-xs" style={{ color: MUTED }}>
                 {t('companies.materials')}: {row.acceptedMaterialTypes || t('companies.empty')}
               </p>
             </li>
           ))}
         </ul>
-        <div className="mt-4 flex items-center gap-3 text-sm">
-          <button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)} className="text-[#c9a84c] disabled:text-[#6e6658]">
+
+        <div className="mt-6 flex items-center gap-3 text-sm">
+          <button type="button" disabled={page <= 1} onClick={() => setPage((value) => value - 1)} className="rounded-full border px-3 py-1.5 disabled:opacity-40" style={{ borderColor: 'rgba(201,168,76,0.35)', color: GOLD_BRIGHT }}>
             {t('companies.prev')}
           </button>
-          <span>{page} / {pages}</span>
-          <button type="button" disabled={page >= pages} onClick={() => setPage(page + 1)} className="text-[#c9a84c] disabled:text-[#6e6658]">
+          <span style={{ color: MUTED }}>{page} / {pages}</span>
+          <button type="button" disabled={page >= pages} onClick={() => setPage((value) => value + 1)} className="rounded-full border px-3 py-1.5 disabled:opacity-40" style={{ borderColor: 'rgba(201,168,76,0.35)', color: GOLD_BRIGHT }}>
             {t('companies.next')}
           </button>
         </div>
       </div>
-    </main>
+    </AppShell>
   );
 }

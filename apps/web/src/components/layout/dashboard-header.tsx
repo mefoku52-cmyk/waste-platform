@@ -35,7 +35,7 @@ export function DashboardHeader() {
 
   return (
     <header
-      className="sticky top-0 z-40 border-b backdrop-blur-md"
+      className="z-40 border-b backdrop-blur-md"
       style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)', background: 'rgba(9,8,7,0.85)' }}
     >
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">

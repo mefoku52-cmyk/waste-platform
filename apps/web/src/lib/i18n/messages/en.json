@@ -14,7 +14,8 @@
     "language": "Language",
     "submit": "Submit",
     "firstName": "First name",
-    "lastName": "Last name"
+    "lastName": "Last name",
+    "close": "Close"
   },
   "login": {
     "title": "Enter the exchange",
@@ -139,7 +140,8 @@
       }
     },
     "clearFilter": "Clear filter",
-    "actions": "Actions"
+    "actions": "Actions",
+    "subline": "An overview of the market, active listings and contacts in one place."
   },
   "register": {
     "title": "Create an account",
@@ -261,7 +263,9 @@
     "loading": "Loading…",
     "conversation": "CONVERSATION",
     "sendPlaceholder": "Write a message…",
-    "send": "Send"
+    "send": "Send",
+    "loadError": "Conversations could not be loaded.",
+    "sending": "Sending…"
   },
   "listings": {
     "mySection": "MY LISTINGS",
@@ -369,5 +373,18 @@
     "brand": "CMEP · CIRCULAR MATERIALS",
     "market": "Marketplace",
     "myListings": "My listings"
+  },
+  "inquiries": {
+    "section": "INQUIRIES",
+    "title": "Inquiries",
+    "received": "Received",
+    "sent": "Sent"
+  },
+  "listingMedia": {
+    "noPhoto": "No photo",
+    "gallery": "Photo gallery",
+    "openPhoto": "Open photo",
+    "companySection": "Company",
+    "acceptedMaterials": "Accepted materials"
   }
 }

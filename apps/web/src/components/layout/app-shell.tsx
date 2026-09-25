@@ -1,19 +1,16 @@
-import { ReactNode } from "react";
+'use client';
 
-export function AppShell({
-  header,
-  children,
-}: {
-  header: ReactNode;
-  children: ReactNode;
-}) {
+import { ReactNode } from 'react';
+
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
+import { DashboardHeader } from '@/components/layout/dashboard-header';
+
+export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-slate-950">
-      {header}
-
-      <div className="mx-auto w-full max-w-7xl px-3 py-3 sm:px-6 sm:py-6">
-        {children}
-      </div>
+    <div className="cmep-page">
+      <DashboardHeader />
+      <main className="cmep-main">{children}</main>
+      <DashboardFooter />
     </div>
   );
 }

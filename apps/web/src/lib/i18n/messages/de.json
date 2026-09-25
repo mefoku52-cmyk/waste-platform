@@ -14,7 +14,8 @@
     "language": "Sprache",
     "submit": "Senden",
     "firstName": "Vorname",
-    "lastName": "Nachname"
+    "lastName": "Nachname",
+    "close": "Schließen"
   },
   "login": {
     "title": "Zur Börse",
@@ -139,7 +140,8 @@
       }
     },
     "clearFilter": "Filter löschen",
-    "actions": "Optionen"
+    "actions": "Optionen",
+    "subline": "Markt, aktive Angebote und Kontakte auf einen Blick."
   },
   "register": {
     "title": "Konto anlegen",
@@ -261,7 +263,9 @@
     "loading": "Laden…",
     "conversation": "UNTERHALTUNG",
     "sendPlaceholder": "Nachricht schreiben…",
-    "send": "Senden"
+    "send": "Senden",
+    "loadError": "Unterhaltungen konnten nicht geladen werden.",
+    "sending": "Wird gesendet…"
   },
   "listings": {
     "mySection": "MEINE ANGEBOTE",
@@ -369,5 +373,18 @@
     "brand": "CMEP · KREISLAUFMATERIALIEN",
     "market": "Marktplatz",
     "myListings": "Meine Angebote"
+  },
+  "inquiries": {
+    "section": "ANFRAGEN",
+    "title": "Anfragen",
+    "received": "Eingegangen",
+    "sent": "Gesendet"
+  },
+  "listingMedia": {
+    "noPhoto": "Kein Foto",
+    "gallery": "Fotogalerie",
+    "openPhoto": "Foto öffnen",
+    "companySection": "Unternehmen",
+    "acceptedMaterials": "Akzeptierte Materialien"
   }
 }

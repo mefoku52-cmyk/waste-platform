@@ -14,7 +14,8 @@
     "language": "Langue",
     "submit": "Envoyer",
     "firstName": "Prénom",
-    "lastName": "Nom"
+    "lastName": "Nom",
+    "close": "Fermer"
   },
   "login": {
     "title": "Accéder à la bourse",
@@ -139,7 +140,8 @@
       }
     },
     "clearFilter": "Effacer le filtre",
-    "actions": "Actions"
+    "actions": "Actions",
+    "subline": "Une vue d’ensemble du marché, des annonces actives et des contacts."
   },
   "register": {
     "title": "Créer un compte",
@@ -261,7 +263,9 @@
     "loading": "Chargement…",
     "conversation": "CONVERSATION",
     "sendPlaceholder": "Écrire un message…",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "loadError": "Impossible de charger les conversations.",
+    "sending": "Envoi…"
   },
   "listings": {
     "mySection": "MES ANNONCES",
@@ -369,5 +373,18 @@
     "brand": "CMEP · MATÉRIAUX CIRCULAIRES",
     "market": "Marché",
     "myListings": "Mes offres"
+  },
+  "inquiries": {
+    "section": "DEMANDES",
+    "title": "Demandes",
+    "received": "Reçues",
+    "sent": "Envoyées"
+  },
+  "listingMedia": {
+    "noPhoto": "Aucune photo",
+    "gallery": "Galerie photos",
+    "openPhoto": "Ouvrir la photo",
+    "companySection": "Entreprise",
+    "acceptedMaterials": "Matériaux acceptés"
   }
 }
