@@ -27,7 +27,7 @@ class GroqModelGateway(ModelGateway):
             raise RuntimeError("GROQ_API_KEY missing")
         body = json.dumps(
             {
-                "model": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
+                "model": os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
                 "messages": [{"role": "user", "content": prompt}],
                 "temperature": 0.2,
             }
@@ -39,6 +39,8 @@ class GroqModelGateway(ModelGateway):
             headers={
                 "Authorization": f"Bearer {key}",
                 "Content-Type": "application/json",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "Accept": "application/json",
             },
         )
         with urllib.request.urlopen(http, timeout=30) as resp:
