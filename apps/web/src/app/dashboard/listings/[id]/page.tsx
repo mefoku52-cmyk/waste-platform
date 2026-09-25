@@ -9,7 +9,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 import { RecommendationsPanel } from '@/features/recommendations/components/recommendations-panel';
-import { AiAssistantPanel } from '@/features/agent-platform/components/ai-assistant-panel';
+import { AiChatWidget } from '@/features/agent-platform/components/ai-chat-widget';
 import { TransportPanel } from '@/features/recommendations/components/transport-panel';
 import { FreightPanel } from '@/features/recommendations/components/freight-panel';
 import { postListingViewed } from '@/features/recommendations/api';
@@ -243,15 +243,16 @@ export default function ListingDetailPage() {
               materialType={data.materialType || data.material_type || undefined}
               onPickDestination={setDestination}
             />
-            <AiAssistantPanel
-              listingId={listingId}
-              listingTitle={data.title || undefined}
-            />
-            <TransportPanel origin={data.location || undefined} destination={destination} />
+<TransportPanel origin={data.location || undefined} destination={destination} />
             <FreightPanel near={destination || data.location || undefined} />
           </>
         ) : null}
       </div>
+
+      <AiChatWidget
+        listingId={listingId}
+        listingTitle={data?.title || undefined}
+      />
 
       {selectedPhoto ? (
         <div
