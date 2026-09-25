@@ -10,4 +10,5 @@ export type RecommendationPredictionFields = {
   prediction_score?: number | null;
   prediction_status?: PredictionStatus | string | null;
   prediction_applied?: boolean | null;
+  prediction_explanation?: string | null;
 };

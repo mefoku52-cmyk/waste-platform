@@ -23,7 +23,7 @@ export function ReportButton({
 
   async function send(reason: string) {
     setErr('');
-    const token = tokenStore.getAccessToken?.() || tokenStore.getToken?.();
+    const token = tokenStore.getToken();
     const res = await fetch(`${config.apiBaseUrl}/events`, {
       method: 'POST',
       headers: {
