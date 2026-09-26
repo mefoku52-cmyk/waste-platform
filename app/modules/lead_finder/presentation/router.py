@@ -9,6 +9,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
+from app.modules.lead_finder.application.services.batch_drafter import (
+    BatchDrafter,
+    CompanyInput,
+)
 from app.modules.lead_finder.application.services.email_drafter import (
     EmailDrafter,
 )
@@ -51,6 +55,30 @@ class SendResponse(BaseModel):
 def _require_admin(current_user) -> None:
     if not is_platform_admin(current_user):
         raise HTTPException(status_code=403, detail="Platform admin access required")
+
+
+class BatchCompanyItem(BaseModel):
+    company_name: str = Field(min_length=1, max_length=255)
+    city: str | None = Field(default=None, max_length=128)
+    industry: str | None = Field(default=None, max_length=128)
+    reason: str | None = Field(default=None, max_length=500)
+
+
+class BatchDraftRequest(BaseModel):
+    companies: list[BatchCompanyItem] = Field(min_length=1, max_length=30)
+
+
+class BatchDraftItem(BaseModel):
+    company_name: str
+    city: str | None
+    industry: str | None
+    subject: str
+    body: str
+
+
+class BatchDraftResponse(BaseModel):
+    count: int
+    items: list[BatchDraftItem]
 
 
 EARLY_BIRD_LIMIT = 10
@@ -135,3 +163,57 @@ async def send_outreach_email(
     if remaining is not None:
         msg = f"{msg} Zostáva dnes: {remaining}."
     return SendResponse(ok=True, message=msg)
+
+
+@router.post("/draft-batch", response_model=BatchDraftResponse)
+async def draft_batch(
+    payload: BatchDraftRequest,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> BatchDraftResponse:
+    """Draft N emails at once (max 30). Admin only."""
+    _require_admin(current_user)
+
+    # Early bird detection (rovnaka logika ako v /draft)
+    early_bird = False
+    try:
+        r = await session.execute(text("SELECT COUNT(*) FROM companies WHERE status = 'verified'"))
+        verified_count = int(r.scalar() or 0)
+        early_bird = verified_count < EARLY_BIRD_LIMIT
+    except Exception:
+        early_bird = False
+
+    companies = [
+        CompanyInput(
+            company_name=c.company_name,
+            city=c.city,
+            industry=c.industry,
+            reason=c.reason,
+        )
+        for c in payload.companies
+    ]
+
+    try:
+        items = await BatchDrafter().draft_batch(
+            companies=companies,
+            early_bird=early_bird,
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=502,
+            detail="Nepodarilo sa pripraviť dávku emailov.",
+        )
+
+    return BatchDraftResponse(
+        count=len(items),
+        items=[
+            BatchDraftItem(
+                company_name=i.company_name,
+                city=i.city,
+                industry=i.industry,
+                subject=i.subject,
+                body=i.body,
+            )
+            for i in items
+        ],
+    )
