@@ -21,6 +21,7 @@ from app.modules.companies.application.entitlements import CompanyEntitlementSer
 from app.modules.companies.domain.enums import SubscriptionTier
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import (
+    current_user_id,
     is_platform_admin,
     membership_company_ids,
 )
@@ -180,7 +181,14 @@ async def user_ai_chat(
         entitlements=entitlements,
     )
 
-    actor_id = str(getattr(current_user, "id", "unknown"))
+    actor_id = current_user_id(current_user)
+    if not actor_id:
+        return UserAiChatResponse(
+            status="unavailable",
+            reply=None,
+            source="user-ai",
+            session_id=payload.session_id or "",
+        )
     session_id = payload.session_id or str(uuid.uuid4())
 
     conversation_id: str | None = None
