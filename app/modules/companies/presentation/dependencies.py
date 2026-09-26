@@ -5,6 +5,7 @@ from app.modules.companies.application.services import (
     CreateCompanyService,
     GetCompanyService,
     ListCompaniesService,
+    SetCompanySubscriptionTierService,
     TransitionCompanyStatusService,
     UpdateCompanyService,
 )
@@ -62,3 +63,9 @@ def get_transition_company_status_service(
     repo: SqlAlchemyCompanyRepository = Depends(get_company_repo),
 ) -> TransitionCompanyStatusService:
     return TransitionCompanyStatusService(repo=repo, clock=Clock())
+
+
+def get_set_subscription_tier_service(
+    repo: SqlAlchemyCompanyRepository = Depends(get_company_repo),
+) -> SetCompanySubscriptionTierService:
+    return SetCompanySubscriptionTierService(repo=repo, clock=Clock())

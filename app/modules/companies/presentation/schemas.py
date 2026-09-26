@@ -104,3 +104,7 @@ class PaginatedCompaniesResponse(BaseModel):
 
 class CompanyStatusTransitionRequest(BaseModel):
     toStatus: CompanyStatus
+
+
+class SubscriptionTierUpdateRequest(BaseModel):
+    tier: SubscriptionTier

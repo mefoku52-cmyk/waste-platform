@@ -256,3 +256,32 @@ class TransitionCompanyStatusService:
         company.updated_by_user_id = actor_user_id
         await self.repo.update(company)
         return to_company_dto(company)
+
+
+class SetCompanySubscriptionTierService:
+    """Admin-only: change a company's subscription tier.
+
+    Never raises on unknown tier — enum enforces valid values.
+    """
+
+    def __init__(self, repo: CompanyRepository, clock: Clock):
+        self.repo = repo
+        self.clock = clock
+
+    async def execute(
+        self,
+        *,
+        company_id: UUID,
+        tier: SubscriptionTier,
+        actor_user_id: UUID | None,
+    ) -> CompanyDTO:
+        company = await self.repo.get_by_id(company_id)
+        if not company:
+            raise NotFoundDomainError("Company not found")
+
+        company.subscription_tier = tier
+        company.updated_at = self.clock.now()
+        company.updated_by_user_id = actor_user_id
+
+        await self.repo.update(company)
+        return to_company_dto(company)

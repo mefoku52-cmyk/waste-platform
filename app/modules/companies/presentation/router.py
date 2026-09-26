@@ -7,6 +7,7 @@ from app.modules.companies.presentation.dependencies import (
     get_create_company_service,
     get_get_company_service,
     get_list_companies_service,
+    get_set_subscription_tier_service,
     get_transition_company_status_service,
     get_update_company_service,
 )
@@ -18,8 +19,10 @@ from app.modules.companies.presentation.schemas import (
     CompanyUpdateRequest,
     PaginatedCompaniesResponse,
     PaginationMeta,
+    SubscriptionTierUpdateRequest,
 )
 from app.shared.application.side_effects import write_audit
+from app.shared.domain.exceptions import ForbiddenDomainError
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import (
     require_current_user,
@@ -253,4 +256,38 @@ async def transition_company_status(
             )
     except Exception:
         pass
+    return CompanyResponse(data=to_company_data(dto))
+
+
+@router.patch(
+    "/{company_id}/subscription-tier",
+    response_model=CompanyResponse,
+    responses=error_responses(401, 403, 404, 422, 500),
+)
+async def set_company_subscription_tier(
+    company_id: UUID,
+    payload: SubscriptionTierUpdateRequest,
+    current_user=Depends(require_current_user),
+    service=Depends(get_set_subscription_tier_service),
+    session=Depends(get_db_session),
+):
+    """Platform-admin-only: set a company subscription tier."""
+    if not _is_admin(current_user):
+        raise ForbiddenDomainError("Subscription tier may only be changed by a platform admin.")
+
+    dto = await service.execute(
+        company_id=company_id,
+        tier=payload.tier,
+        actor_user_id=current_user.user.id,
+    )
+
+    await write_audit(
+        session=session,
+        actor_user_id=current_user.user.id,
+        action="company.subscription_tier_changed",
+        target_type="company",
+        target_id=str(company_id),
+        details=f"tier={payload.tier.value}",
+    )
+
     return CompanyResponse(data=to_company_data(dto))
