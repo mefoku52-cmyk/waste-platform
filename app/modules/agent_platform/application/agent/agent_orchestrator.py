@@ -7,7 +7,19 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from app.modules.agent_platform.application.permission.permission_engine import (
+    PermissionEngine,
+)
 from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+from app.modules.agent_platform.domain.permission.permission_decision import (
+    PermissionOutcome,
+)
+from app.modules.agent_platform.domain.permission.permission_request import (
+    PermissionRequest,
+)
+from app.modules.agent_platform.domain.permission.permission_scope import (
+    PermissionScope,
+)
 from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
 from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
 from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
@@ -43,12 +55,16 @@ class AgentOrchestrator:
         tool_handlers: dict[str, Any],
         model: str,
         policy: PolicyEngine | None = None,
+        permission: PermissionEngine | None = None,
+        tool_scopes: dict[str, tuple[str, str]] | None = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
         self._tool_handlers = dict(tool_handlers)
         self._model = model
         self._policy = policy
+        self._permission = permission
+        self._tool_scopes = dict(tool_scopes or {})
 
     async def respond(
         self,
@@ -149,6 +165,70 @@ class AgentOrchestrator:
                                         "tool_name": tool_name,
                                         "rule_id": decision.rule_id,
                                         "reason": decision.reason,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+
+                if self._permission is not None:
+                    scope_pair = self._tool_scopes.get(tool_name)
+                    if scope_pair is None:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "tool_scope_unmapped",
+                                        "tool_name": tool_name,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+                    perm_decision = await self._permission.authorize(
+                        PermissionRequest(
+                            request_id=str(uuid.uuid4()),
+                            actor_id=actor_id,
+                            actor_type=actor_type,
+                            scope=PermissionScope(
+                                resource=scope_pair[0],
+                                action=scope_pair[1],
+                            ),
+                            reason="agent_tool_call",
+                        )
+                    )
+                    if perm_decision.outcome == PermissionOutcome.DENIED:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "tool_denied_by_permission",
+                                        "tool_name": tool_name,
+                                        "rule_id": perm_decision.policy_rule_id,
+                                        "reason": perm_decision.reason,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+                    if perm_decision.outcome == PermissionOutcome.APPROVAL_REQUIRED:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "tool_requires_permission_approval",
+                                        "tool_name": tool_name,
+                                        "rule_id": perm_decision.policy_rule_id,
+                                        "reason": perm_decision.reason,
                                     },
                                     ensure_ascii=False,
                                 ),

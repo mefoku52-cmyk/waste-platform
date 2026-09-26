@@ -9,6 +9,9 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
+from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+    ActorToolPermissionEngine,
+)
 from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
     AllowlistPolicyEngine,
 )
@@ -68,8 +71,17 @@ async def get_agent_orchestrator(
         "search_companies": company_handler,
         "search_listings": listing_handler,
     }
+    tool_scopes: dict[str, tuple[str, str]] = {
+        "search_companies": ("companies", "search"),
+        "search_listings": ("listings", "search"),
+    }
+
     policy = AllowlistPolicyEngine(
         allowed_tool_names=frozenset(tool_handlers.keys()),
+    )
+    permission = ActorToolPermissionEngine(
+        allowed_actor_types=frozenset({"user", "admin"}),
+        allowed_scopes=frozenset(tool_scopes.values()),
     )
 
     return AgentOrchestrator(
@@ -77,5 +89,7 @@ async def get_agent_orchestrator(
         tool_schemas=build_default_tools(),
         tool_handlers=tool_handlers,
         policy=policy,
+        permission=permission,
+        tool_scopes=tool_scopes,
         model="openai/gpt-oss-120b",
     )
