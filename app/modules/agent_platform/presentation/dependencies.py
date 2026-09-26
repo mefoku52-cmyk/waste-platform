@@ -9,6 +9,9 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
+from app.modules.agent_platform.infrastructure.events.sqlalchemy_event_publisher import (
+    SqlAlchemyEventPublisher,
+)
 from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
     ActorToolPermissionEngine,
 )
@@ -107,5 +110,6 @@ async def get_agent_orchestrator(
         permission=permission,
         tool_scopes=tool_scopes,
         audit=_audit_agent_tool,
+        event_publisher=SqlAlchemyEventPublisher(session=session),
         model="openai/gpt-oss-120b",
     )

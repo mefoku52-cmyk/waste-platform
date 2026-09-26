@@ -8,12 +8,16 @@ import time
 import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Any
 
 from app.modules.agent_platform.application.permission.permission_engine import (
     PermissionEngine,
 )
 from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+from app.modules.agent_platform.domain.events.event_source import EventSource
+from app.modules.agent_platform.domain.events.event_type import PlatformEventType
+from app.modules.agent_platform.domain.events.platform_event import PlatformEvent
 from app.modules.agent_platform.domain.permission.permission_decision import (
     PermissionOutcome,
 )
@@ -32,6 +36,9 @@ from app.modules.agent_platform.infrastructure.ai.model_request import (
     ModelRequest,
 )
 from app.modules.agent_platform.infrastructure.ai.model_response import ModelResponse
+from app.modules.agent_platform.infrastructure.events.event_publisher import (
+    EventPublisher,
+)
 
 MAX_TOOL_ITERATIONS = 4
 
@@ -61,6 +68,7 @@ class AgentOrchestrator:
         permission: PermissionEngine | None = None,
         tool_scopes: dict[str, tuple[str, str]] | None = None,
         audit: Callable[[str, str, str, float], Awaitable[None]] | None = None,
+        event_publisher: EventPublisher | None = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
@@ -70,6 +78,7 @@ class AgentOrchestrator:
         self._permission = permission
         self._tool_scopes = dict(tool_scopes or {})
         self._audit = audit
+        self._event_publisher = event_publisher
 
     async def _safe_audit(
         self,
@@ -83,6 +92,29 @@ class AgentOrchestrator:
             return
         with contextlib.suppress(Exception):
             await self._audit(actor_id, tool_name, outcome, duration_s)
+
+    async def _safe_publish(
+        self,
+        actor_id: str,
+        tool_name: str,
+        event_type: PlatformEventType,
+        source: EventSource,
+    ) -> None:
+        """Best-effort event publish. Failure must never break the tool call."""
+        publisher = self._event_publisher
+        if publisher is None:
+            return
+        with contextlib.suppress(Exception):
+            event = PlatformEvent(
+                event_id=str(uuid.uuid4()),
+                event_type=event_type,
+                source=source,
+                occurred_at=datetime.now(UTC),
+                actor_id=actor_id,
+                target=tool_name,
+                payload={"tool_name": tool_name},
+            )
+            await publisher.publish(event)
 
     async def respond(
         self,
@@ -132,6 +164,15 @@ class AgentOrchestrator:
                 t0 = time.monotonic()
                 tool_name = ""
                 outcome = "not_started"
+                _fn_pre = call.get("function", {}) or {}
+                _tool_pre = _fn_pre.get("name", "")
+                if _tool_pre:
+                    await self._safe_publish(
+                        actor_id,
+                        _tool_pre,
+                        PlatformEventType.TOOL_REQUESTED,
+                        EventSource.AI,
+                    )
                 try:
                     fn = call.get("function", {}) or {}
                     tool_name = fn.get("name", "")
@@ -321,9 +362,33 @@ class AgentOrchestrator:
                         outcome,
                         time.monotonic() - t0,
                     )
+                    _completed_type = _outcome_to_event_type(outcome)
+                    await self._safe_publish(
+                        actor_id,
+                        tool_name,
+                        _completed_type,
+                        EventSource.TOOL,
+                    )
 
         return OrchestrationResult(
             text="Prepáč, nepodarilo sa mi dokončiť odpoveď v rozumnom čase.",
             tool_calls=tuple(collected_calls),
             iterations=MAX_TOOL_ITERATIONS,
         )
+
+
+def _outcome_to_event_type(outcome: str) -> PlatformEventType:
+    if outcome == "executed":
+        return PlatformEventType.TOOL_EXECUTED
+    if outcome in {"failed", "exception"}:
+        return PlatformEventType.TOOL_FAILED
+    if outcome in {
+        "denied_by_policy",
+        "denied_by_permission",
+        "tool_scope_unmapped",
+        "tool_not_available",
+    }:
+        return PlatformEventType.TOOL_DENIED
+    if outcome in {"requires_approval_policy", "requires_approval_permission"}:
+        return PlatformEventType.APPROVAL_REQUESTED
+    return PlatformEventType.TOOL_FAILED
