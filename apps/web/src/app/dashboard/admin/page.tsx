@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
@@ -178,6 +179,28 @@ export default function AdminPage() {
         >
           <SubscriptionTiersPanel />
         </div>
+      </section>
+
+      <section className="mt-12">
+        <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+          LEAD OUTREACH
+        </p>
+        <h2
+          className="mb-3 text-2xl md:text-3xl"
+          style={{ fontFamily: 'DM Serif Display, serif' }}
+        >
+          Oslovenie firiem
+        </h2>
+        <p className="mb-4 text-sm" style={{ color: MUTED }}>
+          AI pripraví personalizovaný email. Ty skontroluješ a pošleš.
+        </p>
+        <Link
+          href="/dashboard/admin/lead-outreach"
+          className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
+          style={{ background: GOLD, color: BG }}
+        >
+          Otvoriť lead outreach →
+        </Link>
       </section>
 
       <section className="mt-8 rounded-2xl border border-[#d4af37]/25 p-4">
