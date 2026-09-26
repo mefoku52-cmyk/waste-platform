@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy import text
 
 from app.modules.lead_finder.application.services.email_drafter import (
     EmailDrafter,
@@ -51,18 +52,33 @@ def _require_admin(current_user) -> None:
         raise HTTPException(status_code=403, detail="Platform admin access required")
 
 
+EARLY_BIRD_LIMIT = 10
+
+
 @router.post("/draft", response_model=DraftResponse)
 async def draft_email(
     payload: DraftRequest,
     current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
 ) -> DraftResponse:
     _require_admin(current_user)
+
+    # Zisti, kolko overenych firiem je na platforme.
+    early_bird = False
+    try:
+        r = await session.execute(text("SELECT COUNT(*) FROM companies WHERE status = 'verified'"))
+        verified_count = int(r.scalar() or 0)
+        early_bird = verified_count < EARLY_BIRD_LIMIT
+    except Exception:
+        early_bird = False
+
     try:
         draft = await EmailDrafter().draft(
             company_name=payload.company_name,
             city=payload.city,
             industry=payload.industry,
             reason=payload.reason,
+            early_bird=early_bird,
         )
     except Exception:
         raise HTTPException(

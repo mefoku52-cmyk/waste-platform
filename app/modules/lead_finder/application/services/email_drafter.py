@@ -28,6 +28,10 @@ PRAVIDLÁ:
 6. Podpis: "Radoslav Čornanič, CMEP — trc-cmep.sk"
 7. Žiadny HTML. Len plain text.
 8. Neuvádzaj moje telefónne číslo ani adresu.
+9. AK ti používateľ povie, že EARLY BIRD ponuka je AKTÍVNA, pridaj do emailu jednu vetu:
+   "Prvých 10 firiem registrovaných na platforme získa PRO alebo AI verziu ZADARMO navždy — aktuálne je ešte pár miest voľných."
+   Túto vetu NIKDY nepridávaj, ak ti používateľ nepovie, že ponuka je aktívna.
+10. Ak early bird NIE JE aktívny, žiadnu zmienku o zľavách, bonusoch ani PRO verziách nespomínaj.
 
 Vráť presne dve časti oddelené prázdnym riadkom:
 SUBJECT: <predmet>
@@ -53,6 +57,7 @@ class EmailDrafter:
         city: str | None = None,
         industry: str | None = None,
         reason: str | None = None,
+        early_bird: bool = False,
     ) -> DraftedEmail:
         parts: list[str] = [f"Názov firmy: {company_name.strip()}"]
         if city and city.strip():
@@ -61,6 +66,14 @@ class EmailDrafter:
             parts.append(f"Odvetvie: {industry.strip()}")
         if reason and reason.strip():
             parts.append(f"Dôvod kontaktovania: {reason.strip()}")
+        if early_bird:
+            parts.append(
+                "EARLY BIRD PONUKA JE AKTÍVNA: áno "
+                "(prvých 10 firiem na platforme získa PRO/AI zadarmo navždy, "
+                "ešte je voľných miest)."
+            )
+        else:
+            parts.append("EARLY BIRD PONUKA JE AKTÍVNA: nie")
 
         prompt = "\n".join(parts) + "\n\nNapíš email podľa pravidiel."
 
