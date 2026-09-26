@@ -290,5 +290,13 @@ class Settings(BaseSettings):
             return [item.strip() for item in value.split(",") if item.strip()]
         return []
 
+    # --- Daily matching job ---
+    MATCHING_ENABLED: bool = Field(default=False)
+    MATCHING_HOUR: int = Field(default=3)  # 3:00 ráno
+    MATCHING_MINUTE: int = Field(default=0)
+    MATCHING_MIN_SCORE: int = Field(default=60)  # minimálne skóre pre notifikáciu
+    MATCHING_MAX_PER_COMPANY: int = Field(default=5)
+    MATCHING_LOOKBACK_DAYS: int = Field(default=7)
+
 
 settings = Settings()

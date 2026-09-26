@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.core.http_exception_handlers import register_http_exception_handlers
+from app.shared.infrastructure.scheduler import start_scheduler, stop_scheduler
 
 logger = logging.getLogger("cmep.main")
 
@@ -19,8 +20,12 @@ async def lifespan(app: FastAPI):
         settings.app_env,
         settings.ENABLE_PUBLIC_DOCS,
     )
-    yield
-    logger.info("Stopping CMEP app")
+    start_scheduler()
+    try:
+        yield
+    finally:
+        stop_scheduler()
+        logger.info("Stopping CMEP app")
 
 
 def _cors_origins() -> list[str]:
