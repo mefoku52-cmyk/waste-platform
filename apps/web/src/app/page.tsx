@@ -95,7 +95,7 @@ export default function LandingPage() {
                 TRČ · CMEP
               </h1>
               <p className="ff mt-4 text-2xl italic leading-snug md:text-3xl" style={{ color: GOLD_BRIGHT }}>
-                Menej bordelu. Viac obchodu.
+                Menej odpadu. Viac obchodu.
               </p>
               <p className="mt-3 text-base md:text-lg" style={{ color: GOLD_BRIGHT }}>
                 Trhovisko firiem a obehových materiálov — filtruj, hľadaj, dohodni.
