@@ -27,22 +27,38 @@ from app.modules.listings.infrastructure.repositories import (
     ListingsRepositoryImpl,
 )
 from app.shared.infrastructure.db.session import get_db_session
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import (
+    is_platform_admin,
+    membership_company_ids,
+)
 
 
 async def get_agent_orchestrator(
     session: AsyncSession = Depends(get_db_session),
+    current_user=Depends(require_current_user),
 ) -> AgentOrchestrator:
-    """Build orchestrator with real tool handlers bound to DB services."""
+    """Build orchestrator with tool handlers bound to current user's scope."""
 
     company_repo = SqlAlchemyCompanyRepository(session)
     list_companies_service = ListCompaniesService(company_repo)
 
     listings_service = ListingsService(ListingsRepositoryImpl(session))
 
+    # Scope z aktuálneho používateľa
+    try:
+        company_ids: tuple[str, ...] = tuple(
+            str(x) for x in (membership_company_ids(current_user) or [])
+        )
+        is_admin: bool = bool(is_platform_admin(current_user))
+    except Exception:
+        company_ids = ()
+        is_admin = False
+
     company_handler = CmepCompanySearchHandler(
         service=list_companies_service,
-        is_platform_admin=False,
-        company_ids=(),
+        is_platform_admin=is_admin,
+        company_ids=company_ids,
     )
     listing_handler = CmepListingSearchHandler(service=listings_service)
 

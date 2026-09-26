@@ -271,18 +271,6 @@ export default function ListingDetailPage() {
               </section>
             ) : null}
 
-{/* DEBUG_INFO – odstranit po overeni */}
-            <div
-              data-debug="listing-owner-debug"
-              style={{ background: '#1a1a1a', color: '#c9a84c', fontSize: 11, padding: 8, marginTop: 16, borderRadius: 8, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
-            >
-              {`DEBUG isOwner=${isOwner}
-myCompanyIds=${JSON.stringify(myCompanyIds)}
-listingCompanyId=${listingCompanyId}
-me.data=${me.data ? 'loaded' : 'null'}
-data.companyId=${(data as any)?.companyId || 'undefined'}`}
-            </div>
-
             <RecommendationsPanel
               listingId={listingId}
               listingTitle={data.title || undefined}
