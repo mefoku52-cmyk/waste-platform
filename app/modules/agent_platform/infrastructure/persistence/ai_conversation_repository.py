@@ -100,7 +100,11 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
             updated_at=now,
         )
         self._session.add(model)
-        await self._session.flush()
+        try:
+            await self._session.commit()
+        except Exception:
+            await self._session.rollback()
+            raise
         return _to_conv(model)
 
     async def get_messages(
@@ -153,5 +157,9 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
         if conv is not None:
             conv.updated_at = now
 
-        await self._session.flush()
+        try:
+            await self._session.commit()
+        except Exception:
+            await self._session.rollback()
+            raise
         return _to_msg(msg)
