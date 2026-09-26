@@ -10,6 +10,7 @@ def to_company_data(dto: CompanyDTO) -> CompanyData:
         tradingName=dto.trading_name,
         registrationNumber=dto.registration_number,
         taxIdentifier=dto.tax_identifier,
+        subscriptionTier=dto.subscription_tier,
         companyType=dto.company_type,
         email=dto.email,
         phone=dto.phone,

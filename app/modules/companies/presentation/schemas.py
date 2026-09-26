@@ -3,7 +3,11 @@ from uuid import UUID
 
 from pydantic import BaseModel, HttpUrl
 
-from app.modules.companies.domain.enums import CompanyStatus, CompanyType
+from app.modules.companies.domain.enums import (
+    CompanyStatus,
+    CompanyType,
+    SubscriptionTier,
+)
 
 
 class CompanyCreateRequest(BaseModel):
@@ -54,6 +58,7 @@ class CompanyData(BaseModel):
     registrationNumber: str
     taxIdentifier: str | None
     vatIdentifier: str | None = None
+    subscriptionTier: SubscriptionTier
     companyType: CompanyType
     email: str | None
     phone: str | None
