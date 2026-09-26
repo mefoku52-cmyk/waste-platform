@@ -107,7 +107,7 @@ export default function LandingPage() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/register" className="rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-                  Pridať / zverejniť ponuku
+                  ➕ Pridať ponuku
                 </Link>
                 <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 45%, transparent)', color: FG }}>
                   Pozrieť živý trh
