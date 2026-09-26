@@ -9,4 +9,5 @@ export interface Company extends BaseEntity {
   zip_code: string;
   country: string;
   is_verified: boolean;
+  subscriptionTier?: 'free' | 'pro' | 'ai' | string | null;
 }

@@ -30,6 +30,7 @@ function AdminReports() {
 
 import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
 import { useAdminStats } from '@/features/admin';
+import { SubscriptionTiersPanel } from '@/features/admin/components/subscription-tiers-panel';
 import { AdminUsersTable, AuditTable } from '@/features/admin';
 import { CompaniesTable } from '@/features/companies';
 import { DashboardHeader } from '@/components/layout/dashboard-header';
@@ -152,6 +153,33 @@ export default function AdminPage() {
           </section>
 
         
+      <section className="mt-12">
+        <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+          {t('admin.subscriptionsKicker', 'PREDPLATNÉ')}
+        </p>
+        <h2
+          className="mb-3 text-2xl md:text-3xl"
+          style={{ fontFamily: 'DM Serif Display, serif' }}
+        >
+          {t('admin.subscriptionsTitle', 'Subscription tiers')}
+        </h2>
+        <p className="mb-6 text-sm" style={{ color: MUTED }}>
+          {t(
+            'admin.subscriptionsHint',
+            'FREE / PRO / AI. Kliknutím zmeníš tier firmy. Zmena je okamžitá.',
+          )}
+        </p>
+        <div
+          className="rounded-2xl border p-5"
+          style={{
+            borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)',
+            background: 'rgba(201,168,76,0.03)',
+          }}
+        >
+          <SubscriptionTiersPanel />
+        </div>
+      </section>
+
       <section className="mt-8 rounded-2xl border border-[#d4af37]/25 p-4">
         <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">Nahlasenia</p>
         <AdminReports />

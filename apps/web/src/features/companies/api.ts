@@ -19,6 +19,9 @@ export const companiesApi = {
   transitionStatus: (id: string, toStatus: string) =>
     http.patch<Company>(`/companies/${id}/status`, { toStatus }),
 
+  setSubscriptionTier: (id: string, tier: 'free' | 'pro' | 'ai') =>
+    http.patch<{ data: Company }>(`/companies/${id}/subscription-tier`, { tier }),
+
   rpoCheck: (ico: string) =>
     http.get<{
       ok: boolean;
