@@ -263,59 +263,36 @@ export default function DashboardPage() {
           <div
             className="rounded-3xl border p-6 md:p-10"
             style={{
-              borderColor:
-                'color-mix(in srgb, #c9a84c 30%, transparent)',
-              background:
-                'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(9,8,7,0) 60%)',
+              borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)',
+              background: 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(9,8,7,0) 60%)',
             }}
           >
-            <p
-              className="mb-3 text-[11px] uppercase tracking-[0.3em]"
-              style={{ color: GOLD }}
-            >
+            <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
               {t('dashboard.welcome.eyebrow')}
             </p>
 
             <h2
               className="mb-4 text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl"
-              style={{
-                color: GOLD_BRIGHT,
-                fontFamily: 'Fraunces, serif',
-              }}
+              style={{ color: GOLD_BRIGHT, fontFamily: 'Fraunces, serif' }}
             >
               {t('dashboard.welcome.title')}
             </h2>
 
-            <p
-              className="max-w-2xl text-base leading-relaxed md:text-lg"
-              style={{ color: MUTED }}
-            >
+            <p className="max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
               {t('dashboard.welcome.desc')}
             </p>
+
+            <p
+              className="mt-8 text-2xl italic leading-snug md:text-3xl"
+              style={{ color: GOLD_BRIGHT, fontFamily: 'Fraunces, serif' }}
+            >
+              {t('dashboard.motto.headline')}
+            </p>
+
+            <p className="mt-3 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
+              {t('dashboard.motto.subline')}
+            </p>
           </div>
-        </section>
-
-        <section className="mb-10">
-          <p
-            className="mb-4 text-[11px] uppercase tracking-[0.3em]"
-            style={{ color: GOLD }}
-          >
-            {t('dashboard.motto.eyebrow')}
-          </p>
-
-          <h1
-            className="text-5xl leading-[1.05] tracking-[-0.02em] md:text-7xl"
-            style={{ fontFamily: 'Fraunces, serif' }}
-          >
-            {t('dashboard.motto.headline')}
-          </h1>
-
-          <p
-            className="mt-6 max-w-2xl text-base leading-relaxed md:text-lg"
-            style={{ color: MUTED }}
-          >
-            {t('dashboard.motto.subline')}
-          </p>
         </section>
 
         <section className="mb-8">
@@ -404,7 +381,7 @@ export default function DashboardPage() {
         </section>
 
         <section className="mb-10">
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+          <div className="flex flex-col gap-4">
             {DASHBOARD_MATERIALS.map((material) => {
               const active = category === material.key;
 
@@ -420,7 +397,7 @@ export default function DashboardPage() {
                     borderColor: active
                       ? GOLD
                       : 'color-mix(in srgb, #c9a84c 20%, transparent)',
-                    aspectRatio: '4/5',
+                    aspectRatio: '21/9',
                   }}
                 >
                   <img
