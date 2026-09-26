@@ -45,7 +45,6 @@ async def get_agent_orchestrator(
 
     listings_service = ListingsService(ListingsRepositoryImpl(session))
 
-    # Scope z aktuálneho používateľa
     try:
         company_ids: tuple[str, ...] = tuple(
             str(x) for x in (membership_company_ids(current_user) or [])

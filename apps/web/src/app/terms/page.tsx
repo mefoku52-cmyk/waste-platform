@@ -65,7 +65,42 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Riešenie sporov</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Platené služby a topovanie</h2>
+              <p>
+                Platforma ponúka dobrovoľné platené zvýraznenie ponúk (tzv. „topovanie"). Ceny sú uvedené v EUR s DPH:
+              </p>
+              <ul className="mt-3 list-disc space-y-1 pl-6">
+                <li><strong style={{ color: FG }}>TOP 7 dní</strong> — 5,00 €</li>
+                <li><strong style={{ color: FG }}>TOP 30 dní</strong> — 10,00 €</li>
+                <li><strong style={{ color: FG }}>GOLD 30 dní</strong> — 30,00 € (zlatý rámik + navrchu 30 dní)</li>
+              </ul>
+              <p className="mt-3">
+                Po zaplatení je služba aktivovaná okamžite a je neodvolateľná.
+                <strong style={{ color: FG }}> Zrušenie po aktivácii nie je možné</strong> a nárok na vrátenie peňazí zaniká.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Spôsob platby</h2>
+              <p>
+                Platby spracúva spoločnosť <strong style={{ color: FG }}>GoPay</strong> (GoPay s.r.o., IČO: 260 46 745), ktorá je licencovanou platobnou inštitúciou.
+                Pri platbe môžeš použiť platobnú kartu (Visa, Mastercard), Apple Pay, Google Pay alebo bankový prevod.
+              </p>
+              <p className="mt-3">
+                Platforma nemá prístup k údajom o tvojej platobnej karte. Všetky platobné údaje spracúva výhradne GoPay.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>7. Fakturácia a daňový doklad</h2>
+              <p>
+                Po úspešnej platbe bude daňový doklad (faktúra) vygenerovaný automaticky a zaslaný na e-mail uvedený v používateľskom účte.
+                Faktúra obsahuje identifikačné údaje firmy (IČO, DIČ, adresa) a je v súlade so zákonom č. 222/2004 Z. z. o DPH.
+              </p>
+            </section>
+
+            <section>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>8. Riešenie sporov</h2>
               <p>
                 Spory medzi používateľmi sa riešia priamo medzi nimi. Platforma môže na žiadosť poskytnúť
                 súčinnosť, ale nie je arbitrom.
@@ -73,7 +108,7 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Zmeny podmienok</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>9. Zmeny podmienok</h2>
               <p>Prevádzkovateľ si vyhradzuje právo meniť tieto podmienky. O zmenách budú používatelia informovaní e-mailom alebo notifikáciou v platforme.</p>
             </section>
 
