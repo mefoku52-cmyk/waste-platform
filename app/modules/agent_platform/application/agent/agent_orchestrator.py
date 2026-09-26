@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
+import time
 import uuid
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -57,6 +60,7 @@ class AgentOrchestrator:
         policy: PolicyEngine | None = None,
         permission: PermissionEngine | None = None,
         tool_scopes: dict[str, tuple[str, str]] | None = None,
+        audit: Callable[[str, str, str, float], Awaitable[None]] | None = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
@@ -65,6 +69,20 @@ class AgentOrchestrator:
         self._policy = policy
         self._permission = permission
         self._tool_scopes = dict(tool_scopes or {})
+        self._audit = audit
+
+    async def _safe_audit(
+        self,
+        actor_id: str,
+        tool_name: str,
+        outcome: str,
+        duration_s: float,
+    ) -> None:
+        """Best-effort audit. Failure must never break the tool call."""
+        if self._audit is None:
+            return
+        with contextlib.suppress(Exception):
+            await self._audit(actor_id, tool_name, outcome, duration_s)
 
     async def respond(
         self,
@@ -111,61 +129,151 @@ class AgentOrchestrator:
             )
 
             for call in response.tool_calls:
-                fn = call.get("function", {}) or {}
-                tool_name = fn.get("name", "")
-                raw_args = fn.get("arguments", "{}")
+                t0 = time.monotonic()
+                tool_name = ""
+                outcome = "not_started"
                 try:
-                    args = (
-                        json.loads(raw_args) if isinstance(raw_args, str) else dict(raw_args or {})
+                    fn = call.get("function", {}) or {}
+                    tool_name = fn.get("name", "")
+                    raw_args = fn.get("arguments", "{}")
+                    try:
+                        args = (
+                            json.loads(raw_args)
+                            if isinstance(raw_args, str)
+                            else dict(raw_args or {})
+                        )
+                    except (TypeError, ValueError):
+                        args = {}
+
+                    collected_calls.append(
+                        {"name": tool_name, "arguments": args, "id": call.get("id", "")}
                     )
-                except (TypeError, ValueError):
-                    args = {}
 
-                collected_calls.append(
-                    {"name": tool_name, "arguments": args, "id": call.get("id", "")}
-                )
+                    if self._policy is not None:
+                        decision = await self._policy.decide(
+                            PolicyContext(
+                                actor_id=actor_id,
+                                actor_type=actor_type,
+                                agent_id=None,
+                                action="tool.call",
+                                target=None,
+                                tool_name=tool_name,
+                                risk_level=None,
+                                attributes={},
+                            )
+                        )
+                        if decision.outcome == PolicyOutcome.DENY:
+                            outcome = "denied_by_policy"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "error": "tool_denied_by_policy",
+                                            "tool_name": tool_name,
+                                            "rule_id": decision.rule_id,
+                                            "reason": decision.reason,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
+                        if decision.outcome == PolicyOutcome.REQUIRE_APPROVAL:
+                            outcome = "requires_approval_policy"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "error": "tool_requires_approval",
+                                            "tool_name": tool_name,
+                                            "rule_id": decision.rule_id,
+                                            "reason": decision.reason,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
 
-                if self._policy is not None:
-                    decision = await self._policy.decide(
-                        PolicyContext(
-                            actor_id=actor_id,
-                            actor_type=actor_type,
-                            agent_id=None,
-                            action="tool.call",
-                            target=None,
-                            tool_name=tool_name,
-                            risk_level=None,
-                            attributes={},
-                        )
-                    )
-                    if decision.outcome == PolicyOutcome.DENY:
-                        messages.append(
-                            ModelMessage(
-                                role="tool",
-                                content=json.dumps(
-                                    {
-                                        "error": "tool_denied_by_policy",
-                                        "tool_name": tool_name,
-                                        "rule_id": decision.rule_id,
-                                        "reason": decision.reason,
-                                    },
-                                    ensure_ascii=False,
+                    if self._permission is not None:
+                        scope_pair = self._tool_scopes.get(tool_name)
+                        if scope_pair is None:
+                            outcome = "tool_scope_unmapped"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "error": "tool_scope_unmapped",
+                                            "tool_name": tool_name,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
+                        perm_decision = await self._permission.authorize(
+                            PermissionRequest(
+                                request_id=str(uuid.uuid4()),
+                                actor_id=actor_id,
+                                actor_type=actor_type,
+                                scope=PermissionScope(
+                                    resource=scope_pair[0],
+                                    action=scope_pair[1],
                                 ),
-                                tool_call_id=call.get("id", ""),
+                                reason="agent_tool_call",
                             )
                         )
-                        continue
-                    if decision.outcome == PolicyOutcome.REQUIRE_APPROVAL:
+                        if perm_decision.outcome == PermissionOutcome.DENIED:
+                            outcome = "denied_by_permission"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "error": "tool_denied_by_permission",
+                                            "tool_name": tool_name,
+                                            "rule_id": perm_decision.policy_rule_id,
+                                            "reason": perm_decision.reason,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
+                        if perm_decision.outcome == PermissionOutcome.APPROVAL_REQUIRED:
+                            outcome = "requires_approval_permission"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "error": "tool_requires_permission_approval",
+                                            "tool_name": tool_name,
+                                            "rule_id": perm_decision.policy_rule_id,
+                                            "reason": perm_decision.reason,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
+
+                    handler = self._tool_handlers.get(tool_name)
+                    if handler is None:
+                        outcome = "tool_not_available"
                         messages.append(
                             ModelMessage(
                                 role="tool",
                                 content=json.dumps(
-                                    {
-                                        "error": "tool_requires_approval",
-                                        "tool_name": tool_name,
-                                        "rule_id": decision.rule_id,
-                                        "reason": decision.reason,
-                                    },
+                                    {"error": "tool_not_available", "name": tool_name},
                                     ensure_ascii=False,
                                 ),
                                 tool_call_id=call.get("id", ""),
@@ -173,115 +281,46 @@ class AgentOrchestrator:
                         )
                         continue
 
-                if self._permission is not None:
-                    scope_pair = self._tool_scopes.get(tool_name)
-                    if scope_pair is None:
-                        messages.append(
-                            ModelMessage(
-                                role="tool",
-                                content=json.dumps(
-                                    {
-                                        "error": "tool_scope_unmapped",
-                                        "tool_name": tool_name,
-                                    },
-                                    ensure_ascii=False,
-                                ),
-                                tool_call_id=call.get("id", ""),
+                    try:
+                        result = await handler.handle(
+                            ToolRequest(
+                                request_id=str(uuid.uuid4()),
+                                tool_name=tool_name,
+                                actor_id=actor_id,
+                                actor_type=actor_type,
+                                arguments=args,
+                                reason="agent_tool_call",
                             )
                         )
-                        continue
-                    perm_decision = await self._permission.authorize(
-                        PermissionRequest(
-                            request_id=str(uuid.uuid4()),
-                            actor_id=actor_id,
-                            actor_type=actor_type,
-                            scope=PermissionScope(
-                                resource=scope_pair[0],
-                                action=scope_pair[1],
-                            ),
-                            reason="agent_tool_call",
-                        )
-                    )
-                    if perm_decision.outcome == PermissionOutcome.DENIED:
-                        messages.append(
-                            ModelMessage(
-                                role="tool",
-                                content=json.dumps(
-                                    {
-                                        "error": "tool_denied_by_permission",
-                                        "tool_name": tool_name,
-                                        "rule_id": perm_decision.policy_rule_id,
-                                        "reason": perm_decision.reason,
-                                    },
-                                    ensure_ascii=False,
-                                ),
-                                tool_call_id=call.get("id", ""),
-                            )
-                        )
-                        continue
-                    if perm_decision.outcome == PermissionOutcome.APPROVAL_REQUIRED:
-                        messages.append(
-                            ModelMessage(
-                                role="tool",
-                                content=json.dumps(
-                                    {
-                                        "error": "tool_requires_permission_approval",
-                                        "tool_name": tool_name,
-                                        "rule_id": perm_decision.policy_rule_id,
-                                        "reason": perm_decision.reason,
-                                    },
-                                    ensure_ascii=False,
-                                ),
-                                tool_call_id=call.get("id", ""),
-                            )
-                        )
-                        continue
+                        outcome = "executed" if result.success else "failed"
+                        payload = {
+                            "success": result.success,
+                            "data": result.data,
+                            "error_code": result.error_code,
+                            "error_message": result.error_message,
+                        }
+                    except Exception as exc:
+                        outcome = "exception"
+                        payload = {
+                            "success": False,
+                            "error_code": "tool_exception",
+                            "error_message": type(exc).__name__,
+                        }
 
-                handler = self._tool_handlers.get(tool_name)
-                if handler is None:
                     messages.append(
                         ModelMessage(
                             role="tool",
-                            content=json.dumps(
-                                {"error": "tool_not_available", "name": tool_name},
-                                ensure_ascii=False,
-                            ),
+                            content=json.dumps(payload, ensure_ascii=False, default=str),
                             tool_call_id=call.get("id", ""),
                         )
                     )
-                    continue
-
-                try:
-                    result = await handler.handle(
-                        ToolRequest(
-                            request_id=str(uuid.uuid4()),
-                            tool_name=tool_name,
-                            actor_id=actor_id,
-                            actor_type=actor_type,
-                            arguments=args,
-                            reason="agent_tool_call",
-                        )
+                finally:
+                    await self._safe_audit(
+                        actor_id,
+                        tool_name,
+                        outcome,
+                        time.monotonic() - t0,
                     )
-                    payload = {
-                        "success": result.success,
-                        "data": result.data,
-                        "error_code": result.error_code,
-                        "error_message": result.error_message,
-                    }
-                except Exception as exc:
-                    payload = {
-                        "success": False,
-                        "error_code": "tool_exception",
-                        "error_message": type(exc).__name__,
-                    }
-
-                messages.append(
-                    ModelMessage(
-                        role="tool",
-                        content=json.dumps(payload, ensure_ascii=False, default=str),
-                        tool_call_id=call.get("id", ""),
-                    )
-                )
 
         return OrchestrationResult(
             text="Prepáč, nepodarilo sa mi dokončiť odpoveď v rozumnom čase.",

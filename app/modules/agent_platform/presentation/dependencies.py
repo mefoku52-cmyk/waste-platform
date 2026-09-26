@@ -32,6 +32,7 @@ from app.modules.listings.application.services import ListingsService
 from app.modules.listings.infrastructure.repositories import (
     ListingsRepositoryImpl,
 )
+from app.shared.application.side_effects import write_audit
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import (
@@ -84,6 +85,20 @@ async def get_agent_orchestrator(
         allowed_scopes=frozenset(tool_scopes.values()),
     )
 
+    async def _audit_agent_tool(
+        actor_id: str,
+        tool_name: str,
+        outcome: str,
+        duration_s: float,
+    ) -> None:
+        await write_audit(
+            session=session,
+            actor_user_id=actor_id,
+            action=f"agent.tool.{outcome}",
+            target_type="agent_tool",
+            details=f"tool={tool_name},duration_ms={int(duration_s * 1000)}",
+        )
+
     return AgentOrchestrator(
         gateway=GroqModelGateway(),
         tool_schemas=build_default_tools(),
@@ -91,5 +106,6 @@ async def get_agent_orchestrator(
         policy=policy,
         permission=permission,
         tool_scopes=tool_scopes,
+        audit=_audit_agent_tool,
         model="openai/gpt-oss-120b",
     )
