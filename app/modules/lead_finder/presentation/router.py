@@ -14,6 +14,7 @@ from app.modules.lead_finder.application.services.email_drafter import (
 )
 from app.shared.application.side_effects import write_audit
 from app.shared.infrastructure.db.session import get_db_session
+from app.shared.infrastructure.email.resend_sender import send_via_resend
 from app.shared.infrastructure.email.sender import send_email
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import (
@@ -96,7 +97,29 @@ async def send_outreach_email(
 ) -> SendResponse:
     _require_admin(current_user)
 
-    ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
+    result = await send_via_resend(
+        session=session,
+        to=payload.to,
+        subject=payload.subject,
+        body=payload.body,
+    )
+
+    if not result.ok:
+        # Fallback na SMTP len ak Resend nie je nakonfigurovany vobec
+        if "nie je nakonfigurovany" in result.message:
+            ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
+            if ok:
+                await write_audit(
+                    session=session,
+                    actor_user_id=current_user_id(current_user),
+                    action="lead_outreach.send",
+                    target_type="email",
+                    target_id=payload.to,
+                    details=f"via=smtp,subject={payload.subject[:80]}",
+                )
+                return SendResponse(ok=True, message="Email odoslaný cez SMTP.")
+            return SendResponse(ok=False, message="SMTP zlyhalo.")
+        return SendResponse(ok=False, message=result.message)
 
     await write_audit(
         session=session,
@@ -104,12 +127,11 @@ async def send_outreach_email(
         action="lead_outreach.send",
         target_type="email",
         target_id=payload.to,
-        details=f"subject={payload.subject[:80]}",
+        details=f"via=resend,subject={payload.subject[:80]}",
     )
 
-    if not ok:
-        return SendResponse(
-            ok=False,
-            message="SMTP nie je nakonfigurované alebo odoslanie zlyhalo.",
-        )
-    return SendResponse(ok=True, message="Email odoslaný.")
+    remaining = result.remaining_today
+    msg = result.message
+    if remaining is not None:
+        msg = f"{msg} Zostáva dnes: {remaining}."
+    return SendResponse(ok=True, message=msg)

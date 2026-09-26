@@ -162,6 +162,17 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = ""
     SMTP_USE_TLS: bool = True
 
+    # --- Resend (moderny email provider pre cold outreach) ---
+    RESEND_API_KEY: str = ""
+    RESEND_FROM_EMAIL: str = Field(
+        default="", validation_alias=AliasChoices("RESEND_FROM_EMAIL", "EMAIL_FROM")
+    )
+    RESEND_FROM_NAME: str = "CMEP"
+
+    # --- Lead outreach limits ---
+    LEAD_OUTREACH_DAILY_LIMIT: int = 30
+    LEAD_OUTREACH_ENABLED: bool = False
+
     @property
     def is_development(self) -> bool:
         return self.app_env.lower() in {"development", "dev", "local", "test"}
