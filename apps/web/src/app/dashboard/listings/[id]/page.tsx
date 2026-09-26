@@ -8,11 +8,13 @@ import { useQuery } from '@tanstack/react-query';
 import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
+import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 import { RecommendationsPanel } from '@/features/recommendations/components/recommendations-panel';
 import { TransportPanel } from '@/features/recommendations/components/transport-panel';
 import { FreightPanel } from '@/features/recommendations/components/freight-panel';
 import { postListingViewed } from '@/features/recommendations/api';
 import { ListingInquiryButton } from '@/features/inquiries/components/listing-inquiry-button';
+import { DeleteListingButton } from '@/features/listings/components/delete-listing-button';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -44,12 +46,15 @@ type ListingData = {
   images?: ImageLike[] | null;
   photos?: ImageLike[] | null;
   company?: {
+    id?: string | null;
     legalName?: string | null;
     tradingName?: string | null;
     city?: string | null;
     status?: string | null;
     acceptedMaterialTypes?: string | null;
   } | null;
+  companyId?: string | null;
+  company_id?: string | null;
   companyName?: string | null;
   company_name?: string | null;
   companyCity?: string | null;
@@ -101,6 +106,7 @@ async function fetchListing(listingId: string): Promise<ListingData> {
 
 export default function ListingDetailPage() {
   const params = useParams<{ id: string }>();
+  const me = useCurrentUser();
   const listingId = String(params?.id || '');
   const { t } = useT();
   const [destination, setDestination] = useState('');
@@ -126,6 +132,12 @@ export default function ListingDetailPage() {
     || data?.companyName
     || data?.company_name;
   const companyCity = data?.company?.city || data?.companyCity || data?.company_city;
+
+  const myCompanyId = String((me.data as any)?.memberships?.[0]?.companyId || '');
+  const listingCompanyId = String(
+    (data as any)?.companyId || (data as any)?.company_id || (data as any)?.company?.id || ''
+  );
+  const isOwner = Boolean(myCompanyId && listingCompanyId && myCompanyId === listingCompanyId);
 
   return (
     <AppShell>
@@ -193,6 +205,11 @@ export default function ListingDetailPage() {
 
                 <div className="mt-6">
                   <ListingInquiryButton listingId={listingId} listingTitle={title} />
+                  {isOwner ? (
+                    <div className="mt-3">
+                      <DeleteListingButton listingId={listingId} />
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </section>
