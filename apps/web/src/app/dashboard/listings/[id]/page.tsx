@@ -138,11 +138,16 @@ export default function ListingDetailPage() {
     || data?.company_name;
   const companyCity = data?.company?.city || data?.companyCity || data?.company_city;
 
-  const myCompanyId = String((me.data as any)?.memberships?.[0]?.companyId || '');
+  const myCompanyIds = ((me.data as any)?.memberships || [])
+    .map((m: any) => String(m?.companyId || m?.company_id || '').toLowerCase().trim())
+    .filter(Boolean);
   const listingCompanyId = String(
-    (data as any)?.companyId || (data as any)?.company_id || (data as any)?.company?.id || ''
-  );
-  const isOwner = Boolean(myCompanyId && listingCompanyId && myCompanyId === listingCompanyId);
+    (data as any)?.companyId ||
+    (data as any)?.company_id ||
+    (data as any)?.company?.id ||
+    ''
+  ).toLowerCase().trim();
+  const isOwner = Boolean(listingCompanyId && myCompanyIds.includes(listingCompanyId));
 
   return (
     <AppShell>
@@ -265,6 +270,18 @@ export default function ListingDetailPage() {
                 ) : null}
               </section>
             ) : null}
+
+{/* DEBUG_INFO – odstranit po overeni */}
+            <div
+              data-debug="listing-owner-debug"
+              style={{ background: '#1a1a1a', color: '#c9a84c', fontSize: 11, padding: 8, marginTop: 16, borderRadius: 8, fontFamily: 'monospace', whiteSpace: 'pre-wrap' }}
+            >
+              {`DEBUG isOwner=${isOwner}
+myCompanyIds=${JSON.stringify(myCompanyIds)}
+listingCompanyId=${listingCompanyId}
+me.data=${me.data ? 'loaded' : 'null'}
+data.companyId=${(data as any)?.companyId || 'undefined'}`}
+            </div>
 
             <RecommendationsPanel
               listingId={listingId}
