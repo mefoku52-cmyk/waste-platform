@@ -87,7 +87,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
           ...m,
           {
             role: 'ai',
-            text: 'AI je momentálne nedostupná (chýba GROQ_API_KEY alebo služba neodpovedá).',
+            text: 'Nepodarilo sa mi odpovedať, skús to znova.',
           },
         ]);
       }

@@ -6,6 +6,7 @@ They never write, never mutate, never expose secrets.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import text
@@ -110,17 +111,18 @@ class CmepAdminToolsHandler:
         days = max(1, min(days, 30))
         limit = max(1, min(limit, 100))
 
+        cutoff = datetime.now(UTC).replace(tzinfo=None) - timedelta(days=days)
         sql = text(
             """
             SELECT event_type, actor_user_id, company_id, listing_id, payload, created_at
             FROM activity_events
-            WHERE created_at >= (now() - (:days || ' days')::interval)
+            WHERE created_at >= :cutoff
             ORDER BY created_at DESC
             LIMIT :limit
             """
         )
         try:
-            r = await self._session.execute(sql, {"days": days, "limit": limit})
+            r = await self._session.execute(sql, {"cutoff": cutoff, "limit": limit})
             items = [
                 {
                     "event_type": row[0],
@@ -183,29 +185,28 @@ class CmepAdminToolsHandler:
         return {"tier_filter": tier_filter, "count": len(items), "items": items}
 
     async def _my_context(self) -> dict[str, Any]:
+        # Bez company_id v request kontexte vratime prehlad vsetkych firiem.
         sql = text(
             """
-            SELECT legal_name, city, status, subscription_tier, seller_capability, buyer_capability, logistics_capability
+            SELECT legal_name, city, status, subscription_tier
             FROM companies
             ORDER BY created_at ASC
-            LIMIT 1
             """
         )
         try:
             r = await self._session.execute(sql)
-            row = r.first()
+            rows = list(r)
         except Exception as exc:
             return {"error": f"context_query_failed: {type(exc).__name__}"}
-        if row is None:
-            return {"company": None}
         return {
-            "company": {
-                "legal_name": row[0],
-                "city": row[1],
-                "status": row[2],
-                "subscription_tier": row[3] or "free",
-                "seller_capability": bool(row[4]),
-                "buyer_capability": bool(row[5]),
-                "logistics_capability": bool(row[6]),
-            }
+            "count": len(rows),
+            "companies": [
+                {
+                    "legal_name": row[0],
+                    "city": row[1],
+                    "status": row[2],
+                    "subscription_tier": row[3] or "free",
+                }
+                for row in rows
+            ],
         }
