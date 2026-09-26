@@ -21,6 +21,9 @@ from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repos
 from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
     AllowlistPolicyEngine,
 )
+from app.modules.agent_platform.infrastructure.tools.cmep_admin_tools import (
+    CmepAdminToolsHandler,
+)
 from app.modules.agent_platform.infrastructure.tools.cmep_company_search_handler import (
     CmepCompanySearchHandler,
 )
@@ -28,6 +31,7 @@ from app.modules.agent_platform.infrastructure.tools.cmep_listing_search_handler
     CmepListingSearchHandler,
 )
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+    build_admin_tools,
     build_default_tools,
 )
 from app.modules.companies.application.entitlements import (
@@ -77,7 +81,7 @@ async def get_agent_orchestrator(
     )
     listing_handler = CmepListingSearchHandler(service=listings_service)
 
-    tool_handlers = {
+    tool_handlers: dict[str, object] = {
         "search_companies": company_handler,
         "search_listings": listing_handler,
     }
@@ -85,6 +89,20 @@ async def get_agent_orchestrator(
         "search_companies": ("companies", "search"),
         "search_listings": ("listings", "search"),
     }
+    tool_schemas: tuple[dict[str, object], ...] = build_default_tools()
+
+    # Admin tools are attached ONLY when the caller is a platform admin.
+    if is_admin:
+        admin_handler = CmepAdminToolsHandler(session=session)
+        for tool_name in (
+            "get_platform_stats",
+            "get_recent_activity",
+            "get_companies_with_tiers",
+            "get_my_company_context",
+        ):
+            tool_handlers[tool_name] = admin_handler
+            tool_scopes[tool_name] = ("admin", "read")
+        tool_schemas = tool_schemas + build_admin_tools()
 
     policy = AllowlistPolicyEngine(
         allowed_tool_names=frozenset(tool_handlers.keys()),
@@ -110,7 +128,7 @@ async def get_agent_orchestrator(
 
     return AgentOrchestrator(
         gateway=GroqModelGateway(),
-        tool_schemas=build_default_tools(),
+        tool_schemas=tool_schemas,
         tool_handlers=tool_handlers,
         policy=policy,
         permission=permission,
