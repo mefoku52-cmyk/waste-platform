@@ -161,3 +161,59 @@ def build_admin_tools() -> tuple[dict[str, Any], ...]:
         ADMIN_COMPANIES_TIERS_SCHEMA,
         ADMIN_MY_CONTEXT_SCHEMA,
     )
+
+
+NEARBY_COMPANIES_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "search_nearby_companies",
+        "description": (
+            "READ-ONLY. Vyhľadá firmy v okolí podľa mesta/regiónu. "
+            "Použi keď sa používateľ pýta na firmy v okolí, odberateľov v regióne, "
+            "alebo kto kupuje materiál v jeho okolí."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "near": {"type": "string", "description": "Mesto alebo región."},
+                "buyer_capability": {"type": "boolean"},
+                "seller_capability": {"type": "boolean"},
+                "material_type": {
+                    "type": "string",
+                    "description": "Materiál (wood, metal, paper, plastics, bio, alebo voľný text).",
+                },
+                "limit": {"type": "integer", "minimum": 1, "maximum": 50, "default": 20},
+            },
+            "required": ["near"],
+        },
+    },
+}
+
+
+LISTING_TRANSPORT_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_listing_transport",
+        "description": (
+            "READ-ONLY. Vypočíta trasu, vzdialenosť, čas a náklady na prepravu "
+            "k ponuke. Použi keď sa používateľ pýta na dopravu, vzdialenosť, "
+            "cestu alebo cenu prepravy."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "listing_id": {"type": "string", "description": "UUID ponuky."},
+                "from_location": {"type": "string", "description": "Odkiaľ (mesto)."},
+                "consumption": {"type": "number", "default": 28.0},
+                "fuel_price": {"type": "number", "default": 1.49},
+                "roundtrip": {"type": "boolean", "default": False},
+            },
+            "required": ["from_location"],
+        },
+    },
+}
+
+
+def build_transport_tools() -> tuple[dict[str, Any], ...]:
+    """Transport + nearby tools. Available to every authenticated user."""
+    return (NEARBY_COMPANIES_SCHEMA, LISTING_TRANSPORT_SCHEMA)

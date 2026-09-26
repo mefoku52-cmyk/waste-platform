@@ -30,9 +30,16 @@ from app.modules.agent_platform.infrastructure.tools.cmep_company_search_handler
 from app.modules.agent_platform.infrastructure.tools.cmep_listing_search_handler import (
     CmepListingSearchHandler,
 )
+from app.modules.agent_platform.infrastructure.tools.cmep_listing_transport_handler import (
+    CmepListingTransportHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_nearby_companies_handler import (
+    CmepNearbyCompaniesHandler,
+)
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
     build_admin_tools,
     build_default_tools,
+    build_transport_tools,
 )
 from app.modules.companies.application.entitlements import (
     CompanyEntitlementService,
@@ -90,6 +97,15 @@ async def get_agent_orchestrator(
         "search_listings": ("listings", "search"),
     }
     tool_schemas: tuple[dict[str, object], ...] = build_default_tools()
+
+    # Transport + nearby READ tools – pre vsetkych prihlasenych.
+    nearby_handler = CmepNearbyCompaniesHandler(session=session)
+    transport_handler = CmepListingTransportHandler(session=session)
+    tool_handlers["search_nearby_companies"] = nearby_handler
+    tool_handlers["get_listing_transport"] = transport_handler
+    tool_scopes["search_nearby_companies"] = ("recommendations", "read")
+    tool_scopes["get_listing_transport"] = ("recommendations", "read")
+    tool_schemas = tool_schemas + build_transport_tools()
 
     # Admin tools are attached ONLY when the caller is a platform admin.
     if is_admin:
