@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from 'react';
 import { http } from '@/lib/api/http';
 import { useMyTier } from '@/features/companies/hooks/use-my-tier';
 import { aiSessionStore } from '../lib/session-store';
+import { personaStore, type Persona } from '../lib/persona-store';
+import { PersonaPicker } from './persona-picker';
 import { AiUpgradePanel } from './ai-upgrade-panel';
 
 type Msg = { role: 'user' | 'ai'; text: string };
@@ -30,11 +32,13 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [sessionId, setSessionId] = useState<string>('');
+  const [persona, setPersona] = useState<Persona>('bystry');
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
     setSessionId(aiSessionStore.getSessionId());
+    setPersona(personaStore.get());
   }, []);
 
   useEffect(() => {
@@ -76,6 +80,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         message: text,
         session_id: sessionId || undefined,
         listing_id: listingId || undefined,
+        persona: persona || undefined,
       });
       if (res?.session_id && res.session_id !== sessionId) {
         setSessionId(res.session_id);
@@ -158,7 +163,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                 {listingTitle ? listingTitle.slice(0, 40) : 'CMEP'}
               </p>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              <PersonaPicker
+                current={persona}
+                onChange={(p) => {
+                  setPersona(p);
+                  personaStore.set(p);
+                }}
+              />
               <button
                 type="button"
                 onClick={startNewConversation}
