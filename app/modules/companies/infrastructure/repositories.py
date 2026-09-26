@@ -83,6 +83,7 @@ class SqlAlchemyCompanyRepository(CompanyRepository):
         if model is None:
             return
         model.status = company.status.value
+        model.subscription_tier = company.subscription_tier.value
         model.legal_name = company.legal_name
         model.trading_name = company.trading_name
         model.tax_identifier = company.tax_identifier

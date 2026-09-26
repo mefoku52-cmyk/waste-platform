@@ -12,6 +12,7 @@ class CompanyDTO:
     registration_number: str
     tax_identifier: str | None
     vat_identifier: str | None
+    subscription_tier: str
     company_type: str
     email: str | None
     phone: str | None

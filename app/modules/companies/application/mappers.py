@@ -11,6 +11,7 @@ def to_company_dto(company: Company) -> CompanyDTO:
         registration_number=company.registration_number,
         tax_identifier=company.tax_identifier,
         vat_identifier=getattr(company, "vat_identifier", None),
+        subscription_tier=company.subscription_tier.value,
         company_type=company.company_type.value,
         email=company.email,
         phone=company.phone,

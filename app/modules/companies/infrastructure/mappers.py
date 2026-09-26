@@ -1,7 +1,11 @@
 from uuid import UUID
 
 from app.modules.companies.domain.entities import Company
-from app.modules.companies.domain.enums import CompanyStatus, CompanyType
+from app.modules.companies.domain.enums import (
+    CompanyStatus,
+    CompanyType,
+    SubscriptionTier,
+)
 from app.modules.companies.infrastructure.models import CompanyModel
 
 
@@ -14,6 +18,7 @@ def to_domain(model: CompanyModel) -> Company:
         registration_number=model.registration_number,
         tax_identifier=model.tax_identifier,
         vat_identifier=getattr(model, "vat_identifier", None),
+        subscription_tier=SubscriptionTier(getattr(model, "subscription_tier", None) or "free"),
         company_type=CompanyType(model.company_type),
         email=model.email,
         phone=model.phone,
@@ -52,6 +57,7 @@ def to_model(entity: Company) -> CompanyModel:
         trading_name=entity.trading_name,
         registration_number=entity.registration_number,
         tax_identifier=entity.tax_identifier,
+        subscription_tier=entity.subscription_tier.value,
         company_type=entity.company_type.value,
         email=entity.email,
         phone=entity.phone,

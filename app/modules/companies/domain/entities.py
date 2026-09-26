@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from uuid import UUID
 
-from app.modules.companies.domain.enums import CompanyStatus, CompanyType
+from app.modules.companies.domain.enums import CompanyStatus, CompanyType, SubscriptionTier
 from app.shared.domain.base import AuditFields
 from app.shared.domain.exceptions import ValidationDomainError
 from app.shared.domain.status_transition import ensure_transition
@@ -16,6 +16,7 @@ class Company(AuditFields):
     registration_number: str
     tax_identifier: str | None
     vat_identifier: str | None
+    subscription_tier: SubscriptionTier
     company_type: CompanyType
     email: str | None
     phone: str | None

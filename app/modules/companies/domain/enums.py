@@ -15,3 +15,9 @@ class CompanyType(StrEnum):
     BUYER = "buyer"
     SELLER_BUYER = "seller_buyer"
     LOGISTICS_PARTNER = "logistics_partner"
+
+
+class SubscriptionTier(StrEnum):
+    FREE = "free"
+    PRO = "pro"
+    AI = "ai"

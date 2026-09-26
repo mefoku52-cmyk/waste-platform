@@ -16,6 +16,9 @@ class CompanyModel(Base):
     )
     tax_identifier: Mapped[str | None] = mapped_column(String(128), nullable=True)
     vat_identifier: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    subscription_tier: Mapped[str] = mapped_column(
+        String(16), nullable=False, server_default="free", default="free"
+    )
     company_type: Mapped[str] = mapped_column(String(32), nullable=False)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(64), nullable=True)

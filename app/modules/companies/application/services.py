@@ -4,7 +4,11 @@ from app.modules.companies.application.dto import CompanyDTO
 from app.modules.companies.application.mappers import to_company_dto
 from app.modules.companies.application.rpo import lookup_ico
 from app.modules.companies.domain.entities import Company
-from app.modules.companies.domain.enums import CompanyStatus, CompanyType
+from app.modules.companies.domain.enums import (
+    CompanyStatus,
+    CompanyType,
+    SubscriptionTier,
+)
 from app.modules.companies.domain.repositories import CompanyRepository
 from app.modules.company_memberships.domain.entities import CompanyMembership
 from app.modules.company_memberships.domain.enums import (
@@ -65,6 +69,7 @@ class CreateCompanyService:
             registration_number=registration_number,
             tax_identifier=tax_identifier,
             vat_identifier=vat_identifier,
+            subscription_tier=SubscriptionTier.FREE,
             company_type=CompanyType(company_type),
             email=email,
             phone=phone,
