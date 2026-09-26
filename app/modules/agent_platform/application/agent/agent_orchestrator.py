@@ -124,12 +124,15 @@ class AgentOrchestrator:
         actor_id: str,
         actor_type: str = "user",
         session_id: str | None = None,
+        conversation_history: tuple[ModelMessage, ...] | None = None,
     ) -> OrchestrationResult:
         session_id = session_id or str(uuid.uuid4())
         messages: list[ModelMessage] = [
             ModelMessage(role="system", content=system_prompt),
-            ModelMessage(role="user", content=user_message),
         ]
+        if conversation_history:
+            messages.extend(conversation_history)
+        messages.append(ModelMessage(role="user", content=user_message))
 
         collected_calls: list[dict[str, Any]] = []
 

@@ -1,13 +1,20 @@
 from __future__ import annotations
 
+import uuid
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
+from app.modules.agent_platform.application.memory.context_builder import build_history
+from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
+    SqlAlchemyAiConversationRepository,
+)
 from app.modules.agent_platform.presentation.dependencies import (
     get_agent_orchestrator,
+    get_ai_conversation_repository,
     get_company_entitlement_service,
 )
 from app.modules.companies.application.entitlements import CompanyEntitlementService
@@ -54,12 +61,15 @@ Odpovedaj v jazyku používateľa. Buď stručný (max 4 odstavce)."""
 
 class UserAiChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
+    session_id: str | None = Field(default=None, max_length=64)
+    listing_id: str | None = Field(default=None, max_length=64)
 
 
 class UserAiChatResponse(BaseModel):
     status: str
     reply: str | None
     source: str
+    session_id: str
     tool_calls: list[dict] = []
 
 
@@ -68,13 +78,7 @@ async def _check_ai_entitlement(
     current_user,
     entitlements: CompanyEntitlementService,
 ) -> None:
-    """Raise 402/403 if the caller is not entitled to AI chat.
-
-    Platform admins always pass.
-    Company members with PRO or AI tier pass.
-    FREE tier returns 402 Payment Required.
-    Members without a company return 403 Forbidden.
-    """
+    """Raise 402/403 if the caller is not entitled to AI chat."""
     if is_platform_admin(current_user):
         return
 
@@ -95,38 +99,100 @@ async def _check_ai_entitlement(
     )
 
 
+def _first_company_id(current_user) -> str | None:
+    ids = membership_company_ids(current_user)
+    return str(ids[0]) if ids else None
+
+
 @router.post("/chat", response_model=UserAiChatResponse)
 async def user_ai_chat(
     payload: UserAiChatRequest,
     orchestrator: AgentOrchestrator = Depends(get_agent_orchestrator),
     current_user=Depends(require_current_user),
     entitlements: CompanyEntitlementService = Depends(get_company_entitlement_service),
+    conversations: SqlAlchemyAiConversationRepository = Depends(
+        get_ai_conversation_repository,
+    ),
 ) -> UserAiChatResponse:
     text = payload.message.strip()
     if not text:
-        return UserAiChatResponse(status="unavailable", reply=None, source="user-ai")
+        return UserAiChatResponse(
+            status="unavailable",
+            reply=None,
+            source="user-ai",
+            session_id=payload.session_id or "",
+        )
 
     await _check_ai_entitlement(
         current_user=current_user,
         entitlements=entitlements,
     )
 
+    actor_id = str(getattr(current_user, "id", "unknown"))
+    session_id = payload.session_id or str(uuid.uuid4())
+
+    conversation_id: str | None = None
+    history = ()
+    try:
+        conversation = await conversations.get_or_create(
+            session_id=session_id,
+            user_id=actor_id,
+            company_id=_first_company_id(current_user),
+        )
+        conversation_id = conversation.id
+        stored = await conversations.get_messages(
+            conversation_id=conversation_id,
+            limit=20,
+        )
+        history = build_history(stored)
+    except Exception:
+        conversation_id = None
+        history = ()
+
     try:
         result = await orchestrator.respond(
             system_prompt=SYSTEM_PROMPT,
             user_message=text,
-            actor_id=str(getattr(current_user, "id", "unknown")),
+            actor_id=actor_id,
             actor_type="user",
+            session_id=session_id,
+            conversation_history=history,
         )
     except Exception:
-        return UserAiChatResponse(status="unavailable", reply=None, source="user-ai")
+        return UserAiChatResponse(
+            status="unavailable",
+            reply=None,
+            source="user-ai",
+            session_id=session_id,
+        )
 
     if not result.text:
-        return UserAiChatResponse(status="unavailable", reply=None, source="groq")
+        return UserAiChatResponse(
+            status="unavailable",
+            reply=None,
+            source="groq",
+            session_id=session_id,
+        )
+
+    if conversation_id:
+        try:
+            await conversations.append_message(
+                conversation_id=conversation_id,
+                role="user",
+                content=text,
+            )
+            await conversations.append_message(
+                conversation_id=conversation_id,
+                role="assistant",
+                content=result.text,
+            )
+        except Exception:
+            pass
 
     return UserAiChatResponse(
         status="ok",
         reply=result.text,
         source="groq",
+        session_id=session_id,
         tool_calls=list(result.tool_calls),
     )

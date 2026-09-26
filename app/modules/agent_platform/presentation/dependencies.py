@@ -15,6 +15,9 @@ from app.modules.agent_platform.infrastructure.events.sqlalchemy_event_publisher
 from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
     ActorToolPermissionEngine,
 )
+from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
+    SqlAlchemyAiConversationRepository,
+)
 from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
     AllowlistPolicyEngine,
 )
@@ -124,3 +127,10 @@ async def get_company_entitlement_service(
     """Build a CompanyEntitlementService bound to the request DB session."""
     repo = SqlAlchemyCompanyRepository(session)
     return CompanyEntitlementService(repository=repo)
+
+
+async def get_ai_conversation_repository(
+    session: AsyncSession = Depends(get_db_session),
+) -> SqlAlchemyAiConversationRepository:
+    """Build AI conversation repository bound to request session."""
+    return SqlAlchemyAiConversationRepository(session=session)
