@@ -168,6 +168,7 @@ class Settings(BaseSettings):
         default="", validation_alias=AliasChoices("RESEND_FROM_EMAIL", "EMAIL_FROM")
     )
     RESEND_FROM_NAME: str = "CMEP"
+    RESEND_REPLY_TO: str = "trc-cmep@gmail.com"
 
     # --- Lead outreach limits ---
     LEAD_OUTREACH_DAILY_LIMIT: int = 30

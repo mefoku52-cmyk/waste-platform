@@ -82,12 +82,16 @@ async def send_via_resend(
 
     from_header = f"{settings.RESEND_FROM_NAME} <{from_email}>"
 
-    payload = {
+    reply_to = (getattr(settings, "RESEND_REPLY_TO", "") or "").strip()
+
+    payload: dict[str, object] = {
         "from": from_header,
         "to": [to],
         "subject": subject,
         "text": body,
     }
+    if reply_to:
+        payload["reply_to"] = reply_to
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
