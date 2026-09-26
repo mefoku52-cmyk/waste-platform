@@ -3,6 +3,10 @@ vsetky tabulky nezavisle od poradia/existencie importov cez routery.
 Import tohto suboru pred Base.metadata.create_all() je jedina zaruka."""
 
 from app.modules.admin.infrastructure.models import AdminAuditEntryModel  # noqa: F401
+from app.modules.agent_platform.infrastructure.models import (
+    AiConversationModel,  # noqa: F401
+    AiMessageModel,  # noqa: F401
+)
 from app.modules.analytics.infrastructure.models import (
     AnalyticsEventModel,  # noqa: F401
 )
