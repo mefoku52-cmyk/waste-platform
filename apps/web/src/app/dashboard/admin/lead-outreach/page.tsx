@@ -142,6 +142,16 @@ export default function LeadOutreachPage() {
             Jeden email = jedno kliknutie. Žiadny hromadný send.
           </p>
 
+          <div className="mb-6">
+            <Link
+              href="/dashboard/admin/lead-outreach/batch"
+              className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
+              style={{ background: GOLD, color: BG }}
+            >
+              📦 Dávkové oslovenie (max 30)
+            </Link>
+          </div>
+
           <section
             className="rounded-2xl border p-5 md:p-6"
             style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
