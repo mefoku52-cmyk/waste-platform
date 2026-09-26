@@ -1,13 +1,22 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
-from app.modules.agent_platform.presentation.dependencies import get_agent_orchestrator
+from app.modules.agent_platform.presentation.dependencies import (
+    get_agent_orchestrator,
+    get_company_entitlement_service,
+)
+from app.modules.companies.application.entitlements import CompanyEntitlementService
+from app.modules.companies.domain.enums import SubscriptionTier
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import (
+    is_platform_admin,
+    membership_company_ids,
+)
 
 router = APIRouter(prefix="/agent-platform", tags=["agent-platform"])
 
@@ -54,15 +63,53 @@ class UserAiChatResponse(BaseModel):
     tool_calls: list[dict] = []
 
 
+async def _check_ai_entitlement(
+    *,
+    current_user,
+    entitlements: CompanyEntitlementService,
+) -> None:
+    """Raise 402/403 if the caller is not entitled to AI chat.
+
+    Platform admins always pass.
+    Company members with PRO or AI tier pass.
+    FREE tier returns 402 Payment Required.
+    Members without a company return 403 Forbidden.
+    """
+    if is_platform_admin(current_user):
+        return
+
+    company_ids = membership_company_ids(current_user)
+    if not company_ids:
+        raise HTTPException(
+            status_code=403,
+            detail="Najprv si vytvor a over firmu (AI asistent vyžaduje firemný účet).",
+        )
+
+    for cid in company_ids:
+        if await entitlements.has_tier(cid, SubscriptionTier.PRO):
+            return
+
+    raise HTTPException(
+        status_code=402,
+        detail="AI asistent je dostupný v PRO alebo AI predplatnom.",
+    )
+
+
 @router.post("/chat", response_model=UserAiChatResponse)
 async def user_ai_chat(
     payload: UserAiChatRequest,
     orchestrator: AgentOrchestrator = Depends(get_agent_orchestrator),
     current_user=Depends(require_current_user),
+    entitlements: CompanyEntitlementService = Depends(get_company_entitlement_service),
 ) -> UserAiChatResponse:
     text = payload.message.strip()
     if not text:
         return UserAiChatResponse(status="unavailable", reply=None, source="user-ai")
+
+    await _check_ai_entitlement(
+        current_user=current_user,
+        entitlements=entitlements,
+    )
 
     try:
         result = await orchestrator.respond(

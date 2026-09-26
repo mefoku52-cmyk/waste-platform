@@ -27,6 +27,9 @@ from app.modules.agent_platform.infrastructure.tools.cmep_listing_search_handler
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
     build_default_tools,
 )
+from app.modules.companies.application.entitlements import (
+    CompanyEntitlementService,
+)
 from app.modules.companies.application.services import ListCompaniesService
 from app.modules.companies.infrastructure.repositories import (
     SqlAlchemyCompanyRepository,
@@ -113,3 +116,11 @@ async def get_agent_orchestrator(
         event_publisher=SqlAlchemyEventPublisher(session=session),
         model="openai/gpt-oss-120b",
     )
+
+
+async def get_company_entitlement_service(
+    session: AsyncSession = Depends(get_db_session),
+) -> CompanyEntitlementService:
+    """Build a CompanyEntitlementService bound to the request DB session."""
+    repo = SqlAlchemyCompanyRepository(session)
+    return CompanyEntitlementService(repository=repo)
