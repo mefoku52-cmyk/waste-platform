@@ -319,3 +319,11 @@ cmep-ui-i18n-fix.py
 cmep-typecheck-fix.sh
 apply_company_search_phase5.py
 patch_company_search_phase5.py
+
+# Local backups — never commit new ones
+*.bak
+*.backup-*
+*.before-*
+*.before_*
+backups/
+.repair-backup-*/
