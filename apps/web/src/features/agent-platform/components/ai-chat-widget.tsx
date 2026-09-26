@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { http } from '@/lib/api/http';
+import { useMyTier } from '@/features/companies/hooks/use-my-tier';
+import { AiUpgradePanel } from './ai-upgrade-panel';
 
 type Msg = { role: 'user' | 'ai'; text: string };
 type ChatResponse = { status: string; reply: string | null; source: string };
@@ -12,6 +14,8 @@ type Props = {
 };
 
 export function AiChatWidget({ listingId, listingTitle }: Props) {
+  const { tier, isLoading: tierLoading } = useMyTier();
+
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -64,6 +68,13 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
       e.preventDefault();
       void send();
     }
+  }
+
+  if (tierLoading) {
+    return null;
+  }
+  if (tier === 'free' || tier === 'unknown') {
+    return <AiUpgradePanel reason={tier} />;
   }
 
   return (
