@@ -23,6 +23,8 @@ class ListingsEntity(AuditFields):
     currency: str = "EUR"
     description: str | None = None
     image_url: str | None = None
+    promoted_until: str | None = None
+    promoted_tier: str | None = None
 
     def validate(self) -> None:
         if not self.title:

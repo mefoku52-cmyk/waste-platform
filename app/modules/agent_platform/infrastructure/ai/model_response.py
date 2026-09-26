@@ -1,4 +1,4 @@
-"""Provider-neutral AI model response."""
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
@@ -6,29 +6,29 @@ from typing import Any
 
 @dataclass(frozen=True, slots=True)
 class ModelToolCall:
-    """A model-proposed tool call.
+    """One tool call requested by the model."""
 
-    This is only a proposal. It is not execution authorization.
-    """
+    id: str
+    name: str
+    arguments: dict[str, Any] = field(default_factory=dict)
 
-    call_id: str
-    tool_name: str
-    arguments: dict[str, Any]
+    def as_openai(self) -> dict[str, Any]:
+        import json
 
-    def __post_init__(self) -> None:
-        if not self.call_id.strip():
-            raise ValueError("call_id is required")
-        if not self.tool_name.strip():
-            raise ValueError("tool_name is required")
+        return {
+            "id": self.id,
+            "type": "function",
+            "function": {
+                "name": self.name,
+                "arguments": json.dumps(self.arguments, ensure_ascii=False),
+            },
+        }
 
 
 @dataclass(frozen=True, slots=True)
 class ModelResponse:
-    """Normalized provider response."""
-
     request_id: str
-    text: str
-    finish_reason: str | None = None
-    tool_calls: tuple[ModelToolCall, ...] = field(default_factory=tuple)
-    usage: dict[str, Any] = field(default_factory=dict)
+    text: str = ""
+    finish_reason: str = "stop"
+    tool_calls: tuple[dict[str, Any], ...] = field(default_factory=tuple)
     provider_metadata: dict[str, Any] = field(default_factory=dict)

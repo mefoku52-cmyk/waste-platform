@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, Query, status
 from fastapi import status as http_status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.application.side_effects import write_audit
 from app.shared.domain.exceptions import ConflictDomainError, NotFoundDomainError
@@ -27,6 +28,8 @@ from .schemas import (
     ListingUpdateRequest,
     PaginatedListingsResponse,
     PaginationMeta,
+    PromoteListingRequest,
+    PromoteListingResponse,
 )
 
 router = APIRouter(prefix="/listings", tags=["listings"])
@@ -49,6 +52,8 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
         imageUrl=getattr(entity, "image_url", None),
         createdAt=entity.created_at,
         updatedAt=entity.updated_at,
+        promotedUntil=getattr(entity, "promoted_until", None),
+        promotedTier=getattr(entity, "promoted_tier", None),
     )
 
 
@@ -317,3 +322,77 @@ async def delete_listing(
         raise NotFoundDomainError(f"Listing {id} not found")
     require_company_admin(current_user, existing.company_id)
     await service.delete(id)
+
+
+@router.post(
+    "/{listing_id}/promote",
+    response_model=PromoteListingResponse,
+    responses=error_responses(401, 403, 404, 422, 500),
+)
+async def promote_listing(
+    listing_id: str,
+    payload: PromoteListingRequest,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Zvýrazní ponuku (owner only). Top = 7/30 dní, Gold = 30 dní."""
+    existing = await service.get_by_id(listing_id)
+    if existing is None:
+        raise NotFoundDomainError(f"Listing {listing_id} not found")
+
+    # Authorization: iba vlastník (alebo admin)
+    if not is_platform_admin(current_user):
+        my_companies = {str(x) for x in _membership_company_ids(current_user)}
+        if str(existing.company_id) not in my_companies:
+            raise ConflictDomainError("Nemáš oprávnenie topovať túto ponuku.")
+
+    await service.promote(listing_id, days=payload.days, tier=payload.tier)
+    updated = await service.get_by_id(listing_id)
+
+    await write_audit(
+        session=session,
+        actor_user_id=current_user_id(current_user),
+        action="listing.promote",
+        target_type="listing",
+        target_id=listing_id,
+        details=f"days={payload.days},tier={payload.tier}",
+    )
+
+    return PromoteListingResponse(
+        ok=True,
+        promotedUntil=getattr(updated, "promoted_until", None),
+        promotedTier=getattr(updated, "promoted_tier", None),
+    )
+
+
+@router.post(
+    "/{listing_id}/unpromote",
+    response_model=PromoteListingResponse,
+    responses=error_responses(401, 403, 404, 422, 500),
+)
+async def unpromote_listing(
+    listing_id: str,
+    current_user=Depends(require_current_user),
+    service: ListingsService = Depends(get_listings_service),
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Zruší zvýraznenie ponuky (owner only)."""
+    existing = await service.get_by_id(listing_id)
+    if existing is None:
+        raise NotFoundDomainError(f"Listing {listing_id} not found")
+
+    if not is_platform_admin(current_user):
+        my_companies = {str(x) for x in _membership_company_ids(current_user)}
+        if str(existing.company_id) not in my_companies:
+            raise ConflictDomainError("Nemáš oprávnenie.")
+
+    await service.unpromote(listing_id)
+    await write_audit(
+        session=session,
+        actor_user_id=current_user_id(current_user),
+        action="listing.unpromote",
+        target_type="listing",
+        target_id=listing_id,
+    )
+    return PromoteListingResponse(ok=True)

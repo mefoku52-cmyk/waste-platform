@@ -31,7 +31,16 @@ class ListingsRepositoryImpl(ListingsRepository):
             if not ids:
                 return []
             stmt = stmt.where(ListingsModel.company_id.in_(ids))
-        stmt = stmt.order_by(ListingsModel.created_at.desc()).offset(offset).limit(limit)
+        from sqlalchemy import case
+
+        stmt = (
+            stmt.order_by(
+                case((ListingsModel.promoted_until > func.now(), 0), else_=1),
+                ListingsModel.created_at.desc(),
+            )
+            .offset(offset)
+            .limit(limit)
+        )
         result = await self.session.execute(stmt)
         models = result.scalars().all()
         return [to_domain(m) for m in models]
@@ -55,7 +64,17 @@ class ListingsRepositoryImpl(ListingsRepository):
             ids = [str(x) for x in exclude_company_ids if x is not None]
             if ids:
                 stmt = stmt.where(ListingsModel.company_id.notin_(ids))
-        stmt = stmt.order_by(ListingsModel.created_at.desc()).offset(offset).limit(limit)
+        # promoted (TOP) listings first, then by created_at
+        from sqlalchemy import case
+
+        stmt = (
+            stmt.order_by(
+                case((ListingsModel.promoted_until > func.now(), 0), else_=1),
+                ListingsModel.created_at.desc(),
+            )
+            .offset(offset)
+            .limit(limit)
+        )
         result = await self.session.execute(stmt)
         models = result.scalars().all()
         return [to_domain(m) for m in models]
@@ -137,6 +156,34 @@ class ListingsRepositoryImpl(ListingsRepository):
         uid = user_id if isinstance(user_id, _uuid.UUID) else _uuid.UUID(str(user_id))
         v = ListingViewModel(listing_id=lid, user_id=uid, viewed_at=datetime.now())
         self.session.add(v)
+        await self.session.commit()
+
+    async def promote(self, listing_id: str, *, days: int, tier: str) -> None:
+        """Set promoted_until = now + days, promoted_tier = tier."""
+        from datetime import datetime, timedelta
+        from uuid import UUID as _UUID
+
+        lid = listing_id if isinstance(listing_id, _UUID) else _UUID(str(listing_id))
+        model = await self.session.get(ListingsModel, lid)
+        if model is None:
+            raise ValueError("Listing not found")
+        model.promoted_until = datetime.now() + timedelta(days=days)
+        model.promoted_tier = tier
+        model.updated_at = datetime.now()
+        await self.session.commit()
+
+    async def unpromote(self, listing_id: str) -> None:
+        """Clear promotion."""
+        from datetime import datetime
+        from uuid import UUID as _UUID
+
+        lid = listing_id if isinstance(listing_id, _UUID) else _UUID(str(listing_id))
+        model = await self.session.get(ListingsModel, lid)
+        if model is None:
+            raise ValueError("Listing not found")
+        model.promoted_until = None
+        model.promoted_tier = None
+        model.updated_at = datetime.now()
         await self.session.commit()
 
     async def get_listing_stats(self, listing_id) -> dict:

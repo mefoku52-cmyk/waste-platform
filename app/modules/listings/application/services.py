@@ -72,6 +72,26 @@ class ListingsService:
         existing.updated_at = datetime.now()
         return await self.repository.update(existing)
 
+    async def promote(self, id: str, *, days: int, tier: str) -> None:
+        """Zvýrazní ponuku na určený počet dní."""
+        from app.shared.domain.exceptions import ValidationDomainError
+
+        if days not in (7, 30):
+            raise ValidationDomainError("Počet dní musí byť 7 alebo 30.")
+        if tier not in ("top", "gold"):
+            raise ValidationDomainError("Tier musí byť 'top' alebo 'gold'.")
+
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"Listing {id} not found")
+        await self.repository.promote(id, days=days, tier=tier)
+
+    async def unpromote(self, id: str) -> None:
+        existing = await self.repository.get_by_id(id)
+        if existing is None:
+            raise NotFoundDomainError(f"Listing {id} not found")
+        await self.repository.unpromote(id)
+
     async def delete(self, id: str) -> None:
         existing = await self.repository.get_by_id(id)
         if existing is None:

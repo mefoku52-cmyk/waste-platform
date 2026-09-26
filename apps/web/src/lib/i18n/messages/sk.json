@@ -282,7 +282,18 @@
     "quantity": "Množstvo",
     "status": "Status",
     "transport": "Doprava",
-    "created": "Vytvorené"
+    "created": "Vytvorené",
+    "promote": {
+      "button": "⭐ Topovať ponuku",
+      "title": "Zvýrazniť ponuku",
+      "desc": "Vyber balíček. Platba sa spustí po potvrdení.",
+      "activate": "Aktivovať",
+      "cancel": "Zrušiť",
+      "active": "AKTÍVNE",
+      "until": "Do",
+      "remove": "Zrušiť zvýraznenie",
+      "loading": "Spracúvam…"
+    }
   },
   "documents": {
     "section": "DOKUMENTY",

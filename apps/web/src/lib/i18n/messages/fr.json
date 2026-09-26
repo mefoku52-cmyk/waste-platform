@@ -282,7 +282,18 @@
     "quantity": "Quantité",
     "status": "Statut",
     "transport": "Transport",
-    "created": "Créé"
+    "created": "Créé",
+    "promote": {
+      "button": "⭐ Promouvoir l'annonce",
+      "title": "Mettre en avant",
+      "desc": "Choisissez un forfait.",
+      "activate": "Activer",
+      "cancel": "Annuler",
+      "active": "ACTIF",
+      "until": "Jusqu'à",
+      "remove": "Retirer",
+      "loading": "Traitement…"
+    }
   },
   "documents": {
     "section": "DOCUMENTS",

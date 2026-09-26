@@ -37,6 +37,8 @@ class ListingsModel(Base):
     )
     created_by_user_id = Column(UUID(as_uuid=True), nullable=True)
     updated_by_user_id = Column(UUID(as_uuid=True), nullable=True)
+    promoted_until = Column(DateTime, nullable=True)
+    promoted_tier = Column(String(16), nullable=True)
 
 
 class ListingViewModel(Base):

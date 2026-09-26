@@ -282,7 +282,18 @@
     "quantity": "Menge",
     "status": "Status",
     "transport": "Transport",
-    "created": "Erstellt"
+    "created": "Erstellt",
+    "promote": {
+      "button": "⭐ Anzeige hervorheben",
+      "title": "Anzeige hervorheben",
+      "desc": "Paket wählen.",
+      "activate": "Aktivieren",
+      "cancel": "Abbrechen",
+      "active": "AKTIV",
+      "until": "Bis",
+      "remove": "Hervorhebung entfernen",
+      "loading": "Verarbeite…"
+    }
   },
   "documents": {
     "section": "DOKUMENTE",

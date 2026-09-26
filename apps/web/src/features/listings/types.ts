@@ -9,4 +9,6 @@ export interface Listing extends BaseEntity {
   status: 'active' | 'completed' | 'cancelled';
   category_id: string;
   company_id: string;
+  promoted_until?: string | null;
+  promoted_tier?: string | null;
 }

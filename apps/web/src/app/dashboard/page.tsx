@@ -20,6 +20,10 @@ type Listing = {
   note: string;
   transport: string;
   images: string[];
+  promotedUntil?: string | null;
+  promoted_until?: string | null;
+  promotedTier?: string | null;
+  promoted_tier?: string | null;
 };
 
 const GOLD = '#c9a84c';
@@ -197,6 +201,8 @@ export default function DashboardPage() {
       images: [
         fixImageUrl(item.imageUrl ?? item.image_url),
       ].filter(Boolean) as string[],
+      promotedUntil: item.promotedUntil ?? item.promoted_until ?? null,
+      promotedTier: item.promotedTier ?? item.promoted_tier ?? null,
     }));
   }, [apiResp, companiesMap, t, formatRelative]);
 

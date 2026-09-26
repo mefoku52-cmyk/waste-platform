@@ -282,7 +282,18 @@
     "quantity": "Quantity",
     "status": "Status",
     "transport": "Transport",
-    "created": "Created"
+    "created": "Created",
+    "promote": {
+      "button": "⭐ Promote listing",
+      "title": "Highlight listing",
+      "desc": "Choose a package.",
+      "activate": "Activate",
+      "cancel": "Cancel",
+      "active": "ACTIVE",
+      "until": "Until",
+      "remove": "Remove highlight",
+      "loading": "Processing…"
+    }
   },
   "documents": {
     "section": "DOCUMENTS",

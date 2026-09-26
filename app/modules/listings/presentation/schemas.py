@@ -52,6 +52,8 @@ class ListingData(BaseModel):
     imageUrl: str | None = None
     createdAt: datetime
     updatedAt: datetime
+    promotedUntil: datetime | None = None
+    promotedTier: str | None = None
 
 
 class ListingResponse(BaseModel):
@@ -72,3 +74,14 @@ class PaginatedListingsResponse(BaseModel):
 class ListingStatsResponse(BaseModel):
     views: int
     uniqueViewers: int
+
+
+class PromoteListingRequest(BaseModel):
+    days: int = Field(default=7, ge=7, le=30)
+    tier: str = Field(default="top", pattern="^(top|gold)$")
+
+
+class PromoteListingResponse(BaseModel):
+    ok: bool
+    promotedUntil: datetime | None = None
+    promotedTier: str | None = None

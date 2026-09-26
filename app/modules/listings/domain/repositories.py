@@ -49,3 +49,9 @@ class ListingsRepository(ABC):
 
     @abstractmethod
     async def get_listing_stats(self, listing_id) -> dict: ...
+
+    @abstractmethod
+    async def promote(self, listing_id: str, *, days: int, tier: str) -> None: ...
+
+    @abstractmethod
+    async def unpromote(self, listing_id: str) -> None: ...

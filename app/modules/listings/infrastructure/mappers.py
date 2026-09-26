@@ -6,6 +6,7 @@ from app.modules.listings.infrastructure.models import ListingsModel
 
 
 def to_domain(model: ListingsModel) -> ListingsEntity:
+    promoted_until = getattr(model, "promoted_until", None)
     return ListingsEntity(
         id=model.id,
         title=model.title,
@@ -24,11 +25,13 @@ def to_domain(model: ListingsModel) -> ListingsEntity:
         updated_at=model.updated_at,
         created_by_user_id=model.created_by_user_id,
         updated_by_user_id=model.updated_by_user_id,
+        promoted_until=promoted_until.isoformat() if promoted_until else None,
+        promoted_tier=getattr(model, "promoted_tier", None),
     )
 
 
 def to_model(entity: ListingsEntity) -> ListingsModel:
-    return ListingsModel(
+    model = ListingsModel(
         id=entity.id,
         title=entity.title,
         material_type=entity.material_type,
@@ -47,3 +50,13 @@ def to_model(entity: ListingsEntity) -> ListingsModel:
         created_by_user_id=entity.created_by_user_id,
         updated_by_user_id=entity.updated_by_user_id,
     )
+    if getattr(entity, "promoted_until", None):
+        from datetime import datetime
+
+        try:
+            model.promoted_until = datetime.fromisoformat(entity.promoted_until)
+        except (TypeError, ValueError):
+            model.promoted_until = None
+    if getattr(entity, "promoted_tier", None):
+        model.promoted_tier = entity.promoted_tier
+    return model

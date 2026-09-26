@@ -15,6 +15,7 @@ import { FreightPanel } from '@/features/recommendations/components/freight-pane
 import { postListingViewed } from '@/features/recommendations/api';
 import { ListingInquiryButton } from '@/features/inquiries/components/listing-inquiry-button';
 import { DeleteListingButton } from '@/features/listings/components/delete-listing-button';
+import { PromoteListingButton } from '@/features/listings/components/promote-listing-button';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -59,6 +60,10 @@ type ListingData = {
   company_name?: string | null;
   companyCity?: string | null;
   company_city?: string | null;
+  promotedUntil?: string | null;
+  promoted_until?: string | null;
+  promotedTier?: string | null;
+  promoted_tier?: string | null;
 };
 
 function imageUrl(item: ImageLike): string | null {
@@ -205,6 +210,15 @@ export default function ListingDetailPage() {
 
                 <div className="mt-6">
                   <ListingInquiryButton listingId={listingId} listingTitle={title} />
+                  {isOwner ? (
+                    <div className="mt-3">
+                      <PromoteListingButton
+                        listingId={listingId}
+                        promotedUntil={(data as any).promotedUntil || (data as any).promoted_until || null}
+                        promotedTier={(data as any).promotedTier || (data as any).promoted_tier || null}
+                      />
+                    </div>
+                  ) : null}
                   {isOwner ? (
                     <div className="mt-3">
                       <DeleteListingButton listingId={listingId} />
