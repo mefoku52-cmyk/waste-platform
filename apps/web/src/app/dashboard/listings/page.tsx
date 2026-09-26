@@ -159,7 +159,7 @@ export default function MyListingsPage() {
 
             <h1
               className="text-4xl leading-tight tracking-[-0.02em] md:text-5xl"
-              style={{ fontFamily: 'Fraunces, serif' }}
+              style={{ fontFamily: 'DM Serif Display, serif' }}
             >
               Ponuky
             </h1>
@@ -208,7 +208,7 @@ export default function MyListingsPage() {
           >
             <h3
               className="text-2xl"
-              style={{ fontFamily: 'Fraunces, serif' }}
+              style={{ fontFamily: 'DM Serif Display, serif' }}
             >
               Zatiaľ žiadne ponuky
             </h3>
@@ -248,7 +248,7 @@ export default function MyListingsPage() {
                     <h3
                       className="mt-2 text-2xl"
                       style={{
-                        fontFamily: 'Fraunces, serif',
+                        fontFamily: 'DM Serif Display, serif',
                         color: GOLD_BRIGHT,
                       }}
                     >

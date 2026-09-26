@@ -39,12 +39,12 @@ export default function LandingPage() {
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap"
         rel="stylesheet"
       />
       <style jsx global>{`
         body { background: ${BG}; color: ${FG}; font-family: 'Outfit', system-ui, sans-serif; }
-        .ff { font-family: 'Fraunces', 'Times New Roman', serif; }
+        .ff { font-family: 'DM Serif Display', 'Times New Roman', serif; }
         .grad { background-image: linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.6) 40%, rgba(9,8,7,0.15) 75%, transparent 100%); }
       `}</style>
 

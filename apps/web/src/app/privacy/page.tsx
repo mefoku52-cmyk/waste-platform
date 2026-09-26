@@ -10,13 +10,13 @@ const MUTED = '#9a8f7c';
 export default function PrivacyPage() {
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
       <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
         <header className="border-b" style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)' }}>
           <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-4">
             <Link href="/" className="flex items-center gap-3">
               <img src="/trc-mark.jpg" alt="TRČ" className="h-10 w-10 rounded-full object-cover" />
-              <span style={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem' }}>CMEP</span>
+              <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.25rem' }}>CMEP</span>
             </Link>
             <div className="ml-auto flex gap-4 text-sm">
               <Link href="/terms" style={{ color: MUTED }}>Podmienky</Link>
@@ -27,13 +27,13 @@ export default function PrivacyPage() {
 
         <main className="mx-auto max-w-4xl px-4 py-16">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVNE</p>
-          <h1 className="mb-10 text-4xl md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h1 className="mb-10 text-4xl md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
             Ochrana osobných údajov
           </h1>
 
           <div className="space-y-8 text-base leading-relaxed" style={{ color: MUTED }}>
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>1. Správca údajov</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>1. Správca údajov</h2>
               <p>Správcom osobných údajov je:</p>
               <ul className="mt-3 space-y-1">
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>2. Aké údaje zbierame</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>2. Aké údaje zbierame</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>E-mail, meno, rola v platforme</li>
                 <li>Údaje o firme: IČO, DIČ, adresa, kontaktné údaje</li>
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>3. Na aký účel</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>3. Na aký účel</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>Poskytovanie služieb platformy (registrácia, prihlásenie, inzeráty)</li>
                 <li>Overenie firiem a IČO</li>
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>4. Ako dlho uchovávame</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>4. Ako dlho uchovávame</h2>
               <p>
                 Údaje uchovávame po dobu existencie účtu, maximálne však 3 roky od poslednej aktivity.
                 Po vymazaní účtu sa osobné údaje anonymizujú alebo vymažú, okrem údajov, ktoré musíme
@@ -72,7 +72,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>5. Vaše práva</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Vaše práva</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>Právo na prístup k svojim údajom</li>
                 <li>Právo na opravu nesprávnych údajov</li>
@@ -86,7 +86,7 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>6. Cookies</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Cookies</h2>
               <p>
                 Platforma používa nevyhnutné cookies na prihlásenie a zabezpečenie relácie.
                 Nepoužívame reklamné ani tracking cookies tretích strán.

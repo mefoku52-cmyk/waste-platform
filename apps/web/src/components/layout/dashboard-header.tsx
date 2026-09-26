@@ -53,7 +53,7 @@ export function DashboardHeader() {
           <img src="/trc-mark.jpg" alt="TRČ" className="h-16 w-16 rounded-2xl object-cover" />
           <div className="rounded-2xl border px-3 py-2" style={{ borderColor: "color-mix(in srgb, #c9a84c 35%, transparent)" }}>
             <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PREČO CMEP</p>
-            <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "Fraunces, serif", color: GOLD_BRIGHT }}>
+            <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "DM Serif Display, serif", color: GOLD_BRIGHT }}>
               CMEP — Circular Materials Exchange Platform.
             </p>
             <p className="mt-2 text-[11px] leading-relaxed" style={{ color: MUTED }}>

@@ -273,7 +273,7 @@ export default function DashboardPage() {
 
             <h2
               className="mb-4 text-4xl leading-[1.05] tracking-[-0.02em] md:text-5xl"
-              style={{ color: GOLD_BRIGHT, fontFamily: 'Fraunces, serif' }}
+              style={{ color: GOLD_BRIGHT, fontFamily: 'DM Serif Display, serif' }}
             >
               {t('dashboard.welcome.title')}
             </h2>
@@ -284,7 +284,7 @@ export default function DashboardPage() {
 
             <p
               className="mt-8 text-2xl italic leading-snug md:text-3xl"
-              style={{ color: GOLD_BRIGHT, fontFamily: 'Fraunces, serif' }}
+              style={{ color: GOLD_BRIGHT, fontFamily: 'DM Serif Display, serif' }}
             >
               {t('dashboard.motto.headline')}
             </p>
@@ -424,7 +424,7 @@ export default function DashboardPage() {
                       className="text-2xl md:text-3xl"
                       style={{
                         color: active ? GOLD : GOLD_BRIGHT,
-                        fontFamily: 'Fraunces, serif',
+                        fontFamily: 'DM Serif Display, serif',
                       }}
                     >
                       {t(
@@ -509,7 +509,7 @@ export default function DashboardPage() {
             >
               <h3
                 className="text-2xl"
-                style={{ fontFamily: 'Fraunces, serif' }}
+                style={{ fontFamily: 'DM Serif Display, serif' }}
               >
                 {t('dashboard.notFound')}
               </h3>
@@ -577,7 +577,7 @@ export default function DashboardPage() {
                             <h3
                               className="mt-1 text-2xl leading-tight"
                               style={{
-                                fontFamily: 'Fraunces, serif',
+                                fontFamily: 'DM Serif Display, serif',
                                 color: GOLD_BRIGHT,
                               }}
                             >
@@ -601,7 +601,7 @@ export default function DashboardPage() {
                             <h3
                               className="mt-1 text-2xl leading-tight"
                               style={{
-                                fontFamily: 'Fraunces, serif',
+                                fontFamily: 'DM Serif Display, serif',
                                 color: GOLD_BRIGHT,
                               }}
                             >

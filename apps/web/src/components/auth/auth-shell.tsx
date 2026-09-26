@@ -18,7 +18,7 @@ export function AuthShell({
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap"
         rel="stylesheet"
       />
       <div className="relative min-h-[100dvh] bg-[#090807] text-[#f3ead8]">
@@ -37,7 +37,7 @@ export function AuthShell({
               </Link>
               <h1
                 className="mt-4 text-4xl font-normal tracking-[-0.03em]"
-                style={{ fontFamily: 'Fraunces, serif' }}
+                style={{ fontFamily: 'DM Serif Display, serif' }}
               >
                 {title}
               </h1>

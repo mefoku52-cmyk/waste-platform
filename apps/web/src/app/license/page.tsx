@@ -14,13 +14,13 @@ export default function LicensePage() {
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
       <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
         <header className="border-b" style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)' }}>
           <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-4">
             <Link href="/" className="flex items-center gap-3">
               <img src="/trc-mark.jpg" alt="TRČ" className="h-10 w-10 rounded-full object-cover" />
-              <span style={{ fontFamily: 'Fraunces, serif', fontSize: '1.25rem' }}>CMEP</span>
+              <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.25rem' }}>CMEP</span>
             </Link>
             <div className="ml-auto flex gap-4 text-sm">
               <Link href="/terms" style={{ color: MUTED }}>Podmienky</Link>
@@ -31,7 +31,7 @@ export default function LicensePage() {
 
         <main className="mx-auto max-w-4xl px-4 py-16">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVNE</p>
-          <h1 className="mb-4 text-4xl md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h1 className="mb-4 text-4xl md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
             Licencia a autorské práva
           </h1>
           <p className="mb-10 text-sm" style={{ color: FAINT }}>
@@ -41,7 +41,7 @@ export default function LicensePage() {
           <div className="space-y-10 text-base leading-relaxed" style={{ color: MUTED }}>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>1. Vlastníctvo platformy</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>1. Vlastníctvo platformy</h2>
               <p>
                 Platforma <strong style={{ color: FG }}>CMEP</strong> (Circular Materials Exchange Platform),
                 vrátane zdrojového kódu, dizajnu, textov, databázovej štruktúry, API, loga TRČ, vizuálnej identity
@@ -58,7 +58,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>2. Predmet licencie</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>2. Predmet licencie</h2>
               <p>Táto licencia sa vzťahuje na:</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>Zdrojový kód platformy (frontend aj backend)</li>
@@ -71,7 +71,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>3. Udelená licencia používateľom</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>3. Udelená licencia používateľom</h2>
               <p>
                 Používateľom platformy sa udeľuje <strong style={{ color: FG }}>nevýhradná, neprenosná,
                 odvolateľná a časovo obmedzená licencia</strong> na používanie platformy výhradne na účel
@@ -89,7 +89,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>4. Obsah vložený používateľmi</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>4. Obsah vložený používateľmi</h2>
               <p>
                 Používateľ si <strong style={{ color: FG }}>zachováva autorské práva</strong> k obsahu, ktorý sám vloží
                 (texty inzerátov, fotografie materiálov, popisy). Vložením obsahu do platformy udeľuje
@@ -107,7 +107,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>5. Ochrana duševného vlastníctva</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Ochrana duševného vlastníctva</h2>
               <p>
                 Akékoľvek neoprávnené použitie platformy, jej častí alebo loga môže byť postihnuté
                 podľa <strong style={{ color: FG }}>zákona č. 185/2015 Z. z. (Autorský zákon)</strong> a
@@ -119,7 +119,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>6. Použité open-source technológie</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Použité open-source technológie</h2>
               <p>Platforma je postavená na open-source technológiách. Ich používanie sa riadi vlastnými licenciami:</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li><strong style={{ color: FG }}>Next.js</strong> — MIT License</li>
@@ -135,7 +135,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>7. Použitie fotografií a obrázkov</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>7. Použitie fotografií a obrázkov</h2>
               <p>
                 Fotografie materiálov zobrazené na landing stránke sú licencované z <strong style={{ color: FG }}>Unsplash</strong>
                 (Unsplash License) alebo sú vlastníctvom prevádzkovateľa. Fotografie vložené používateľmi
@@ -144,7 +144,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>8. Ukončenie licencie</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>8. Ukončenie licencie</h2>
               <p>
                 Prevádzkovateľ môže túto licenciu <strong style={{ color: FG }}>okamžite ukončiť</strong> v prípade
                 porušenia podmienok (najmä bod 3 a 5). Po ukončení licencie je používateľ povinný
@@ -153,7 +153,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>9. Rozhodné právo</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>9. Rozhodné právo</h2>
               <p>
                 Táto licencia sa riadi právom <strong style={{ color: FG }}>Slovenskej republiky</strong>.
                 Na riešenie sporov je príslušný súd v sídle prevádzkovateľa.
@@ -161,7 +161,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>10. Kontakt pre právne otázky</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>10. Kontakt pre právne otázky</h2>
               <p>V prípade otázok týkajúcich sa licencie, autorských práv alebo porušenia práv kontaktujte:</p>
               <ul className="mt-3 space-y-1">
                 <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
@@ -169,7 +169,7 @@ export default function LicensePage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'Fraunces, serif' }}>11. Záverečné ustanovenia</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>11. Záverečné ustanovenia</h2>
               <p>
                 Táto licencia je platná od {today} a nahrádza všetky predchádzajúce licenčné podmienky.
                 Prevádzkovateľ si vyhradzuje právo ju jednostranne meniť; o zmenách budú používatelia

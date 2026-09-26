@@ -22,7 +22,7 @@ export function DashboardFooter() {
           <div className="flex items-center gap-3">
             <img src="/trc-mark.jpg" alt="TRČ" className="h-12 w-12 rounded-full object-cover" />
             <div>
-              <p className="text-2xl" style={{ fontFamily: 'Fraunces, serif' }}>
+              <p className="text-2xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
                 CMEP
               </p>
               <p className="text-xs" style={{ color: MUTED }}>

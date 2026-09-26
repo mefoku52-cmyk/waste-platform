@@ -74,7 +74,7 @@ export default function AdminPage() {
   return (
     <>
       <link
-        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Outfit:wght@400;500;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap"
         rel="stylesheet"
       />
       <div className="min-h-screen" style={{ background: BG, color: FG, fontFamily: 'Outfit, sans-serif' }}>
@@ -84,7 +84,7 @@ export default function AdminPage() {
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
             {t('admin.kicker')}
           </p>
-          <h1 className="mb-10 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'Fraunces, serif' }}>
+          <h1 className="mb-10 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
             {t('admin.title')}
           </h1>
 
@@ -101,7 +101,7 @@ export default function AdminPage() {
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
               {t('admin.firmsKicker')}
             </p>
-            <h2 className="mb-3 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h2 className="mb-3 text-2xl md:text-3xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
               {t('admin.firmsTitle')}
             </h2>
             <p className="mb-6 text-sm" style={{ color: MUTED }}>
@@ -123,7 +123,7 @@ export default function AdminPage() {
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
               {t('admin.usersKicker')}
             </p>
-            <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
               {t('admin.usersTitle')}
             </h2>
             <div
@@ -142,7 +142,7 @@ export default function AdminPage() {
             <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
               {t('admin.historyKicker')}
             </p>
-            <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'Fraunces, serif' }}>
+            <h2 className="mb-6 text-2xl md:text-3xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
               {t('admin.historyTitle')}
             </h2>
             <p className="mb-6 text-sm" style={{ color: MUTED }}>
@@ -191,7 +191,7 @@ function StatCard({
       <p
         className="mt-2 text-3xl md:text-4xl"
         style={{
-          fontFamily: 'Fraunces, serif',
+          fontFamily: 'DM Serif Display, serif',
           color: accent ? '#e8a598' : GOLD_BRIGHT,
         }}
       >
