@@ -7,6 +7,7 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.presentation.dependencies import get_agent_orchestrator
+from app.shared.presentation.auth_dependencies import require_current_user
 
 router = APIRouter(prefix="/agent-platform", tags=["agent-platform"])
 
@@ -57,6 +58,7 @@ class UserAiChatResponse(BaseModel):
 async def user_ai_chat(
     payload: UserAiChatRequest,
     orchestrator: AgentOrchestrator = Depends(get_agent_orchestrator),
+    current_user=Depends(require_current_user),
 ) -> UserAiChatResponse:
     text = payload.message.strip()
     if not text:
@@ -66,7 +68,7 @@ async def user_ai_chat(
         result = await orchestrator.respond(
             system_prompt=SYSTEM_PROMPT,
             user_message=text,
-            actor_id="anonymous",
+            actor_id=str(getattr(current_user, "id", "unknown")),
             actor_type="user",
         )
     except Exception:

@@ -10,8 +10,8 @@ from app.modules.agent_platform.domain.tools.tool_result import ToolResult
 class CmepCompanySearchHandler:
     """Search CMEP companies through the existing service.
 
-    Authorization is enforced by the application boundary: only companies
-    the calling actor is allowed to see are returned.
+    Only authenticated actors may search. Scope is enforced by the
+    application boundary (company_ids / admin flag).
     """
 
     _ALLOWED: frozenset[str] = frozenset(
@@ -76,12 +76,13 @@ class CmepCompanySearchHandler:
         elif self._company_ids:
             company_scope = list(self._company_ids)
         else:
+            # Authenticated but not member of any company – see nothing.
             return ToolResult(
                 request_id=request.request_id,
                 tool_name=request.tool_name,
                 success=False,
                 error_code="company_access_denied",
-                error_message="Nemáš oprávnenie na vyhľadávanie firiem.",
+                error_message="Najprv si vytvor alebo over firmu.",
             )
 
         try:
