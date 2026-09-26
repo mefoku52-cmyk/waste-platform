@@ -1,12 +1,21 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
 import { http } from '@/lib/api/http';
 import { useMyTier } from '@/features/companies/hooks/use-my-tier';
+import { aiSessionStore } from '../lib/session-store';
 import { AiUpgradePanel } from './ai-upgrade-panel';
 
 type Msg = { role: 'user' | 'ai'; text: string };
-type ChatResponse = { status: string; reply: string | null; source: string };
+
+type ChatResponse = {
+  status: string;
+  reply: string | null;
+  source: string;
+  session_id?: string;
+  tool_calls?: unknown[];
+};
 
 type Props = {
   listingId?: string;
@@ -20,7 +29,13 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
+  const [sessionId, setSessionId] = useState<string>('');
   const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setSessionId(aiSessionStore.getSessionId());
+  }, []);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -39,6 +54,17 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, busy]);
 
+  function startNewConversation() {
+    const fresh = aiSessionStore.resetSession();
+    setSessionId(fresh);
+    setMessages([
+      {
+        role: 'ai',
+        text: 'Nová konverzácia. S čím ti pomôžem?',
+      },
+    ]);
+  }
+
   async function send() {
     const text = input.trim();
     if (!text || busy) return;
@@ -46,13 +72,23 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     setMessages((m) => [...m, { role: 'user', text }]);
     setBusy(true);
     try {
-      const res = await http.post<ChatResponse>('/agent-platform/chat', { message: text });
+      const res = await http.post<ChatResponse>('/agent-platform/chat', {
+        message: text,
+        session_id: sessionId || undefined,
+        listing_id: listingId || undefined,
+      });
+      if (res?.session_id && res.session_id !== sessionId) {
+        setSessionId(res.session_id);
+      }
       if (res?.status === 'ok' && res.reply) {
         setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
       } else {
         setMessages((m) => [
           ...m,
-          { role: 'ai', text: 'AI je momentálne nedostupná (chýba GROQ_API_KEY alebo služba neodpovedá).' },
+          {
+            role: 'ai',
+            text: 'AI je momentálne nedostupná (chýba GROQ_API_KEY alebo služba neodpovedá).',
+          },
         ]);
       }
     } catch (e: unknown) {
@@ -79,7 +115,6 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
   return (
     <>
-      {/* Plavajuce tlacidlo vpravo dole */}
       {!open && (
         <button
           type="button"
@@ -88,41 +123,64 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
           className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition hover:scale-105"
           style={{ background: '#c9a84c', color: '#0b0b0b' }}
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
           </svg>
         </button>
       )}
 
-      {/* Chat okno */}
       {open && (
         <div
           className="fixed bottom-6 right-6 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border shadow-2xl"
           style={{ borderColor: 'rgba(201,168,76,0.35)', background: '#0b0b0b' }}
         >
-          {/* Hlavicka */}
-          <div className="flex items-center justify-between border-b px-4 py-3"
-               style={{ borderColor: 'rgba(201,168,76,0.25)' }}>
+          <div
+            className="flex items-center justify-between border-b px-4 py-3"
+            style={{ borderColor: 'rgba(201,168,76,0.25)' }}
+          >
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: '#c9a84c' }}>
+              <p
+                className="text-[10px] font-semibold uppercase tracking-[0.22em]"
+                style={{ color: '#c9a84c' }}
+              >
                 AI asistent
               </p>
               <p className="text-xs" style={{ color: '#9a8f7c' }}>
                 {listingTitle ? listingTitle.slice(0, 40) : 'CMEP'}
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded-full px-2 text-lg"
-              style={{ color: '#9a8f7c' }}
-              aria-label="Zavrieť"
-            >
-              ×
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={startNewConversation}
+                className="rounded-full px-2 py-1 text-xs"
+                style={{ color: '#9a8f7c' }}
+                aria-label="Nová konverzácia"
+                title="Nová konverzácia"
+              >
+                ⟲
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="rounded-full px-2 text-lg"
+                style={{ color: '#9a8f7c' }}
+                aria-label="Zavrieť"
+              >
+                ×
+              </button>
+            </div>
           </div>
 
-          {/* Spravy */}
           <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
             {messages.map((m, i) => (
               <div
@@ -140,15 +198,16 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
               </div>
             ))}
             {busy && (
-              <div className="max-w-[85%] rounded-xl px-3 py-2 text-sm"
-                   style={{ background: '#17140d', color: '#9a8f7c' }}>
+              <div
+                className="max-w-[85%] rounded-xl px-3 py-2 text-sm"
+                style={{ background: '#17140d', color: '#9a8f7c' }}
+              >
                 píšem…
               </div>
             )}
             <div ref={bottomRef} />
           </div>
 
-          {/* Vstup */}
           <div className="border-t p-3" style={{ borderColor: 'rgba(201,168,76,0.25)' }}>
             <div className="flex items-end gap-2">
               <textarea
