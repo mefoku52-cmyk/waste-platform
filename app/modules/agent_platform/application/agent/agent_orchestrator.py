@@ -7,6 +7,9 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
 from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
 from app.modules.agent_platform.infrastructure.ai.model_gateway import ModelGateway
 from app.modules.agent_platform.infrastructure.ai.model_request import (
@@ -39,11 +42,13 @@ class AgentOrchestrator:
         tool_schemas: tuple[dict[str, Any], ...],
         tool_handlers: dict[str, Any],
         model: str,
+        policy: PolicyEngine | None = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
         self._tool_handlers = dict(tool_handlers)
         self._model = model
+        self._policy = policy
 
     async def respond(
         self,
@@ -103,6 +108,54 @@ class AgentOrchestrator:
                 collected_calls.append(
                     {"name": tool_name, "arguments": args, "id": call.get("id", "")}
                 )
+
+                if self._policy is not None:
+                    decision = await self._policy.decide(
+                        PolicyContext(
+                            actor_id=actor_id,
+                            actor_type=actor_type,
+                            agent_id=None,
+                            action="tool.call",
+                            target=None,
+                            tool_name=tool_name,
+                            risk_level=None,
+                            attributes={},
+                        )
+                    )
+                    if decision.outcome == PolicyOutcome.DENY:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "tool_denied_by_policy",
+                                        "tool_name": tool_name,
+                                        "rule_id": decision.rule_id,
+                                        "reason": decision.reason,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+                    if decision.outcome == PolicyOutcome.REQUIRE_APPROVAL:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "tool_requires_approval",
+                                        "tool_name": tool_name,
+                                        "rule_id": decision.rule_id,
+                                        "reason": decision.reason,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
 
                 handler = self._tool_handlers.get(tool_name)
                 if handler is None:

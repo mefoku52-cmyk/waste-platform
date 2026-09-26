@@ -9,6 +9,9 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
+from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+    AllowlistPolicyEngine,
+)
 from app.modules.agent_platform.infrastructure.tools.cmep_company_search_handler import (
     CmepCompanySearchHandler,
 )
@@ -61,12 +64,18 @@ async def get_agent_orchestrator(
     )
     listing_handler = CmepListingSearchHandler(service=listings_service)
 
+    tool_handlers = {
+        "search_companies": company_handler,
+        "search_listings": listing_handler,
+    }
+    policy = AllowlistPolicyEngine(
+        allowed_tool_names=frozenset(tool_handlers.keys()),
+    )
+
     return AgentOrchestrator(
         gateway=GroqModelGateway(),
         tool_schemas=build_default_tools(),
-        tool_handlers={
-            "search_companies": company_handler,
-            "search_listings": listing_handler,
-        },
+        tool_handlers=tool_handlers,
+        policy=policy,
         model="openai/gpt-oss-120b",
     )
