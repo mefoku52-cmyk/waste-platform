@@ -104,20 +104,25 @@ export default function LeadOutreachPage() {
     }
   }
 
-  async function draft() {
+  async function draftFrom(input: {
+    company_name: string;
+    city?: string | null;
+    industry?: string | null;
+    reason?: string | null;
+  }) {
     setErr(null);
     setOkMsg(null);
-    if (!companyName.trim()) {
+    if (!input.company_name.trim()) {
       setErr('Zadaj názov firmy.');
       return;
     }
     setBusyDraft(true);
     try {
       const res = await http.post<DraftResponse>('/admin/lead-outreach/draft', {
-        company_name: companyName.trim(),
-        city: city.trim() || undefined,
-        industry: industry.trim() || undefined,
-        reason: reason.trim() || undefined,
+        company_name: input.company_name.trim(),
+        city: input.city?.trim() || undefined,
+        industry: input.industry?.trim() || undefined,
+        reason: input.reason?.trim() || undefined,
       });
       setSubject(res.subject || '');
       setBody(res.body || '');
@@ -238,6 +243,12 @@ export default function LeadOutreachPage() {
                       setIndustry(item.industry || '');
                       setSubject(item.subject || '');
                       setBody(item.body || '');
+                      void draftFrom({
+                        company_name: item.company_name || '',
+                        city: item.city,
+                        industry: item.industry,
+                        reason: 'pozvanka na platformu CMEP',
+                      });
                     }}
                   >
                     <span style={{ color: GOLD_BRIGHT }}>{item.company_name}</span>
@@ -304,7 +315,7 @@ export default function LeadOutreachPage() {
 
             <button
               type="button"
-              onClick={() => void draft()}
+              onClick={() => void draftFrom({ company_name: companyName, city, industry, reason })}
               disabled={busyDraft || !companyName.trim()}
               className="mt-4 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
               style={{ background: GOLD, color: BG }}
