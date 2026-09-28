@@ -82,6 +82,7 @@ async def run_daily_discover(
     created = 0
     drafted = 0
     failed = 0
+    items: list[dict[str, Any]] = []
     for row in picked:
         try:
             candidate = await repo.create(
@@ -110,6 +111,18 @@ async def run_daily_discover(
                 body=draft.body,
             )
             drafted += 1
+            items.append(
+                {
+                    "id": candidate.id,
+                    "company_name": candidate.company_name,
+                    "ico": candidate.ico,
+                    "city": candidate.city,
+                    "industry": candidate.industry,
+                    "subject": draft.subject,
+                    "body": draft.body,
+                    "email": None,
+                }
+            )
         except Exception:
             logger.exception("draft failed %s", candidate.ico)
             failed += 1
@@ -123,4 +136,5 @@ async def run_daily_discover(
         "failed": failed,
         "known_before": len(known) - len(picked),
         "send": False,
+        "items": items,
     }

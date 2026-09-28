@@ -19,6 +19,23 @@ const OK = '#6ee7a7';
 
 type DraftResponse = { subject: string; body: string };
 type SendResponse = { ok: boolean; message: string };
+type DiscoverItem = {
+  id: string;
+  company_name: string;
+  ico?: string | null;
+  city?: string | null;
+  industry?: string | null;
+  subject?: string | null;
+  body?: string | null;
+};
+type DiscoverResponse = {
+  ok: boolean;
+  picked: number;
+  created: number;
+  drafted: number;
+  failed: number;
+  items?: DiscoverItem[];
+};
 
 export default function LeadOutreachPage() {
   const { user, isLoading } = useAuthRequired();
@@ -37,6 +54,8 @@ export default function LeadOutreachPage() {
   const [busySend, setBusySend] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
+  const [busyDiscover, setBusyDiscover] = useState(false);
+  const [found, setFound] = useState<DiscoverItem[]>([]);
 
   if (isLoading) {
     return (
@@ -49,6 +68,34 @@ export default function LeadOutreachPage() {
     );
   }
   if (user && !isAdmin) redirect('/dashboard');
+
+  async function discoverDaily() {
+    setErr(null);
+    setOkMsg(null);
+    setBusyDiscover(true);
+    try {
+      const res = await http.post<DiscoverResponse>(
+        '/admin/lead-outreach/discover-daily',
+        {},
+      );
+      const items = res.items || [];
+      setFound(items);
+      setOkMsg(
+        `Nájdených ${res.created} firiem, draftov ${res.drafted}. Doplň email a pošli.`,
+      );
+      if (items[0]) {
+        setCompanyName(items[0].company_name || '');
+        setCity(items[0].city || '');
+        setIndustry(items[0].industry || '');
+        setSubject(items[0].subject || '');
+        setBody(items[0].body || '');
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Hľadanie firiem zlyhalo');
+    } finally {
+      setBusyDiscover(false);
+    }
+  }
 
   async function draft() {
     setErr(null);
@@ -142,7 +189,16 @@ export default function LeadOutreachPage() {
             Jeden email = jedno kliknutie. Žiadny hromadný send.
           </p>
 
-          <div className="mb-6">
+          <div className="mb-6 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => void discoverDaily()}
+              disabled={busyDiscover}
+              className="inline-flex rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+              style={{ background: GOLD, color: BG }}
+            >
+              {busyDiscover ? 'Hľadám…' : 'Nájsť 30 nových firiem'}
+            </button>
             <Link
               href="/dashboard/admin/lead-outreach/batch"
               className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
@@ -151,6 +207,42 @@ export default function LeadOutreachPage() {
               📦 Dávkové oslovenie (max 30)
             </Link>
           </div>
+          {found.length ? (
+            <section
+              className="mb-6 rounded-2xl border p-5"
+              style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
+            >
+              <h2
+                className="mb-3 text-xl"
+                style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
+              >
+                Dnešných {found.length} firiem
+              </h2>
+              <div className="grid gap-2">
+                {found.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="rounded-lg border px-3 py-2 text-left text-sm"
+                    style={inputStyle}
+                    onClick={() => {
+                      setCompanyName(item.company_name || '');
+                      setCity(item.city || '');
+                      setIndustry(item.industry || '');
+                      setSubject(item.subject || '');
+                      setBody(item.body || '');
+                    }}
+                  >
+                    <span style={{ color: GOLD_BRIGHT }}>{item.company_name}</span>
+                    <span style={{ color: MUTED }}>
+                      {' '}
+                      · {item.city || '—'} · {item.ico || 'bez IČO'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           <section
             className="rounded-2xl border p-5 md:p-6"
