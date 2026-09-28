@@ -71,7 +71,7 @@ async def run_daily_discover(
     day = datetime.now(UTC).timetuple().tm_yday
     rotated = QUERIES[day % len(QUERIES) :] + QUERIES[: day % len(QUERIES)]
     picked: list[dict[str, Any]] = []
-    for query in rotated:
+    for query in rotated[:1]:
         if len(picked) >= cap:
             break
         try:
