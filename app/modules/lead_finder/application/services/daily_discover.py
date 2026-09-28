@@ -25,16 +25,9 @@ logger = logging.getLogger(__name__)
 MAX_DAILY = 30
 SKIP_MARKERS = ("konkurz", "likvidac", "vzniku")
 QUERIES: tuple[dict[str, str], ...] = (
-    {"municipality": "Presov", "main_activity": "odpad"},
-    {"municipality": "Presov", "main_activity": "recykl"},
-    {"municipality": "Presov", "main_activity": "drevo"},
-    {"municipality": "Kosice", "main_activity": "recykl"},
-    {"municipality": "Zilina", "main_activity": "odpad"},
-    {"municipality": "Poprad", "main_activity": "drevo"},
-    {"municipality": "Trencin", "main_activity": "plasty"},
     {"full_name": "recykl"},
     {"full_name": "odpady"},
-    {"full_name": "zber druhot"},
+    {"municipality": "Presov", "main_activity": "odpad"},
 )
 
 

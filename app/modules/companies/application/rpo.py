@@ -137,7 +137,7 @@ def search_rpo(
     url = f"{RPO_SEARCH}?{urlencode(params)}"
     req = Request(url, headers={"User-Agent": "CMEP-RPO/1.0", "Accept": "application/json"})
     try:
-        with urlopen(req, timeout=20) as resp:
+        with urlopen(req, timeout=8) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except (HTTPError, URLError, TimeoutError, json.JSONDecodeError):
         return []

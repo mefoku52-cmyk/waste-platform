@@ -92,7 +92,13 @@ export default function LeadOutreachPage() {
         setBody(items[0].body || '');
       }
     } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Hľadanie firiem zlyhalo');
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === 'object' && e && 'message' in e
+            ? String((e as { message: unknown }).message)
+            : 'Hľadanie firiem zlyhalo';
+      setErr(msg);
     } finally {
       setBusyDiscover(false);
     }
