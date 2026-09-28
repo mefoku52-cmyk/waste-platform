@@ -6,6 +6,7 @@ Never sends. Skips ICO already stored. RPO has no email.
 from __future__ import annotations
 
 import logging
+from datetime import UTC
 from typing import Any
 
 from sqlalchemy import select
@@ -27,7 +28,18 @@ SKIP_MARKERS = ("konkurz", "likvidac", "vzniku")
 QUERIES: tuple[dict[str, str], ...] = (
     {"full_name": "recykl"},
     {"full_name": "odpady"},
+    {"full_name": "drevo"},
+    {"full_name": "plasty"},
+    {"full_name": "kovosrot"},
+    {"full_name": "papier"},
+    {"full_name": "sklo"},
+    {"full_name": "textil"},
+    {"full_name": "kompost"},
+    {"full_name": "zberna"},
     {"municipality": "Presov", "main_activity": "odpad"},
+    {"municipality": "Kosice", "main_activity": "recykl"},
+    {"municipality": "Zilina", "main_activity": "drevo"},
+    {"municipality": "Bratislava", "main_activity": "odpad"},
 )
 
 
@@ -54,8 +66,12 @@ async def run_daily_discover(
         select(OutreachCandidateModel.ico).where(OutreachCandidateModel.ico.is_not(None))
     )
     known = {str(v).strip() for v in existing.scalars().all() if v}
+    from datetime import datetime
+
+    day = datetime.now(UTC).timetuple().tm_yday
+    rotated = QUERIES[day % len(QUERIES) :] + QUERIES[: day % len(QUERIES)]
     picked: list[dict[str, Any]] = []
-    for query in QUERIES:
+    for query in rotated:
         if len(picked) >= cap:
             break
         try:
@@ -122,6 +138,34 @@ async def run_daily_discover(
                 logger.exception("draft failed %s", candidate.ico)
                 failed += 1
         items.append(item)
+
+    if len(items) < cap:
+        leftover = await session.execute(
+            select(OutreachCandidateModel)
+            .where(OutreachCandidateModel.status.in_(("new", "drafted")))
+            .where(OutreachCandidateModel.sent_at.is_(None))
+            .order_by(OutreachCandidateModel.created_at.desc())
+            .limit(cap)
+        )
+        have = {str(x.get("id")) for x in items}
+        for row in leftover.scalars().all():
+            if str(row.id) in have:
+                continue
+            items.append(
+                {
+                    "id": str(row.id),
+                    "company_name": row.company_name,
+                    "ico": row.ico,
+                    "city": row.city,
+                    "industry": row.industry,
+                    "subject": row.draft_subject,
+                    "body": row.draft_body,
+                    "email": row.email,
+                }
+            )
+            have.add(str(row.id))
+            if len(items) >= cap:
+                break
 
     await session.commit()
     return {
