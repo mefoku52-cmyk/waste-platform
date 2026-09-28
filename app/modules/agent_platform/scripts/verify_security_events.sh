@@ -1,18 +1,5 @@
-#!/usr/bin/env bash
+#!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
-ROOT="\( (cd " \)(dirname "$0")/../../.." && pwd)"
-cd "$ROOT"
-python3 - <<'PY'
-from pathlib import Path
-mod = Path("app/modules/agent_platform")
-need = [
-    "application/security/security_engine.py",
-    "infrastructure/security/security_event_store.py",
-    "application/alerts/alert_service.py",
-    "application/audit/audit_service.py",
-]
-missing = [n for n in need if not (mod / n).exists()]
-if missing:
-    raise SystemExit("MISSING " + ",".join(missing))
-print("SECURITY_EVENTS_OK")
-PY
+cd /data/data/com.termux/files/home/waste-platform
+python3 -c 'from pathlib import Path; m=Path("app/modules/agent_platform"); need=["application/security/security_engine.py","infrastructure/security/security_event_store.py","application/alerts/alert_service.py","application/audit/audit_service.py"]; miss=[n for n in need if not (m/n).exists()];
+raise SystemExit("MISSING "+",".join(miss)) if miss else print("SECURITY_EVENTS_OK")'

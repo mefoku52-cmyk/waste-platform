@@ -1,18 +1,5 @@
-#!/usr/bin/env bash
+#!/data/data/com.termux/files/usr/bin/bash
 set -euo pipefail
-ROOT="\( (cd " \)(dirname "$0")/../../.." && pwd)"
-cd "$ROOT"
-python3 - <<'PY'
-from pathlib import Path
-p = Path("app/modules/agent_platform/infrastructure/tools")
-need = [
-    "tool_catalog.py",
-    "forbidden_tool_names.py",
-    "safe_tool_registry.py",
-    "cmep_tool_dispatcher.py",
-]
-missing = [n for n in need if not (p / n).exists()]
-if missing:
-    raise SystemExit("MISSING " + ",".join(missing))
-print("TOOL_REGISTRY_OK")
-PY
+cd /data/data/com.termux/files/home/waste-platform
+python3 -c 'from pathlib import Path; p=Path("app/modules/agent_platform/infrastructure/tools"); need=["tool_catalog.py","forbidden_tool_names.py","safe_tool_registry.py","cmep_tool_dispatcher.py"]; miss=[n for n in need if not (p/n).exists()];
+raise SystemExit("MISSING "+",".join(miss)) if miss else print("TOOL_REGISTRY_OK")'
