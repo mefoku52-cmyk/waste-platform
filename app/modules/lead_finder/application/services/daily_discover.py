@@ -1,0 +1,126 @@
+"""Pick 30 new Slovak companies from official RPO and draft emails.
+
+Never sends. Skips ICO already stored. RPO has no email.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.companies.application.rpo import search_rpo
+from app.modules.lead_finder.application.services.email_drafter import EmailDrafter
+from app.modules.lead_finder.infrastructure.persistence.models import (
+    OutreachCandidateModel,
+)
+from app.modules.lead_finder.infrastructure.persistence.repositories import (
+    SqlAlchemyOutreachCandidateRepository,
+)
+
+logger = logging.getLogger(__name__)
+
+MAX_DAILY = 30
+SKIP_MARKERS = ("konkurz", "likvidac", "vzniku")
+QUERIES: tuple[dict[str, str], ...] = (
+    {"municipality": "Presov", "main_activity": "odpad"},
+    {"municipality": "Presov", "main_activity": "recykl"},
+    {"municipality": "Presov", "main_activity": "drevo"},
+    {"municipality": "Kosice", "main_activity": "recykl"},
+    {"municipality": "Zilina", "main_activity": "odpad"},
+    {"municipality": "Poprad", "main_activity": "drevo"},
+    {"municipality": "Trencin", "main_activity": "plasty"},
+    {"full_name": "recykl"},
+    {"full_name": "odpady"},
+    {"full_name": "zber druhot"},
+)
+
+
+def _usable(row: dict[str, Any], known: set[str]) -> bool:
+    name = str(row.get("legalName") or "").strip()
+    ico = str(row.get("ico") or "").strip()
+    if not name or len(ico) != 8:
+        return False
+    if ico in known:
+        return False
+    low = name.lower()
+    return not any(m in low for m in SKIP_MARKERS)
+
+
+async def run_daily_discover(
+    session: AsyncSession,
+    *,
+    limit: int = MAX_DAILY,
+) -> dict[str, Any]:
+    cap = max(1, min(int(limit), MAX_DAILY))
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+    existing = await session.execute(
+        select(OutreachCandidateModel.ico).where(OutreachCandidateModel.ico.is_not(None))
+    )
+    known = {str(v).strip() for v in existing.scalars().all() if v}
+    picked: list[dict[str, Any]] = []
+    for query in QUERIES:
+        if len(picked) >= cap:
+            break
+        try:
+            rows = search_rpo(limit=10, only_active=True, **query)
+        except Exception:
+            logger.exception("rpo search failed %s", query)
+            continue
+        for row in rows:
+            if not _usable(row, known):
+                continue
+            ico = str(row["ico"])
+            known.add(ico)
+            picked.append(row)
+            if len(picked) >= cap:
+                break
+
+    drafter = EmailDrafter()
+    created = 0
+    drafted = 0
+    failed = 0
+    for row in picked:
+        try:
+            candidate = await repo.create(
+                company_name=str(row["legalName"]),
+                ico=str(row["ico"]),
+                city=row.get("city"),
+                industry=row.get("activity") or "obehove materialy",
+                email=None,
+            )
+            created += 1
+        except Exception:
+            logger.exception("create candidate failed %s", row.get("ico"))
+            failed += 1
+            continue
+        try:
+            draft = await drafter.draft(
+                company_name=candidate.company_name,
+                city=candidate.city,
+                industry=candidate.industry,
+                reason="platforma na obehove materialy a druhotny odpad",
+                early_bird=False,
+            )
+            await repo.update_draft(
+                candidate_id=candidate.id,
+                subject=draft.subject,
+                body=draft.body,
+            )
+            drafted += 1
+        except Exception:
+            logger.exception("draft failed %s", candidate.ico)
+            failed += 1
+
+    await session.commit()
+    return {
+        "ok": True,
+        "picked": len(picked),
+        "created": created,
+        "drafted": drafted,
+        "failed": failed,
+        "known_before": len(known) - len(picked),
+        "send": False,
+    }

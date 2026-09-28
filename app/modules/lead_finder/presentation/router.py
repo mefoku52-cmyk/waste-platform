@@ -84,6 +84,30 @@ class BatchDraftResponse(BaseModel):
 EARLY_BIRD_LIMIT = 10
 
 
+class DiscoverDailyResponse(BaseModel):
+    ok: bool
+    picked: int
+    created: int
+    drafted: int
+    failed: int
+    known_before: int
+    send: bool = False
+
+
+@router.post("/discover-daily", response_model=DiscoverDailyResponse)
+async def discover_daily(
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+):
+    _require_admin(current_user)
+    from app.modules.lead_finder.application.services.daily_discover import (
+        run_daily_discover,
+    )
+
+    result = await run_daily_discover(session)
+    return DiscoverDailyResponse(**result)
+
+
 @router.post("/draft", response_model=DraftResponse)
 async def draft_email(
     payload: DraftRequest,
