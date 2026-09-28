@@ -84,6 +84,17 @@ class BatchDraftResponse(BaseModel):
 EARLY_BIRD_LIMIT = 10
 
 
+class DiscoverDailyItem(BaseModel):
+    id: str
+    company_name: str
+    ico: str | None = None
+    city: str | None = None
+    industry: str | None = None
+    subject: str | None = None
+    body: str | None = None
+    email: str | None = None
+
+
 class DiscoverDailyResponse(BaseModel):
     ok: bool
     picked: int
@@ -92,6 +103,7 @@ class DiscoverDailyResponse(BaseModel):
     failed: int
     known_before: int
     send: bool = False
+    items: list[DiscoverDailyItem] = []
 
 
 @router.post("/discover-daily", response_model=DiscoverDailyResponse)
@@ -104,7 +116,7 @@ async def discover_daily(
         run_daily_discover,
     )
 
-    result = await run_daily_discover(session)
+    result = await run_daily_discover(session, draft=False)
     return DiscoverDailyResponse(**result)
 
 

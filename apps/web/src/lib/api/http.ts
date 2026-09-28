@@ -1,7 +1,7 @@
 import { config } from '../config';
 import { tokenStore } from '../auth/token-store';
 
-async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
+async function request<T>(path: string, options: RequestInit & { timeoutMs?: number } = {}): Promise<T> {
   const baseUrl = config.apiBaseUrl;
   const url = `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   const token = tokenStore.getToken();
@@ -16,11 +16,13 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), 20000);
+  const timeoutMs = options.timeoutMs ?? 20000;
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
   let response: Response;
   try {
+    const { timeoutMs: _ignoredTimeout, ...fetchOptions } = options;
     response = await fetch(url, {
-      ...options,
+      ...fetchOptions,
       headers,
       signal: controller.signal,
     });
@@ -28,7 +30,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     window.clearTimeout(timer);
     const aborted = err instanceof DOMException && err.name === 'AbortError';
     throw {
-      message: aborted ? 'Server neodpovedal do 20 s' : 'Failed to fetch',
+      message: aborted ? `Server neodpovedal do ${Math.round(timeoutMs / 1000)} s` : 'Failed to fetch',
       status: 0,
     };
   }

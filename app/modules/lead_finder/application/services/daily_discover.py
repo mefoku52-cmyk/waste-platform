@@ -53,6 +53,7 @@ async def run_daily_discover(
     session: AsyncSession,
     *,
     limit: int = MAX_DAILY,
+    draft: bool = False,
 ) -> dict[str, Any]:
     cap = max(1, min(int(limit), MAX_DAILY))
     repo = SqlAlchemyOutreachCandidateRepository(session)
@@ -97,35 +98,37 @@ async def run_daily_discover(
             logger.exception("create candidate failed %s", row.get("ico"))
             failed += 1
             continue
-        try:
-            draft = await drafter.draft(
-                company_name=candidate.company_name,
-                city=candidate.city,
-                industry=candidate.industry,
-                reason="platforma na obehove materialy a druhotny odpad",
-                early_bird=False,
-            )
-            await repo.update_draft(
-                candidate_id=candidate.id,
-                subject=draft.subject,
-                body=draft.body,
-            )
-            drafted += 1
-            items.append(
-                {
-                    "id": candidate.id,
-                    "company_name": candidate.company_name,
-                    "ico": candidate.ico,
-                    "city": candidate.city,
-                    "industry": candidate.industry,
-                    "subject": draft.subject,
-                    "body": draft.body,
-                    "email": None,
-                }
-            )
-        except Exception:
-            logger.exception("draft failed %s", candidate.ico)
-            failed += 1
+        item = {
+            "id": candidate.id,
+            "company_name": candidate.company_name,
+            "ico": candidate.ico,
+            "city": candidate.city,
+            "industry": candidate.industry,
+            "subject": None,
+            "body": None,
+            "email": None,
+        }
+        if draft:
+            try:
+                mail = await drafter.draft(
+                    company_name=candidate.company_name,
+                    city=candidate.city,
+                    industry=candidate.industry,
+                    reason="platforma na obehove materialy a druhotny odpad",
+                    early_bird=False,
+                )
+                await repo.update_draft(
+                    candidate_id=candidate.id,
+                    subject=mail.subject,
+                    body=mail.body,
+                )
+                drafted += 1
+                item["subject"] = mail.subject
+                item["body"] = mail.body
+            except Exception:
+                logger.exception("draft failed %s", candidate.ico)
+                failed += 1
+        items.append(item)
 
     await session.commit()
     return {

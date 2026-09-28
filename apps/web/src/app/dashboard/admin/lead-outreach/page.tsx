@@ -77,6 +77,7 @@ export default function LeadOutreachPage() {
       const res = await http.post<DiscoverResponse>(
         '/admin/lead-outreach/discover-daily',
         {},
+        { timeoutMs: 60000 },
       );
       const items = res.items || [];
       setFound(items);
