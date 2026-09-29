@@ -71,7 +71,7 @@ async def run_daily_discover(
     slot = int(datetime.now(UTC).timestamp() // 43200)
     rotated = QUERIES[slot % len(QUERIES) :] + QUERIES[: slot % len(QUERIES)]
     picked: list[dict[str, Any]] = []
-    for query in rotated[:1]:
+    for query in rotated:
         if len(picked) >= cap:
             break
         try:
