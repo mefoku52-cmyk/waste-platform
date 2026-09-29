@@ -139,14 +139,13 @@ async def run_daily_discover(
                 failed += 1
         items.append(item)
 
-    if len(items) < cap:
-        return {
-            "ok": True,
-            "picked": len(picked),
-            "created": created,
-            "drafted": drafted,
-            "failed": failed,
-            "known_before": len(known) - len(picked),
-            "send": False,
-            "items": items,
-        }
+    return {
+        "ok": True,
+        "picked": len(picked),
+        "created": created,
+        "drafted": drafted,
+        "failed": failed,
+        "known_before": len(known) - len(picked),
+        "send": False,
+        "items": items,
+    }
