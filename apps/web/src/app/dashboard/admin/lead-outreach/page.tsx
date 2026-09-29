@@ -45,6 +45,7 @@ export default function LeadOutreachPage() {
   const [city, setCity] = useState('');
   const [industry, setIndustry] = useState('');
   const [reason, setReason] = useState('');
+  const [batchText, setBatchText] = useState('');
   const [email, setEmail] = useState('');
 
   const [subject, setSubject] = useState('');
@@ -216,7 +217,9 @@ export default function LeadOutreachPage() {
               className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
               style={{ background: GOLD, color: BG }}
             >
-              📦 Dávkové oslovenie (max 30)
+              📦 Dávkové oslovenie
+
+ (max 30)
             </Link>
           </div>
           {found.length ? (
@@ -332,7 +335,53 @@ export default function LeadOutreachPage() {
               className="mb-4 text-xl"
               style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
             >
-              2. Náhľad a odoslanie
+              
+          <section
+            className="mt-6 rounded-2xl border p-5 md:p-6"
+            style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
+          >
+            <h2 className="text-lg font-semibold" style={{ color: GOLD }}>
+              Dávka z CSV
+            </h2>
+            <p className="mt-1 text-sm" style={{ color: MUTED }}>
+              Názov, Mesto, Odvetvie, email@firma.sk — max 30 riadkov.
+            </p>
+            <input
+              type="file"
+              accept=".csv,text/csv,text/plain"
+              className="mt-3 block text-sm"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const text = String(reader.result || '');
+                  const lines = text
+                    .split(/\r?\n/)
+                    .map((ln) => ln.trim())
+                    .filter(
+                      (ln) =>
+                        ln &&
+                        !ln.toLowerCase().startsWith('nazov') &&
+                        !ln.toLowerCase().startsWith('názov'),
+                    );
+                  setBatchText(lines.slice(0, 30).join('\n'));
+                };
+                reader.readAsText(file);
+              }}
+            />
+            <textarea
+              id="batch-lines"
+              value={batchText}
+              onChange={(e) => setBatchText(e.target.value)}
+              rows={8}
+              placeholder="DrevoSK s.r.o., Prešov, drevo, info@drevo.sk"
+              className="mt-3 w-full rounded-lg border p-3 text-sm outline-none"
+              style={inputStyle}
+            />
+          </section>
+
+          2. Náhľad a odoslanie
             </h2>
 
             <input
