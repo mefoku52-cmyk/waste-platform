@@ -47,3 +47,22 @@ api_router.include_router(agent_platform_router)
 api_router.include_router(lead_finder_router)
 api_router.include_router(agent_platform_control_router)
 api_router.include_router(agent_platform_chat_router)
+
+# Agent Platform governance routers (security / approvals / alerts / audit)
+from app.modules.agent_platform.presentation.alerts_router import (
+    router as agent_platform_alerts_router,
+)
+from app.modules.agent_platform.presentation.approvals_router import (
+    router as agent_platform_approvals_router,
+)
+from app.modules.agent_platform.presentation.audit_router import (
+    router as agent_platform_audit_router,
+)
+from app.modules.agent_platform.presentation.security_router import (
+    router as agent_platform_security_router,
+)
+
+api_router.include_router(agent_platform_security_router)
+api_router.include_router(agent_platform_approvals_router)
+api_router.include_router(agent_platform_alerts_router)
+api_router.include_router(agent_platform_audit_router)
