@@ -42,6 +42,16 @@ async def _daily_matching_wrapper() -> None:
         logger.exception("Daily matching job zlyhal")
 
 
+async def run_lead_discover_job() -> None:
+    from app.modules.lead_finder.application.services.daily_discover import (
+        run_daily_discover,
+    )
+    from app.shared.infrastructure.db.session import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as session:
+        await run_daily_discover(session, draft=False)
+
+
 def start_scheduler() -> AsyncIOScheduler | None:
     """Start APScheduler with daily matching job. Idempotent."""
     global _scheduler
@@ -71,6 +81,15 @@ def start_scheduler() -> AsyncIOScheduler | None:
             replace_existing=True,
             misfire_grace_time=3600,
         )
+
+    scheduler.add_job(
+        run_lead_discover_job,
+        "interval",
+        hours=12,
+        id="lead_discover_12h",
+        replace_existing=True,
+        misfire_grace_time=3600,
+    )
     scheduler.start()
     _scheduler = scheduler
     logger.info(

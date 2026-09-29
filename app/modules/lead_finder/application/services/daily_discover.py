@@ -59,7 +59,7 @@ async def run_daily_discover(
     *,
     limit: int = MAX_DAILY,
     draft: bool = False,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
     cap = max(1, min(int(limit), MAX_DAILY))
     repo = SqlAlchemyOutreachCandidateRepository(session)
     existing = await session.execute(
@@ -68,8 +68,8 @@ async def run_daily_discover(
     known = {str(v).strip() for v in existing.scalars().all() if v}
     from datetime import datetime
 
-    day = datetime.now(UTC).timetuple().tm_yday
-    rotated = QUERIES[day % len(QUERIES) :] + QUERIES[: day % len(QUERIES)]
+    slot = int(datetime.now(UTC).timestamp() // 43200)
+    rotated = QUERIES[slot % len(QUERIES) :] + QUERIES[: slot % len(QUERIES)]
     picked: list[dict[str, Any]] = []
     for query in rotated[:1]:
         if len(picked) >= cap:
@@ -140,41 +140,13 @@ async def run_daily_discover(
         items.append(item)
 
     if len(items) < cap:
-        leftover = await session.execute(
-            select(OutreachCandidateModel)
-            .where(OutreachCandidateModel.status.in_(("new", "drafted")))
-            .where(OutreachCandidateModel.sent_at.is_(None))
-            .order_by(OutreachCandidateModel.created_at.desc())
-            .limit(cap)
-        )
-        have = {str(x.get("id")) for x in items}
-        for row in leftover.scalars().all():
-            if str(row.id) in have:
-                continue
-            items.append(
-                {
-                    "id": str(row.id),
-                    "company_name": row.company_name,
-                    "ico": row.ico,
-                    "city": row.city,
-                    "industry": row.industry,
-                    "subject": row.draft_subject,
-                    "body": row.draft_body,
-                    "email": row.email,
-                }
-            )
-            have.add(str(row.id))
-            if len(items) >= cap:
-                break
-
-    await session.commit()
-    return {
-        "ok": True,
-        "picked": len(picked),
-        "created": created,
-        "drafted": drafted,
-        "failed": failed,
-        "known_before": len(known) - len(picked),
-        "send": False,
-        "items": items,
-    }
+        return {
+            "ok": True,
+            "picked": len(picked),
+            "created": created,
+            "drafted": drafted,
+            "failed": failed,
+            "known_before": len(known) - len(picked),
+            "send": False,
+            "items": items,
+        }
