@@ -128,6 +128,13 @@ export default function ListingDetailPage() {
     if (listingId) void postListingViewed(listingId);
   }, [listingId]);
 
+  useEffect(() => {
+    if (destination) return;
+    const raw = me as { company?: { city?: string | null }; city?: string | null } | null;
+    const city = raw?.company?.city || raw?.city || '';
+    if (city) setDestination(String(city));
+  }, [me, destination]);
+
   const data = query.data;
   const gallery = useMemo(() => (data ? getGallery(data) : []), [data]);
   const title = data?.title || t('dashboard.titleNoName');
