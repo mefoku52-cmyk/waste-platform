@@ -228,6 +228,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
             <div ref={bottomRef} />
           </div>
 
+          {!minimized && (
           <div className="border-t p-3" style={{ borderColor: 'rgba(201,168,76,0.25)' }}>
             <div className="flex items-end gap-2">
               <textarea
@@ -256,6 +257,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
               </button>
             </div>
           </div>
+          )}
         </div>
       )}
     </>
