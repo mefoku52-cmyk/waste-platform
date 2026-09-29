@@ -28,6 +28,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const { tier, isLoading: tierLoading } = useMyTier();
 
   const [open, setOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -123,7 +124,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
       {!open && (
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => { setOpen(true); setMinimized(false); }}
           aria-label="Otvoriť AI chat"
           className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition hover:scale-105"
           style={{ background: '#c9a84c', color: '#0b0b0b' }}
@@ -183,6 +184,13 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
               </button>
               <button
                 type="button"
+                onClick={() => setMinimized((v) => !v)}
+                aria-label="minimalizovat"
+              >
+                {minimized ? '+' : '–'}
+              </button>
+              <button
+                type="button"
                 onClick={() => setOpen(false)}
                 className="rounded-full px-2 text-lg"
                 style={{ color: '#9a8f7c' }}
@@ -194,7 +202,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
           </div>
 
           <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
-            {messages.map((m, i) => (
+            {!minimized && messages.map((m, i) => (
               <div
                 key={i}
                 className={`max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm ${
