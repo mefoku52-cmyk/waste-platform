@@ -70,6 +70,54 @@ export default function LeadOutreachPage() {
   }
   if (user && !isAdmin) redirect('/dashboard');
 
+
+  async function draftFromCsv() {
+    const rows = batchText
+      .split(/\n/)
+      .map((ln) => ln.trim())
+      .filter((ln) => ln && !ln.toLowerCase().startsWith('nazov') && !ln.toLowerCase().startsWith('názov'));
+    const companies = rows.slice(0, 30).map((ln) => {
+      const parts = ln.split(',').map((x) => x.trim());
+      return {
+        company_name: parts[0] || '',
+        city: parts[1] || '',
+        industry: parts[2] || '',
+        reason: parts[3] || 'Pozvánka na CMEP',
+      };
+    }).filter((c) => c.company_name);
+    if (!companies.length) {
+      setErr('CSV box je prázdny.');
+      return;
+    }
+    setBusyDraft(true);
+    setErr(null);
+    setOkMsg(null);
+    try {
+      const res = await http.post<{ items?: { company_name: string; subject: string; body: string }[]; count?: number }>(
+        '/admin/lead-outreach/draft-batch',
+        { companies },
+        { timeoutMs: 60000 },
+      );
+      const first = res.items?.[0];
+      if (first) {
+        setCompanyName(first.company_name || '');
+        setSubject(first.subject || '');
+        setBody(first.body || '');
+      }
+      setOkMsg('Draftov ' + String(res.count ?? res.items?.length ?? 0) + '. Skontroluj náhľad a pošli.');
+    } catch (e) {
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === 'object' && e && 'message' in e
+            ? String((e as { message: unknown }).message)
+            : 'Draft z CSV zlyhal';
+      setErr(msg);
+    } finally {
+      setBusyDraft(false);
+    }
+  }
+
   async function discoverDaily() {
     setErr(null);
     setOkMsg(null);
@@ -379,6 +427,15 @@ export default function LeadOutreachPage() {
               className="mt-3 w-full rounded-lg border p-3 text-sm outline-none"
               style={inputStyle}
             />
+            <button
+              type="button"
+              onClick={() => void draftFromCsv()}
+              disabled={busyDraft || !batchText.trim()}
+              className="mt-3 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+              style={{ background: '#c9a84c', color: '#090807' }}
+            >
+              {busyDraft ? 'Pripravujem drafty…' : 'Vygenerovať drafty z CSV'}
+            </button>
           </section>
 
           2. Náhľad a odoslanie
