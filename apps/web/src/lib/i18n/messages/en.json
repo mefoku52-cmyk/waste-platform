@@ -287,7 +287,12 @@
     "phCompanyName": "Company name *",
     "phCity": "City",
     "phIndustry": "Industry (e.g. woodworking)",
-    "phBody": "Email body"
+    "phBody": "Email body",
+    "firmsHintPrefix": "Companies that requested verification. Click ",
+    "firmsHintMiddle": " to approve or ",
+    "firmsHintSuffix": " to reject.",
+    "verify": "Verify",
+    "reject": "Reject"
   },
   "chat": {
     "section": "MESSAGES",

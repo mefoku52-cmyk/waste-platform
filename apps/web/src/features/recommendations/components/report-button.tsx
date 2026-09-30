@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
+import { useT } from '@/lib/i18n/context';
 
 const REASONS = [
-  { id: 'harassment', sk: 'Obtazovanie' },
-  { id: 'fake', sk: 'Fejk ucet' },
-  { id: 'spam', sk: 'Spam' },
+  { id: 'harassment', key: 'report.reasonHarassment' },
+  { id: 'fake', key: 'report.reasonFake' },
+  { id: 'spam', key: 'report.reasonSpam' },
 ] as const;
 
 export function ReportButton({
@@ -17,6 +18,7 @@ export function ReportButton({
   listingId?: string;
   companyId?: string;
 }) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState(false);
   const [err, setErr] = useState('');
@@ -39,7 +41,7 @@ export function ReportButton({
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setErr(String(body.detail || body.message || 'Nahradenie zlyhalo'));
+      setErr(String(body.detail || body.message || t('report.sendFailed')));
       return;
     }
     setDone(true);
@@ -47,7 +49,7 @@ export function ReportButton({
   }
 
   if (done) {
-    return <p className="text-xs text-[#cbb98a]">Nahlásené. Pozrie to admin.</p>;
+    return <p className="text-xs text-[#cbb98a]">{t('report.done')}</p>;
   }
 
   return (
@@ -57,7 +59,7 @@ export function ReportButton({
         className="text-xs uppercase tracking-[0.16em] text-[#c45c4a]"
         onClick={() => setOpen((v) => !v)}
       >
-        Nahlásiť
+        {t('report.button')}
       </button>
       {open && (
         <div className="mt-2 flex flex-wrap gap-2">
@@ -68,7 +70,7 @@ export function ReportButton({
               className="rounded-full border border-[#c45c4a]/50 px-3 py-1 text-xs text-[#f3ead8]"
               onClick={() => send(r.id)}
             >
-              {r.sk}
+              {t(r.key)}
             </button>
           ))}
         </div>

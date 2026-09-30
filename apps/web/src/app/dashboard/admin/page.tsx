@@ -107,7 +107,7 @@ export default function AdminPage() {
               {t('admin.firmsTitle')}
             </h2>
             <p className="mb-6 text-sm" style={{ color: MUTED }}>
-              Firmy, ktoré požiadali o overenie. Klikni <strong style={{ color: GOLD_BRIGHT }}>Overiť</strong> pre schválenie alebo <strong style={{ color: GOLD_BRIGHT }}>Zamietnuť</strong> pre odmietnutie.
+              {t('admin.firmsHintPrefix')}<strong style={{ color: GOLD_BRIGHT }}>{t('admin.verify')}</strong>{t('admin.firmsHintMiddle')}<strong style={{ color: GOLD_BRIGHT }}>{t('admin.reject')}</strong>{t('admin.firmsHintSuffix')}
             </p>
             <div
               className="rounded-2xl border p-5"

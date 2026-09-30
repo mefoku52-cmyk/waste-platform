@@ -287,7 +287,12 @@
     "phCompanyName": "Názov firmy *",
     "phCity": "Mesto",
     "phIndustry": "Odvetvie (napr. drevospracovanie)",
-    "phBody": "Telo emailu"
+    "phBody": "Telo emailu",
+    "firmsHintPrefix": "Firmy, ktoré požiadali o overenie. Klikni ",
+    "firmsHintMiddle": " pre schválenie alebo ",
+    "firmsHintSuffix": " pre odmietnutie.",
+    "verify": "Overiť",
+    "reject": "Zamietnuť"
   },
   "chat": {
     "section": "SPRÁVY",

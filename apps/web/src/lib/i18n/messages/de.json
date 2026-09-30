@@ -287,7 +287,12 @@
     "phCompanyName": "Firmenname *",
     "phCity": "Stadt",
     "phIndustry": "Branche (z. B. Holzbearbeitung)",
-    "phBody": "E-Mail-Text"
+    "phBody": "E-Mail-Text",
+    "firmsHintPrefix": "Unternehmen, die eine Verifizierung beantragt haben. Klicken Sie ",
+    "firmsHintMiddle": " zum Genehmigen oder ",
+    "firmsHintSuffix": " zum Ablehnen.",
+    "verify": "Bestätigen",
+    "reject": "Ablehnen"
   },
   "chat": {
     "section": "NACHRICHTEN",

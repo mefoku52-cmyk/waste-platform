@@ -287,7 +287,12 @@
     "phCompanyName": "Nom de l'entreprise *",
     "phCity": "Ville",
     "phIndustry": "Secteur (ex. travail du bois)",
-    "phBody": "Corps de l'e-mail"
+    "phBody": "Corps de l'e-mail",
+    "firmsHintPrefix": "Entreprises ayant demandé une vérification. Cliquez sur ",
+    "firmsHintMiddle": " pour approuver ou ",
+    "firmsHintSuffix": " pour rejeter.",
+    "verify": "Vérifier",
+    "reject": "Rejeter"
   },
   "chat": {
     "section": "MESSAGES",
