@@ -81,6 +81,9 @@ export default function LeadOutreachPage() {
   const [busySendId, setBusySendId] = useState<string | null>(null);
   const [pendingEmail, setPendingEmail] = useState<Record<string, string>>({});
   const [pendingSubject, setPendingSubject] = useState<Record<string, string>>({});
+  const [selectedPending, setSelectedPending] = useState<Record<string, boolean>>({});
+  const [busySendAll, setBusySendAll] = useState(false);
+  const [sendAllProgress, setSendAllProgress] = useState<{ current: number; total: number } | null>(null);
 
   if (isLoading) {
     return (
@@ -102,12 +105,15 @@ export default function LeadOutreachPage() {
       setPending(res.items || []);
       const emails: Record<string, string> = {};
       const subjects: Record<string, string> = {};
+      const selected: Record<string, boolean> = {};
       for (const it of res.items || []) {
         emails[it.id] = it.email || '';
         subjects[it.id] = it.subject || '';
+        selected[it.id] = !!it.email;
       }
       setPendingEmail(emails);
       setPendingSubject(subjects);
+      setSelectedPending(selected);
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Pending zlyhal');
     } finally {
@@ -149,6 +155,48 @@ export default function LeadOutreachPage() {
     } finally {
       setBusySendId(null);
     }
+  }
+
+  async function sendSelected() {
+    const toSend = pending.filter(
+      (item) => selectedPending[item.id] && (pendingEmail[item.id] || '').includes('@'),
+    );
+    if (toSend.length === 0) {
+      setErr('Nie je vybraný žiadny kandidát s platným emailom.');
+      return;
+    }
+    setErr(null);
+    setOkMsg(null);
+    setBusySendAll(true);
+    let sent = 0;
+    let failed = 0;
+    for (let i = 0; i < toSend.length; i++) {
+      const item = toSend[i];
+      setSendAllProgress({ current: i + 1, total: toSend.length });
+      const to = (pendingEmail[item.id] || '').trim();
+      const sub = (pendingSubject[item.id] || item.subject || '').trim();
+      try {
+        const res = await http.post<SendPendingResponse>(
+          `/admin/lead-outreach/candidates/${item.id}/send`,
+          { to, subject: sub, body: item.body || '' },
+        );
+        if (res.ok) {
+          sent += 1;
+          setPending((prev) => prev.filter((x) => x.id !== item.id));
+        } else {
+          failed += 1;
+        }
+      } catch {
+        failed += 1;
+      }
+    }
+    setSendAllProgress(null);
+    setBusySendAll(false);
+    setOkMsg(
+      failed === 0
+        ? `Odoslaných ${sent} z ${toSend.length}.`
+        : `Odoslaných ${sent} z ${toSend.length}. Zlyhalo: ${failed}.`,
+    );
   }
 
   async function skipPending(item: PendingItem) {
@@ -356,27 +404,40 @@ export default function LeadOutreachPage() {
               background: 'rgba(201,168,76,0.05)',
             }}
           >
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2
                   className="text-xl"
                   style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
                 >
-                  📥 Pripravené na odoslanie ({pending.length})
+                  Pripravené na odoslanie ({pending.length})
                 </h2>
                 <p className="mt-1 text-xs" style={{ color: MUTED }}>
-                  AI vygeneroval text. Doplň email a klikni Poslať.
+                  Začiarkni kandidátov a klikni Poslať vybrané. Alebo uprav jednotlivé pole pred odoslaním.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => void loadPending()}
-                disabled={busyPending}
-                className="rounded-full px-3 py-1 text-xs font-semibold disabled:opacity-40"
-                style={{ background: GOLD, color: BG }}
-              >
-                {busyPending ? 'Obnovujem…' : 'Obnoviť'}
-              </button>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => void loadPending()}
+                  disabled={busyPending || busySendAll}
+                  className="rounded-full px-3 py-1 text-xs font-semibold disabled:opacity-40"
+                  style={{ background: 'transparent', color: GOLD_BRIGHT, border: '1px solid ' + GOLD }}
+                >
+                  {busyPending ? 'Obnovujem…' : 'Obnoviť'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void sendSelected()}
+                  disabled={busySendAll || busyPending || pending.length === 0}
+                  className="rounded-full px-4 py-1 text-xs font-semibold disabled:opacity-40"
+                  style={{ background: GOLD, color: BG }}
+                >
+                  {busySendAll
+                    ? `Posielam ${sendAllProgress?.current ?? 0}/${sendAllProgress?.total ?? 0}…`
+                    : `Poslať vybrané (${pending.filter((i) => selectedPending[i.id] && (pendingEmail[i.id] || '').includes('@')).length})`}
+                </button>
+              </div>
             </div>
 
             {pending.length === 0 ? (
@@ -395,13 +456,34 @@ export default function LeadOutreachPage() {
                     }}
                   >
                     <div className="flex flex-wrap items-start justify-between gap-2">
-                      <div>
-                        <p style={{ color: GOLD_BRIGHT, fontWeight: 600 }}>
-                          {item.company_name}
-                        </p>
-                        <p className="text-xs" style={{ color: MUTED }}>
-                          {[item.city, item.ico, item.industry].filter(Boolean).join(' · ')}
-                        </p>
+                      <div className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={!!selectedPending[item.id]}
+                          onChange={(e) =>
+                            setSelectedPending((prev) => ({ ...prev, [item.id]: e.target.checked }))
+                          }
+                          disabled={!(pendingEmail[item.id] || '').includes('@')}
+                          className="mt-1 h-4 w-4 accent-[#c9a84c]"
+                          title={
+                            (pendingEmail[item.id] || '').includes('@')
+                              ? 'Zaradiť do dávky'
+                              : 'Chýba platný email'
+                          }
+                        />
+                        <div>
+                          <p style={{ color: GOLD_BRIGHT, fontWeight: 600 }}>
+                            {item.company_name}
+                          </p>
+                          <p className="text-xs" style={{ color: MUTED }}>
+                            {[item.city, item.ico, item.industry].filter(Boolean).join(' · ')}
+                          </p>
+                          {!(pendingEmail[item.id] || '').includes('@') ? (
+                            <p className="mt-1 text-xs" style={{ color: DANGER }}>
+                              Chýba platný email — doplň ho nižšie.
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
                       <button
                         type="button"
@@ -463,7 +545,7 @@ export default function LeadOutreachPage() {
                         className="rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
                         style={{ background: GOLD, color: BG }}
                       >
-                        {busySendId === item.id ? 'Posielam…' : '📧 Poslať email'}
+                        {busySendId === item.id ? 'Posielam…' : 'Poslať email'}
                       </button>
                     </div>
                   </li>
