@@ -5,8 +5,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMessages, useThread } from '../hooks/use-chat-queries';
 import { chatApi } from '../api';
 import { useCurrentUser } from '../../auth/hooks/use-current-user';
+import { useT } from '@/lib/i18n/context';
 
 export const ChatWindow = ({ threadId }: { threadId: string }) => {
+  const { t } = useT();
   const qc = useQueryClient();
   const { data: thread } = useThread(threadId);
   const { data: msgs, isLoading } = useMessages(threadId);
@@ -90,7 +92,7 @@ export const ChatWindow = ({ threadId }: { threadId: string }) => {
           <textarea
             className="flex-1 resize-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none focus:border-emerald-400"
             rows={2}
-            placeholder="Napíš správu..."
+            placeholder={t('chatWidget.placeholder')}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {

@@ -8,6 +8,7 @@ import { aiSessionStore } from '../lib/session-store';
 import { personaStore, type Persona } from '../lib/persona-store';
 import { PersonaPicker } from './persona-picker';
 import { AiUpgradePanel } from './ai-upgrade-panel';
+import { useT } from '@/lib/i18n/context';
 
 type Msg = { role: 'user' | 'ai'; text: string };
 
@@ -25,6 +26,7 @@ type Props = {
 };
 
 export function AiChatWidget({ listingId, listingTitle }: Props) {
+  const { t } = useT();
   const { tier, isLoading: tierLoading } = useMyTier();
 
   const [open, setOpen] = useState(false);
@@ -125,7 +127,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         <button
           type="button"
           onClick={() => { setOpen(true); setMinimized(false); }}
-          aria-label="Otvoriť AI chat"
+          aria-label={t('chatWidget.ariaOpen')}
           className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition hover:scale-105"
           style={{ background: '#c9a84c', color: '#0b0b0b' }}
         >

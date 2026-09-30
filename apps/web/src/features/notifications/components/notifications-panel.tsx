@@ -1,8 +1,10 @@
 'use client';
 
 import { useNotifications } from '../hooks/use-notifications';
+import { useT } from '@/lib/i18n/context';
 
 export const NotificationsPanel = () => {
+  const { t } = useT();
   const { data, isLoading, error } = useNotifications();
   const items = (data as any)?.items ?? [];
 
@@ -20,7 +22,7 @@ export const NotificationsPanel = () => {
   return (
     <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
       <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center">
-        <h2 className="text-lg font-semibold text-gray-900">Notifikácie</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t('notifications.title')}</h2>
         <span className="text-xs text-gray-500">{items.length}</span>
       </div>
       <ul className="divide-y divide-gray-100 max-h-64 overflow-y-auto">

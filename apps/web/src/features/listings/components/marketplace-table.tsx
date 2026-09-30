@@ -3,8 +3,10 @@
 import { useRouter } from 'next/navigation';
 import { useMarketplace } from '../hooks/use-marketplace';
 import { cn } from '../../../lib/utils/cn';
+import { useT } from '@/lib/i18n/context';
 
 export const MarketplaceTable = () => {
+  const { t } = useT();
   const { data, isLoading, error } = useMarketplace();
   const router = useRouter();
 
@@ -18,11 +20,11 @@ export const MarketplaceTable = () => {
       <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Názov</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Množstvo</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Jednotka</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Lokalita</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.title')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.quantity')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.unit')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.location')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.status')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">

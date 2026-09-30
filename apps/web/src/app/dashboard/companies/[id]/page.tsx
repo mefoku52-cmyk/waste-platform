@@ -269,7 +269,7 @@ export default function CompanyDetailPage() {
               ) : contactsQuery.data?.revealed ? (
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="cmep-panel rounded-xl p-3">
-                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Email</p>
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('tables.email')}</p>
                     <p className="mt-1 text-sm">
                       {contactsQuery.data.email ? (
                         <a href={`mailto:${contactsQuery.data.email}`} style={{ color: GOLD_BRIGHT }}>
@@ -279,7 +279,7 @@ export default function CompanyDetailPage() {
                     </p>
                   </div>
                   <div className="cmep-panel rounded-xl p-3">
-                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Telefón</p>
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('tables.phone')}</p>
                     <p className="mt-1 text-sm">{contactsQuery.data.phone || '—'}</p>
                   </div>
                   <div className="cmep-panel rounded-xl p-3 sm:col-span-2">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRecommendations } from '../hooks/use-recommendations';
 import { RecommendationPredictionSlot } from "@/features/recommendations/components/recommendation-prediction-slot";
+import { useT } from '@/lib/i18n/context';
 
 const REASON_LABEL: Record<string, string> = {
   verified_buyer: 'overeny odberatel',
@@ -28,6 +29,7 @@ export function RecommendationsPanel({
   materialType,
   onPickDestination,
 }: Props) {
+  const { t } = useT();
   const { data, isLoading, error } = useRecommendations(listingId);
   const [draft, setDraft] = useState('');
 
@@ -58,8 +60,8 @@ export function RecommendationsPanel({
 
   return (
     <section className="mt-6 rounded-2xl border border-[#d4af37]/35 bg-black p-6">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">Odporucania</p>
-      <h2 className="mt-1 font-serif text-2xl text-[#f3e6c4]">Mozni odberatelia</h2>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">{t('recommendations.kicker')}</p>
+      <h2 className="mt-1 font-serif text-2xl text-[#f3e6c4]">{t('recommendations.title')}</h2>
       <p className="mt-1 text-sm text-[#cbb98a]">Overeni odberatelia z existujucich dat. Obchod sa neuzatvara.</p>
       {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">Nacitavam…</p>}
       {error && <p className="mt-4 text-sm text-red-300">{(error as Error).message}</p>}
@@ -93,7 +95,7 @@ export function RecommendationsPanel({
       )}
       {draft && (
         <div className="mt-4 rounded-xl border border-[#d4af37]/25 p-4">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">Navrh spravy do chatu</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">{t('recommendations.chatDraft')}</p>
           <textarea
             value={draft}
             onChange={(e) => setDraft(e.target.value)}

@@ -170,7 +170,7 @@
     "back": "Back to sign in"
   },
   "listingForm": {
-    "title": "New listing",
+    "title": "Add listing",
     "titleAdd": "Add new listing",
     "subtitle": "Fill in the details of the material you want to offer.",
     "companyLabel": "Company",
@@ -185,10 +185,18 @@
     "locationLabel": "Location",
     "imageLabel": "Photo URL",
     "submit": "Create listing",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "company": "Company",
+    "description": "Description",
+    "imageUrl": "Image URL (optional)",
+    "quantity": "Quantity",
+    "unit": "Unit",
+    "price": "Price (optional)",
+    "currency": "Currency",
+    "location": "Location"
   },
   "companyForm": {
-    "title": "New company",
+    "title": "Register a new company",
     "titleAdd": "Add company",
     "legalNameLabel": "Legal name",
     "tradingNameLabel": "Trading name",
@@ -200,7 +208,10 @@
     "cityLabel": "City",
     "pscLabel": "Postal code",
     "countryLabel": "Country",
-    "submit": "Create company"
+    "submit": "Create company",
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "logistics": "Logistics"
   },
   "tables": {
     "name": "Name",
@@ -221,7 +232,22 @@
     "adminMode": "Admin mode – you can approve companies.",
     "adminOnly": "Only an admin can approve.",
     "companyMustBeVerified": "Company must be verified.",
-    "publishToMarketplace": "Publish to marketplace"
+    "publishToMarketplace": "Publish to marketplace",
+    "title": "Title",
+    "location": "Location",
+    "material": "Material",
+    "materialType": "Material type",
+    "date": "Date",
+    "action": "Action",
+    "target": "Target",
+    "details": "Details",
+    "role": "Role",
+    "email": "Email",
+    "phone": "Phone",
+    "file": "File",
+    "regulation": "Regulation",
+    "document": "Document",
+    "note": "Note"
   },
   "docs": {
     "title": "Documents",
@@ -252,7 +278,16 @@
     "historyTitle": "Change audit",
     "historyHint": "Latest admin actions — who, when, what changed.",
     "saveMaterials": "Save materials",
-    "materialsPlaceholder": "bio, wood, metal"
+    "materialsPlaceholder": "bio, wood, metal",
+    "reports": "Reports",
+    "recommendationsKicker": "Admin",
+    "recommendationsTitle": "Recommendations",
+    "phEmail": "Recipient email *",
+    "phSubject": "Subject",
+    "phCompanyName": "Company name *",
+    "phCity": "City",
+    "phIndustry": "Industry (e.g. woodworking)",
+    "phBody": "Email body"
   },
   "chat": {
     "section": "MESSAGES",
@@ -430,5 +465,58 @@
     "sentSpamBold": "Spam",
     "sentPromotions": "Promotions",
     "sentValid": "The link is valid for 24 hours."
+  },
+  "legal": {
+    "privacy": "Privacy",
+    "license": "License",
+    "terms": "Terms",
+    "notifications": "Sending notifications about inquiries and messages",
+    "security": "Security and fraud prevention",
+    "rightAccess": "Right to access your data",
+    "rightCorrect": "Right to correct inaccurate data",
+    "rightObject": "Right to object to processing",
+    "noDbSchema": "Database schema and structure",
+    "noReverse": "Perform reverse engineering or decompilation",
+    "noDerived": "Create derivative works without written consent",
+    "noBypass": "Bypass security measures or authorization mechanisms",
+    "viewContent": "View content within the platform",
+    "storeContent": "Store content in the database",
+    "notifyContent": "Send notifications related to content"
+  },
+  "recommendations": {
+    "kicker": "Recommendations",
+    "title": "Potential buyers",
+    "chatDraft": "Chat message draft"
+  },
+  "freight": {
+    "kicker": "Freight",
+    "title": "Carriers nearby"
+  },
+  "chatDraftBanner": {
+    "kicker": "Draft from recommendations"
+  },
+  "notifications": {
+    "title": "Notifications"
+  },
+  "documentForm": {
+    "title": "Add document",
+    "name": "Title",
+    "type": "Type (certificate, invoice, other)",
+    "file": "File (pdf, jpg, png)",
+    "fileUrl": "File URL",
+    "company": "Company"
+  },
+  "chatWidget": {
+    "placeholder": "Type a message...",
+    "ariaOpen": "Open AI chat"
+  },
+  "aiAssistant": {
+    "placeholder": "Type a question..."
+  },
+  "pagination": {
+    "aria": "Pagination"
+  },
+  "languageSwitcher": {
+    "aria": "Language"
   }
 }
