@@ -78,6 +78,15 @@ def create_app() -> FastAPI:
 
     register_http_exception_handlers(app)
 
+    from fastapi.exceptions import RequestValidationError
+    from fastapi.responses import JSONResponse
+
+    @app.exception_handler(RequestValidationError)
+    async def _validation_handler(request, exc):
+        # Vratime len loc + msg, NIE `input` (leak user vstupu / DoS vektor).
+        clean = [{"loc": list(e.get("loc", [])), "msg": e.get("msg", "")} for e in exc.errors()]
+        return JSONResponse(status_code=422, content={"detail": clean})
+
     app.add_middleware(
         CORSMiddleware,
         allow_origins=_cors_origins(),
