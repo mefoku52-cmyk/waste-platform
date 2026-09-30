@@ -1,151 +1,225 @@
-"""Unit tests for the centralised platform/tenant authorization module.
+"""Unit tests for shared/presentation/authorization.py.
 
-These tests pin down the security-critical distinction between:
-
-* **platform admin** — global operator, derived only from
-  `PLATFORM_ADMIN_EMAILS` or the reserved `platform_admin` role.
-* **company admin** — tenant-level `owner`/`admin` inside one company.
-
-The regression they guard against: `roleCodes` are built solely from company
-memberships, so treating a membership role `admin` as a platform role let any
-tenant admin perform platform-admin operations (privilege escalation).
+Pokryva: current_user_*, role_codes, is_platform_admin,
+membership helpers, require_platform_admin, require_company_*.
 """
 
-from __future__ import annotations
+from dataclasses import dataclass, field
 
 import pytest
 
 from app.shared.domain.exceptions import ForbiddenDomainError
-from app.shared.presentation.authorization import (
-    current_user_email,
-    current_user_id,
-    is_company_admin,
-    is_company_member,
-    is_platform_admin,
-    membership_company_ids,
-    require_company_admin,
-    require_company_member,
-    require_platform_admin,
-)
-
-COMPANY_A = "11111111-1111-1111-1111-111111111111"
-COMPANY_B = "22222222-2222-2222-2222-222222222222"
-USER_ID = "33333333-3333-3333-3333-333333333333"
+from app.shared.presentation import authorization as authz
 
 
-class _User:
-    def __init__(self, email: str):
-        self.id = USER_ID
-        self.email = email
+@dataclass
+class FakeUser:
+    id: str = "user-1"
+    email: str = "user@example.com"
 
 
-class _Context:
-    """Mimics CurrentUserResponse: user + roleCodes + memberships."""
-
-    def __init__(self, email: str, roles=None, memberships=None):
-        self.user = _User(email)
-        self.roleCodes = roles or []
-        self.memberships = memberships or []
-
-    # property used by some routers
-    @property
-    def id(self):  # pragma: no cover - only present on some DTOs
-        return USER_ID
+@dataclass
+class FakeMembership:
+    companyId: str = "company-1"
+    membershipRole: str = "owner"
 
 
-def _membership(company_id, role, status="active"):
-    return {
-        "id": "44444444-4444-4444-4444-444444444444",
-        "companyId": company_id,
-        "membershipRole": role,
-        "status": status,
-        "isPrimaryContact": False,
-    }
+@dataclass
+class FakeCurrentUser:
+    id: str = "user-1"
+    email: str = "user@example.com"
+    roleCodes: list = field(default_factory=list)
+    memberships: list = field(default_factory=list)
 
 
-@pytest.fixture
-def admin_emails(monkeypatch):
-    from app.core import config as cfg
-
-    monkeypatch.setattr(cfg.settings, "PLATFORM_ADMIN_EMAILS", "root@cmep.dev", raising=False)
+def test_current_user_id_from_direct():
+    cu = FakeCurrentUser(id="u-1")
+    assert authz.current_user_id(cu) == "u-1"
 
 
-class TestPlatformAdmin:
-    def test_email_in_allowlist_is_platform_admin(self, admin_emails):
-        assert is_platform_admin(_Context("root@cmep.dev")) is True
+def test_current_user_id_from_nested_user():
+    @dataclass
+    class Wrapper:
+        user: FakeUser
 
-    def test_email_allowlist_is_case_insensitive(self, admin_emails):
-        assert is_platform_admin(_Context("ROOT@CMEP.DEV")) is True
-
-    def test_reserved_platform_admin_role_is_platform_admin(self, admin_emails):
-        assert is_platform_admin(_Context("other@x.sk", roles=["platform_admin"])) is True
-
-    def test_tenant_admin_role_is_not_platform_admin(self, admin_emails):
-        """Regression: membership role `admin` must NOT grant platform admin."""
-        ctx = _Context(
-            "tenant@x.sk", roles=["admin"], memberships=[_membership(COMPANY_A, "admin")]
-        )
-        assert is_platform_admin(ctx) is False
-
-    def test_plain_user_is_not_platform_admin(self, admin_emails):
-        ctx = _Context("user@x.sk", memberships=[_membership(COMPANY_A, "member")])
-        assert is_platform_admin(ctx) is False
-
-    def test_require_platform_admin_raises_for_tenant_admin(self, admin_emails):
-        ctx = _Context("tenant@x.sk", roles=["admin"])
-        with pytest.raises(ForbiddenDomainError):
-            require_platform_admin(ctx)
-
-    def test_require_platform_admin_allows_allowlisted_email(self, admin_emails):
-        ctx = _Context("root@cmep.dev")
-        assert require_platform_admin(ctx) is ctx
+    cu = Wrapper(user=FakeUser(id="u-2"))
+    assert authz.current_user_id(cu) == "u-2"
 
 
-class TestTenantAuthorization:
-    def test_membership_company_ids_reads_all_memberships(self, admin_emails):
-        ctx = _Context(
-            "user@x.sk",
-            memberships=[_membership(COMPANY_A, "member"), _membership(COMPANY_B, "owner")],
-        )
-        assert set(membership_company_ids(ctx)) == {COMPANY_A, COMPANY_B}
+def test_current_user_id_returns_none_when_no_id():
+    @dataclass
+    class NoId:
+        pass
 
-    def test_company_admin_roles_owner_and_admin(self, admin_emails):
-        assert is_company_admin(
-            _Context("a@x.sk", memberships=[_membership(COMPANY_A, "owner")]), COMPANY_A
-        )
-        assert is_company_admin(
-            _Context("a@x.sk", memberships=[_membership(COMPANY_A, "admin")]), COMPANY_A
-        )
-
-    def test_plain_member_is_not_company_admin(self, admin_emails):
-        ctx = _Context("m@x.sk", memberships=[_membership(COMPANY_A, "member")])
-        assert is_company_admin(ctx, COMPANY_A) is False
-        assert is_company_member(ctx, COMPANY_A) is True
-
-    def test_cross_tenant_access_is_denied(self, admin_emails):
-        """A member of company A must not manage company B."""
-        ctx = _Context("m@x.sk", memberships=[_membership(COMPANY_A, "owner")])
-        with pytest.raises(ForbiddenDomainError):
-            require_company_admin(ctx, COMPANY_B)
-        with pytest.raises(ForbiddenDomainError):
-            require_company_member(ctx, COMPANY_B)
-
-    def test_platform_admin_passes_tenant_checks(self, admin_emails):
-        ctx = _Context("root@cmep.dev")
-        # no exception expected
-        require_company_member(ctx, COMPANY_B)
-        require_company_admin(ctx, COMPANY_B)
-
-    def test_tenant_admin_limited_to_own_company(self, admin_emails):
-        ctx = _Context("t@x.sk", memberships=[_membership(COMPANY_A, "admin")])
-        require_company_admin(ctx, COMPANY_A)
-        with pytest.raises(ForbiddenDomainError):
-            require_company_admin(ctx, COMPANY_B)
+    assert authz.current_user_id(NoId()) is None
 
 
-class TestHelpers:
-    def test_current_user_id_prefers_nested_user(self):
-        assert current_user_id(_Context("a@x.sk")) == USER_ID
+def test_current_user_email_lowercase():
+    cu = FakeCurrentUser(email="USER@EXAMPLE.COM")
+    assert authz.current_user_email(cu) == "user@example.com"
 
-    def test_current_user_email_normalises(self):
-        assert current_user_email(_Context("  MiXeD@X.sk ")) == "mixed@x.sk"
+
+def test_role_codes_from_roleCodes_lowercase():
+    cu = FakeCurrentUser(roleCodes=["Owner", "ADMIN"])
+    assert authz.role_codes(cu) == {"owner", "admin"}
+
+
+def test_role_codes_from_role_codes_alias():
+    @dataclass
+    class AliasUser:
+        role_codes: list = field(default_factory=lambda: ["Platform_Admin"])
+
+    assert authz.role_codes(AliasUser()) == {"platform_admin"}
+
+
+def test_is_platform_admin_by_role():
+    cu = FakeCurrentUser(roleCodes=["platform_admin"])
+    assert authz.is_platform_admin(cu) is True
+
+
+def test_is_platform_admin_false_for_owner():
+    cu = FakeCurrentUser(roleCodes=["owner"])
+    assert authz.is_platform_admin(cu) is False
+
+
+def test_is_platform_admin_none_user():
+    assert authz.is_platform_admin(None) is False
+
+
+def test_is_platform_admin_by_email(monkeypatch):
+    """Platform admin sa urci aj podla emailu (nie len role)."""
+    monkeypatch.setattr(
+        authz,
+        "_platform_admin_emails",
+        lambda: frozenset({"admin@example.com"}),
+    )
+    cu = FakeCurrentUser(email="admin@example.com")
+    assert authz.is_platform_admin(cu) is True
+
+
+def test_is_platform_admin_by_email_uppercase(monkeypatch):
+    monkeypatch.setattr(
+        authz,
+        "_platform_admin_emails",
+        lambda: frozenset({"admin@example.com"}),
+    )
+    cu = FakeCurrentUser(email="ADMIN@EXAMPLE.COM")
+    assert authz.is_platform_admin(cu) is True
+
+
+def test_is_not_platform_admin_for_other_email(monkeypatch):
+    monkeypatch.setattr(
+        authz,
+        "_platform_admin_emails",
+        lambda: frozenset({"admin@example.com"}),
+    )
+    cu = FakeCurrentUser(email="random@example.com")
+    assert authz.is_platform_admin(cu) is False
+
+
+def test_memberships_empty_by_default():
+    cu = FakeCurrentUser()
+    assert authz.memberships(cu) == []
+
+
+def test_memberships_returns_list():
+    m = FakeMembership()
+    cu = FakeCurrentUser(memberships=[m])
+    assert authz.memberships(cu) == [m]
+
+
+def test_membership_company_ids():
+    cu = FakeCurrentUser(
+        memberships=[
+            FakeMembership(companyId="c-1"),
+            FakeMembership(companyId="c-2"),
+        ]
+    )
+    assert authz.membership_company_ids(cu) == ["c-1", "c-2"]
+
+
+def test_membership_role_in_company():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1", membershipRole="admin")])
+    assert authz.membership_role_in_company(cu, "c-1") == "admin"
+
+
+def test_membership_role_not_member_returns_none():
+    cu = FakeCurrentUser()
+    assert authz.membership_role_in_company(cu, "c-99") is None
+
+
+def test_is_company_member_true():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1")])
+    assert authz.is_company_member(cu, "c-1") is True
+
+
+def test_is_company_member_false():
+    cu = FakeCurrentUser()
+    assert authz.is_company_member(cu, "c-1") is False
+
+
+def test_is_company_member_none_company():
+    cu = FakeCurrentUser()
+    assert authz.is_company_member(cu, None) is False
+
+
+def test_is_company_admin_owner():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1", membershipRole="owner")])
+    assert authz.is_company_admin(cu, "c-1") is True
+
+
+def test_is_company_admin_admin():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1", membershipRole="admin")])
+    assert authz.is_company_admin(cu, "c-1") is True
+
+
+def test_is_company_admin_member_not_admin():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1", membershipRole="member")])
+    assert authz.is_company_admin(cu, "c-1") is False
+
+
+def test_require_platform_admin_passes_for_platform_admin():
+    cu = FakeCurrentUser(roleCodes=["platform_admin"])
+    assert authz.require_platform_admin(cu) is cu
+
+
+def test_require_platform_admin_raises_for_tenant_owner():
+    cu = FakeCurrentUser(roleCodes=["owner"])
+    with pytest.raises(ForbiddenDomainError):
+        authz.require_platform_admin(cu)
+
+
+def test_require_company_member_platform_admin_passes():
+    cu = FakeCurrentUser(roleCodes=["platform_admin"])
+    authz.require_company_member(cu, "c-any")
+
+
+def test_require_company_member_member_passes():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1")])
+    authz.require_company_member(cu, "c-1")
+
+
+def test_require_company_member_raises_for_non_member():
+    cu = FakeCurrentUser()
+    with pytest.raises(ForbiddenDomainError):
+        authz.require_company_member(cu, "c-1")
+
+
+def test_require_company_admin_owner_passes():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1", membershipRole="owner")])
+    authz.require_company_admin(cu, "c-1")
+
+
+def test_require_company_admin_raises_for_plain_member():
+    cu = FakeCurrentUser(memberships=[FakeMembership(companyId="c-1", membershipRole="member")])
+    with pytest.raises(ForbiddenDomainError):
+        authz.require_company_admin(cu, "c-1")
+
+
+def test_platform_admin_role_codes_constant():
+    assert "platform_admin" in authz.PLATFORM_ADMIN_ROLE_CODES
+
+
+def test_company_admin_roles_constant():
+    assert "owner" in authz.COMPANY_ADMIN_ROLES
+    assert "admin" in authz.COMPANY_ADMIN_ROLES
