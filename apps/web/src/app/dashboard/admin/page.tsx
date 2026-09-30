@@ -95,7 +95,7 @@ export default function AdminPage() {
             <StatCard label="Používatelia" value={safeStats.total_users} loading={isLoadingStats} />
             <StatCard label="Ponuky" value={safeStats.total_listings} loading={isLoadingStats} />
             <StatCard label="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
-            <StatCard label="{t('admin.pending')}" value={safeStats.pending_verifications} loading={isLoadingStats} accent />
+            <StatCard label={t('admin.pending')} value={safeStats.pending_verifications} loading={isLoadingStats} accent />
           </section>
 
           {/* {t('admin.firmsKicker')} NA OVERENIE */}
