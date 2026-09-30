@@ -123,7 +123,9 @@ async def run_daily_discover(
                     city=candidate.city,
                 )
                 if website:
-                    found_email = await email_finder.find_email_for_company(website)
+                    found_email = await email_finder.find_email_for_company(
+                        website, company_name=candidate.company_name
+                    )
                     if found_email:
                         await repo.update_email(
                             candidate_id=candidate.id,

@@ -82,7 +82,9 @@ async def backfill_emails(
                     )
                     continue
 
-                found_email = await email_finder.find_email_for_company(website)
+                found_email = await email_finder.find_email_for_company(
+                    website, company_name=company_name
+                )
                 if not found_email:
                     no_email_on_website += 1
                     items.append(

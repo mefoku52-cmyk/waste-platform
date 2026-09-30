@@ -30,13 +30,32 @@ _EMAIL_RE = re.compile(
 # Bezne "smetne" adresy, ktore nechceme
 _JUNK_PATTERNS = (
     "example.com",
+    "example.org",
+    "example.net",
     "sentry.io",
     "wixpress.com",
-    "googlemail.com",
     "@2x.png",
+    "@2x.jpg",
+    "@3x.png",
     "no-reply@",
     "noreply@",
     "donotreply@",
+    "do-not-reply@",
+    "discord.com",
+    "discord.gg",
+    "github.com",
+    "gitlab.com",
+    "reddit.com",
+    "stackoverflow.com",
+    "hst.link",
+    "@sentry",
+    "@wixpress",
+    "wix.com",
+    "shopify.com",
+    "wordpress.com",
+    "wixsite.com",
+    "weebly.com",
+    "squarespace.com",
 )
 
 # Preferovane genericke firemne adresy
@@ -48,6 +67,108 @@ _GENERIC_PREFIXES = (
     "obchod@",
     "kancelaria@",
 )
+
+
+# Free email providers — nie su firemne, pre B2B outreach nemaju hodnotu
+_FREE_EMAIL_DOMAINS = {
+    "gmail.com",
+    "googlemail.com",
+    "yahoo.com",
+    "yahoo.co.uk",
+    "yahoo.de",
+    "yahoo.fr",
+    "hotmail.com",
+    "hotmail.co.uk",
+    "hotmail.sk",
+    "outlook.com",
+    "outlook.sk",
+    "live.com",
+    "live.sk",
+    "msn.com",
+    "gmx.com",
+    "gmx.at",
+    "gmx.de",
+    "gmx.net",
+    "mail.com",
+    "email.com",
+    "protonmail.com",
+    "proton.me",
+    "icloud.com",
+    "me.com",
+    "mac.com",
+    "centrum.sk",
+    "azet.sk",
+    "zoznam.sk",
+    "post.sk",
+    "atlas.sk",
+    "pobox.sk",
+    "inbox.sk",
+    "mail.sk",
+    "seznam.cz",
+    "email.cz",
+    "centrum.cz",
+    "atlas.cz",
+    "wp.pl",
+    "o2.pl",
+    "interia.pl",
+}
+
+
+def _is_free_email(email: str) -> bool:
+    """True ak email je z free providera (gmail, yahoo, atd.)."""
+    try:
+        domain = email.rsplit("@", 1)[1].lower()
+    except (IndexError, AttributeError):
+        return True
+    return domain in _FREE_EMAIL_DOMAINS
+
+
+def _email_matches_company(email: str, company_name: str) -> bool:
+    """True ak email domena alebo lokalna cast suvisi s nazvom firmy.
+
+    Priklad:
+      email='info@djservice.sk', company='D-J service s.r.o.' -> True
+      email='support@discord.com', company='D-J service s.r.o.' -> False
+      email='info@ekol.sk', company='EKOL - recyklacne systemy' -> True
+    """
+    try:
+        local, domain = email.rsplit("@", 1)
+    except (ValueError, AttributeError):
+        return False
+
+    local = local.lower()
+    domain = domain.lower()
+
+    # Normalizuj nazov firmy
+    name = company_name.lower()
+    # Odstran bezne pravne formy
+    for suffix in (
+        " s.r.o.",
+        " s. r. o.",
+        " s.r.o",
+        " sro",
+        " a.s.",
+        " a. s.",
+        " as",
+        " k.s.",
+        " v.o.s.",
+        " o.z.",
+        " n.o.",
+        " jsa",
+    ):
+        name = name.replace(suffix, " ")
+    # Odstran interpunkciu
+    import re
+
+    name = re.sub(r"[^a-z0-9\s]", " ", name)
+    words = [w for w in name.split() if len(w) >= 3]
+
+    if not words:
+        return False
+
+    # Skontroluj ci aspon jedno slovo z nazvu je v domena alebo local casti
+    haystack = domain + " " + local
+    return any(w in haystack for w in words)
 
 
 class LegalEmailFinder:
@@ -64,8 +185,15 @@ class LegalEmailFinder:
             },
         )
 
-    def find_email_for_company(self, website_url: str | None) -> str | None:
-        """Return the best business email found on the company website, or None."""
+    def find_email_for_company(
+        self,
+        website_url: str | None,
+        company_name: str | None = None,
+    ) -> str | None:
+        """Return the best business email found on the company website, or None.
+
+        Ak je company_name zadany, filtruj aj podla suvislosti s firmou.
+        """
         if not website_url:
             return None
 
@@ -91,7 +219,10 @@ class LegalEmailFinder:
             if not emails:
                 return None
 
-            return self._pick_best(emails)
+            filtered = LegalEmailFinder._filter_emails(emails, company_name)
+            if not filtered:
+                return None
+            return self._pick_best(filtered)
 
         except Exception as exc:
             logger.debug("Email discovery failed for %s: %s", url, exc)
@@ -105,6 +236,18 @@ class LegalEmailFinder:
         if resp.status_code >= 400:
             return []
         return self._extract_from_html(resp.text)
+
+    @staticmethod
+    def _filter_emails(emails: list[str], company_name: str | None) -> list[str]:
+        """Filtruj: ziadny free provider + musi mat suvislost s firmou."""
+        result: list[str] = []
+        for e in emails:
+            if _is_free_email(e):
+                continue
+            if company_name and not _email_matches_company(e, company_name):
+                continue
+            result.append(e)
+        return result
 
     @staticmethod
     def _extract_from_html(html: str) -> list[str]:
@@ -190,7 +333,11 @@ class AsyncLegalEmailFinder:
             )
         return self._client
 
-    async def find_email_for_company(self, website_url: str | None) -> str | None:
+    async def find_email_for_company(
+        self,
+        website_url: str | None,
+        company_name: str | None = None,
+    ) -> str | None:
         if not website_url:
             return None
 
@@ -215,7 +362,10 @@ class AsyncLegalEmailFinder:
             if not emails:
                 return None
 
-            return self._pick_best(emails)
+            filtered = LegalEmailFinder._filter_emails(emails, company_name)
+            if not filtered:
+                return None
+            return self._pick_best(filtered)
 
         except Exception as exc:
             logger.debug("Email discovery failed for %s: %s", url, exc)
