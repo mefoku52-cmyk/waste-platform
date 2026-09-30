@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
@@ -37,6 +37,21 @@ type DiscoverResponse = {
   items?: DiscoverItem[];
 };
 
+type PendingItem = {
+  id: string;
+  company_name: string;
+  ico?: string | null;
+  city?: string | null;
+  industry?: string | null;
+  email?: string | null;
+  subject?: string | null;
+  body?: string | null;
+  status: string;
+  created_at?: string | null;
+};
+type PendingResponse = { count: number; items: PendingItem[] };
+type SendPendingResponse = { ok: boolean; message: string; status: string };
+
 export default function LeadOutreachPage() {
   const { user, isLoading } = useAuthRequired();
   const isAdmin = useIsPlatformAdmin();
@@ -58,6 +73,13 @@ export default function LeadOutreachPage() {
   const [busyDiscover, setBusyDiscover] = useState(false);
   const [found, setFound] = useState<DiscoverItem[]>([]);
 
+  // Pending (pripravene na odoslanie z DB)
+  const [pending, setPending] = useState<PendingItem[]>([]);
+  const [busyPending, setBusyPending] = useState(false);
+  const [busySendId, setBusySendId] = useState<string | null>(null);
+  const [pendingEmail, setPendingEmail] = useState<Record<string, string>>({});
+  const [pendingSubject, setPendingSubject] = useState<Record<string, string>>({});
+
   if (isLoading) {
     return (
       <div className="min-h-screen" style={{ background: BG, color: FG }}>
@@ -70,6 +92,78 @@ export default function LeadOutreachPage() {
   }
   if (user && !isAdmin) redirect('/dashboard');
 
+
+  async function loadPending() {
+    setBusyPending(true);
+    try {
+      const res = await http.get<PendingResponse>('/admin/lead-outreach/pending?limit=50');
+      setPending(res.items || []);
+      const emails: Record<string, string> = {};
+      const subjects: Record<string, string> = {};
+      for (const it of res.items || []) {
+        emails[it.id] = it.email || '';
+        subjects[it.id] = it.subject || '';
+      }
+      setPendingEmail(emails);
+      setPendingSubject(subjects);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Pending zlyhal');
+    } finally {
+      setBusyPending(false);
+    }
+  }
+
+  async function sendPending(item: PendingItem) {
+    const to = (pendingEmail[item.id] || '').trim();
+    const sub = (pendingSubject[item.id] || item.subject || '').trim();
+    if (!to || !to.includes('@')) {
+      setErr(`Doplň email pre ${item.company_name}`);
+      return;
+    }
+    if (!sub) {
+      setErr(`Chýba predmet pre ${item.company_name}`);
+      return;
+    }
+    if (!item.body) {
+      setErr(`Chýba telo emailu pre ${item.company_name}`);
+      return;
+    }
+    setErr(null);
+    setOkMsg(null);
+    setBusySendId(item.id);
+    try {
+      const res = await http.post<SendPendingResponse>(
+        `/admin/lead-outreach/candidates/${item.id}/send`,
+        { to, subject: sub, body: item.body },
+      );
+      if (res.ok) {
+        setOkMsg(`Odoslané: ${item.company_name} — ${res.message}`);
+        setPending((prev) => prev.filter((x) => x.id !== item.id));
+      } else {
+        setErr(res.message || 'Odoslanie zlyhalo');
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Send zlyhal');
+    } finally {
+      setBusySendId(null);
+    }
+  }
+
+  async function skipPending(item: PendingItem) {
+    setErr(null);
+    try {
+      await http.post(`/admin/lead-outreach/candidates/${item.id}/skip`, {});
+      setPending((prev) => prev.filter((x) => x.id !== item.id));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : 'Skip zlyhal');
+    }
+  }
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    void loadPending();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   async function draftFromCsv() {
     const rows = batchText
@@ -249,6 +343,132 @@ export default function LeadOutreachPage() {
             AI pripraví personalizovaný email. Ty skontroluješ a pošleš.
             Jeden email = jedno kliknutie. Žiadny hromadný send.
           </p>
+
+          {/* ═══════════════════════════════════════════════════ */}
+          {/* PENDING — pripravene na odoslanie                    */}
+          {/* ═══════════════════════════════════════════════════ */}
+          <section
+            className="mb-8 rounded-2xl border p-5"
+            style={{
+              borderColor: 'color-mix(in srgb, #c9a84c 40%, transparent)',
+              background: 'rgba(201,168,76,0.05)',
+            }}
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2
+                  className="text-xl"
+                  style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
+                >
+                  📥 Pripravené na odoslanie ({pending.length})
+                </h2>
+                <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                  AI vygeneroval text. Doplň email a klikni Poslať.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => void loadPending()}
+                disabled={busyPending}
+                className="rounded-full px-3 py-1 text-xs font-semibold disabled:opacity-40"
+                style={{ background: GOLD, color: BG }}
+              >
+                {busyPending ? 'Obnovujem…' : 'Obnoviť'}
+              </button>
+            </div>
+
+            {pending.length === 0 ? (
+              <p className="text-sm" style={{ color: MUTED }}>
+                Žiadne čakajúce drafty. Automaticky sa naplnia o 7:15 (alebo klikni „Nájsť 30 nových firiem“ nižšie).
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {pending.map((item) => (
+                  <li
+                    key={item.id}
+                    className="rounded-xl border p-4"
+                    style={{
+                      borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)',
+                      background: '#0b0b0b',
+                    }}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div>
+                        <p style={{ color: GOLD_BRIGHT, fontWeight: 600 }}>
+                          {item.company_name}
+                        </p>
+                        <p className="text-xs" style={{ color: MUTED }}>
+                          {[item.city, item.ico, item.industry].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void skipPending(item)}
+                        className="text-xs underline"
+                        style={{ color: MUTED }}
+                      >
+                        Preskočiť
+                      </button>
+                    </div>
+
+                    <div className="mt-3 grid gap-2 md:grid-cols-2">
+                      <input
+                        type="email"
+                        placeholder="Email príjemcu *"
+                        value={pendingEmail[item.id] || ''}
+                        onChange={(e) =>
+                          setPendingEmail((p) => ({ ...p, [item.id]: e.target.value }))
+                        }
+                        className="h-10 rounded-lg border px-3 text-sm outline-none"
+                        style={inputStyle}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Predmet"
+                        value={pendingSubject[item.id] || ''}
+                        onChange={(e) =>
+                          setPendingSubject((p) => ({ ...p, [item.id]: e.target.value }))
+                        }
+                        className="h-10 rounded-lg border px-3 text-sm outline-none"
+                        style={inputStyle}
+                      />
+                    </div>
+
+                    <details className="mt-3">
+                      <summary
+                        className="cursor-pointer text-xs"
+                        style={{ color: GOLD_BRIGHT }}
+                      >
+                        Zobraziť telo emailu
+                      </summary>
+                      <pre
+                        className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg border p-3 text-xs"
+                        style={{
+                          borderColor: 'rgba(201,168,76,0.2)',
+                          background: '#050505',
+                          color: FG,
+                        }}
+                      >
+                        {item.body || '(prázdne)'}
+                      </pre>
+                    </details>
+
+                    <div className="mt-3 flex justify-end">
+                      <button
+                        type="button"
+                        disabled={busySendId === item.id}
+                        onClick={() => void sendPending(item)}
+                        className="rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+                        style={{ background: GOLD, color: BG }}
+                      >
+                        {busySendId === item.id ? 'Posielam…' : '📧 Poslať email'}
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
 
           <div className="mb-6 flex flex-wrap gap-3">
             <button
