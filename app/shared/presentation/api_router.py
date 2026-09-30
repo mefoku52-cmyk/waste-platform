@@ -22,9 +22,11 @@ from app.modules.lead_finder.presentation.router import (
 )
 from app.modules.listings.presentation.router import router as listings_router
 from app.modules.notifications.presentation.router import router as notifications_router
+from app.modules.prediction.presentation.router import router as prediction_router
 from app.modules.recommendations.presentation.router import router as recommendations_router
 from app.modules.uploads.presentation.router import router as uploads_router
 from app.modules.users.presentation.router import router as users_router
+from app.shared.presentation.metrics_router import router as metrics_router
 
 api_router = APIRouter()
 
@@ -42,6 +44,8 @@ api_router.include_router(listings_router)
 api_router.include_router(notifications_router)
 api_router.include_router(uploads_router)
 api_router.include_router(recommendations_router)
+api_router.include_router(prediction_router)
+api_router.include_router(metrics_router)
 api_router.include_router(events_router)
 api_router.include_router(agent_platform_router)
 api_router.include_router(lead_finder_router)
