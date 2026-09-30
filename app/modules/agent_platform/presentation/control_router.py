@@ -5,9 +5,10 @@ router = APIRouter(prefix="/agent-platform/control", tags=["agent-platform-contr
 
 @router.get("/status")
 async def control_status() -> dict[str, object]:
+    # Verejny healthcheck endpoint — ziadne mena, ziadne interny stav.
+    # Detailny stav je dostupny len cez autentifikovany /mode.
     return {
         "status": "present",
-        "actor": "radoslav",
         "approval": False,
         "break_glass": False,
         "live": False,
