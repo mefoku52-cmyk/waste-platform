@@ -416,5 +416,19 @@
     "phEmail": "E-mail",
     "phCompany": "Firma",
     "phMessage": "Správa"
+  },
+  "auth": {
+    "backToLogin": "Prihlásenie",
+    "goToLogin": "Prejsť na prihlásenie",
+    "requestNewLink": "Požiadať o nový odkaz",
+    "emailLabel": "Váš e-mail",
+    "tokenLabel": "Token",
+    "newPasswordLabel": "Nové heslo (min. 8)",
+    "sentTitle": "Skontrolujte e-mail",
+    "sentSubtitle": "Poslali sme vám overovací odkaz.",
+    "sentSpam": "Ak e-mail nevidíte, skontrolujte priečinok",
+    "sentSpamBold": "Spam",
+    "sentPromotions": "Promócie",
+    "sentValid": "Odkaz je platný 24 hodín."
   }
 }

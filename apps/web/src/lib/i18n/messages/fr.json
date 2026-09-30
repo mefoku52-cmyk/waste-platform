@@ -416,5 +416,19 @@
     "phEmail": "E-mail",
     "phCompany": "Entreprise",
     "phMessage": "Message"
+  },
+  "auth": {
+    "backToLogin": "Connexion",
+    "goToLogin": "Aller à la connexion",
+    "requestNewLink": "Demander un nouveau lien",
+    "emailLabel": "Votre e-mail",
+    "tokenLabel": "Jeton",
+    "newPasswordLabel": "Nouveau mot de passe (min. 8)",
+    "sentTitle": "Vérifiez votre e-mail",
+    "sentSubtitle": "Nous vous avons envoyé un lien de vérification.",
+    "sentSpam": "Si vous ne voyez pas l'e-mail, vérifiez",
+    "sentSpamBold": "Spam",
+    "sentPromotions": "Promotions",
+    "sentValid": "Le lien est valable 24 heures."
   }
 }

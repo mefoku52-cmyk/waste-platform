@@ -416,5 +416,19 @@
     "phEmail": "E-mail",
     "phCompany": "Компания",
     "phMessage": "Сообщение"
+  },
+  "auth": {
+    "backToLogin": "Вход",
+    "goToLogin": "Перейти к входу",
+    "requestNewLink": "Запросить новую ссылку",
+    "emailLabel": "Ваш e-mail",
+    "tokenLabel": "Токен",
+    "newPasswordLabel": "Новый пароль (мин. 8)",
+    "sentTitle": "Проверьте почту",
+    "sentSubtitle": "Мы отправили вам ссылку для подтверждения.",
+    "sentSpam": "Если вы не видите письмо, проверьте",
+    "sentSpamBold": "Спам",
+    "sentPromotions": "Промоакции",
+    "sentValid": "Ссылка действительна 24 часа."
   }
 }

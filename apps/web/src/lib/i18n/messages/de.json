@@ -416,5 +416,19 @@
     "phEmail": "E-Mail",
     "phCompany": "Unternehmen",
     "phMessage": "Nachricht"
+  },
+  "auth": {
+    "backToLogin": "Anmeldung",
+    "goToLogin": "Zur Anmeldung",
+    "requestNewLink": "Neuen Link anfordern",
+    "emailLabel": "Ihre E-Mail",
+    "tokenLabel": "Token",
+    "newPasswordLabel": "Neues Passwort (mind. 8)",
+    "sentTitle": "Prüfen Sie Ihre E-Mail",
+    "sentSubtitle": "Wir haben Ihnen einen Bestätigungslink gesendet.",
+    "sentSpam": "Wenn Sie die E-Mail nicht sehen, prüfen Sie",
+    "sentSpamBold": "Spam",
+    "sentPromotions": "Werbung",
+    "sentValid": "Der Link ist 24 Stunden gültig."
   }
 }

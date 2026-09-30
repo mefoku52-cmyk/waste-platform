@@ -416,5 +416,19 @@
     "phEmail": "Email",
     "phCompany": "Company",
     "phMessage": "Message"
+  },
+  "auth": {
+    "backToLogin": "Sign in",
+    "goToLogin": "Go to sign in",
+    "requestNewLink": "Request a new link",
+    "emailLabel": "Your email",
+    "tokenLabel": "Token",
+    "newPasswordLabel": "New password (min. 8)",
+    "sentTitle": "Check your email",
+    "sentSubtitle": "We have sent you a verification link.",
+    "sentSpam": "If you don't see the email, check your",
+    "sentSpamBold": "Spam",
+    "sentPromotions": "Promotions",
+    "sentValid": "The link is valid for 24 hours."
   }
 }

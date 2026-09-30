@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AuthShell, AuthButton, AuthInput } from '@/components/auth/auth-shell';
 import { config } from '@/lib/config';
+import { useT } from '@/lib/i18n/context';
 
 function VerifyEmailSentContent() {
   const params = useSearchParams();
@@ -37,8 +38,8 @@ function VerifyEmailSentContent() {
 
   return (
     <AuthShell
-      title="Skontrolujte e-mail"
-      subtitle="Poslali sme vám overovací odkaz."
+      title={t('auth.sentTitle')}
+      subtitle={t('auth.sentSubtitle')}
     >
       <div className="space-y-5 text-[#9a8f7c]">
         <p className="text-sm leading-relaxed">
@@ -67,7 +68,7 @@ function VerifyEmailSentContent() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Váš e-mail"
+                placeholder={t('auth.emailLabel')}
               />
               {error && <p className="text-sm text-[#c45c4a]">{error}</p>}
               <AuthButton type="submit" disabled={status === 'sending'}>
@@ -88,6 +89,7 @@ function VerifyEmailSentContent() {
 }
 
 export default function VerifyEmailSentPage() {
+  const { t } = useT();
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#090807]" />}>
       <VerifyEmailSentContent />

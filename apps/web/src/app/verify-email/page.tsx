@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AuthShell, AuthButton } from '@/components/auth/auth-shell';
 import { config } from '@/lib/config';
+import { useT } from '@/lib/i18n/context';
 
 type Status = 'verifying' | 'success' | 'error';
 
@@ -76,14 +77,14 @@ function VerifyEmailContent() {
 
         {status === 'success' && (
           <Link href="/login" className="block">
-            <AuthButton type="button">Prejsť na prihlásenie</AuthButton>
+            <AuthButton type="button">{t('auth.goToLogin')}</AuthButton>
           </Link>
         )}
 
         {status === 'error' && (
           <div className="grid gap-2">
             <Link href="/verify-email-sent" className="block">
-              <AuthButton type="button">Požiadať o nový odkaz</AuthButton>
+              <AuthButton type="button">{t('auth.requestNewLink')}</AuthButton>
             </Link>
             <Link
               href="/login"
@@ -99,6 +100,7 @@ function VerifyEmailContent() {
 }
 
 export default function VerifyEmailPage() {
+  const { t } = useT();
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#090807]" />}>
       <VerifyEmailContent />
