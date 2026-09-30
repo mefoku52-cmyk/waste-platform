@@ -204,16 +204,36 @@ def _detect_security_patterns(text: str) -> list[tuple[str, float]]:
     return findings
 
 
+_DECISION_PRIORITY = {
+    "allow": 0,
+    "monitor": 1,
+    "alert": 2,
+    "require_approval": 3,
+    "block": 4,
+}
+
+
 async def _apply_security_check(
     *,
     session: AsyncSession,
     text: str,
     actor_id: str,
-) -> None:
-    """Best-effort security check. Nikdy neblokuje chat."""
+) -> str:
+    """Best-effort security check. Vrati najvaznejsi decision.
+
+    Vratene hodnoty: 'allow', 'monitor', 'alert', 'require_approval', 'block'.
+    Pri 'block' by caller mal chat zastavit (vratit neutralnu odpoved).
+    """
     findings = _detect_security_patterns(text)
     if not findings:
-        return
+        return "allow"
+
+    from app.modules.agent_platform.application.security.security_engine import (
+        DefaultSecurityEngine,
+    )
+
+    worst = "allow"
+    engine = DefaultSecurityEngine()
 
     try:
         from datetime import UTC, datetime
@@ -268,6 +288,13 @@ async def _apply_security_check(
             with contextlib.suppress(Exception):
                 await signal_svc.observe(observation)
 
+            # Vyhodnotenie rozhodnutia
+            with contextlib.suppress(Exception):
+                decision = await engine.evaluate(observation)
+                dval = decision.value if hasattr(decision, "value") else str(decision)
+                if _DECISION_PRIORITY.get(dval, 0) > _DECISION_PRIORITY.get(worst, 0):
+                    worst = dval
+
             if confidence >= 0.7:
                 try:
                     alert = AlertRecord(
@@ -288,7 +315,9 @@ async def _apply_security_check(
                     pass
     except Exception:
         # Best-effort. Nikdy nezhodi chat.
-        pass
+        return "allow"
+
+    return worst
 
 
 class UserAiChatRequest(BaseModel):
@@ -392,11 +421,24 @@ async def user_ai_chat(
 
     system_prompt = _build_system_prompt(current_user, persona=payload.persona)
 
-    with contextlib.suppress(Exception):
-        await _apply_security_check(
+    security_decision = "allow"
+    try:
+        security_decision = await _apply_security_check(
             session=session,
             text=text,
             actor_id=actor_id,
+        )
+    except Exception:
+        security_decision = "allow"
+
+    # Ak je decision BLOCK, chat sa zastavi. Vratime neutralnu odpoved,
+    # aby sme neprezradili, ze nieco detegujeme.
+    if security_decision == "block":
+        return UserAiChatResponse(
+            status="unavailable",
+            reply="Nepodarilo sa mi odpovedať, skús to znova.",
+            source="user-ai",
+            session_id=session_id,
         )
 
     try:

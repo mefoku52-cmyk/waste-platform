@@ -37,17 +37,3 @@ class DefaultSecurityEngine(SecurityEngine):
         )
         decision_value = _PATTERN_DECISION.get(pattern_value, "monitor")
         return SecurityDecision(decision_value)
-
-
-_PATTERN_DECISION = {
-    "prompt_injection": "alert",
-    "manipulation": "monitor",
-    "social_engineering": "alert",
-    "coercion": "alert",
-    "data_leakage": "block",
-    "permission_escalation": "block",
-    "unusual_activity": "monitor",
-    "repeated_behavior": "alert",
-    "tool_abuse": "alert",
-    "auth_anomaly": "alert",
-}
