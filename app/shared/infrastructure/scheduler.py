@@ -29,6 +29,38 @@ async def _daily_lead_discover_wrapper() -> None:
         logger.exception("Daily lead discover zlyhal")
 
 
+async def _cleanup_pending_users_wrapper() -> None:
+    """Zmaze userov v stave pending_verification starsich ako 7 dni.
+
+    Bez tohto jobu sa DB plni zombie uctami z fake registracii.
+    """
+    from datetime import UTC, datetime, timedelta
+
+    from sqlalchemy import delete, select
+
+    from app.modules.users.infrastructure.models import UserModel
+    from app.shared.infrastructure.db.session import async_session_factory
+
+    days = int(getattr(settings, "CLEANUP_PENDING_USERS_DAYS", 7))
+    cutoff = datetime.now(UTC) - timedelta(days=days)
+    try:
+        async with async_session_factory() as session:
+            stmt = select(UserModel.id).where(
+                UserModel.status == "pending_verification",
+                UserModel.created_at < cutoff,
+            )
+            result = await session.execute(stmt)
+            ids = [row[0] for row in result.all()]
+            if not ids:
+                logger.info("Cleanup pending users: nothing to delete")
+                return
+            await session.execute(delete(UserModel).where(UserModel.id.in_(ids)))
+            await session.commit()
+            logger.info("Cleanup pending users: deleted %d stale accounts", len(ids))
+    except Exception:
+        logger.exception("Cleanup pending users zlyhal")
+
+
 async def _daily_matching_wrapper() -> None:
     """Run the daily matching job in its own DB session."""
     from app.modules.recommendations.application.matching_job import run_daily_matching
@@ -60,8 +92,9 @@ def start_scheduler() -> AsyncIOScheduler | None:
 
     matching_on = bool(getattr(settings, "MATCHING_ENABLED", False))
     outreach_on = bool(getattr(settings, "LEAD_OUTREACH_ENABLED", False))
-    if not matching_on and not outreach_on:
-        logger.info("scheduler off – matching aj outreach vypnute")
+    cleanup_on = bool(getattr(settings, "CLEANUP_PENDING_USERS_ENABLED", True))
+    if not matching_on and not outreach_on and not cleanup_on:
+        logger.info("scheduler off – matching, outreach aj cleanup vypnute")
         return None
 
     scheduler = AsyncIOScheduler(timezone="Europe/Bratislava")
@@ -81,6 +114,14 @@ def start_scheduler() -> AsyncIOScheduler | None:
             replace_existing=True,
             misfire_grace_time=3600,
         )
+    if cleanup_on:
+        scheduler.add_job(
+            _cleanup_pending_users_wrapper,
+            CronTrigger(hour=4, minute=0),
+            id="cleanup_pending_users",
+            replace_existing=True,
+            misfire_grace_time=3600,
+        )
 
     scheduler.add_job(
         run_lead_discover_job,
@@ -93,9 +134,10 @@ def start_scheduler() -> AsyncIOScheduler | None:
     scheduler.start()
     _scheduler = scheduler
     logger.info(
-        "Scheduler started matching=%s outreach=%s",
+        "Scheduler started matching=%s outreach=%s cleanup=%s",
         matching_on,
         outreach_on,
+        cleanup_on,
     )
     return scheduler
 

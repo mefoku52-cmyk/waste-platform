@@ -36,6 +36,8 @@ _RULES = [
     ("PATCH", "/listings/", 60, 60, "listings-write"),
     ("DELETE", "/listings/", 30, 60, "listings-delete"),
     ("POST", "/inquiries", 30, 60, "inquiries-create"),
+    # Registracia — bot spam ochrana. 3 registracie / hodinu / IP.
+    ("POST", "/users", 3, 3600, "user-register-ip"),
 ]
 
 _API_PREFIXES = ("/api/v1", "/api")

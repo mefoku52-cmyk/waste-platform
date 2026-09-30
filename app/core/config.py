@@ -141,6 +141,13 @@ class Settings(BaseSettings):
 
     RATE_LIMIT_ENABLED: bool | None = None
 
+    # Cloudflare Turnstile (captcha). Default off.
+    # Cleanup stale pending_verification users (denny job).
+    CLEANUP_PENDING_USERS_ENABLED: bool = True
+    CLEANUP_PENDING_USERS_DAYS: int = 7
+    TURNSTILE_ENABLED: bool = False
+    TURNSTILE_SECRET_KEY: str = ""
+
     jwt: JWTSettings | None = None
     redis: RedisSettings = Field(default_factory=RedisSettings)
     rate_limit: RateLimitSettings = Field(default_factory=RateLimitSettings)

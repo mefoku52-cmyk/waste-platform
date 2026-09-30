@@ -1,9 +1,12 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from app.modules.users.domain.enums import UserStatus
+from app.shared.application.email_domain_validator import (
+    validate_email_domain,
+)
 
 
 class UserCreateRequest(BaseModel):
@@ -15,6 +18,11 @@ class UserCreateRequest(BaseModel):
     phone: str | None = None
     locale: str | None = None
     timezone: str | None = None
+
+    @field_validator("email")
+    @classmethod
+    def _reject_fake_domains(cls, v: str) -> str:
+        return validate_email_domain(str(v))
 
 
 class UserUpdateRequest(BaseModel):
