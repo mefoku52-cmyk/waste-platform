@@ -3,12 +3,12 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useT } from '@/lib/i18n/context';
 
-const GOLD = '#c9a84c';
-const GOLD_BRIGHT = '#e8d48b';
-const BG = '#090807';
-const FG = '#f3ead8';
-const MUTED = '#9a8f7c';
-const FAINT = '#6e6658';
+const GOLD = '#d6a84f';
+const GOLD_BRIGHT = '#f1d58a';
+const BG = '#0b0d0f';
+const FG = '#f5f7f8';
+const MUTED = '#aeb5bb';
+const FAINT = '#737b82';
 // const DANGER = '#c45c4a';
 
 const MATERIALS = [
@@ -47,34 +47,54 @@ export default function LandingPage() {
       <style jsx global>{`
         body { background: ${BG}; color: ${FG}; font-family: 'Outfit', system-ui, sans-serif; }
         .ff { font-family: 'DM Serif Display', 'Times New Roman', serif; }
-        .grad { background-image: linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.6) 40%, rgba(9,8,7,0.15) 75%, transparent 100%); }
+        .grad { background-image: linear-gradient(to top, rgba(11,13,15,0.96) 0%, rgba(11,13,15,0.68) 42%, rgba(11,13,15,0.18) 76%, transparent 100%); }
       `}</style>
 
       <div className="min-h-screen" style={{ background: BG, color: FG }}>
         {/* HEADER */}
-        <header className="sticky top-0 z-40 border-b border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)] backdrop-blur-md" style={{ background: 'rgba(9,8,7,0.85)' }}>
+        <header
+          className="sticky top-0 z-40 border-b backdrop-blur-md"
+          style={{
+            borderColor: 'rgba(255,255,255,0.08)',
+            background: 'rgba(11,13,15,0.92)',
+          }}
+        >
           <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-            <Link href="/" className="flex items-center gap-3">
-              <img src="/trc-mark.jpg" alt="CMEP" className="h-10 w-10 rounded-full object-cover" />
-              <div className="hidden sm:block">
-                <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>CMEP · BURZA OBEHOVÝCH MATERIÁLOV</p>
-                <p className="ff text-lg leading-none">{t('landing.materials')}</p>
+            <Link href="/" className="flex min-w-0 items-center gap-3">
+              <img
+                src="/trc-mark.jpg"
+                alt="CMEP"
+                className="h-10 w-10 shrink-0 rounded-full object-cover"
+              />
+              <div className="min-w-0 hidden sm:block">
+                <p
+                  className="truncate text-[10px] font-medium uppercase tracking-[0.2em]"
+                  style={{ color: GOLD }}
+                >
+                  CMEP · BURZA OBEHOVÝCH MATERIÁLOV
+                </p>
+                <p className="ff truncate text-lg leading-none" style={{ color: FG }}>
+                  {t('landing.materials')}
+                </p>
               </div>
             </Link>
             <nav className="hidden items-center gap-2 md:flex">
-              <Link href="/login" className="rounded-md border px-4 py-2 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)', color: FG }}>
+              <Link href="/login" className="rounded-md border px-4 py-2 text-sm" style={{ borderColor: 'rgba(255,255,255,0.14)', color: FG }}>
                 Prihlásiť sa
               </Link>
               <Link href="/register" className="rounded-md px-4 py-2 text-sm font-medium" style={{ background: GOLD, color: BG }}>
                 Zverejniť
               </Link>
             </nav>
-            <button onClick={() => setMenuOpen((v) => !v)} className="rounded-md border px-3 py-2 text-sm md:hidden" style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)' }}>
+            <button onClick={() => setMenuOpen((v) => !v)} className="rounded-md border px-3 py-2 text-sm md:hidden" style={{ borderColor: 'rgba(255,255,255,0.14)' }}>
               ☰
             </button>
           </div>
           {menuOpen && (
-            <div className="border-t border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)] px-4 py-3 md:hidden">
+            <div
+              className="border-t px-4 py-3 md:hidden"
+              style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+            >
               <Link href="/login" className="block py-2 text-sm">{t('landing.login')}</Link>
               <Link href="/register" className="block py-2 text-sm" style={{ color: GOLD_BRIGHT }}>{t('landing.postListing')}</Link>
               <Link href="/dashboard" className="block py-2 text-sm">{t('landing.dashboard')}</Link>
@@ -84,12 +104,12 @@ export default function LandingPage() {
 
         {/* HERO */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 30% 20%, color-mix(in srgb, #c9a84c 8%, transparent), transparent 60%)` }} />
+          <div className="absolute inset-0" style={{
+              background:
+                'radial-gradient(circle at 30% 20%, rgba(214,168,79,0.07), transparent 58%)',
+            }} />
           <div className="relative mx-auto max-w-6xl px-4 py-12 md:py-20">
-            <div
-              className="rounded-3xl border p-6 md:p-10"
-              style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)' }}
-            >
+            <div className="px-1 py-4 md:px-2 md:py-8">
               <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
                 {t('landing.heroKicker')}
               </p>
@@ -110,7 +130,7 @@ export default function LandingPage() {
                 <Link href="/register" className="rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
                   {t('landing.heroCtaAdd')}
                 </Link>
-                <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 45%, transparent)', color: FG }}>
+                <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'rgba(214,168,79,0.55)', color: FG }}>
                   {t('landing.heroCtaMarket')}
                 </Link>
               </div>
@@ -139,14 +159,14 @@ export default function LandingPage() {
         </section>
 
         {/* PRÁVE TERAZ */}
-        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.nowKicker')}</p>
             <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.nowTitle')}</h2>
-            <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_25%,transparent)]">
+            <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-white/10">
               <span
                 className="absolute right-4 top-4 z-10 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
-                style={{ borderColor: GOLD, color: GOLD_BRIGHT, background: 'rgba(9,8,7,0.85)' }}
+                style={{ borderColor: GOLD, color: GOLD_BRIGHT, background: 'rgba(11,13,15,0.92)' }}
               >
                 {t('landing.nowBadge')}
               </span>
@@ -165,7 +185,7 @@ export default function LandingPage() {
         </section>
 
         {/* PREČO CMEP */}
-        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.whyKicker')}</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
@@ -184,19 +204,19 @@ export default function LandingPage() {
 
             {/* TRI PILIERE */}
             <div className="mt-10 grid gap-4 md:grid-cols-3">
-              <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+              <div className="rounded-2xl border p-6" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
                 <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forCompanies')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
                   {t('landing.forCompaniesDesc')}
                 </p>
               </div>
-              <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+              <div className="rounded-2xl border p-6" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
                 <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forPeople')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
                   {t('landing.forPeopleDesc')}
                 </p>
               </div>
-              <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+              <div className="rounded-2xl border p-6" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
                 <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forPlanet')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
                   {t('landing.forPlanetDesc')}
@@ -211,13 +231,13 @@ export default function LandingPage() {
         </section>
 
         {/* ČO SA TU HÝBE */}
-        <section id="trh" className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section id="trh" className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.flowsKicker')}</p>
             <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.flowsTitle')}</h2>
             <div className="flex flex-col gap-5">
               {MATERIALS.map((m) => (
-                <Link key={m.key} href={`/dashboard?cat=${m.key}`} className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)]">
+                <Link key={m.key} href={`/dashboard?cat=${m.key}`} className="group relative block overflow-hidden rounded-2xl border border-white/10">
                   <div className="relative aspect-[21/9] w-full">
                     <img src={m.img} alt={m.label} className="h-full w-full object-cover opacity-60 transition group-hover:opacity-80 group-hover:scale-[1.02]" />
                     <div className="grad absolute inset-0" />
@@ -233,7 +253,7 @@ export default function LandingPage() {
         </section>
 
         {/* STRATA */}
-        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>STRATA, KTORÚ UŽ POČÍTATE</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
@@ -253,14 +273,14 @@ export default function LandingPage() {
         </section>
 
         {/* AKO TO FUNGUJE */}
-        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>AKO TO FUNGUJE</p>
-            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Tri kroky. Od prebytku k obchodu za pár minút.</h2>
+            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.stepsTitle')}</h2>
             <div className="grid gap-4 md:grid-cols-3">
               {STEPS.map((s) => (
-                <div key={s.n} className="rounded-2xl border p-6 md:p-8" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
-                  <p className="ff text-5xl" style={{ color: 'color-mix(in srgb, #c9a84c 60%, transparent)' }}>{s.n}</p>
+                <div key={s.n} className="rounded-2xl border p-6 md:p-8" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
+                  <p className="ff text-5xl" style={{ color: 'rgba(214,168,79,0.42)' }}>{s.n}</p>
                   <p className="mt-4 text-2xl" style={{ color: GOLD }}>{s.icon}</p>
                   <p className="ff mt-3 text-2xl">{s.title}</p>
                   <p className="mt-2 text-sm leading-relaxed" style={{ color: MUTED }}>{s.text}</p>
@@ -271,7 +291,7 @@ export default function LandingPage() {
         </section>
 
         {/* ZHODA / KONTAKT PRÍDE AKO SPRÁVA */}
-        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section className="border-t border-white/10">
           <div className="mx-auto max-w-3xl px-4 py-16 md:py-20 text-center">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>SÚKROMIE</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
@@ -285,24 +305,24 @@ export default function LandingPage() {
         </section>
 
         {/* TICHÝ VSTUP */}
-        <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <section className="border-t border-white/10">
           <div className="mx-auto max-w-3xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>TICHÝ VSTUP</p>
-            <h2 className="ff text-4xl leading-tight md:text-5xl">Nemusíte sa registrovať, aby ste sa opýtali.</h2>
+            <h2 className="ff text-4xl leading-tight md:text-5xl">{t('landing.contactTitle')}</h2>
             <p className="mt-6 text-base" style={{ color: MUTED }}>
               Jedna správa stačí. Ozveme sa ako firma firme — nie ako newsletter.
             </p>
             {sent ? (
-              <div className="mt-8 rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)', background: 'rgba(201,168,76,0.05)' }}>
+              <div className="mt-8 rounded-2xl border p-6" style={{ borderColor: 'rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.035)' }}>
                 <p className="ff text-xl" style={{ color: GOLD_BRIGHT }}>Ďakujeme. Ozveme sa.</p>
                 <p className="mt-2 text-sm" style={{ color: MUTED }}>Vaša správa je u nás. Odpovieme do 24 hodín.</p>
               </div>
             ) : (
               <form onSubmit={onContact} className="mt-8 grid gap-3">
-                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t('landing.phName')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
-                <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t('landing.phEmail')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
-                <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder={t('landing.phCompany')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
-                <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={t('landing.phMessage')} rows={5} className="rounded-md border bg-transparent px-4 py-3 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
+                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t('landing.phName')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
+                <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t('landing.phEmail')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
+                <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder={t('landing.phCompany')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
+                <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={t('landing.phMessage')} rows={5} className="rounded-md border bg-transparent px-4 py-3 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
                 <button type="submit" className="justify-self-start rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
                   Odoslať
                 </button>
@@ -312,7 +332,7 @@ export default function LandingPage() {
         </section>
 
         {/* FOOTER */}
-        <footer className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
+        <footer className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-12">
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
@@ -338,7 +358,7 @@ export default function LandingPage() {
                 <span className="block py-1 text-sm" style={{ color: FG }}>{t('landing.privateExchange')}</span>
               </div>
             </div>
-            <div className="mt-10 flex items-center justify-between border-t pt-6 text-xs" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)', color: FAINT }}>
+            <div className="mt-10 flex items-center justify-between border-t pt-6 text-xs" style={{ borderColor: 'rgba(255,255,255,0.08)', color: FAINT }}>
               <span>© CMEP · Circular Materials Exchange Platform · Slovensko</span>
               <span>{t('footer.langLabel')}: SK</span>
             </div>
