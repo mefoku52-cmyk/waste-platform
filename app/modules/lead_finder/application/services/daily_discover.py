@@ -5,7 +5,6 @@ Never sends. Skips ICO already stored. RPO has no email.
 
 from __future__ import annotations
 
-import asyncio
 import logging
 from datetime import UTC
 from typing import Any
@@ -15,7 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.companies.application.rpo import search_rpo
 from app.modules.lead_finder.application.services.email_drafter import EmailDrafter
-from app.modules.lead_finder.application.services.email_finder import LegalEmailFinder
+from app.modules.lead_finder.application.services.email_finder import AsyncLegalEmailFinder
 from app.modules.lead_finder.application.services.website_finder import WebsiteFinder
 from app.modules.lead_finder.infrastructure.persistence.models import (
     OutreachCandidateModel,
@@ -26,7 +25,7 @@ from app.modules.lead_finder.infrastructure.persistence.repositories import (
 
 logger = logging.getLogger(__name__)
 
-MAX_DAILY = 30
+MAX_DAILY = 35
 SKIP_MARKERS = ("konkurz", "likvidac", "vzniku")
 QUERIES: tuple[dict[str, str], ...] = (
     {"full_name": "recykl"},
@@ -93,7 +92,7 @@ async def run_daily_discover(
 
     drafter = EmailDrafter()
     website_finder = WebsiteFinder()
-    email_finder = LegalEmailFinder()
+    email_finder = AsyncLegalEmailFinder()
     created = 0
     drafted = 0
     failed = 0
@@ -124,9 +123,7 @@ async def run_daily_discover(
                     city=candidate.city,
                 )
                 if website:
-                    found_email = await asyncio.to_thread(
-                        email_finder.find_email_for_company, website
-                    )
+                    found_email = await email_finder.find_email_for_company(website)
                     if found_email:
                         await repo.update_email(
                             candidate_id=candidate.id,
@@ -174,7 +171,7 @@ async def run_daily_discover(
                     failed += 1
             items.append(item)
     finally:
-        email_finder.close()
+        await email_finder.close()
 
     return {
         "ok": True,

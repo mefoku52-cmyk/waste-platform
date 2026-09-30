@@ -166,3 +166,92 @@ class LegalEmailFinder:
 
     def close(self) -> None:
         self._client.close()
+
+
+class AsyncLegalEmailFinder:
+    """Async verzia — neblokuje event loop. Pouziva httpx.AsyncClient.
+
+    Odporucana pre FastAPI async endpoints. Vytvor raz, zavri raz.
+    """
+
+    def __init__(self, *, timeout: float = 10.0) -> None:
+        self._timeout = timeout
+        self._client: httpx.AsyncClient | None = None
+
+    async def _get_client(self) -> httpx.AsyncClient:
+        if self._client is None:
+            self._client = httpx.AsyncClient(
+                timeout=self._timeout,
+                follow_redirects=True,
+                headers={
+                    "User-Agent": "CMEP-Bot/1.0 (+https://trc-cmep.sk/bot)",
+                    "Accept": "text/html,application/xhtml+xml",
+                },
+            )
+        return self._client
+
+    async def find_email_for_company(self, website_url: str | None) -> str | None:
+        if not website_url:
+            return None
+
+        url = website_url.strip()
+        if not url.startswith(("http://", "https://")):
+            url = "https://" + url
+
+        try:
+            parsed = urlparse(url)
+            if not parsed.netloc:
+                return None
+        except Exception:
+            return None
+
+        try:
+            emails = await self._extract_from_url(url)
+            if not emails:
+                contact = await self._find_contact_link(url)
+                if contact:
+                    emails = await self._extract_from_url(contact)
+
+            if not emails:
+                return None
+
+            return self._pick_best(emails)
+
+        except Exception as exc:
+            logger.debug("Email discovery failed for %s: %s", url, exc)
+            return None
+
+    async def _extract_from_url(self, url: str) -> list[str]:
+        try:
+            client = await self._get_client()
+            resp = await client.get(url)
+        except Exception:
+            return []
+        if resp.status_code >= 400:
+            return []
+        return self._extract_from_html(resp.text)
+
+    async def _find_contact_link(self, base_url: str) -> str | None:
+        try:
+            client = await self._get_client()
+            resp = await client.get(base_url)
+        except Exception:
+            return None
+        if resp.status_code >= 400:
+            return None
+
+        soup = BeautifulSoup(resp.text, "html.parser")
+        keywords = ("kontakt", "contact", "o-nas", "o nás", "about")
+        for a in soup.find_all("a", href=True):
+            href = str(a["href"]).lower()
+            if any(k in href for k in keywords):
+                return urljoin(base_url, a["href"])
+        return None
+
+    _extract_from_html = staticmethod(LegalEmailFinder._extract_from_html)
+    _pick_best = staticmethod(LegalEmailFinder._pick_best)
+
+    async def close(self) -> None:
+        if self._client is not None:
+            await self._client.aclose()
+            self._client = None

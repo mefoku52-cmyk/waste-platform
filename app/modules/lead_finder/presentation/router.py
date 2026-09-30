@@ -291,6 +291,45 @@ class SendCandidateResponse(BaseModel):
     status: str = "sent"
 
 
+class BackfillEmailsItem(BaseModel):
+    company_name: str
+    ico: str | None = None
+    website: str | None = None
+    email: str | None = None
+    reason: str
+
+
+class BackfillEmailsResponse(BaseModel):
+    ok: bool
+    processed: int
+    found: int
+    no_website: int
+    no_email_on_website: int
+    failed: int
+    items: list[BackfillEmailsItem] = []
+
+
+@router.post("/backfill-emails", response_model=BackfillEmailsResponse)
+async def backfill_emails_endpoint(
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+    limit: int = 35,
+) -> BackfillEmailsResponse:
+    """Najde emaily pre existujucich kandidatov, ktori ich nemaju.
+
+    Google CSE -> firemny web -> scrape email -> uloz.
+    Limit max 100, default 35.
+    """
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.application.services.backfill_emails import (
+        backfill_emails,
+    )
+
+    result = await backfill_emails(session, limit=limit)
+    return BackfillEmailsResponse(**result)
+
+
 @router.get("/pending", response_model=PendingCandidatesResponse)
 async def list_pending_candidates(
     current_user=Depends(require_current_user),

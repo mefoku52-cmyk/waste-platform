@@ -61,6 +61,47 @@ async def _cleanup_pending_users_wrapper() -> None:
         logger.exception("Cleanup pending users zlyhal")
 
 
+async def _daily_lead_outreach_wrapper() -> None:
+    """Daily outreach — najdi 35 novych firiem + draftni emaily.
+
+    Spusti sa denne o 9:00 Europe/Bratislava. 30 z RPO + 5 z backfillu.
+    """
+    from app.modules.lead_finder.application.services.backfill_emails import (
+        backfill_emails,
+    )
+    from app.modules.lead_finder.application.services.daily_discover import (
+        run_daily_discover,
+    )
+    from app.shared.infrastructure.db.session import async_session_factory
+
+    try:
+        async with async_session_factory() as session:
+            # 1. Najdi 30 novych firiem z RPO + draftni
+            result = await run_daily_discover(session, limit=30, draft=True)
+            logger.info(
+                "Daily lead discover: %s",
+                {
+                    "picked": (result or {}).get("picked"),
+                    "created": (result or {}).get("created"),
+                    "drafted": (result or {}).get("drafted"),
+                    "emails_found": (result or {}).get("emails_found"),
+                },
+            )
+
+        # 2. Backfill emaily pre starych bez emailu (5 firiem)
+        async with async_session_factory() as session:
+            bf = await backfill_emails(session, limit=5)
+            logger.info(
+                "Daily backfill emails: %s",
+                {
+                    "processed": bf.get("processed"),
+                    "found": bf.get("found"),
+                },
+            )
+    except Exception:
+        logger.exception("Daily lead outreach zlyhal")
+
+
 async def _daily_matching_wrapper() -> None:
     """Run the daily matching job in its own DB session."""
     from app.modules.recommendations.application.matching_job import run_daily_matching
@@ -122,6 +163,14 @@ def start_scheduler() -> AsyncIOScheduler | None:
             replace_existing=True,
             misfire_grace_time=3600,
         )
+
+    scheduler.add_job(
+        _daily_lead_outreach_wrapper,
+        CronTrigger(hour=9, minute=0),
+        id="daily_lead_outreach",
+        replace_existing=True,
+        misfire_grace_time=3600,
+    )
 
     scheduler.add_job(
         run_lead_discover_job,
