@@ -94,16 +94,22 @@ export default function CompaniesPage() {
 
         <ul className="mt-6 space-y-3">
           {items.map((row) => (
-            <li key={row.id} className="cmep-card rounded-2xl p-4">
-              <p className="font-serif text-xl" style={{ color: GOLD_BRIGHT }}>
-                {row.tradingName || row.legalName || row.id}
-              </p>
-              <p className="mt-1 text-sm" style={{ color: MUTED }}>
-                {[row.city, row.status].filter(Boolean).join(' · ') || '—'}
-              </p>
-              <p className="mt-3 text-xs" style={{ color: MUTED }}>
-                {t('companies.materials')}: {row.acceptedMaterialTypes || t('companies.empty')}
-              </p>
+            <li key={row.id}>
+              <Link
+                href={`/dashboard/companies/${row.id}`}
+                className="cmep-card block rounded-2xl p-4 transition-colors hover:bg-[#14110a]"
+                style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
+              >
+                <p className="font-serif text-xl" style={{ color: GOLD_BRIGHT }}>
+                  {row.tradingName || row.legalName || row.id}
+                </p>
+                <p className="mt-1 text-sm" style={{ color: MUTED }}>
+                  {[row.city, row.status].filter(Boolean).join(' · ') || '—'}
+                </p>
+                <p className="mt-3 text-xs" style={{ color: MUTED }}>
+                  {t('companies.materials')}: {row.acceptedMaterialTypes || t('companies.empty')}
+                </p>
+              </Link>
             </li>
           ))}
         </ul>
