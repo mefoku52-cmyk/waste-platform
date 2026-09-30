@@ -513,7 +513,9 @@
     "whyFooter": "CMEP — because cleanliness isn't a luxury. It's a responsibility.",
     "flowsKicker": "WHAT'S MOVING HERE",
     "flowsTitle": "Five streams. One market. Endless possibilities.",
-    "footerTagline": "Private exchange. Verified companies. Contacts that belong to you."
+    "footerTagline": "Private exchange. Verified companies. Contacts that belong to you.",
+    "stepsTitle": "Three steps. From surplus to trade in minutes.",
+    "contactTitle": "You don't need to register to ask a question."
   },
   "auth": {
     "backToLogin": "Sign in",

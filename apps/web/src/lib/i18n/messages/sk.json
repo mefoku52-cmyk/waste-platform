@@ -513,7 +513,9 @@
     "whyFooter": "CMEP — pretože čistota nie je luxus. Je to zodpovednosť.",
     "flowsKicker": "ČO SA TU HÝBE",
     "flowsTitle": "Päť prúdov. Jeden trh. Nekonečné možnosti.",
-    "footerTagline": "Súkromná burza. Overené firmy. Kontakty, ktoré patria vám."
+    "footerTagline": "Súkromná burza. Overené firmy. Kontakty, ktoré patria vám.",
+    "stepsTitle": "Tri kroky. Od prebytku k obchodu za pár minút.",
+    "contactTitle": "Nemusíte sa registrovať, aby ste sa opýtali."
   },
   "auth": {
     "backToLogin": "Prihlásenie",
