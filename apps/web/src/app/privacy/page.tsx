@@ -10,6 +10,8 @@ const MUTED = '#9a8f7c';
 
 export default function PrivacyPage() {
   const { t } = useT();
+  const today = new Date().toLocaleDateString();
+
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -28,15 +30,15 @@ export default function PrivacyPage() {
         </header>
 
         <main className="mx-auto max-w-4xl px-4 py-16">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVNE</p>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('legal.kicker')}</p>
           <h1 className="mb-10 text-4xl md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
-            Ochrana osobných údajov
+            {t('legal.privacyTitle')}
           </h1>
 
           <div className="space-y-8 text-base leading-relaxed" style={{ color: MUTED }}>
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>1. Správca údajov</h2>
-              <p>Správcom osobných údajov je:</p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.privacyS1')}</h2>
+              <p>{t('legal.privacyS1Intro')}</p>
               <ul className="mt-3 space-y-1">
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
                 <li>IČO: 51745666</li>
@@ -45,58 +47,51 @@ export default function PrivacyPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>2. Aké údaje zbierame</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.privacyS2')}</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li>E-mail, meno, rola v platforme</li>
-                <li>Údaje o firme: IČO, DIČ, adresa, kontaktné údaje</li>
-                <li>Obsah inzerátov, ktoré vložíte</li>
-                <li>Technické údaje: IP adresa, typ zariadenia, čas prihlásenia</li>
+                <li>{t('legal.privacyS2L1')}</li>
+                <li>{t('legal.privacyS2L2')}</li>
+                <li>{t('legal.privacyS2L3')}</li>
+                <li>{t('legal.privacyS2L4')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>3. Na aký účel</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.privacyS3')}</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li>Poskytovanie služieb platformy (registrácia, prihlásenie, inzeráty)</li>
-                <li>Overenie firiem a IČO</li>
+                <li>{t('legal.privacyS3L1')}</li>
+                <li>{t('legal.privacyS3L2')}</li>
                 <li>{t('legal.notifications')}</li>
                 <li>{t('legal.security')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>4. Ako dlho uchovávame</h2>
-              <p>
-                Údaje uchovávame po dobu existencie účtu, maximálne však 3 roky od poslednej aktivity.
-                Po vymazaní účtu sa osobné údaje anonymizujú alebo vymažú, okrem údajov, ktoré musíme
-                uchovať zo zákona (napr. účtovné doklady).
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.privacyS4')}</h2>
+              <p>{t('legal.privacyS4P1')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Vaše práva</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.privacyS5')}</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>{t('legal.rightAccess')}</li>
                 <li>{t('legal.rightCorrect')}</li>
-                <li>Právo na vymazanie („právo byť zabudnutý")</li>
+                <li>{t('legal.privacyS5L1')}</li>
                 <li>{t('legal.rightObject')}</li>
-                <li>Právo podať sťažnosť na Úrad na ochranu osobných údajov SR</li>
+                <li>{t('legal.privacyS5L2')}</li>
               </ul>
               <p className="mt-3">
-                Žiadosti posielajte na <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a>. Odpovieme do 30 dní.
+                {t('legal.privacyS5P1a')} <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a>{t('legal.privacyS5P1b')}
               </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Cookies</h2>
-              <p>
-                Platforma používa nevyhnutné cookies na prihlásenie a zabezpečenie relácie.
-                Nepoužívame reklamné ani tracking cookies tretích strán.
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.privacyS6')}</h2>
+              <p>{t('legal.privacyS6P1')}</p>
             </section>
 
             <p className="pt-8 text-sm" style={{ color: '#6e6658' }}>
-              Posledná aktualizácia: {new Date().toLocaleDateString('sk-SK')}
+              {t('legal.privacyUpdated')} {today}
             </p>
           </div>
         </main>

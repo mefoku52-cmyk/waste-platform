@@ -10,6 +10,8 @@ const MUTED = '#9a8f7c';
 
 export default function TermsPage() {
   const { t } = useT();
+  const today = new Date().toLocaleDateString();
+
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -28,15 +30,15 @@ export default function TermsPage() {
         </header>
 
         <main className="mx-auto max-w-4xl px-4 py-16">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVNE</p>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('legal.kicker')}</p>
           <h1 className="mb-10 text-4xl md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
-            Obchodné podmienky
+            {t('legal.termsTitle')}
           </h1>
 
           <div className="space-y-8 text-base leading-relaxed" style={{ color: MUTED }}>
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>1. Prevádzkovateľ</h2>
-              <p>Platformu CMEP (Circular Materials Exchange Platform) prevádzkuje:</p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS1')}</h2>
+              <p>{t('legal.termsS1Intro')}</p>
               <ul className="mt-3 space-y-1">
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
                 <li>IČO: 51745666</li>
@@ -45,77 +47,59 @@ export default function TermsPage() {
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>2. Predmet platformy</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS2')}</h2>
               <p>
-                CMEP je B2B platforma určená na sprostredkovanie kontaktu medzi firmami, ktoré ponúkajú
-                a dopytujú obehové materiály (druhotné suroviny, prebytky z výroby, vedľajšie produkty).
-                Platforma <strong style={{ color: FG }}>nie je obchodníkom</strong> ani stranou v obchodnom vzťahu.
+                {t('legal.termsS2P1a')} <strong style={{ color: FG }}>{t('legal.termsS2P1b')}</strong> {t('legal.termsS2P1c')}
               </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>3. Registrácia a účet</h2>
-              <p>Používateľ je povinný pri registrácii uvádzať pravdivé údaje. Za správnosť údajov zodpovedá výhradne používateľ.</p>
-            </section>
-
-            <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>4. Zodpovednosť za obsah</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS3')}</h2>
               <p>
-                Platforma <strong style={{ color: FG }}>nenesie zodpovednosť</strong> za pravdivosť, úplnosť ani zákonnosť inzerátov vložených používateľmi.
-                Používateľ nesmie zverejňovať osobné údaje tretích osôb bez ich súhlasu.
+                {t('legal.termsS3P1a')} <strong style={{ color: FG }}>{t('legal.termsS3P1b')}</strong> {t('legal.termsS3P1c')} <strong style={{ color: FG }}>{t('legal.termsS3P1d')}</strong>{t('legal.termsS3P1e')}
               </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Platené služby a topovanie</h2>
-              <p>
-                Platforma ponúka dobrovoľné platené zvýraznenie ponúk (tzv. „topovanie"). Ceny sú uvedené v EUR s DPH:
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS4')}</h2>
+              <p>{t('legal.termsS4P1')}</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li><strong style={{ color: FG }}>TOP 7 dní</strong> — 5,00 €</li>
-                <li><strong style={{ color: FG }}>TOP 30 dní</strong> — 10,00 €</li>
-                <li><strong style={{ color: FG }}>GOLD 30 dní</strong> — 30,00 € (zlatý rámik + navrchu 30 dní)</li>
+                <li>{t('legal.termsS4L1')}</li>
+                <li>{t('legal.termsS4L2')}</li>
+                <li>{t('legal.termsS4L3')}</li>
               </ul>
-              <p className="mt-3">
-                Po zaplatení je služba aktivovaná okamžite a je neodvolateľná.
-                <strong style={{ color: FG }}> Zrušenie po aktivácii nie je možné</strong> a nárok na vrátenie peňazí zaniká.
-              </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Spôsob platby</h2>
-              <p>
-                Platby spracúva spoločnosť <strong style={{ color: FG }}>GoPay</strong> (GoPay s.r.o., IČO: 260 46 745), ktorá je licencovanou platobnou inštitúciou.
-                Pri platbe môžeš použiť platobnú kartu (Visa, Mastercard), Apple Pay, Google Pay alebo bankový prevod.
-              </p>
-              <p className="mt-3">
-                Platforma nemá prístup k údajom o tvojej platobnej karte. Všetky platobné údaje spracúva výhradne GoPay.
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS5')}</h2>
+              <p>{t('legal.termsS5P1')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>7. Fakturácia a daňový doklad</h2>
-              <p>
-                Po úspešnej platbe bude daňový doklad (faktúra) vygenerovaný automaticky a zaslaný na e-mail uvedený v používateľskom účte.
-                Faktúra obsahuje identifikačné údaje firmy (IČO, DIČ, adresa) a je v súlade so zákonom č. 222/2004 Z. z. o DPH.
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS6')}</h2>
+              <p>{t('legal.termsS6P1')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>8. Riešenie sporov</h2>
-              <p>
-                Spory medzi používateľmi sa riešia priamo medzi nimi. Platforma môže na žiadosť poskytnúť
-                súčinnosť, ale nie je arbitrom.
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS7')}</h2>
+              <p>{t('legal.termsS7P1')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>9. Zmeny podmienok</h2>
-              <p>Prevádzkovateľ si vyhradzuje právo meniť tieto podmienky. O zmenách budú používatelia informovaní e-mailom alebo notifikáciou v platforme.</p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS8')}</h2>
+              <p>{t('legal.termsS8P1a')} <strong style={{ color: FG }}>{t('legal.termsS8P1b')}</strong>{t('legal.termsS8P1c')}</p>
+            </section>
+
+            <section>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.termsS9')}</h2>
+              <p>{t('legal.termsS9P1')}</p>
+              <ul className="mt-3 space-y-1">
+                <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
+              </ul>
             </section>
 
             <p className="pt-8 text-sm" style={{ color: '#6e6658' }}>
-              Posledná aktualizácia: {new Date().toLocaleDateString('sk-SK')}
+              {t('legal.termsUpdated')} {today}
             </p>
           </div>
         </main>

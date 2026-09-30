@@ -12,7 +12,7 @@ const FAINT = '#6e6658';
 export default function LicensePage() {
   const { t } = useT();
   const year = new Date().getFullYear();
-  const today = new Date().toLocaleDateString('sk-SK');
+  const today = new Date().toLocaleDateString();
 
   return (
     <>
@@ -32,97 +32,81 @@ export default function LicensePage() {
         </header>
 
         <main className="mx-auto max-w-4xl px-4 py-16">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVNE</p>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('legal.kicker')}</p>
           <h1 className="mb-4 text-4xl md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
-            Licencia a autorské práva
+            {t('legal.licenseTitle')}
           </h1>
           <p className="mb-10 text-sm" style={{ color: FAINT }}>
-            Verzia 1.0 · Účinná od {today} · © {year} Radoslav Čornanič
+            {t('legal.licenseMeta')} {today} · © {year} Radoslav Čornanič
           </p>
 
           <div className="space-y-10 text-base leading-relaxed" style={{ color: MUTED }}>
-
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>1. Vlastníctvo platformy</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS1')}</h2>
               <p>
-                Platforma <strong style={{ color: FG }}>CMEP</strong> (Circular Materials Exchange Platform),
-                vrátane zdrojového kódu, dizajnu, textov, databázovej štruktúry, API, loga TRČ, vizuálnej identity
-                a všetkých súvisiacich autorských diel, je <strong style={{ color: GOLD_BRIGHT }}>výhradným duševným vlastníctvom</strong> prevádzkovateľa:
+                {t('legal.licenseS1P1a')} <strong style={{ color: FG }}>CMEP</strong> {t('legal.licenseS1P1b')} <strong style={{ color: GOLD_BRIGHT }}>{t('legal.licenseS1P1c')}</strong> {t('legal.licenseS1P1d')}
               </p>
               <ul className="mt-4 space-y-1">
                 <li><strong style={{ color: FG }}>Radoslav Čornanič</strong></li>
                 <li>IČO: 51745666</li>
                 <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
               </ul>
-              <p className="mt-4">
-                Všetky práva, ktoré nie sú výslovne udelené touto licenciou, zostávajú vyhradené prevádzkovateľovi.
-              </p>
+              <p className="mt-4">{t('legal.licenseS1P2')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>2. Predmet licencie</h2>
-              <p>Táto licencia sa vzťahuje na:</p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS2')}</h2>
+              <p>{t('legal.licenseS2Intro')}</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li>Zdrojový kód platformy (frontend aj backend)</li>
-                <li>Dizajn, UI/UX, farebnú schému, typografiu</li>
-                <li>Logo TRČ a vizuálnu identitu</li>
-                <li>Texty, popisy, marketingové materiály</li>
+                <li>{t('legal.licenseS2L1')}</li>
+                <li>{t('legal.licenseS2L2')}</li>
+                <li>{t('legal.licenseS2L3')}</li>
+                <li>{t('legal.licenseS2L4')}</li>
                 <li>{t('legal.noDbSchema')}</li>
-                <li>API a dokumentáciu</li>
+                <li>{t('legal.licenseS2L5')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>3. Udelená licencia používateľom</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS3')}</h2>
               <p>
-                Používateľom platformy sa udeľuje <strong style={{ color: FG }}>nevýhradná, neprenosná,
-                odvolateľná a časovo obmedzená licencia</strong> na používanie platformy výhradne na účel
-                sprostredkovania obehových materiálov (predaj, dopyt, komunikácia medzi firmami).
+                {t('legal.licenseS3P1a')} <strong style={{ color: FG }}>{t('legal.licenseS3P1b')}</strong> {t('legal.licenseS3P1c')}
               </p>
-              <p className="mt-3">Táto licencia <strong style={{ color: FG }}>neoprávňuje</strong> používateľa:</p>
+              <p className="mt-3">{t('legal.licenseS3P2a')} <strong style={{ color: FG }}>{t('legal.licenseS3P2b')}</strong> {t('legal.licenseS3P2c')}</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li>Kopírovať, distribuovať alebo predávať zdrojový kód platformy</li>
+                <li>{t('legal.licenseS3L1')}</li>
                 <li>{t('legal.noReverse')}</li>
-                <li>Automatizovane sťahovať obsah (scraping, crawling) bez písomného súhlasu</li>
-                <li>Používať logo TRČ alebo ochrannú známku CMEP na komerčné účely</li>
+                <li>{t('legal.licenseS3L2')}</li>
+                <li>{t('legal.licenseS3L3')}</li>
                 <li>{t('legal.noDerived')}</li>
                 <li>{t('legal.noBypass')}</li>
               </ul>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>4. Obsah vložený používateľmi</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS4')}</h2>
               <p>
-                Používateľ si <strong style={{ color: FG }}>zachováva autorské práva</strong> k obsahu, ktorý sám vloží
-                (texty inzerátov, fotografie materiálov, popisy). Vložením obsahu do platformy udeľuje
-                prevádzkovateľovi <strong style={{ color: FG }}>bezplatnú, nevýhradnú licenciu</strong> na:
+                {t('legal.licenseS4P1a')} <strong style={{ color: FG }}>{t('legal.licenseS4P1b')}</strong> {t('legal.licenseS4P1c')} <strong style={{ color: FG }}>{t('legal.licenseS4P1d')}</strong> {t('legal.licenseS4P1e')}
               </p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>{t('legal.viewContent')}</li>
                 <li>{t('legal.storeContent')}</li>
                 <li>{t('legal.notifyContent')}</li>
               </ul>
-              <p className="mt-3">
-                Táto licencia zaniká v momente, keď používateľ obsah vymaže alebo vymaže svoj účet,
-                okrem záloh uchovávaných po dobu max. 30 dní.
-              </p>
+              <p className="mt-3">{t('legal.licenseS4P2')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Ochrana duševného vlastníctva</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS5')}</h2>
               <p>
-                Akékoľvek neoprávnené použitie platformy, jej častí alebo loga môže byť postihnuté
-                podľa <strong style={{ color: FG }}>zákona č. 185/2015 Z. z. (Autorský zákon)</strong> a
-                <strong style={{ color: FG }}> zákona č. 513/1991 Zb. (Obchodný zákonník)</strong>.
+                {t('legal.licenseS5P1a')} <strong style={{ color: FG }}>{t('legal.licenseS5P1b')}</strong> {t('legal.licenseS5P1c')} <strong style={{ color: FG }}>{t('legal.licenseS5P1d')}</strong>.
               </p>
-              <p className="mt-3">
-                Prevádzkovateľ si vyhradzuje právo uplatniť náhradu škody a ušlý zisk v prípade porušenia tejto licencie.
-              </p>
+              <p className="mt-3">{t('legal.licenseS5P2')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>6. Použité open-source technológie</h2>
-              <p>Platforma je postavená na open-source technológiách. Ich používanie sa riadi vlastnými licenciami:</p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS6')}</h2>
+              <p>{t('legal.licenseS6Intro')}</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li><strong style={{ color: FG }}>Next.js</strong> — MIT License</li>
                 <li><strong style={{ color: FG }}>React</strong> — MIT License</li>
@@ -131,64 +115,51 @@ export default function LicensePage() {
                 <li><strong style={{ color: FG }}>Redis / Valkey</strong> — BSD-3-Clause</li>
                 <li><strong style={{ color: FG }}>Tailwind CSS</strong> — MIT License</li>
               </ul>
-              <p className="mt-3">
-                Táto licencia sa <strong style={{ color: FG }}>nevzťahuje</strong> na tieto open-source komponenty.
-              </p>
+              <p className="mt-3">{t('legal.licenseS6P2a')} <strong style={{ color: FG }}>{t('legal.licenseS6P2b')}</strong> {t('legal.licenseS6P2c')}</p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>7. Použitie fotografií a obrázkov</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS7')}</h2>
               <p>
-                Fotografie materiálov zobrazené na landing stránke sú licencované z <strong style={{ color: FG }}>Unsplash</strong>
-                (Unsplash License) alebo sú vlastníctvom prevádzkovateľa. Fotografie vložené používateľmi
-                sú výhradne v zodpovednosti používateľa, ktorý ich vložil.
+                {t('legal.licenseS7P1a')} <strong style={{ color: FG }}>Unsplash</strong> {t('legal.licenseS7P1b')}
               </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>8. Ukončenie licencie</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS8')}</h2>
               <p>
-                Prevádzkovateľ môže túto licenciu <strong style={{ color: FG }}>okamžite ukončiť</strong> v prípade
-                porušenia podmienok (najmä bod 3 a 5). Po ukončení licencie je používateľ povinný
-                okamžite prestať používať platformu a vymazať všetky prípadné kópie.
+                {t('legal.licenseS8P1a')} <strong style={{ color: FG }}>{t('legal.licenseS8P1b')}</strong> {t('legal.licenseS8P1c')}
               </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>9. Rozhodné právo</h2>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS9')}</h2>
               <p>
-                Táto licencia sa riadi právom <strong style={{ color: FG }}>Slovenskej republiky</strong>.
-                Na riešenie sporov je príslušný súd v sídle prevádzkovateľa.
+                {t('legal.licenseS9P1a')} <strong style={{ color: FG }}>{t('legal.licenseS9P1b')}</strong>{t('legal.licenseS9P1c')}
               </p>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>10. Kontakt pre právne otázky</h2>
-              <p>V prípade otázok týkajúcich sa licencie, autorských práv alebo porušenia práv kontaktujte:</p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS10')}</h2>
+              <p>{t('legal.licenseS10Intro')}</p>
               <ul className="mt-3 space-y-1">
                 <li>E-mail: <a href="mailto:trc-cmep@gmail.com" style={{ color: GOLD_BRIGHT }}>trc-cmep@gmail.com</a></li>
               </ul>
             </section>
 
             <section>
-              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>11. Záverečné ustanovenia</h2>
-              <p>
-                Táto licencia je platná od {today} a nahrádza všetky predchádzajúce licenčné podmienky.
-                Prevádzkovateľ si vyhradzuje právo ju jednostranne meniť; o zmenách budú používatelia
-                informovaní e-mailom alebo notifikáciou v platforme.
-              </p>
-              <p className="mt-3">
-                Používaním platformy CMEP používateľ vyjadruje súhlas s touto licenciou v plnom rozsahu.
-              </p>
+              <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>{t('legal.licenseS11')}</h2>
+              <p>{t('legal.licenseS11P1a')} {today} {t('legal.licenseS11P1b')}</p>
+              <p className="mt-3">{t('legal.licenseS11P2')}</p>
             </section>
 
             <p className="pt-8 text-sm" style={{ color: FAINT }}>
-              © {year} Radoslav Čornanič · TRČ · Všetky práva vyhradené.
+              © {year} Radoslav Čornanič · TRČ · {t('legal.licenseCopyright')}
             </p>
 
             <div className="mt-10 flex flex-wrap gap-4 text-sm">
-              <Link href="/terms" style={{ color: GOLD_BRIGHT }}>Obchodné podmienky →</Link>
-              <Link href="/privacy" style={{ color: GOLD_BRIGHT }}>Ochrana osobných údajov →</Link>
+              <Link href="/terms" style={{ color: GOLD_BRIGHT }}>{t('legal.licenseLinkTerms')}</Link>
+              <Link href="/privacy" style={{ color: GOLD_BRIGHT }}>{t('legal.licenseLinkPrivacy')}</Link>
             </div>
           </div>
         </main>
