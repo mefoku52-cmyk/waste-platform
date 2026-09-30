@@ -26,6 +26,19 @@ export function TurnstileWidget({ onVerify, onExpire, onError }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
 
+  // Callbacky drzime v refs, aby sa useEffect NEspustal pri kazdom renderi.
+  // Inak by sa widget zacyklil (render -> verify -> parent setState -> novy
+  // callback -> useEffect cleanup + render -> verify -> ...).
+  const onVerifyRef = useRef(onVerify);
+  const onExpireRef = useRef(onExpire);
+  const onErrorRef = useRef(onError);
+
+  useEffect(() => {
+    onVerifyRef.current = onVerify;
+    onExpireRef.current = onExpire;
+    onErrorRef.current = onError;
+  });
+
   useEffect(() => {
     let mounted = true;
 
@@ -41,16 +54,18 @@ export function TurnstileWidget({ onVerify, onExpire, onError }: Props) {
         sitekey,
         theme: "dark",
         callback: (token: string) => {
-          if (mounted) onVerify(token);
+          if (mounted) onVerifyRef.current(token);
         },
         "expired-callback": () => {
-          if (mounted) onExpire?.();
+          if (mounted) onExpireRef.current?.();
         },
         "error-callback": () => {
-          if (mounted) onError?.();
+          if (mounted) onErrorRef.current?.();
         },
       });
     };
+
+    let intervalId: number | null = null;
 
     if (window.turnstile) {
       renderWidget();
@@ -63,20 +78,17 @@ export function TurnstileWidget({ onVerify, onExpire, onError }: Props) {
       script.onload = renderWidget;
       document.head.appendChild(script);
     } else {
-      const iv = window.setInterval(() => {
+      intervalId = window.setInterval(() => {
         if (window.turnstile) {
-          window.clearInterval(iv);
+          if (intervalId !== null) window.clearInterval(intervalId);
           renderWidget();
         }
       }, 100);
-      return () => {
-        mounted = false;
-        window.clearInterval(iv);
-      };
     }
 
     return () => {
       mounted = false;
+      if (intervalId !== null) window.clearInterval(intervalId);
       if (widgetId.current && window.turnstile) {
         try {
           window.turnstile.remove(widgetId.current);
@@ -86,7 +98,7 @@ export function TurnstileWidget({ onVerify, onExpire, onError }: Props) {
         widgetId.current = null;
       }
     };
-  }, [onVerify, onExpire, onError]);
+  }, []);
 
   return <div ref={ref} className="flex justify-center" />;
 }
