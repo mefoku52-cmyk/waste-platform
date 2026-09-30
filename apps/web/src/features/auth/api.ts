@@ -1,10 +1,13 @@
 import { http } from '../../lib/api/http';
-import { AuthResponse, MeResponse } from './types';
+import { AuthResponse, LoginResponse, MeResponse } from './types';
 import { LoginInput } from './schemas';
 
 export const authApi = {
   login: (data: LoginInput) =>
-    http.post<AuthResponse>('/auth/login', data),
+    http.post<LoginResponse>('/auth/login', data),
+
+  twoFactorLogin: (twoFactorToken: string, code: string) =>
+    http.post<LoginResponse>('/auth/2fa/login', { twoFactorToken, code }),
 
   googleLogin: (credential: string) =>
     http.post<AuthResponse>('/auth/google', { credential }),

@@ -36,3 +36,12 @@ export interface AuthResponse {
   tokenType: string;
   expiresIn: number;
 }
+
+export interface LoginResponse {
+  requires2fa: boolean;
+  twoFactorToken?: string | null;
+  accessToken?: string | null;
+  refreshToken?: string | null;
+  tokenType?: string;
+  expiresIn?: number;
+}
