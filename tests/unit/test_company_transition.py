@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from uuid import uuid4
 
 import pytest
@@ -11,6 +12,26 @@ from app.shared.application.clock import Clock
 from app.shared.application.uuid_generator import UuidGenerator
 from app.shared.domain.exceptions import NotFoundDomainError
 from tests.unit.test_company_services import FakeCompanyRepo, FakeMembershipRepo, _create_kwargs
+
+
+@pytest.fixture(autouse=True)
+def mock_lookup_ico():
+    """RPO lookup volá reálnu api.statistics.sk — v unit teste to musí byť mock.
+
+    Bez tohto mocku test padá, keď RPO API spomalí / spadne / vráti not_found.
+    """
+    with patch(
+        "app.modules.companies.application.services.lookup_ico",
+        return_value={
+            "ok": True,
+            "exists": True,
+            "ico": "12345678",
+            "legalName": "Test Company s.r.o.",
+            "city": "Bratislava",
+            "reason": "found",
+        },
+    ):
+        yield
 
 
 def _other_status(current: CompanyStatus) -> str:

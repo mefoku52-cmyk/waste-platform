@@ -15,7 +15,7 @@ from app.shared.presentation.error_schemas import error_responses
 
 from .schemas import UploadResponse
 
-router = APIRouter(prefix="/uploads", tags=["uploads"])
+router = APIRouter(prefix="/uploads", tags=["uploads"], redirect_slashes=False)
 
 APP_DATA_DIR = os.getenv("APP_DATA_DIR", "/var/data")
 UPLOAD_ROOT = Path(APP_DATA_DIR) / "uploads"
