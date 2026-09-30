@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.shared.infrastructure.db.timezone import to_naive_utc
+
 """Control-state persistence contract."""
 
 from abc import ABC, abstractmethod
@@ -46,7 +48,7 @@ class SqlAlchemyControlRepository(ControlRepository):
             m = ControlStateModel(
                 id=self._SINGLETON_ID,
                 mode=state.mode.value,
-                changed_at=state.changed_at,
+                changed_at=to_naive_utc(state.changed_at),
                 changed_by=state.changed_by,
                 reason=state.reason,
             )

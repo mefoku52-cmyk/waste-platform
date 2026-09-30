@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.shared.infrastructure.db.timezone import to_naive_utc
+
 """Audit persistence contract."""
 
 from abc import ABC, abstractmethod
@@ -61,7 +63,7 @@ class SqlAlchemyAuditStore(AuditStore):
             action=record.action.value,
             subject_type=record.subject.subject_type if record.subject else None,
             subject_id=record.subject.subject_id if record.subject else None,
-            occurred_at=record.occurred_at,
+            occurred_at=to_naive_utc(record.occurred_at),
             success=record.success,
             reason=record.reason,
             details=json.dumps(record.metadata, default=str) if record.metadata else None,

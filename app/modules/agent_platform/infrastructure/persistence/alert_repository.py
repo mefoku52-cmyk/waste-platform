@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.shared.infrastructure.db.timezone import to_naive_utc
+
 """Alert persistence contract."""
 
 from abc import ABC, abstractmethod
@@ -49,7 +51,7 @@ class SqlAlchemyAlertRepository(AlertRepository):
             event=alert.event,
             evidence=json.dumps(alert.evidence, default=str) if alert.evidence else None,
             status=alert.status.value,
-            created_at=alert.created_at,
+            created_at=to_naive_utc(alert.created_at),
             assigned_to=alert.assigned_to,
             resolution=alert.resolution,
         )

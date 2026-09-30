@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.shared.infrastructure.db.timezone import to_naive_utc
+
 """Approval persistence contract."""
 
 from abc import ABC, abstractmethod
@@ -46,8 +48,8 @@ class SqlAlchemyApprovalRepository(ApprovalRepository):
             reason=approval.reason,
             risk_level=approval.risk_level,
             status=approval.status.value,
-            created_at=approval.created_at,
-            expires_at=approval.expires_at,
+            created_at=to_naive_utc(approval.created_at),
+            expires_at=to_naive_utc(approval.expires_at),
         )
         self._session.add(m)
         try:

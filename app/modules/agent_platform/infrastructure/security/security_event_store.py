@@ -1,5 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.shared.infrastructure.db.timezone import to_naive_utc
+
 """Security event storage contract."""
 
 from abc import ABC, abstractmethod
@@ -53,7 +55,7 @@ class SqlAlchemySecurityEventStore(SecurityEventStore):
             else None,
             confidence=None,
             source_observation_id=None,
-            occurred_at=observation.observed_at,
+            occurred_at=to_naive_utc(observation.observed_at),
         )
         self._session.add(m)
         try:
@@ -75,7 +77,7 @@ class SqlAlchemySecurityEventStore(SecurityEventStore):
             evidence=None,
             confidence=float(signal.confidence),
             source_observation_id=signal.source_observation_id,
-            occurred_at=signal.created_at,
+            occurred_at=to_naive_utc(signal.created_at),
         )
         self._session.add(m)
         try:
