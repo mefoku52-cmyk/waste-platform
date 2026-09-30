@@ -397,5 +397,24 @@
     "openPhoto": "Foto öffnen",
     "companySection": "Unternehmen",
     "acceptedMaterials": "Akzeptierte Materialien"
+  },
+  "landing": {
+    "materials": "Kreislaufmaterialien",
+    "login": "Anmelden",
+    "postListing": "Angebot veröffentlichen",
+    "dashboard": "Dashboard",
+    "sawdust": "Sägespäne",
+    "forCompanies": "Für Unternehmen",
+    "forPeople": "Für Menschen",
+    "forPlanet": "Für den Planeten",
+    "marketplace": "Marktplatz",
+    "companies": "Unternehmen",
+    "about": "Über uns",
+    "hiddenContacts": "Verborgene Kontakte",
+    "privateExchange": "Private Börse",
+    "phName": "Name",
+    "phEmail": "E-Mail",
+    "phCompany": "Unternehmen",
+    "phMessage": "Nachricht"
   }
 }

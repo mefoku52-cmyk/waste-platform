@@ -397,5 +397,24 @@
     "openPhoto": "Ouvrir la photo",
     "companySection": "Entreprise",
     "acceptedMaterials": "Matériaux acceptés"
+  },
+  "landing": {
+    "materials": "Matériaux circulaires",
+    "login": "Se connecter",
+    "postListing": "Publier une annonce",
+    "dashboard": "Tableau de bord",
+    "sawdust": "Sciure",
+    "forCompanies": "Pour les entreprises",
+    "forPeople": "Pour les personnes",
+    "forPlanet": "Pour la planète",
+    "marketplace": "Marché",
+    "companies": "Entreprises",
+    "about": "À propos",
+    "hiddenContacts": "Contacts cachés",
+    "privateExchange": "Bourse privée",
+    "phName": "Nom",
+    "phEmail": "E-mail",
+    "phCompany": "Entreprise",
+    "phMessage": "Message"
   }
 }

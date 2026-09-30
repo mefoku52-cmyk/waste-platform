@@ -397,5 +397,24 @@
     "openPhoto": "Open photo",
     "companySection": "Company",
     "acceptedMaterials": "Accepted materials"
+  },
+  "landing": {
+    "materials": "Circular materials",
+    "login": "Sign in",
+    "postListing": "Post a listing",
+    "dashboard": "Dashboard",
+    "sawdust": "Sawdust",
+    "forCompanies": "For companies",
+    "forPeople": "For people",
+    "forPlanet": "For the planet",
+    "marketplace": "Marketplace",
+    "companies": "Companies",
+    "about": "About",
+    "hiddenContacts": "Hidden contacts",
+    "privateExchange": "Private exchange",
+    "phName": "Name",
+    "phEmail": "Email",
+    "phCompany": "Company",
+    "phMessage": "Message"
   }
 }

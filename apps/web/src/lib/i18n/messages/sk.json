@@ -397,5 +397,24 @@
     "openPhoto": "Otvoriť fotografiu",
     "companySection": "Firma",
     "acceptedMaterials": "Akceptované materiály"
+  },
+  "landing": {
+    "materials": "Obehové materiály",
+    "login": "Prihlásiť sa",
+    "postListing": "Zverejniť ponuku",
+    "dashboard": "Dashboard",
+    "sawdust": "Piloviny",
+    "forCompanies": "Pre firmy",
+    "forPeople": "Pre ľudí",
+    "forPlanet": "Pre planétu",
+    "marketplace": "Trhovisko",
+    "companies": "Firmy",
+    "about": "O platforme",
+    "hiddenContacts": "Skryté kontakty",
+    "privateExchange": "Súkromná burza",
+    "phName": "Meno",
+    "phEmail": "E-mail",
+    "phCompany": "Firma",
+    "phMessage": "Správa"
   }
 }

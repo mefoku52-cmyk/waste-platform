@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -25,6 +26,7 @@ const STEPS = [
 ];
 
 export default function LandingPage() {
+  const { t } = useT();
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [sent, setSent] = useState(false);
@@ -56,7 +58,7 @@ export default function LandingPage() {
               <img src="/trc-mark.jpg" alt="CMEP" className="h-10 w-10 rounded-full object-cover" />
               <div className="hidden sm:block">
                 <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>CMEP · BURZA OBEHOVÝCH MATERIÁLOV</p>
-                <p className="ff text-lg leading-none">Obehové materiály</p>
+                <p className="ff text-lg leading-none">{t('landing.materials')}</p>
               </div>
             </Link>
             <nav className="hidden items-center gap-2 md:flex">
@@ -73,9 +75,9 @@ export default function LandingPage() {
           </div>
           {menuOpen && (
             <div className="border-t border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)] px-4 py-3 md:hidden">
-              <Link href="/login" className="block py-2 text-sm">Prihlásiť sa</Link>
-              <Link href="/register" className="block py-2 text-sm" style={{ color: GOLD_BRIGHT }}>Zverejniť ponuku</Link>
-              <Link href="/dashboard" className="block py-2 text-sm">Dashboard</Link>
+              <Link href="/login" className="block py-2 text-sm">{t('landing.login')}</Link>
+              <Link href="/register" className="block py-2 text-sm" style={{ color: GOLD_BRIGHT }}>{t('landing.postListing')}</Link>
+              <Link href="/dashboard" className="block py-2 text-sm">{t('landing.dashboard')}</Link>
             </div>
           )}
         </header>
@@ -150,11 +152,11 @@ export default function LandingPage() {
                 VZOR · takto vyzerá reálna ponuka
               </span>
               <div className="relative aspect-[16/9] w-full">
-                <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1600&q=80" alt="Piloviny" className="h-full w-full object-cover opacity-70 transition group-hover:opacity-90" />
+                <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1600&q=80" alt={t('landing.sawdust')} className="h-full w-full object-cover opacity-70 transition group-hover:opacity-90" />
                 <div className="grad absolute inset-0" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                   <p className="mb-3 text-[10px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>DNES NA STOLE</p>
-                  <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>Piloviny</p>
+                  <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>{t('landing.sawdust')}</p>
                   <p className="mt-2 text-sm md:text-base" style={{ color: FG }}>Mám na ponuku predaj pilovín, asi 300 t.</p>
                   <p className="mt-3 text-xs" style={{ color: MUTED }}>Žilina · Drevo · 300 t</p>
                 </div>
@@ -185,19 +187,19 @@ export default function LandingPage() {
             {/* TRI PILIERE */}
             <div className="mt-10 grid gap-4 md:grid-cols-3">
               <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
-                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>Pre firmy</p>
+                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forCompanies')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
                   Nižšie náklady, nové príjmy, jednoduchšie hľadanie surovín.
                 </p>
               </div>
               <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
-                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>Pre ľudí</p>
+                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forPeople')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
                   Čistejšie prostredie, menej skládok, lepšia budúcnosť.
                 </p>
               </div>
               <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
-                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>Pre planétu</p>
+                <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forPlanet')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
                   Menej odpadu, viac obehu, viac času.
                 </p>
@@ -299,10 +301,10 @@ export default function LandingPage() {
               </div>
             ) : (
               <form onSubmit={onContact} className="mt-8 grid gap-3">
-                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Meno" className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
-                <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="E-mail" className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
-                <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder="Firma" className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
-                <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder="Správa" rows={5} className="rounded-md border bg-transparent px-4 py-3 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
+                <input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t('landing.phName')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
+                <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t('landing.phEmail')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
+                <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder={t('landing.phCompany')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
+                <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={t('landing.phMessage')} rows={5} className="rounded-md border bg-transparent px-4 py-3 outline-none" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)', color: FG }} />
                 <button type="submit" className="justify-self-start rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
                   Odoslať
                 </button>
@@ -327,15 +329,15 @@ export default function LandingPage() {
             <div className="mt-8 grid grid-cols-2 gap-6">
               <div>
                 <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>TRH</p>
-                <Link href="/dashboard" className="block py-1 text-sm" style={{ color: FG }}>Trhovisko</Link>
-                <Link href="/dashboard" className="block py-1 text-sm" style={{ color: FG }}>Firmy</Link>
-                <Link href="#preco" className="block py-1 text-sm" style={{ color: FG }}>O platforme</Link>
+                <Link href="/dashboard" className="block py-1 text-sm" style={{ color: FG }}>{t('landing.marketplace')}</Link>
+                <Link href="/dashboard" className="block py-1 text-sm" style={{ color: FG }}>{t('landing.companies')}</Link>
+                <Link href="#preco" className="block py-1 text-sm" style={{ color: FG }}>{t('landing.about')}</Link>
               </div>
               <div>
                 <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>DÔVERA</p>
                 <span className="block py-1 text-sm" style={{ color: FG }}>Overené IČO</span>
-                <span className="block py-1 text-sm" style={{ color: FG }}>Skryté kontakty</span>
-                <span className="block py-1 text-sm" style={{ color: FG }}>Súkromná burza</span>
+                <span className="block py-1 text-sm" style={{ color: FG }}>{t('landing.hiddenContacts')}</span>
+                <span className="block py-1 text-sm" style={{ color: FG }}>{t('landing.privateExchange')}</span>
               </div>
             </div>
             <div className="mt-10 flex items-center justify-between border-t pt-6 text-xs" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)', color: FAINT }}>

@@ -397,5 +397,24 @@
     "openPhoto": "Открыть фотографию",
     "companySection": "Компания",
     "acceptedMaterials": "Принимаемые материалы"
+  },
+  "landing": {
+    "materials": "Оборотные материалы",
+    "login": "Войти",
+    "postListing": "Опубликовать объявление",
+    "dashboard": "Панель",
+    "sawdust": "Опилки",
+    "forCompanies": "Для компаний",
+    "forPeople": "Для людей",
+    "forPlanet": "Для планеты",
+    "marketplace": "Рынок",
+    "companies": "Компании",
+    "about": "О платформе",
+    "hiddenContacts": "Скрытые контакты",
+    "privateExchange": "Частная биржа",
+    "phName": "Имя",
+    "phEmail": "E-mail",
+    "phCompany": "Компания",
+    "phMessage": "Сообщение"
   }
 }
