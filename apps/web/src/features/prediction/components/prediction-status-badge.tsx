@@ -1,3 +1,5 @@
+import { useT } from '@/lib/i18n/context';
+
 type PredictionStatus =
   | "active"
   | "disabled"
@@ -34,6 +36,7 @@ const COPY: Record<string, { label: string; hint: string }> = {
 };
 
 export function PredictionStatusBadge({ status, score, applied, explanation }: Props) {
+  const { t } = useT();
   const key = String(status ?? "unavailable").toLowerCase();
   const copy = COPY[key] ?? COPY.unavailable;
   const showScore =
@@ -47,7 +50,7 @@ export function PredictionStatusBadge({ status, score, applied, explanation }: P
         <p>{explanation}</p>
       ) : null}
       {showScore ? (
-        <p>Predicted interest {Math.round(score * 100)}%</p>
+        <p>{t('prediction.predictedInterest')} {Math.round(score * 100)}%</p>
       ) : null}
     </div>
   );

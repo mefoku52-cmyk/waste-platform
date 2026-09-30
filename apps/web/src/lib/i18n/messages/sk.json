@@ -15,7 +15,8 @@
     "submit": "Odoslať",
     "firstName": "Meno",
     "lastName": "Priezvisko",
-    "close": "Zavrieť"
+    "close": "Zavrieť",
+    "loadingShort": "Načítavam..."
   },
   "login": {
     "title": "Prihláste sa",
@@ -211,7 +212,8 @@
     "submit": "Vytvoriť firmu",
     "seller": "Predajca",
     "buyer": "Kupujúci",
-    "logistics": "Logistika"
+    "logistics": "Logistika",
+    "sellerBuyer": "Predajca + Kupujúci"
   },
   "tables": {
     "name": "Meno",
@@ -699,5 +701,11 @@
     "reasonFake": "Fejk ucet",
     "reasonSpam": "Spam",
     "sendFailed": "Nahradenie zlyhalo"
+  },
+  "prediction": {
+    "predictedInterest": "Predpokladaný záujem"
+  },
+  "aiUpgrade": {
+    "onlyForCompanies": "AI asistent je dostupný pre firemné účty."
   }
 }

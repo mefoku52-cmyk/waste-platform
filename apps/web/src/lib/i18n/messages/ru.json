@@ -15,7 +15,8 @@
     "submit": "Отправить",
     "firstName": "Имя",
     "lastName": "Фамилия",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "loadingShort": "Загрузка..."
   },
   "login": {
     "title": "Вход на биржу",
@@ -211,7 +212,8 @@
     "submit": "Создать компанию",
     "seller": "Продавец",
     "buyer": "Покупатель",
-    "logistics": "Логистика"
+    "logistics": "Логистика",
+    "sellerBuyer": "Продавец + Покупатель"
   },
   "tables": {
     "name": "Имя",
@@ -699,5 +701,11 @@
     "reasonFake": "Фейковый аккаунт",
     "reasonSpam": "Спам",
     "sendFailed": "Отправка жалобы не удалась"
+  },
+  "prediction": {
+    "predictedInterest": "Прогнозируемый интерес"
+  },
+  "aiUpgrade": {
+    "onlyForCompanies": "ИИ-ассистент доступен для корпоративных аккаунтов."
   }
 }

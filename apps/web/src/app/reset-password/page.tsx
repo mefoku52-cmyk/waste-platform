@@ -48,9 +48,10 @@ function ResetForm() {
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useT();
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
-      <Suspense fallback={<div>Načítavam...</div>}>
+      <Suspense fallback={<div>{t('common.loadingShort')}</div>}>
         <ResetForm />
       </Suspense>
     </div>

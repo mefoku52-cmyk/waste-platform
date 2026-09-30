@@ -15,7 +15,8 @@
     "submit": "Envoyer",
     "firstName": "Prénom",
     "lastName": "Nom",
-    "close": "Fermer"
+    "close": "Fermer",
+    "loadingShort": "Chargement..."
   },
   "login": {
     "title": "Accéder à la bourse",
@@ -211,7 +212,8 @@
     "submit": "Créer l'entreprise",
     "seller": "Vendeur",
     "buyer": "Acheteur",
-    "logistics": "Logistique"
+    "logistics": "Logistique",
+    "sellerBuyer": "Vendeur + Acheteur"
   },
   "tables": {
     "name": "Nom",
@@ -699,5 +701,11 @@
     "reasonFake": "Faux compte",
     "reasonSpam": "Spam",
     "sendFailed": "Échec du signalement"
+  },
+  "prediction": {
+    "predictedInterest": "Intérêt prévu"
+  },
+  "aiUpgrade": {
+    "onlyForCompanies": "L'assistant IA est disponible pour les comptes d'entreprise."
   }
 }

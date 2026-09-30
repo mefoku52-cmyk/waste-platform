@@ -94,7 +94,7 @@ export function DashboardFooter() {
           style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)', color: FAINT }}
         >
           <span>© {year} Radoslav Čornanič · TRČ</span>
-          <span>JAZYK: SK</span>
+          <span>{t('footer.langLabel')}: SK</span>
         </div>
       </div>
     </footer>

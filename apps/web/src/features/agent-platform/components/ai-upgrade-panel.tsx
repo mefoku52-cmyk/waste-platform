@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export function AiUpgradePanel({ reason = 'free' }: Props) {
+  const { t } = useT();
   const [open, setOpen] = useState(false);
 
   const noCompany = reason === 'unknown';
@@ -76,7 +78,7 @@ export function AiUpgradePanel({ reason = 'free' }: Props) {
             {noCompany ? (
               <>
                 <p className="text-sm leading-relaxed" style={{ color: FG }}>
-                  AI asistent je dostupný pre <strong>firemné účty</strong>.
+                  {t('aiUpgrade.onlyForCompanies')}
                   Najprv si vytvor firmu a over ju.
                 </p>
                 <a

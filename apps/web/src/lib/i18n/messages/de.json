@@ -15,7 +15,8 @@
     "submit": "Senden",
     "firstName": "Vorname",
     "lastName": "Nachname",
-    "close": "Schließen"
+    "close": "Schließen",
+    "loadingShort": "Lädt..."
   },
   "login": {
     "title": "Zur Börse",
@@ -211,7 +212,8 @@
     "submit": "Firma erstellen",
     "seller": "Verkäufer",
     "buyer": "Käufer",
-    "logistics": "Logistik"
+    "logistics": "Logistik",
+    "sellerBuyer": "Verkäufer + Käufer"
   },
   "tables": {
     "name": "Name",
@@ -699,5 +701,11 @@
     "reasonFake": "Fake-Konto",
     "reasonSpam": "Spam",
     "sendFailed": "Meldung fehlgeschlagen"
+  },
+  "prediction": {
+    "predictedInterest": "Vorhergesagtes Interesse"
+  },
+  "aiUpgrade": {
+    "onlyForCompanies": "Der KI-Assistent ist für Firmenkonten verfügbar."
   }
 }

@@ -81,7 +81,7 @@ export const CompanyForm = () => {
             disabled={isPending}
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white"
           >
-            <option value="seller_buyer">Predajca + Kupujúci</option>
+            <option value="seller_buyer">{t('companyForm.sellerBuyer')}</option>
             <option value="seller">{t('companyForm.seller')}</option>
             <option value="buyer">{t('companyForm.buyer')}</option>
             <option value="logistics_partner">{t('companyForm.logistics')}</option>

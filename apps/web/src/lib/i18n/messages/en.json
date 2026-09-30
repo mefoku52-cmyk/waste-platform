@@ -15,7 +15,8 @@
     "submit": "Submit",
     "firstName": "First name",
     "lastName": "Last name",
-    "close": "Close"
+    "close": "Close",
+    "loadingShort": "Loading..."
   },
   "login": {
     "title": "Enter the exchange",
@@ -211,7 +212,8 @@
     "submit": "Create company",
     "seller": "Seller",
     "buyer": "Buyer",
-    "logistics": "Logistics"
+    "logistics": "Logistics",
+    "sellerBuyer": "Seller + Buyer"
   },
   "tables": {
     "name": "Name",
@@ -699,5 +701,11 @@
     "reasonFake": "Fake account",
     "reasonSpam": "Spam",
     "sendFailed": "Report failed"
+  },
+  "prediction": {
+    "predictedInterest": "Predicted interest"
+  },
+  "aiUpgrade": {
+    "onlyForCompanies": "The AI assistant is available for company accounts."
   }
 }
