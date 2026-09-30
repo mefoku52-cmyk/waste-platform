@@ -195,8 +195,42 @@ def test_real_client_is_optional():
 # --------------------------------------------------------------------------
 
 
-def test_client_ip_prefers_forwarded_header():
+def test_client_ip_prefers_cf_connecting_ip():
+    """Cloudflare ju prepise realnou IP — klient ju nemoze podvrhnut."""
+    request = _request(
+        {
+            "CF-Connecting-IP": "203.0.113.5",
+            "X-Forwarded-For": "fake1, fake2",
+        }
+    )
+
+    assert rate_limit.client_ip(request) == "203.0.113.5"
+
+
+def test_client_ip_prefers_x_real_ip_over_xff():
+    request = _request(
+        {
+            "X-Real-IP": "203.0.113.6",
+            "X-Forwarded-For": "fake1, fake2",
+        }
+    )
+
+    assert rate_limit.client_ip(request) == "203.0.113.6"
+
+
+def test_client_ip_uses_last_xff_element():
+    """POSLEDNY prvok XFF = najblizsi proxy k nam.
+
+    Klient moze append-nut falosne hodnoty na ZACIATOK XFF (to je
+    bezpecnostna chyba, ktoru sme fixli v commite abde26d).
+    """
     request = _request({"X-Forwarded-For": "203.0.113.5, 10.0.0.1"})
+
+    assert rate_limit.client_ip(request) == "10.0.0.1"
+
+
+def test_client_ip_single_xff_element():
+    request = _request({"X-Forwarded-For": "203.0.113.5"})
 
     assert rate_limit.client_ip(request) == "203.0.113.5"
 
@@ -214,6 +248,25 @@ def test_client_ip_handles_blank_host():
 
 
 def test_client_ip_ignores_whitespace_in_header():
-    request = _request({"X-Forwarded-For": "  198.51.100.7  , 10.0.0.1"})
+    """Whitespace sa strippuje; vraciame POSLEDNY prvok."""
+    request = _request({"X-Forwarded-For": "  198.51.100.7  ,   10.0.0.1   "})
 
-    assert rate_limit.client_ip(request) == "198.51.100.7"
+    assert rate_limit.client_ip(request) == "10.0.0.1"
+
+
+def test_client_ip_empty_xff_falls_back_to_socket():
+    request = _request({"X-Forwarded-For": ""})
+
+    assert rate_limit.client_ip(request) == "9.9.9.9"
+
+
+def test_client_ip_blank_parts_in_xff_are_ignored():
+    request = _request({"X-Forwarded-For": "  ,  , 10.0.0.1 ,  "})
+
+    assert rate_limit.client_ip(request) == "10.0.0.1"
+
+
+def test_client_ip_cf_connecting_ip_with_whitespace():
+    request = _request({"CF-Connecting-IP": "  203.0.113.99  "})
+
+    assert rate_limit.client_ip(request) == "203.0.113.99"
