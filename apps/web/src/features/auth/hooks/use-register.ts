@@ -9,6 +9,7 @@ type RegisterBody = {
   name?: string;
   firstName?: string;
   lastName?: string;
+  turnstileToken?: string;
 };
 
 function splitName(data: RegisterBody) {
@@ -21,6 +22,7 @@ function splitName(data: RegisterBody) {
     password: data.password,
     firstName,
     lastName,
+    turnstileToken: data.turnstileToken,
   };
 }
 

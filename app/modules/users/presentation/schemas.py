@@ -18,6 +18,7 @@ class UserCreateRequest(BaseModel):
     phone: str | None = None
     locale: str | None = None
     timezone: str | None = None
+    turnstileToken: str | None = None
 
     @field_validator("email")
     @classmethod

@@ -26,6 +26,7 @@ from app.modules.users.presentation.schemas import (
 from app.shared.application.passwords import PasswordService
 from app.shared.domain.exceptions import ForbiddenDomainError
 from app.shared.infrastructure.db.session import get_db_session
+from app.shared.infrastructure.turnstile import verify_turnstile
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import current_user_id, is_platform_admin
 from app.shared.presentation.error_schemas import error_responses
@@ -84,6 +85,12 @@ async def create_user(
     password_service: PasswordService = Depends(get_password_service),
     verification_service=Depends(get_email_verification_service),
 ):
+    # Turnstile overenie (ak je zapnuty v env TURNSTILE_ENABLED=true)
+    if not await verify_turnstile(payload.turnstileToken):
+        from fastapi import HTTPException
+
+        raise HTTPException(status_code=400, detail="Captcha verification failed")
+
     dto = await service.execute(
         email=payload.email,
         password_hash=password_service.hash_password(payload.password),

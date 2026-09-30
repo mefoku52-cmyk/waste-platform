@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useRegister } from '../hooks/use-register';
 import { AuthButton, AuthInput, AuthLink } from '@/components/auth/auth-shell';
 import { PasswordInput } from '@/components/auth/password-input';
+import { TurnstileWidget } from '@/components/auth/turnstile-widget';
 
 export function RegisterForm() {
   const { t } = useT();
@@ -13,13 +14,14 @@ export function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [err, setErr] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string>('');
   const register = useRegister();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
     try {
-      await register.mutateAsync({ email, password, name });
+      await register.mutateAsync({ email, password, name, turnstileToken });
       router.push('/verify-email-sent?email=' + encodeURIComponent(email));
     } catch (e: unknown) {
       const msg =
@@ -56,6 +58,7 @@ export function RegisterForm() {
         autoComplete="new-password"
         placeholder={t('register.password')}
       />
+      <TurnstileWidget onVerify={setTurnstileToken} onExpire={() => setTurnstileToken('')} />
       {err ? <p className="text-sm text-[#c45c4a]">{err}</p> : null}
       <AuthButton type="submit" disabled={register.isPending}>
         {register.isPending ? t('register.submit') + '…' : t('register.submit')}
