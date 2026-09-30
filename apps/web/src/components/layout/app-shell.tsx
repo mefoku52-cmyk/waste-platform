@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { AiChatWidget } from '@/features/agent-platform/components/ai-chat-widget';
+import { FeedbackWidget } from '@/features/feedback/components/feedback-widget';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -17,6 +18,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="cmep-main">{children}</main>
       <DashboardFooter />
       {isLoggedIn ? <AiChatWidget /> : null}
+      {isLoggedIn ? <FeedbackWidget /> : null}
     </div>
   );
 }

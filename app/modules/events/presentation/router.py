@@ -16,6 +16,7 @@ ALLOWED = {
     "recommendation_shown",
     "inquiry_opened",
     "route_calculated",
+    "user_feedback",
 }
 
 router = APIRouter(prefix="/events", tags=["events"])

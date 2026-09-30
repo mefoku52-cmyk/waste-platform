@@ -4,18 +4,18 @@ import { useEffect, useState } from 'react';
 import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
 
-function AdminReports() {
+function AdminReports({ eventType = 'user_reported' }: { eventType?: string }) {
   const [items, setItems] = useState<any[]>([]);
   useEffect(() => {
     const token = tokenStore.getToken();
-    fetch(`${config.apiBaseUrl}/events/reports`, {
+    fetch(`${config.apiBaseUrl}/events/reports?event_type=${encodeURIComponent(eventType)}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     })
       .then((r) => r.json())
       .then((d) => setItems(d.items || []))
       .catch(() => setItems([]));
-  }, []);
-  if (!items.length) return <p className="mt-2 text-sm text-[#9a8f7c]">Ziadne nahlasenia.</p>;
+  }, [eventType]);
+  if (!items.length) return <p className="mt-2 text-sm text-[#9a8f7c]">Ziadne zaznamy.</p>;
   return (
     <ul className="mt-3 space-y-2 text-sm text-[#f3ead8]">
       {items.map((it) => (
@@ -223,6 +223,30 @@ export default function AdminPage() {
         >
           Otvoriť lead outreach →
         </Link>
+      </section>
+
+      <section className="mt-12">
+        <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+          FEEDBACK OD POUZIVATELOV
+        </p>
+        <h2
+          className="mb-3 text-2xl md:text-3xl"
+          style={{ fontFamily: 'DM Serif Display, serif' }}
+        >
+          Napady a pripomienky
+        </h2>
+        <p className="mb-4 text-sm" style={{ color: MUTED }}>
+          Co by si pouzivatelia priali. Klik na &quot;Nápad?&quot; na dashboarde im to otvori.
+        </p>
+        <div
+          className="rounded-2xl border p-5"
+          style={{
+            borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)',
+            background: 'rgba(201,168,76,0.03)',
+          }}
+        >
+          <AdminReports eventType="user_feedback" />
+        </div>
       </section>
 
       <section className="mt-8 rounded-2xl border border-[#d4af37]/25 p-4">
