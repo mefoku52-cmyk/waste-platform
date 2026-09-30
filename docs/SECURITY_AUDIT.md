@@ -90,24 +90,49 @@ Všetkých 8 nálezov je opravených a nasadených na produkciu (commity `c2b671
 - **2FA endpointy** — všetky vyžadujú auth (401 bez tokenu)
 - **SSRF** — iba whitelist `api.statistics.sk`
 
-## Tech debt (nie security blocker)
+## T4 — Intra-tenant privilege escalation (P1, opravené 2026-09-30)
 
-### T1. Upload endpoint vracia 308 redirect
+Objavené počas T4 mass-assignment auditu (KROK 5).
+
+**Endpoint:** `PATCH /api/v1/company-memberships/{id}`
+
+**Problém:**
+- Vyžadoval len `require_company_admin` (= `owner` alebo `admin`)
+- Schéma `CompanyMembershipUpdateRequest` prijímala pole `membershipRole`
+- Service `UpdateCompanyMembershipService.execute` aplikoval rolu bez kontroly
+
+**Dôsledok:** tenant `admin` mohol:
+1. Povýšiť seba na `owner` (self-promotion)
+2. Povýšiť kolegu na `owner`
+3. Degradovať existujúceho ownera
+4. Degradovať **posledného** ownera → firma bez ownera
+
+**Fix:** 3 pravidlá v routeri pred volaním service:
+1. Zmena roly vyžaduje `owner` firmy **alebo** platform admina (`admin` nestačí)
+2. Self-role-change zakázané
+3. Last-owner protection (posledný owner sa nedá degradovať)
+
+**Commit:** `e380cae`
+
+**Poznámka:** `CompanyUpdateRequest` a `UserUpdateRequest` **neobsahujú** citlivé polia (`role`, `status`, `tier`, `verified`). Mass assignment v Pydantic zmysle nie je — problém bol v tom, že `membershipRole` bolo zámerne editovateľné, ale s príliš voľnou autorizáciou.
+
+## Tech debt — stav po KROKU 5 (2026-09-30)
+
+### T1. Upload endpoint 308 redirect — ✅ UZAVRETÉ (nie je bug)
 `POST /uploads/` → 308 Permanent Redirect (trailing slash mismatch). Browser pri cross-origin 308 nezachová POST body.
-**Fix:** `redirect_slashes=False` v FastAPI alebo dorovnať trailing slash.
-**Priorita:** P2
+**Zistenie:** 308 pochádza z Next.js `trailingSlash: false` (default) — normalizuje `/foo/` → `/foo` **predtým**, než rewrite pošle request na FastAPI. `redirect_slashes=False` na `FastAPI()` je inertný cez Next.js, ale ponechaný (správne správanie bez Next.js).
 
-### T2. Flaky test `test_company_transition`
+**Dôležité:** 308 je navrhnutý tak, aby **zachoval metódu aj telo** (na rozdiel od 301/302). Browsers ho sledujú. **Toto nie je bezpečnostná diera.**
+
+### T2. Flaky test `test_company_transition` — ✅ VYRIEŠENÉ (`16f75bf`)
 Test volá `CreateCompanyService` bez mocku `lookup_ico`, ktorý reálne fetchuje `api.statistics.sk`. Pri výpadku RPO API test padá.
-**Fix:** Mock `lookup_ico` v teste.
-**Priorita:** P2
+**Fix:** Autouse fixture `mock_lookup_ico` patchuje `app.modules.companies.application.services.lookup_ico`.
 
-### T3. Redis testy failujú lokálne
+### T3. Redis testy failujú lokálne — ✅ VYRIEŠENÉ (`8905934`)
 9 testov v `test_jwt_service.py` a `test_jwt_revocation_store.py` vyžaduje bežiaci Redis na `127.0.0.1:6379`. V CI aj tak bežia.
-**Fix:** `fakeredis` knižnica alebo pytest fixture s `redis-server --daemonize yes`.
-**Priorita:** P2
+**Fix:** `tests/conftest.py` nastavuje `REDIS_URL=memory://` → `TokenRevocationStore` použije `_MemoryBackend`. Žiadny externý Redis server nie je potrebný.
 
-### T4. Mass assignment netestované
+### T4. Mass assignment — ✅ VYRIEŠENÉ (`e380cae`)
 PATCH endpointy neboli testované s extra poľami (`role`, `status`) — vyžaduje prihlásenie. Pydantic schémy by to mali blokovať, ale treba overiť.
 
 ## Odporúčania pre ďalšie kolo
@@ -130,3 +155,8 @@ PATCH endpointy neboli testované s extra poľami (`role`, `status`) — vyžadu
 | `60bfce6` | RateLimitMiddleware + drop python-jose |
 | `103fa81` | CORS do env, fix nested-string default |
 | `abde26d` | **XFF bypass fix + Pydantic input leak fix** |
+| `16f75bf` | T1+T2: uploads trailing slash + mock RPO |
+| `8026177` | FastAPI redirect_slashes=False |
+| `8905934` | T3: in-memory Redis pre testy |
+| `061366c` | Testy pre XFF spoofing fix |
+| `e380cae` | **T4: intra-tenant privilege escalation fix** |
