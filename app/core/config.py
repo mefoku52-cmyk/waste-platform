@@ -118,8 +118,8 @@ class Settings(BaseSettings):
 
     CORS_ORIGINS: list[str] | str = Field(
         default_factory=lambda: [
-            "http://127.0.0.1:3001",
-            "https://trc-cmep.sk,https://www.trc-cmep.sk,http://localhost:3001",
+            "https://trc-cmep.sk",
+            "https://www.trc-cmep.sk",
         ],
         validation_alias=AliasChoices("CORS_ORIGINS", "CORS_ALLOWED_ORIGINS"),
     )

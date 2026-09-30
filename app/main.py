@@ -31,21 +31,36 @@ async def lifespan(app: FastAPI):
 
 
 def _cors_origins() -> list[str]:
-    raw = settings.CORS_ORIGINS
-    if isinstance(raw, list):
-        origins = [str(item).strip() for item in raw if str(item).strip()]
-    elif isinstance(raw, str) and raw.strip():
-        origins = [part.strip() for part in raw.split(",") if part.strip()]
-    else:
-        origins = []
-    for extra in (
-        "http://127.0.0.1:3001",
-        "http://localhost:3001",
-        "https://trc-cmep.sk",
-        "https://www.trc-cmep.sk",
-    ):
-        if extra not in origins:
-            origins.append(extra)
+    """Vrati zoznam povolenych CORS origins.
+
+    Zdroj pravdy: settings.CORS_ORIGINS (env CORS_ORIGINS alebo
+    CORS_ALLOWED_ORIGINS). Dev domény sa pridávajú len v development.
+    Ak by env bolo prazdne, drzime bezpecny produkcny fallback.
+    """
+    origins: list[str] = []
+    seen: set[str] = set()
+
+    def _add(value: str) -> None:
+        v = value.strip()
+        if v and v not in seen:
+            seen.add(v)
+            origins.append(v)
+
+    # settings.cors_origin_list() moze vratit legacy string s ciarkami ako
+    # jeden prvok (stary default), tak kazdy prvok rozdelime.
+    for item in settings.cors_origin_list():
+        for part in str(item).split(","):
+            _add(part)
+
+    # Bezpecny produkcny fallback, ak by env bolo prazdne.
+    if not origins:
+        _add("https://trc-cmep.sk")
+        _add("https://www.trc-cmep.sk")
+
+    if settings.is_development:
+        _add("http://127.0.0.1:3001")
+        _add("http://localhost:3001")
+
     return origins
 
 
