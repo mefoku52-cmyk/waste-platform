@@ -45,3 +45,109 @@ async def list_security_events(
         ],
         "count": len(rows),
     }
+
+
+from datetime import UTC, datetime
+from uuid import uuid4
+
+from pydantic import BaseModel as _BM
+
+from app.modules.agent_platform.application.security.security_risk_engine import (
+    DefaultSecurityRiskEngine,
+)
+from app.modules.agent_platform.application.security.security_signal_service import (
+    DefaultSecuritySignalService,
+)
+from app.modules.agent_platform.domain.security.security_observation import (
+    SecurityObservation,
+)
+from app.modules.agent_platform.domain.security.security_pattern import (
+    SecurityPattern,
+)
+from app.modules.agent_platform.infrastructure.security.security_event_store import (
+    SqlAlchemySecurityEventStore,
+)
+
+
+class _ObservationIn(_BM):
+    pattern: str
+    source: str = "manual"
+    actor_id: str | None = None
+    target: str | None = None
+    evidence: dict = {}
+
+
+@router.post("/evaluate")
+async def evaluate_observation(
+    payload: _ObservationIn,
+    current_user=Depends(require_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Zoberie observation a vrati SecurityDecision (bez zapisu)."""
+    from fastapi import HTTPException
+
+    try:
+        pattern = SecurityPattern(payload.pattern)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"Neznamy pattern: {payload.pattern}") from exc
+
+    from app.modules.agent_platform.application.security.security_engine import (
+        DefaultSecurityEngine,
+    )
+
+    obs = SecurityObservation(
+        observation_id=str(uuid4()),
+        pattern=pattern,
+        source=payload.source,
+        actor_id=payload.actor_id,
+        target=payload.target,
+        evidence=payload.evidence,
+        observed_at=datetime.now(UTC),
+    )
+    engine = DefaultSecurityEngine()
+    decision = await engine.evaluate(obs)
+    return {
+        "observationId": obs.observation_id,
+        "pattern": pattern.value,
+        "decision": decision.value if hasattr(decision, "value") else str(decision),
+    }
+
+
+@router.post("/observe")
+async def observe_and_signal(
+    payload: _ObservationIn,
+    current_user=Depends(require_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Vytvori observation -> signal -> risk. Signal sa zapise do DB."""
+    from fastapi import HTTPException
+
+    try:
+        pattern = SecurityPattern(payload.pattern)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"Neznamy pattern: {payload.pattern}") from exc
+
+    obs = SecurityObservation(
+        observation_id=str(uuid4()),
+        pattern=pattern,
+        source=payload.source,
+        actor_id=payload.actor_id,
+        target=payload.target,
+        evidence=payload.evidence,
+        observed_at=datetime.now(UTC),
+    )
+    store = SqlAlchemySecurityEventStore(session)
+    signal_svc = DefaultSecuritySignalService(store=store)
+    risk_engine = DefaultSecurityRiskEngine()
+
+    signal = await signal_svc.observe(obs)
+    risk = await risk_engine.evaluate(signal)
+
+    return {
+        "observationId": obs.observation_id,
+        "signalId": signal.signal_id,
+        "pattern": pattern.value,
+        "confidence": float(signal.confidence),
+        "riskLevel": risk.level.value if hasattr(risk.level, "value") else str(risk.level),
+        "riskScore": float(risk.score),
+    }

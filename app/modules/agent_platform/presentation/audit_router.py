@@ -73,3 +73,73 @@ async def audit_by_actor(
         ],
         "count": len(rows),
     }
+
+
+from datetime import UTC, datetime
+from uuid import uuid4
+
+from pydantic import BaseModel as _BM
+
+from app.modules.agent_platform.application.audit.audit_service import (
+    DefaultAuditService,
+)
+from app.modules.agent_platform.domain.audit.audit_action import (
+    AuditAction,
+)
+from app.modules.agent_platform.domain.audit.audit_record import (
+    AuditRecord,
+)
+from app.modules.agent_platform.domain.audit.audit_subject import (
+    AuditSubject,
+)
+from app.modules.agent_platform.infrastructure.audit.audit_store import (
+    SqlAlchemyAuditStore,
+)
+from app.shared.presentation.authorization import current_user_id
+
+
+class _AuditIn(_BM):
+    action: str
+    actor_type: str = "admin"
+    subject_type: str | None = None
+    subject_id: str | None = None
+    reason: str | None = None
+    metadata: dict = {}
+
+
+@router.post("/record")
+async def record_audit(
+    payload: _AuditIn,
+    current_user=Depends(require_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Manualny zapis auditu. Pouzivatel: admin. Append-only."""
+    from fastapi import HTTPException
+
+    try:
+        action = AuditAction(payload.action)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=f"Neznama akcia: {payload.action}") from exc
+
+    subject = None
+    if payload.subject_type and payload.subject_id:
+        subject = AuditSubject(
+            subject_type=payload.subject_type,
+            subject_id=payload.subject_id,
+        )
+
+    record = AuditRecord(
+        audit_id=str(uuid4()),
+        actor_id=current_user_id(current_user),
+        actor_type=payload.actor_type,
+        action=action,
+        subject=subject,
+        occurred_at=datetime.now(UTC),
+        success=True,
+        reason=payload.reason,
+        metadata=payload.metadata,
+    )
+    store = SqlAlchemyAuditStore(session)
+    svc = DefaultAuditService(store=store)
+    saved = await svc.record(record)
+    return {"auditId": saved.audit_id, "action": action.value}

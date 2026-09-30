@@ -114,3 +114,20 @@ async def deny(
 ) -> dict:
     actor = current_user_id(current_user) or "admin"
     return await _decide(approval_id, ApprovalStatus.DENIED, payload.reason, actor, session)
+
+
+@router.get("/{approval_id}/is-executable")
+async def is_executable(
+    approval_id: str,
+    current_user=Depends(require_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Overi, ci approval je schvaleny a neexpirovany."""
+    from app.modules.agent_platform.application.approval.approval_workflow import (
+        DefaultApprovalWorkflow,
+    )
+
+    repo = SqlAlchemyApprovalRepository(session)
+    wf = DefaultApprovalWorkflow(repository=repo)
+    executable = await wf.is_executable(approval_id)
+    return {"approvalId": approval_id, "executable": bool(executable)}

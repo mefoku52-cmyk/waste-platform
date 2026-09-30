@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import contextlib
+
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -134,13 +136,65 @@ async def get_agent_orchestrator(
         outcome: str,
         duration_s: float,
     ) -> None:
-        await write_audit(
-            session=session,
-            actor_user_id=actor_id,
-            action=f"agent.tool.{outcome}",
-            target_type="agent_tool",
-            details=f"tool={tool_name},duration_ms={int(duration_s * 1000)}",
-        )
+        # 1. Existujuce: zapis do admin_audit_entries (best-effort).
+        with contextlib.suppress(Exception):
+            await write_audit(
+                session=session,
+                actor_user_id=actor_id,
+                action=f"agent.tool.{outcome}",
+                target_type="agent_tool",
+                details=f"tool={tool_name},duration_ms={int(duration_s * 1000)}",
+            )
+
+        # 2. Nove: zapis do agent_audit_records cez DefaultAuditService.
+        try:
+            from datetime import UTC, datetime
+            from uuid import uuid4
+
+            from app.modules.agent_platform.application.audit.audit_service import (
+                DefaultAuditService,
+            )
+            from app.modules.agent_platform.domain.audit.audit_action import (
+                AuditAction,
+            )
+            from app.modules.agent_platform.domain.audit.audit_record import (
+                AuditRecord,
+            )
+            from app.modules.agent_platform.domain.audit.audit_subject import (
+                AuditSubject,
+            )
+            from app.modules.agent_platform.infrastructure.audit.audit_store import (
+                SqlAlchemyAuditStore,
+            )
+
+            action_map = {
+                "executed": AuditAction.EXECUTE,
+                "failed": AuditAction.EXECUTE,
+                "exception": AuditAction.EXECUTE,
+                "denied_by_policy": AuditAction.DENY,
+                "denied_by_permission": AuditAction.DENY,
+                "tool_scope_unmapped": AuditAction.DENY,
+                "tool_not_available": AuditAction.DENY,
+                "requires_approval_policy": AuditAction.REQUEST,
+                "requires_approval_permission": AuditAction.REQUEST,
+            }
+            audit_action = action_map.get(outcome, AuditAction.EXECUTE)
+
+            record = AuditRecord(
+                audit_id=str(uuid4()),
+                actor_id=actor_id,
+                actor_type="user",
+                action=audit_action,
+                subject=AuditSubject(subject_type="agent_tool", subject_id=tool_name),
+                occurred_at=datetime.now(UTC),
+                success=(outcome == "executed"),
+                reason=outcome,
+                metadata={"duration_ms": int(duration_s * 1000)},
+            )
+            svc = DefaultAuditService(store=SqlAlchemyAuditStore(session))
+            await svc.record(record)
+        except Exception:
+            pass
 
     return AgentOrchestrator(
         gateway=GroqModelGateway(),
@@ -150,7 +204,7 @@ async def get_agent_orchestrator(
         permission=permission,
         tool_scopes=tool_scopes,
         audit=_audit_agent_tool,
-        event_publisher=SqlAlchemyEventPublisher(session=session),
+        event_publisher=_build_event_bus(session=session),
         model="openai/gpt-oss-120b",
     )
 
@@ -168,3 +222,145 @@ async def get_ai_conversation_repository(
 ) -> SqlAlchemyAiConversationRepository:
     """Build AI conversation repository bound to request session."""
     return SqlAlchemyAiConversationRepository(session=session)
+
+
+async def get_control_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.control.control_service import (
+        DefaultControlService,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.control_repository import (
+        SqlAlchemyControlRepository,
+    )
+
+    return DefaultControlService(repository=SqlAlchemyControlRepository(session))
+
+
+async def get_alert_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.alerts.alert_service import (
+        DefaultAlertService,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.alert_repository import (
+        SqlAlchemyAlertRepository,
+    )
+
+    return DefaultAlertService(repository=SqlAlchemyAlertRepository(session))
+
+
+async def get_approval_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.approval.approval_service import (
+        DefaultApprovalService,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+        SqlAlchemyApprovalRepository,
+    )
+
+    return DefaultApprovalService(repository=SqlAlchemyApprovalRepository(session))
+
+
+async def get_approval_workflow(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.approval.approval_workflow import (
+        DefaultApprovalWorkflow,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+        SqlAlchemyApprovalRepository,
+    )
+
+    return DefaultApprovalWorkflow(repository=SqlAlchemyApprovalRepository(session))
+
+
+async def get_audit_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.audit.audit_service import (
+        DefaultAuditService,
+    )
+    from app.modules.agent_platform.infrastructure.audit.audit_store import (
+        SqlAlchemyAuditStore,
+    )
+
+    return DefaultAuditService(store=SqlAlchemyAuditStore(session))
+
+
+async def get_security_engine():
+    from app.modules.agent_platform.application.security.security_engine import (
+        DefaultSecurityEngine,
+    )
+
+    return DefaultSecurityEngine()
+
+
+async def get_security_signal_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.security.security_signal_service import (
+        DefaultSecuritySignalService,
+    )
+    from app.modules.agent_platform.infrastructure.security.security_event_store import (
+        SqlAlchemySecurityEventStore,
+    )
+
+    return DefaultSecuritySignalService(store=SqlAlchemySecurityEventStore(session))
+
+
+async def get_security_risk_engine():
+    from app.modules.agent_platform.application.security.security_risk_engine import (
+        DefaultSecurityRiskEngine,
+    )
+
+    return DefaultSecurityRiskEngine()
+
+
+async def get_security_alert_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.security.security_alert_service import (
+        DefaultSecurityAlertService,
+    )
+
+    alert_svc = await get_alert_service(session)
+    return DefaultSecurityAlertService(alert_service=alert_svc)
+
+
+async def get_event_bus(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.events.event_bus import (
+        DefaultEventBus,
+    )
+
+    return DefaultEventBus(publisher=SqlAlchemyEventPublisher(session=session))
+
+
+async def get_event_dispatcher():
+    from app.modules.agent_platform.application.events.event_dispatcher import (
+        DefaultEventDispatcher,
+    )
+
+    return DefaultEventDispatcher()
+
+
+async def get_event_store(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.infrastructure.events.event_store import (
+        SqlAlchemyEventStore,
+    )
+
+    return SqlAlchemyEventStore(session)
+
+
+def _build_event_bus(*, session):
+    """Zabal SqlAlchemyEventPublisher do DefaultEventBus."""
+    from app.modules.agent_platform.application.events.event_bus import (
+        DefaultEventBus,
+    )
+
+    return DefaultEventBus(publisher=SqlAlchemyEventPublisher(session=session))
