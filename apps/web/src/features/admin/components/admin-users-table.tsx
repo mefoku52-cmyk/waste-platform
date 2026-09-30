@@ -1,6 +1,9 @@
 'use client';
 
+import Link from 'next/link';
+import { useState } from 'react';
 import { useAdminUsers } from '../hooks/use-admin-users';
+import { useAdminDeleteUser } from '../hooks/use-admin-user';
 import type { UserManagement } from '../types';
 import { cn } from '../../../lib/utils/cn';
 import { useT } from '@/lib/i18n/context';
@@ -53,6 +56,64 @@ function getUserIsActive(user: UserManagement): boolean {
   return false;
 }
 
+
+function ActionsCell({
+  userId,
+  userEmail,
+}: {
+  userId: string | undefined;
+  userEmail: string;
+}) {
+  const [confirming, setConfirming] = useState(false);
+  const deleteUser = useAdminDeleteUser();
+
+  if (!userId) return <span className="text-gray-400">—</span>;
+
+  const onDelete = async () => {
+    if (!confirming) {
+      setConfirming(true);
+      return;
+    }
+    try {
+      await deleteUser.mutateAsync(userId);
+      setConfirming(false);
+    } catch (e) {
+      alert('Nepodarilo sa zmazať: ' + (e as { message?: string })?.message);
+      setConfirming(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Link
+        href={`/dashboard/admin/users/${userId}`}
+        className="rounded border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-50"
+      >
+        Detail
+      </Link>
+      <button
+        type="button"
+        onClick={onDelete}
+        disabled={deleteUser.isPending}
+        className={
+          'rounded px-2 py-1 text-xs font-medium text-white transition-colors ' +
+          (confirming
+            ? 'bg-red-700 hover:bg-red-800'
+            : 'bg-red-600 hover:bg-red-700') +
+          (deleteUser.isPending ? ' opacity-50 cursor-wait' : '')
+        }
+        title={confirming ? 'Klikni znova pre potvrdenie' : `Zmazať ${userEmail}`}
+      >
+        {confirming
+          ? deleteUser.isPending
+            ? 'Mažem…'
+            : 'Potvrdiť zmazanie'
+          : 'Zmazať'}
+      </button>
+    </div>
+  );
+}
+
 export const AdminUsersTable = () => {
   const { t } = useT();
   const { data, isLoading, error } = useAdminUsers();
@@ -76,12 +137,13 @@ export const AdminUsersTable = () => {
             <th className="px-4 py-3 text-left font-semibold text-gray-900">E-mail</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-900">{t('tables.role')}</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-900">{t('tables.status')}</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-900">Akcie</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
           {users.length === 0 ? (
             <tr>
-              <td colSpan={4} className="px-4 py-8 text-center italic text-gray-500">
+              <td colSpan={5} className="px-4 py-8 text-center italic text-gray-500">
                 Žiadni používatelia neboli nájdení.
               </td>
             </tr>
@@ -110,6 +172,9 @@ export const AdminUsersTable = () => {
                     >
                       {active ? 'Aktívny' : 'Deaktivovaný'}
                     </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <ActionsCell userId={user.id} userEmail={user.email ?? ''} />
                   </td>
                 </tr>
               );

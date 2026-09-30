@@ -22,3 +22,36 @@ export interface AdminUsersResponse {
   users?: UserManagement[];
   meta?: Record<string, unknown>;
 }
+
+export interface AdminUserSummaryResponse {
+  user: {
+    id: string;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+    status: string;
+    lastLoginAt: string | null;
+    createdAt: string | null;
+    updatedAt: string | null;
+  };
+  counts: {
+    listings?: number | null;
+    inquiries?: number | null;
+    memberships?: number | null;
+    activity_events?: number | null;
+  };
+}
+
+export interface AdminUserActivityItem {
+  id: string;
+  eventType: string;
+  companyId: string | null;
+  listingId: string | null;
+  payload: string | null;
+  createdAt: string | null;
+}
+
+export interface AdminUserActivityResponse {
+  items: AdminUserActivityItem[];
+  total: number;
+}
