@@ -151,3 +151,63 @@ async def observe_and_signal(
         "riskLevel": risk.level.value if hasattr(risk.level, "value") else str(risk.level),
         "riskScore": float(risk.score),
     }
+
+
+@router.get("/diagnostics")
+async def security_diagnostics(
+    current_user=Depends(require_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Diagnostika: ci tabulky existuju a kolko zaznamov maju."""
+    from sqlalchemy import text
+
+    out: dict = {}
+
+    # 1. Existuju tabulky?
+    for table in (
+        "agent_security_events",
+        "agent_alert_records",
+        "agent_approval_requests",
+        "agent_audit_records",
+        "agent_control_state",
+    ):
+        try:
+            r = await session.execute(
+                text("SELECT COUNT(*) FROM information_schema.tables WHERE table_name = :t"),
+                {"t": table},
+            )
+            exists = int(r.scalar() or 0) > 0
+            count = None
+            if exists:
+                c = await session.execute(text(f"SELECT COUNT(*) FROM {table}"))
+                count = int(c.scalar() or 0)
+            out[table] = {"exists": exists, "count": count}
+        except Exception as exc:
+            out[table] = {"exists": False, "error": type(exc).__name__}
+
+    # 2. Poslednych 5 udalosti zo security events
+    recent = []
+    try:
+        r = await session.execute(
+            text(
+                "SELECT event_id, kind, pattern, actor_id, occurred_at "
+                "FROM agent_security_events ORDER BY occurred_at DESC LIMIT 5"
+            )
+        )
+        for row in r:
+            recent.append(
+                {
+                    "eventId": str(row[0]),
+                    "kind": row[1],
+                    "pattern": row[2],
+                    "actorId": row[3],
+                    "occurredAt": row[4].isoformat() if row[4] else None,
+                }
+            )
+    except Exception as exc:
+        recent = [{"error": type(exc).__name__}]
+
+    return {
+        "tables": out,
+        "recentSecurityEvents": recent,
+    }

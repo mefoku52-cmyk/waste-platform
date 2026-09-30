@@ -221,9 +221,13 @@ async def _apply_security_check(
 ) -> str:
     """Best-effort security check. Vrati najvaznejsi decision.
 
-    Vratene hodnoty: 'allow', 'monitor', 'alert', 'require_approval', 'block'.
-    Pri 'block' by caller mal chat zastavit (vratit neutralnu odpoved).
+    Pouziva VLASTNU session (nie request session), aby commit
+    neovplyvnil hlavny chat flow a aby sa chyby nemuseli ticho zjest.
     """
+    import logging
+
+    logger = logging.getLogger("cmep.security")
+
     findings = _detect_security_patterns(text)
     if not findings:
         return "allow"
@@ -234,6 +238,9 @@ async def _apply_security_check(
 
     worst = "allow"
     engine = DefaultSecurityEngine()
+
+    # Vlastna session - nezasahuje do request session
+    from app.shared.infrastructure.db.session import async_session_factory
 
     try:
         from datetime import UTC, datetime
@@ -263,59 +270,71 @@ async def _apply_security_check(
             SqlAlchemySecurityEventStore,
         )
 
-        store = SqlAlchemySecurityEventStore(session)
-        signal_svc = DefaultSecuritySignalService(store=store)
-        alert_svc = DefaultAlertService(
-            repository=SqlAlchemyAlertRepository(session),
-        )
-
-        for pattern_name, confidence in findings:
-            try:
-                pattern = SecurityPattern(pattern_name)
-            except ValueError:
-                continue
-
-            observation = SecurityObservation(
-                observation_id=str(uuid.uuid4()),
-                pattern=pattern,
-                source="chat",
-                actor_id=actor_id,
-                target="chat",
-                evidence={"snippet": text[:200]},
-                observed_at=datetime.now(UTC),
+        async with async_session_factory() as own_session:
+            store = SqlAlchemySecurityEventStore(own_session)
+            signal_svc = DefaultSecuritySignalService(store=store)
+            alert_svc = DefaultAlertService(
+                repository=SqlAlchemyAlertRepository(own_session),
             )
 
-            with contextlib.suppress(Exception):
-                await signal_svc.observe(observation)
-
-            # Vyhodnotenie rozhodnutia
-            with contextlib.suppress(Exception):
-                decision = await engine.evaluate(observation)
-                dval = decision.value if hasattr(decision, "value") else str(decision)
-                if _DECISION_PRIORITY.get(dval, 0) > _DECISION_PRIORITY.get(worst, 0):
-                    worst = dval
-
-            if confidence >= 0.7:
+            for pattern_name, confidence in findings:
                 try:
-                    alert = AlertRecord(
-                        alert_id=str(uuid.uuid4()),
-                        category=pattern_name,
-                        severity=(
-                            AlertSeverity.HIGH if confidence >= 0.9 else AlertSeverity.MEDIUM
-                        ),
-                        source="chat",
-                        actor_id=actor_id,
-                        target="chat",
-                        event="ai_pattern_detected",
-                        evidence={"snippet": text[:200]},
-                        created_at=datetime.now(UTC),
-                    )
-                    await alert_svc.create(alert)
+                    pattern = SecurityPattern(pattern_name)
+                except ValueError:
+                    continue
+
+                observation = SecurityObservation(
+                    observation_id=str(uuid.uuid4()),
+                    pattern=pattern,
+                    source="chat",
+                    actor_id=actor_id,
+                    target="chat",
+                    evidence={"snippet": text[:200]},
+                    observed_at=datetime.now(UTC),
+                )
+
+                # Zapis observation (predtym chybalo!)
+                try:
+                    await store.store_observation(observation)
                 except Exception:
-                    pass
+                    logger.exception("store_observation failed pattern=%s", pattern_name)
+
+                with contextlib.suppress(Exception):
+                    await signal_svc.observe(observation)
+
+                # Vyhodnotenie rozhodnutia
+                with contextlib.suppress(Exception):
+                    decision = await engine.evaluate(observation)
+                    dval = decision.value if hasattr(decision, "value") else str(decision)
+                    if _DECISION_PRIORITY.get(dval, 0) > _DECISION_PRIORITY.get(worst, 0):
+                        worst = dval
+
+                if confidence >= 0.7:
+                    try:
+                        alert = AlertRecord(
+                            alert_id=str(uuid.uuid4()),
+                            category=pattern_name,
+                            severity=(
+                                AlertSeverity.HIGH if confidence >= 0.9 else AlertSeverity.MEDIUM
+                            ),
+                            source="chat",
+                            actor_id=actor_id,
+                            target="chat",
+                            event="ai_pattern_detected",
+                            evidence={"snippet": text[:200]},
+                            created_at=datetime.now(UTC),
+                        )
+                        await alert_svc.create(alert)
+                        logger.info(
+                            "security alert created pattern=%s confidence=%s",
+                            pattern_name,
+                            confidence,
+                        )
+                    except Exception:
+                        logger.exception("alert_svc.create failed pattern=%s", pattern_name)
     except Exception:
-        # Best-effort. Nikdy nezhodi chat.
-        return "allow"
+        logger.exception("_apply_security_check failed")
+        return worst
 
     return worst
 
