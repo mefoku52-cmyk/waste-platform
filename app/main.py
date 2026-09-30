@@ -66,6 +66,7 @@ def _cors_origins() -> list[str]:
 
 def create_app() -> FastAPI:
     app = FastAPI(
+        redirect_slashes=False,
         title=settings.app_name,
         description=settings.app_description,
         version=settings.app_version,
