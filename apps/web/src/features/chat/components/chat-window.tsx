@@ -138,7 +138,7 @@ export const ChatWindow = ({ threadId }: { threadId: string }) => {
       </div>
 
       {/* MESSAGES */}
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4 sm:px-5">
+      <div className="flex-1 space-y-1 overflow-y-auto px-4 py-4 sm:px-5">
         {isLoading ? (
           <div className="space-y-3">
             {[0, 1, 2].map((i) => (
@@ -173,34 +173,51 @@ export const ChatWindow = ({ threadId }: { threadId: string }) => {
             </p>
           </div>
         ) : (
-          items.map((m: any) => {
+          items.map((m: any, idx: number) => {
             const mine = String(m.senderUserId) === myId;
+            const prev = idx > 0 ? items[idx - 1] : null;
+            const sameSender =
+              !!prev && String(prev.senderUserId) === String(m.senderUserId);
             return (
-              <div
-                key={m.id}
-                className={
-                  'max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ' +
-                  (mine ? 'ml-auto' : '')
-                }
-                style={
-                  mine
-                    ? {
-                        background: `linear-gradient(135deg, ${GOLD} 0%, ${GOLD_BRIGHT} 100%)`,
-                        color: '#090807',
-                      }
-                    : {
-                        background: 'rgba(201,168,76,0.06)',
-                        border: '1px solid color-mix(in srgb, #c9a84c 25%, transparent)',
-                        color: FG,
-                      }
-                }
-              >
-                <div className="whitespace-pre-wrap break-words">{m.body}</div>
+              <div key={m.id} className={sameSender ? 'mt-1' : 'mt-4'}>
                 <div
-                  className="mt-1 text-[10px]"
-                  style={{ color: mine ? 'rgba(9,8,7,0.65)' : MUTED }}
+                  className={
+                    'max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ' +
+                    (mine ? 'ml-auto' : 'mr-auto')
+                  }
+                  style={
+                    mine
+                      ? {
+                          background: `linear-gradient(135deg, ${GOLD} 0%, ${GOLD_BRIGHT} 100%)`,
+                          color: '#090807',
+                        }
+                      : {
+                          background: 'rgba(201,168,76,0.08)',
+                          border: '1px solid color-mix(in srgb, #c9a84c 30%, transparent)',
+                          color: FG,
+                        }
+                  }
                 >
-                  {formatTime(m.createdAt, t)}
+                  {!sameSender && (
+                    <div
+                      className={
+                        'mb-1 text-[10px] font-semibold uppercase tracking-wider ' +
+                        (mine ? 'text-right' : 'text-left')
+                      }
+                      style={{ color: mine ? 'rgba(9,8,7,0.75)' : GOLD }}
+                    >
+                      {mine ? 'Vy' : 'Druhá firma'}
+                    </div>
+                  )}
+                  <div className="whitespace-pre-wrap break-words">{m.body}</div>
+                  <div
+                    className={
+                      'mt-1 text-[10px] ' + (mine ? 'text-right' : 'text-left')
+                    }
+                    style={{ color: mine ? 'rgba(9,8,7,0.65)' : MUTED }}
+                  >
+                    {formatTime(m.createdAt, t)}
+                  </div>
                 </div>
               </div>
             );

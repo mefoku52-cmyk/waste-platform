@@ -45,7 +45,7 @@ export const CompanyForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-2xl p-6 bg-white rounded-lg shadow-md">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-2xl p-6 bg-slate-100">
       <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('companyForm.title')}</h2>
 
       {error && (
@@ -118,7 +118,12 @@ export const CompanyForm = () => {
         <Button type="button" variant="outline" onClick={() => router.back()}>
           Zrušiť
         </Button>
-        <Button type="submit" disabled={isPending}>
+        <Button
+          type="submit"
+          disabled={isPending}
+          style={{ background: '#c9a84c', color: '#090807', borderColor: '#c9a84c' }}
+          className="font-semibold hover:opacity-90"
+        >
           {isPending ? 'Ukladám...' : 'Registrovať'}
         </Button>
       </div>

@@ -61,16 +61,16 @@ export const ListingForm = () => {
 
   if (!isLoadingCompanies && !hasCompanies) {
     return (
-      <div className="w-full max-w-2xl rounded-2xl border border-slate-700/80 bg-slate-950/95 p-6 shadow-xl shadow-black/30 sm:p-8">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+      <div className="w-full max-w-2xl bg-slate-100 p-6 sm:p-8">
+        <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#c9a84c' }}>
           Prvý krok
         </p>
 
-        <h2 className="mt-2 text-xl font-bold text-white">
+        <h2 className="mt-2 text-xl font-bold text-slate-900">
           Najprv pridajte firmu
         </h2>
 
-        <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-300">
+        <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-700">
           Každá ponuka musí patriť konkrétnej firme. Po vytvorení firmy sa sem môžete
           okamžite vrátiť a pridať ponuku materiálu.
         </p>
@@ -78,16 +78,17 @@ export const ListingForm = () => {
         <div className="mt-6 flex flex-wrap gap-3">
           <Button
             type="button"
-            className="bg-emerald-600 text-white hover:bg-emerald-500"
+            className="font-semibold text-[#090807] hover:opacity-90"
+            style={{ background: '#c9a84c' }}
             onClick={() => router.push('/dashboard/companies/new')}
           >
-            + Pridať firmu
+            Pridať firmu
           </Button>
 
           <Button
             type="button"
             variant="outline"
-            className="border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800"
+            className="border-slate-400 bg-transparent text-slate-700 hover:bg-slate-200"
             onClick={() => router.push('/dashboard')}
           >
             Späť na dashboard
@@ -119,20 +120,20 @@ export const ListingForm = () => {
 
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="w-full max-w-2xl space-y-4 rounded-2xl border border-slate-700/80 bg-slate-950/95 p-6 shadow-xl shadow-black/30 sm:p-8"
+      className="w-full max-w-2xl space-y-4 bg-slate-100 p-6 sm:p-8"
     >
-      <div className="border-b border-slate-700/70 pb-4">
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+      <div className="border-b border-slate-300 pb-4">
+        <p className="text-[10px] font-semibold uppercase tracking-wider">
           Nová ponuka
         </p>
-        <h2 className="mt-1 text-xl font-bold text-white">{t('listingForm.titleAdd')}</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <h2 className="mt-1 text-xl font-bold text-slate-900">{t('listingForm.titleAdd')}</h2>
+        <p className="mt-1 text-sm text-slate-600">
           Vyplňte údaje o materiáli, ktorý chcete ponúknuť.
         </p>
       </div>
 
       {isLoadingCompanies && (
-        <div className="rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm text-slate-300">
+        <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm text-slate-700">
           Načítavam firmy…
         </div>
       )}
@@ -147,7 +148,7 @@ export const ListingForm = () => {
         <select
           {...register('companyId')}
           disabled={isPending || isLoadingCompanies}
-          className="h-10 w-full rounded-xl border border-slate-600 bg-slate-900 px-3 text-sm text-slate-100 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50"
+          className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <option value="">— vyberte firmu —</option>
           {companies.map((company: any) => (
@@ -178,7 +179,7 @@ export const ListingForm = () => {
 
       <FormField label="Popis" error={errors.description?.message}>
         <textarea
-          className="w-full rounded-xl border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30 disabled:cursor-not-allowed disabled:opacity-50"
           rows={3}
           {...register('description')}
           disabled={isPending || isLoadingCompanies}
@@ -196,7 +197,7 @@ export const ListingForm = () => {
         <input
           type="file"
           accept="image/*,.pdf"
-          className="mt-2 block w-full text-sm text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-2 file:text-sm file:font-medium file:text-slate-100 hover:file:bg-slate-700"
+          className="mt-2 block w-full text-sm text-slate-700 file:mr-3 file:rounded-lg file:border-0 file:bg-[#c9a84c] file:px-3 file:py-2 file:text-sm file:font-semibold file:text-[#090807] hover:file:opacity-90"
           disabled={isPending || isLoadingCompanies}
           onChange={async (event) => {
             const file = event.target.files?.[0];
@@ -278,11 +279,11 @@ export const ListingForm = () => {
         </FormField>
       </div>
 
-      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-700/70 pt-5">
+      <div className="flex flex-wrap justify-end gap-3 border-t border-slate-300 pt-5">
         <Button
           type="button"
           variant="outline"
-          className="border-slate-600 bg-slate-900 text-slate-100 hover:bg-slate-800"
+          className="border-slate-400 bg-transparent text-slate-700 hover:bg-slate-200"
           onClick={() => router.back()}
         >
           Zrušiť
@@ -291,7 +292,8 @@ export const ListingForm = () => {
         <Button
           type="submit"
           disabled={isPending || isLoadingCompanies || !hasCompanies}
-          className="bg-emerald-600 text-white hover:bg-emerald-500"
+          className="font-semibold text-[#090807] hover:opacity-90"
+          style={{ background: '#c9a84c' }}
         >
           {isPending ? 'Ukladám...' : 'Vytvoriť ponuku'}
         </Button>
