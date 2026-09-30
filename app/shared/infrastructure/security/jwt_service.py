@@ -72,6 +72,32 @@ class JwtService:
             payload.update(extra_claims)
         return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM), jti, expires_at
 
+    async def issue_2fa_token(self, subject: str) -> tuple[str, datetime]:
+        """Kratkodoby token, ktory opravnuje dokoncit 2FA login. 5 minut."""
+        issued_at = datetime.now(UTC)
+        expires_at = issued_at + timedelta(minutes=5)
+        jti = str(uuid4())
+        payload: dict[str, Any] = {
+            "sub": subject,
+            "type": "2fa",
+            "jti": jti,
+            "iat": issued_at,
+            "exp": expires_at,
+        }
+        return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM), expires_at
+
+    async def decode_2fa_token(self, token: str) -> dict[str, Any]:
+        """Overi 2FA token (typ='2fa') a vrati payload."""
+        try:
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        except jwt.ExpiredSignatureError:
+            raise TokenExpiredError("2FA token has expired")
+        except jwt.InvalidTokenError as e:
+            raise InvalidTokenError(f"Invalid 2FA token: {e!s}")
+        if payload.get("type") != "2fa":
+            raise TokenTypeMismatchError("Expected 2fa token")
+        return payload
+
     async def decode_and_validate(
         self, token: str, expected_type: str = "access"
     ) -> dict[str, Any]:

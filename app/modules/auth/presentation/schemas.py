@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
@@ -58,3 +59,49 @@ class VerifyEmailRequest(BaseModel):
 
 class ResendVerificationRequest(BaseModel):
     email: str = Field(min_length=3, max_length=255)
+
+
+# ─────────────────────────────────────────────────────────────
+# 2FA (TOTP)
+# ─────────────────────────────────────────────────────────────
+
+
+class TwoFactorLoginRequest(BaseModel):
+    twoFactorToken: str = Field(min_length=10, max_length=512)
+    code: str = Field(min_length=6, max_length=16)
+
+
+class TwoFactorSetupResponse(BaseModel):
+    secret: str
+    otpauthUri: str
+    qrSvg: str
+
+
+class TwoFactorVerifyRequest(BaseModel):
+    code: str = Field(min_length=6, max_length=16)
+
+
+class TwoFactorVerifyResponse(BaseModel):
+    ok: bool
+    backupCodes: list[str] = []
+
+
+class TwoFactorStatusResponse(BaseModel):
+    enabled: bool
+    verifiedAt: datetime | None = None
+
+
+class TwoFactorDisableRequest(BaseModel):
+    code: str = Field(min_length=6, max_length=16)
+
+
+class LoginResponse(BaseModel):
+    """Rozsireny login response — bud tokeny alebo 2FA challenge."""
+
+    requires2fa: bool = False
+    twoFactorToken: str | None = None
+
+    accessToken: str | None = None
+    refreshToken: str | None = None
+    tokenType: str = "Bearer"
+    expiresIn: int = 0

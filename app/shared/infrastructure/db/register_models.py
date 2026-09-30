@@ -34,4 +34,7 @@ from app.modules.listings.infrastructure.models import ListingsModel, ListingVie
 from app.modules.notifications.infrastructure.models import (
     NotificationModel,  # noqa: F401
 )
-from app.modules.users.infrastructure.models import UserModel  # noqa: F401
+from app.modules.users.infrastructure.models import (  # noqa: F401
+    User2FAModel,
+    UserModel,
+)

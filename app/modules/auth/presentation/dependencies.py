@@ -11,6 +11,7 @@ from app.modules.auth.application.services import (
     LogoutService,
     RefreshTokenService,
 )
+from app.modules.auth.application.two_factor import TwoFactorService
 from app.modules.company_memberships.infrastructure.repositories import (
     SqlAlchemyCompanyMembershipRepository,
 )
@@ -25,6 +26,12 @@ from app.shared.infrastructure.security.jwt_service import JwtService
 def get_jwt_service() -> JwtService:
     revocation_store = get_revocation_store()
     return JwtService(revocation_store=revocation_store)
+
+
+def get_two_factor_service(
+    session: Annotated[AsyncSession, Depends(get_db_session)],
+) -> TwoFactorService:
+    return TwoFactorService(session=session)
 
 
 def get_password_service() -> PasswordService:
@@ -48,12 +55,14 @@ def get_login_service(
     jwt_service: Annotated[JwtService, Depends(get_jwt_service)],
     password_service: Annotated[PasswordService, Depends(get_password_service)],
     session: Annotated[AsyncSession, Depends(get_db_session)],
+    two_factor_service: Annotated[TwoFactorService, Depends(get_two_factor_service)],
 ) -> LoginService:
     user_repo = SqlAlchemyUserRepository(session=session)
     return LoginService(
         jwt_service=jwt_service,
         user_repo=user_repo,
         password_service=password_service,
+        two_factor_service=two_factor_service,
     )
 
 

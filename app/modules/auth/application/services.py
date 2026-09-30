@@ -2,7 +2,7 @@ import logging
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from app.modules.auth.application.dto import AuthTokenPairDTO
+from app.modules.auth.application.dto import AuthTokenPairDTO, LoginResult
 from app.modules.users.infrastructure.repositories import SqlAlchemyUserRepository
 from app.shared.application.passwords import PasswordService
 from app.shared.domain.exceptions import UnauthorizedDomainError
@@ -25,12 +25,14 @@ class LoginService:
         jwt_service: JwtService,
         user_repo: SqlAlchemyUserRepository,
         password_service: PasswordService,
+        two_factor_service=None,
     ):
         self.jwt_service = jwt_service
         self.user_repo = user_repo
         self.password_service = password_service
+        self.two_factor_service = two_factor_service
 
-    async def execute(self, email: str, password: str) -> AuthTokenPairDTO:
+    async def execute(self, email: str, password: str) -> LoginResult:
         user = await self.user_repo.get_by_email(email)
         if not user or not self.password_service.verify_password(password, user.password_hash):
             raise UnauthorizedDomainError("Invalid credentials")
@@ -46,7 +48,34 @@ class LoginService:
                 "E-mail nie je overený. Skontrolujte si schránku a kliknite na verifikačný odkaz."
             )
 
-        subject = str(user.id)
+        # 2FA gate: ak ma user aktivnu 2FA, vratime len 2fa_token
+        if await self._two_factor_enabled(str(user.id)):
+            two_factor_token, _ = await self.jwt_service.issue_2fa_token(subject=str(user.id))
+            return LoginResult(
+                requires_2fa=True,
+                two_factor_token=two_factor_token,
+            )
+
+        return await self._issue_tokens(subject=str(user.id))
+
+    async def _two_factor_enabled(self, user_id: str) -> bool:
+        if self.two_factor_service is None:
+            return False
+        try:
+            return await self.two_factor_service.is_enabled(user_id=user_id)
+        except Exception:
+            return False
+
+    async def complete_login(self, *, user_id: str, code: str) -> LoginResult:
+        """Dokonci 2FA login po overeni kodu."""
+        if self.two_factor_service is None:
+            raise UnauthorizedDomainError("2FA not configured")
+        ok = await self.two_factor_service.verify_code(user_id=user_id, code=code)
+        if not ok:
+            raise UnauthorizedDomainError("Invalid 2FA code")
+        return await self._issue_tokens(subject=str(user_id))
+
+    async def _issue_tokens(self, *, subject: str) -> LoginResult:
         family_id = str(uuid4())
         access_token, access_expires_at = await self.jwt_service.issue_access_token(subject=subject)
         (
@@ -60,7 +89,8 @@ class LoginService:
 
         expires_in = int((access_expires_at - datetime.now(UTC)).total_seconds())
 
-        return AuthTokenPairDTO(
+        return LoginResult(
+            requires_2fa=False,
             access_token=access_token,
             refresh_token=refresh_token,
             token_type="Bearer",
