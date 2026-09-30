@@ -253,3 +253,171 @@ async def draft_batch(
             for i in items
         ],
     )
+
+
+# ══════════════════════════════════════════════════════════════
+# PENDING / SEND / SKIP  — automaticky outreach workflow
+# ══════════════════════════════════════════════════════════════
+
+
+class PendingCandidateItem(BaseModel):
+    id: str
+    company_name: str
+    ico: str | None = None
+    city: str | None = None
+    industry: str | None = None
+    email: str | None = None
+    subject: str | None = None
+    body: str | None = None
+    status: str
+    created_at: str | None = None
+
+
+class PendingCandidatesResponse(BaseModel):
+    count: int
+    items: list[PendingCandidateItem]
+
+
+class SendCandidateRequest(BaseModel):
+    to: str = Field(min_length=3, max_length=255)
+    subject: str = Field(min_length=1, max_length=255)
+    body: str = Field(min_length=1, max_length=20000)
+
+
+class SendCandidateResponse(BaseModel):
+    ok: bool
+    message: str
+    status: str = "sent"
+
+
+@router.get("/pending", response_model=PendingCandidatesResponse)
+async def list_pending_candidates(
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+    limit: int = 50,
+):
+    """Vrati vsetkych kandidatov so statusom drafted, ktori cakaju na odoslanie."""
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.domain.entities.outreach_candidate import (
+        OutreachStatus,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+    rows = await repo.list_by_status(
+        status=OutreachStatus.DRAFTED,
+        limit=limit,
+    )
+
+    items = [
+        PendingCandidateItem(
+            id=r.id,
+            company_name=r.company_name,
+            ico=r.ico,
+            city=r.city,
+            industry=r.industry,
+            email=r.email,
+            subject=r.draft_subject,
+            body=r.draft_body,
+            status=r.status.value,
+            created_at=r.created_at.isoformat() if r.created_at else None,
+        )
+        for r in rows
+    ]
+
+    return PendingCandidatesResponse(count=len(items), items=items)
+
+
+@router.post("/candidates/{candidate_id}/send", response_model=SendCandidateResponse)
+async def send_candidate_email(
+    candidate_id: str,
+    payload: SendCandidateRequest,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> SendCandidateResponse:
+    """Odesle jeden pripraveny email a oznaci kandidata ako 'sent'."""
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.domain.entities.outreach_candidate import (
+        OutreachStatus,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+    candidate = await repo.get_by_id(candidate_id)
+    if candidate is None:
+        raise HTTPException(status_code=404, detail="Kandidat sa nenasiel")
+
+    result = await send_via_resend(
+        session=session,
+        to=payload.to,
+        subject=payload.subject,
+        body=payload.body,
+    )
+
+    if not result.ok:
+        if "nie je nakonfigurovany" in result.message:
+            ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
+            if not ok:
+                return SendCandidateResponse(ok=False, message="SMTP zlyhalo.")
+        else:
+            return SendCandidateResponse(ok=False, message=result.message)
+
+    await repo.update_status(
+        candidate_id=candidate_id,
+        status=OutreachStatus.SENT,
+    )
+
+    await write_audit(
+        session=session,
+        actor_user_id=current_user_id(current_user),
+        action="lead_outreach.send_candidate",
+        target_type="outreach_candidate",
+        target_id=candidate_id,
+        details=f"to={payload.to},company={candidate.company_name}",
+    )
+
+    remaining = getattr(result, "remaining_today", None)
+    msg = result.message if result.ok else "Email odoslaný cez SMTP."
+    if remaining is not None:
+        msg = f"{msg} Zostáva dnes: {remaining}."
+
+    return SendCandidateResponse(ok=True, message=msg, status="sent")
+
+
+class SkipCandidateResponse(BaseModel):
+    ok: bool
+    status: str
+
+
+@router.post("/candidates/{candidate_id}/skip", response_model=SkipCandidateResponse)
+async def skip_candidate(
+    candidate_id: str,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> SkipCandidateResponse:
+    """Preskoci kandidata (status -> skipped)."""
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.domain.entities.outreach_candidate import (
+        OutreachStatus,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+    candidate = await repo.get_by_id(candidate_id)
+    if candidate is None:
+        raise HTTPException(status_code=404, detail="Kandidat sa nenasiel")
+
+    await repo.update_status(
+        candidate_id=candidate_id,
+        status=OutreachStatus.SKIPPED,
+    )
+    return SkipCandidateResponse(ok=True, status="skipped")

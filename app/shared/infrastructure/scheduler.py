@@ -49,7 +49,7 @@ async def run_lead_discover_job() -> None:
     from app.shared.infrastructure.db.session import AsyncSessionLocal
 
     async with AsyncSessionLocal() as session:
-        await run_daily_discover(session, draft=False)
+        await run_daily_discover(session, draft=True)
 
 
 def start_scheduler() -> AsyncIOScheduler | None:
