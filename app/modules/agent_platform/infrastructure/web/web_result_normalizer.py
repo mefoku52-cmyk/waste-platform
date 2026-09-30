@@ -1,4 +1,4 @@
-"""Normalization boundary for external search results."""
+"""Normalization of external web search results."""
 
 from dataclasses import dataclass
 
@@ -10,20 +10,16 @@ class NormalizedWebResult:
     title: str
     url: str
     snippet: str
-    source: str
+    source: str = "web"
 
 
 class WebResultNormalizer:
-    """Converts external results into safe internal records.
-
-    This class deliberately does not interpret page content as instructions.
-    """
+    """Converts raw web results into safe internal records."""
 
     @staticmethod
     def normalize(result: WebSearchResult) -> NormalizedWebResult:
         return NormalizedWebResult(
-            title=result.title.strip(),
-            url=result.url.strip(),
-            snippet=(result.snippet or "").strip(),
-            source=(result.source or "external").strip(),
+            title=result.title.strip()[:300],
+            url=result.url.strip()[:2000],
+            snippet=(result.snippet or "").strip()[:500],
         )
