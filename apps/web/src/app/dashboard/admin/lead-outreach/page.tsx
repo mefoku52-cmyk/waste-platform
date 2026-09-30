@@ -482,15 +482,6 @@ export default function LeadOutreachPage() {
             >
               {busyDiscover ? 'Hľadám…' : 'Nájsť 30 nových firiem'}
             </button>
-            <Link
-              href="/dashboard/admin/lead-outreach/batch"
-              className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
-              style={{ background: GOLD, color: BG }}
-            >
-              📦 Dávkové oslovenie
-
- (max 30)
-            </Link>
           </div>
           {found.length ? (
             <section
@@ -535,77 +526,66 @@ export default function LeadOutreachPage() {
             </section>
           ) : null}
 
-          <section
-            className="rounded-2xl border p-5 md:p-6"
-            style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
-          >
-            <h2
-              className="mb-4 text-xl"
-              style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
+          <details className="mb-6 rounded-2xl border p-5 md:p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+            <summary
+              className="cursor-pointer text-sm font-semibold"
+              style={{ color: GOLD_BRIGHT }}
             >
-              1. Firma
-            </h2>
+              + Pridať firmu manuálne (jednorazový draft)
+            </summary>
+            <div className="mt-4">
+              <div className="grid gap-3 md:grid-cols-2">
+                <input
+                  placeholder={t('admin.phCompanyName')}
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className="h-12 rounded-lg border px-4 text-sm outline-none"
+                  style={inputStyle}
+                />
+                <input
+                  placeholder={t('admin.phCity')}
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  className="h-12 rounded-lg border px-4 text-sm outline-none"
+                  style={inputStyle}
+                />
+                <input
+                  placeholder={t('admin.phIndustry')}
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  className="h-12 rounded-lg border px-4 text-sm outline-none"
+                  style={inputStyle}
+                />
+                <input
+                  placeholder={t('admin.phEmail')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-12 rounded-lg border px-4 text-sm outline-none"
+                  style={inputStyle}
+                />
+              </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
-              <input
-                placeholder={t('admin.phCompanyName')}
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="h-12 rounded-lg border px-4 text-sm outline-none"
+              <textarea
+                placeholder="Dôvod kontaktovania (napr. Firma spracúva drevo a mohla by mať záujem o predaj pilín.)"
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                rows={3}
+                className="mt-3 w-full resize-none rounded-lg border p-3 text-sm outline-none"
                 style={inputStyle}
               />
-              <input
-                placeholder={t('admin.phCity')}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="h-12 rounded-lg border px-4 text-sm outline-none"
-                style={inputStyle}
-              />
-              <input
-                placeholder={t('admin.phIndustry')}
-                value={industry}
-                onChange={(e) => setIndustry(e.target.value)}
-                className="h-12 rounded-lg border px-4 text-sm outline-none"
-                style={inputStyle}
-              />
-              <input
-                placeholder={t('admin.phEmail')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 rounded-lg border px-4 text-sm outline-none"
-                style={inputStyle}
-              />
+
+              <button
+                type="button"
+                onClick={() => void draftFrom({ company_name: companyName, city, industry, reason })}
+                disabled={busyDraft || !companyName.trim()}
+                className="mt-4 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+                style={{ background: GOLD, color: BG }}
+              >
+                {busyDraft ? 'Pripravujem…' : 'Vygenerovať návrh'}
+              </button>
             </div>
+          </details>
 
-            <textarea
-              placeholder="Dôvod kontaktovania (napr. Firma spracúva drevo a mohla by mať záujem o predaj pilín.)"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              rows={3}
-              className="mt-3 w-full resize-none rounded-lg border p-3 text-sm outline-none"
-              style={inputStyle}
-            />
-
-            <button
-              type="button"
-              onClick={() => void draftFrom({ company_name: companyName, city, industry, reason })}
-              disabled={busyDraft || !companyName.trim()}
-              className="mt-4 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
-              style={{ background: GOLD, color: BG }}
-            >
-              {busyDraft ? 'Pripravujem…' : '✨ Vygenerovať návrh'}
-            </button>
-          </section>
-
-          <section
-            className="mt-6 rounded-2xl border p-5 md:p-6"
-            style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
-          >
-            <h2
-              className="mb-4 text-xl"
-              style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
-            >
-              
           <section
             className="mt-6 rounded-2xl border p-5 md:p-6"
             style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}
@@ -613,93 +593,64 @@ export default function LeadOutreachPage() {
             <h2 className="text-lg font-semibold" style={{ color: GOLD }}>
               Dávka z CSV
             </h2>
-            <p className="mt-1 text-sm" style={{ color: MUTED }}>
-              Názov, Mesto, Odvetvie, email@firma.sk — max 30 riadkov.
+            <p className="mt-2 text-sm" style={{ color: MUTED }}>
+              Pre hromadné oslovenie (max 30 firiem) použi samostatnú stránku.
             </p>
-            <input
-              type="file"
-              accept=".csv,text/csv,text/plain"
-              className="mt-3 block text-sm"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                  const text = String(reader.result || '');
-                  const lines = text
-                    .split(/\r?\n/)
-                    .map((ln) => ln.trim())
-                    .filter(
-                      (ln) =>
-                        ln &&
-                        !ln.toLowerCase().startsWith('nazov') &&
-                        !ln.toLowerCase().startsWith('názov'),
-                    );
-                  setBatchText(lines.slice(0, 30).join('\n'));
-                };
-                reader.readAsText(file);
-              }}
-            />
-            <textarea
-              id="batch-lines"
-              value={batchText}
-              onChange={(e) => setBatchText(e.target.value)}
-              rows={8}
-              placeholder="DrevoSK s.r.o., Prešov, drevo, info@drevo.sk"
-              className="mt-3 w-full rounded-lg border p-3 text-sm outline-none"
-              style={inputStyle}
-            />
-            <button
-              type="button"
-              onClick={() => void draftFromCsv()}
-              disabled={busyDraft || !batchText.trim()}
-              className="mt-3 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
-              style={{ background: '#c9a84c', color: '#090807' }}
-            >
-              {busyDraft ? 'Pripravujem drafty…' : 'Vygenerovať drafty z CSV'}
-            </button>
-          </section>
-
-          2. Náhľad a odoslanie
-            </h2>
-
-            <input
-              placeholder={t('admin.phSubject')}
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="h-12 w-full rounded-lg border px-4 text-sm outline-none"
-              style={inputStyle}
-            />
-            <textarea
-              placeholder={t('admin.phBody')}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={12}
-              className="mt-3 w-full resize-y rounded-lg border p-3 text-sm outline-none"
-              style={inputStyle}
-            />
-
-            <button
-              type="button"
-              onClick={() => void send()}
-              disabled={busySend || !subject.trim() || !body.trim() || !email.trim()}
-              className="mt-4 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+            <Link
+              href="/dashboard/admin/lead-outreach/batch"
+              className="mt-4 inline-block rounded-full px-5 py-2 text-sm font-semibold"
               style={{ background: GOLD, color: BG }}
             >
-              {busySend ? 'Odosielam…' : '📤 Poslať email'}
-            </button>
-
-            {err ? (
-              <p className="mt-3 text-sm" style={{ color: DANGER }}>
-                {err}
-              </p>
-            ) : null}
-            {okMsg ? (
-              <p className="mt-3 text-sm" style={{ color: OK }}>
-                {okMsg}
-              </p>
-            ) : null}
+              Otvoriť dávkové oslovenie
+            </Link>
           </section>
+
+          <details className="mt-6 rounded-2xl border p-5 md:p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
+            <summary
+              className="cursor-pointer text-sm font-semibold"
+              style={{ color: GOLD_BRIGHT }}
+            >
+              2. Manuálny náhľad a odoslanie (len pre jednu firmu)
+            </summary>
+            <div className="mt-4">
+              <input
+                placeholder={t('admin.phSubject')}
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="h-12 w-full rounded-lg border px-4 text-sm outline-none"
+                style={inputStyle}
+              />
+              <textarea
+                placeholder={t('admin.phBody')}
+                value={body}
+                onChange={(e) => setBody(e.target.value)}
+                rows={12}
+                className="mt-3 w-full resize-y rounded-lg border p-3 text-sm outline-none"
+                style={inputStyle}
+              />
+
+              <button
+                type="button"
+                onClick={() => void send()}
+                disabled={busySend || !subject.trim() || !body.trim() || !email.trim()}
+                className="mt-4 rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+                style={{ background: GOLD, color: BG }}
+              >
+                {busySend ? 'Odosielam…' : 'Poslať email'}
+              </button>
+
+              {err ? (
+                <p className="mt-3 text-sm" style={{ color: DANGER }}>
+                  {err}
+                </p>
+              ) : null}
+              {okMsg ? (
+                <p className="mt-3 text-sm" style={{ color: OK }}>
+                  {okMsg}
+                </p>
+              ) : null}
+            </div>
+          </details>
         </main>
 
         <DashboardFooter />
