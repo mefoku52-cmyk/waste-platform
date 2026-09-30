@@ -91,36 +91,35 @@ export default function LandingPage() {
               style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)' }}
             >
               <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-                VITAJTE NA PLATFORME
+                {t('landing.heroKicker')}
               </p>
               <h1 className="ff text-4xl font-normal leading-[1.05] tracking-[-0.02em] md:text-6xl">
                 TRČ · CMEP
               </h1>
               <p className="ff mt-4 text-2xl italic leading-snug md:text-3xl" style={{ color: GOLD_BRIGHT }}>
-                Menej odpadu. Viac obchodu.
+                {t('landing.heroSlogan')}
               </p>
               <p className="mt-3 text-base md:text-lg" style={{ color: GOLD_BRIGHT }}>
-                Trhovisko firiem a obehových materiálov — filtruj, hľadaj, dohodni.
+                {t('landing.heroSubtitle')}
               </p>
               <p className="mt-4 max-w-2xl text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
-                Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty,
-                žiadny spam. Filtruj, hľadaj, dohodni — všetko na jednom mieste.
+                {t('landing.heroDesc')}
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link href="/register" className="rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-                  ➕ Pridať ponuku
+                  {t('landing.heroCtaAdd')}
                 </Link>
                 <Link href="#trh" className="rounded-md border px-6 py-3 text-sm" style={{ borderColor: 'color-mix(in srgb, #c9a84c 45%, transparent)', color: FG }}>
-                  Pozrieť živý trh
+                  {t('landing.heroCtaMarket')}
                 </Link>
               </div>
 
               <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
                 {[
-                  { v: '447,6', l: 'TON NA TRHU' },
-                  { v: '8', l: 'OVERENÝCH FIRIEM' },
-                  { v: '10', l: 'ŽIVÝCH PONÚK', dot: true },
+                  { v: '447,6', l: t('landing.statsTons') },
+                  { v: '8', l: t('landing.statsVerified') },
+                  { v: '10', l: t('landing.statsLive'), dot: true },
                 ].map((s) => (
                   <div key={s.l}>
                     <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>
@@ -142,23 +141,23 @@ export default function LandingPage() {
         {/* PRÁVE TERAZ */}
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PRÁVE TERAZ</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.nowKicker')}</p>
             <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Materiál, ktorý ešte čaká na svojho kupca.</h2>
             <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_25%,transparent)]">
               <span
                 className="absolute right-4 top-4 z-10 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
                 style={{ borderColor: GOLD, color: GOLD_BRIGHT, background: 'rgba(9,8,7,0.85)' }}
               >
-                VZOR · takto vyzerá reálna ponuka
+                {t('landing.nowBadge')}
               </span>
               <div className="relative aspect-[16/9] w-full">
                 <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1600&q=80" alt={t('landing.sawdust')} className="h-full w-full object-cover opacity-70 transition group-hover:opacity-90" />
                 <div className="grad absolute inset-0" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <p className="mb-3 text-[10px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>DNES NA STOLE</p>
+                  <p className="mb-3 text-[10px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.nowOnTable')}</p>
                   <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>{t('landing.sawdust')}</p>
-                  <p className="mt-2 text-sm md:text-base" style={{ color: FG }}>Mám na ponuku predaj pilovín, asi 300 t.</p>
-                  <p className="mt-3 text-xs" style={{ color: MUTED }}>Žilina · Drevo · 300 t</p>
+                  <p className="mt-2 text-sm md:text-base" style={{ color: FG }}>{t('landing.nowDesc')}</p>
+                  <p className="mt-3 text-xs" style={{ color: MUTED }}>{t('landing.nowMeta')}</p>
                 </div>
               </div>
             </Link>
@@ -168,19 +167,18 @@ export default function LandingPage() {
         {/* PREČO CMEP */}
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>PREČO CMEP</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.whyKicker')}</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
               CMEP — Circular Materials Exchange Platform.
             </h2>
 
             <div className="mt-8 max-w-3xl space-y-5 text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
               <p>
-                Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu
-                materiálu, ktorý by iný dokázal využiť. <strong style={{ color: FG }}>My to meníme.</strong>
+                {t('landing.whyP1')} <strong style={{ color: FG }}>{t('landing.whyP1Bold')}</strong>
               </p>
               <p>
-                <strong style={{ color: FG }}>CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú.</strong>
-                Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.
+                <strong style={{ color: FG }}>{t('landing.whyP2Bold')}</strong>
+                {t('landing.whyP2Rest')}
               </p>
             </div>
 
@@ -189,25 +187,25 @@ export default function LandingPage() {
               <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
                 <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forCompanies')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
-                  Nižšie náklady, nové príjmy, jednoduchšie hľadanie surovín.
+                  {t('landing.forCompaniesDesc')}
                 </p>
               </div>
               <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
                 <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forPeople')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
-                  Čistejšie prostredie, menej skládok, lepšia budúcnosť.
+                  {t('landing.forPeopleDesc')}
                 </p>
               </div>
               <div className="rounded-2xl border p-6" style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)' }}>
                 <p className="ff mb-2 text-2xl" style={{ color: GOLD_BRIGHT }}>{t('landing.forPlanet')}</p>
                 <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
-                  Menej odpadu, viac obehu, viac času.
+                  {t('landing.forPlanetDesc')}
                 </p>
               </div>
             </div>
 
             <p className="ff mt-10 text-2xl italic leading-tight md:text-3xl" style={{ color: GOLD_BRIGHT }}>
-              CMEP — pretože čistota nie je luxus. Je to zodpovednosť.
+              {t('landing.whyFooter')}
             </p>
           </div>
         </section>
@@ -215,8 +213,8 @@ export default function LandingPage() {
         {/* ČO SA TU HÝBE */}
         <section id="trh" className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>ČO SA TU HÝBE</p>
-            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Päť prúdov. Jeden trh. Nekonečné možnosti.</h2>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.flowsKicker')}</p>
+            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.flowsTitle')}</h2>
             <div className="flex flex-col gap-5">
               {MATERIALS.map((m) => (
                 <Link key={m.key} href={`/dashboard?cat=${m.key}`} className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_20%,transparent)]">
@@ -324,25 +322,25 @@ export default function LandingPage() {
                   <p className="text-xs" style={{ color: MUTED }}>Circular Materials Exchange Platform</p>
                 </div>
               </div>
-              <p className="text-sm" style={{ color: MUTED }}>Súkromná burza. Overené firmy. Kontakty, ktoré patria vám.</p>
+              <p className="text-sm" style={{ color: MUTED }}>{t('landing.footerTagline')}</p>
             </div>
             <div className="mt-8 grid grid-cols-2 gap-6">
               <div>
-                <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>TRH</p>
+                <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t('footer.marketSection')}</p>
                 <Link href="/dashboard" className="block py-1 text-sm" style={{ color: FG }}>{t('landing.marketplace')}</Link>
                 <Link href="/dashboard" className="block py-1 text-sm" style={{ color: FG }}>{t('landing.companies')}</Link>
                 <Link href="#preco" className="block py-1 text-sm" style={{ color: FG }}>{t('landing.about')}</Link>
               </div>
               <div>
-                <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>DÔVERA</p>
-                <span className="block py-1 text-sm" style={{ color: FG }}>Overené IČO</span>
+                <p className="mb-3 text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t('footer.trust')}</p>
+                <span className="block py-1 text-sm" style={{ color: FG }}>{t('footer.verifiedIco')}</span>
                 <span className="block py-1 text-sm" style={{ color: FG }}>{t('landing.hiddenContacts')}</span>
                 <span className="block py-1 text-sm" style={{ color: FG }}>{t('landing.privateExchange')}</span>
               </div>
             </div>
             <div className="mt-10 flex items-center justify-between border-t pt-6 text-xs" style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)', color: FAINT }}>
               <span>© CMEP · Circular Materials Exchange Platform · Slovensko</span>
-              <span>JAZYK: SK</span>
+              <span>{t('footer.langLabel')}: SK</span>
             </div>
           </div>
         </footer>
