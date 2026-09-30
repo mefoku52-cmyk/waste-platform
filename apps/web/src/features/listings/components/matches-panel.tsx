@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useMatches } from '../hooks/use-matches';
 import { Input } from '../../../components/ui/input';
 import { Button } from '../../../components/ui/button';
-import { useT } from '@/lib/i18n/context';
 
 export const MatchesPanel = () => {
   const [material, setMaterial] = useState('kov');
@@ -18,7 +17,7 @@ export const MatchesPanel = () => {
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2 items-end">
         <div className="flex-1 min-w-[160px]">
-          <label className="mb-1 block text-xs text-gray-500">{t('tables.materialType')}</label>
+          <label className="mb-1 block text-xs text-gray-500">Typ materiálu</label>
           <Input
             value={material}
             onChange={(e) => setMaterial(e.target.value)}
@@ -45,10 +44,10 @@ export const MatchesPanel = () => {
           <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.title')}</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.material')}</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.location')}</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.quantity')}</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-900">Názov</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-900">Materiál</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-900">Lokalita</th>
+                <th className="px-4 py-2 text-left font-medium text-gray-900">Množstvo</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">

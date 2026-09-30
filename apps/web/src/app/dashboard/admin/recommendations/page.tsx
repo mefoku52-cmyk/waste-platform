@@ -3,7 +3,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { config } from '@/lib/config';
 import { getListingRecommendations } from '@/features/recommendations/api';
-import { useT } from '@/lib/i18n/context';
 
 type ListingRow = { id: string; title: string; materialType?: string; location?: string };
 
@@ -22,7 +21,6 @@ async function fetchListings(): Promise<ListingRow[]> {
 }
 
 export default function AdminRecommendationsPage() {
-  const { t } = useT();
   const listingsQuery = useQuery({ queryKey: ['admin-listings'], queryFn: fetchListings });
   const firstId = listingsQuery.data?.[0]?.id;
   const recQuery = useQuery({
@@ -33,8 +31,8 @@ export default function AdminRecommendationsPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl bg-[#070707] p-6 text-[#f3e6c4]">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">{t('admin.recommendationsKicker')}</p>
-      <h1 className="mt-1 font-serif text-3xl">{t('admin.recommendationsTitle')}</h1>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">Admin</p>
+      <h1 className="mt-1 font-serif text-3xl">Odporucania</h1>
       <p className="mt-2 text-sm text-[#cbb98a]">Prehlad match-ov. Ziadny auto-deal.</p>
       {listingsQuery.error && <p className="mt-4 text-red-300">{(listingsQuery.error as Error).message}</p>}
       <ul className="mt-4 space-y-2">

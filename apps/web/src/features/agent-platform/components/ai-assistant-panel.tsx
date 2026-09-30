@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { http } from '@/lib/api/http';
-import { useT } from '@/lib/i18n/context';
 
 type ChatResponse = {
   status: string;
@@ -32,7 +31,6 @@ const TONE_PREFIX: Record<string, string> = {
 };
 
 export function AiAssistantPanel({ listingId, listingTitle }: Props) {
-  const { t } = useT();
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [reply, setReply] = useState<string | null>(null);
@@ -41,8 +39,7 @@ export function AiAssistantPanel({ listingId, listingTitle }: Props) {
   const [minimized, setMinimized] = useState(false);
   const [tone, setTone] = useState<string>('vecny');
 
- 
-  const { t } = useT(); async function send() {
+  async function send() {
     const text = message.trim();
     if (!text || busy) return;
     setBusy(true);
@@ -140,7 +137,7 @@ export function AiAssistantPanel({ listingId, listingTitle }: Props) {
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder={t('aiAssistant.placeholder')}
+            placeholder="Napíš otázku..."
             rows={3}
             disabled={busy}
             className="mt-4 w-full rounded-lg border p-3 text-sm"

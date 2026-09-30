@@ -2,7 +2,6 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { config } from '../../../lib/config';
-import { useT } from '@/lib/i18n/context';
 
 type Carrier = {
   name: string;
@@ -30,7 +29,6 @@ async function fetchCarriers(near: string): Promise<Carrier[]> {
 }
 
 export function FreightPanel({ near }: { near?: string }) {
-  const { t } = useT();
   const enabled = !!near;
   const { data, isLoading, error } = useQuery({
     queryKey: ['company-carriers', near],
@@ -40,8 +38,8 @@ export function FreightPanel({ near }: { near?: string }) {
 
   return (
     <section className="mt-6 rounded-2xl border border-[#d4af37]/35 bg-black p-6 text-[#f3e6c4]">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">{t('freight.kicker')}</p>
-      <h2 className="mt-1 font-serif text-2xl">{t('freight.title')}</h2>
+      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">Spedicia</p>
+      <h2 className="mt-1 font-serif text-2xl">Dopravcovia v okoli</h2>
       <p className="mt-1 text-sm text-[#cbb98a]">
         Firmy s logistikou pri {near || 'destinacii'}. Nie objednavka.
       </p>

@@ -49,8 +49,8 @@ function VerifyEmailSentContent() {
           sme poslali odkaz na overenie účtu. Kliknite naň a dokončite registráciu.
         </p>
         <p className="text-xs leading-relaxed">
-          Ak e-mail nevidíte, skontrolujte priečinok <strong>{t('auth.sentSpamBold')}</strong> alebo{' '}
-          <strong>{t('auth.sentPromotions')}</strong>. Odkaz je platný 24 hodín.
+          Ak e-mail nevidíte, skontrolujte priečinok <strong>Spam</strong> alebo{' '}
+          <strong>Promócie</strong>. Odkaz je platný 24 hodín.
         </p>
 
         <div className="pt-3 border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">

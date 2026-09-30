@@ -71,11 +71,11 @@ export const ListingsTable = () => {
       <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.title')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.quantity')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.unit')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.status')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.actions')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Názov</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Množstvo</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Jednotka</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Akcie</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">

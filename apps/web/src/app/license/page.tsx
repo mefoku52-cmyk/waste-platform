@@ -1,6 +1,5 @@
 'use client';
 import Link from 'next/link';
-import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -10,7 +9,6 @@ const MUTED = '#9a8f7c';
 const FAINT = '#6e6658';
 
 export default function LicensePage() {
-  const { t } = useT();
   const year = new Date().getFullYear();
   const today = new Date().toLocaleDateString('sk-SK');
 
@@ -25,8 +23,8 @@ export default function LicensePage() {
               <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.25rem' }}>CMEP</span>
             </Link>
             <div className="ml-auto flex gap-4 text-sm">
-              <Link href="/terms" style={{ color: MUTED }}>{t('legal.terms')}</Link>
-              <Link href="/privacy" style={{ color: MUTED }}>{t('legal.privacy')}</Link>
+              <Link href="/terms" style={{ color: MUTED }}>Podmienky</Link>
+              <Link href="/privacy" style={{ color: MUTED }}>Súkromie</Link>
             </div>
           </div>
         </header>
@@ -67,7 +65,7 @@ export default function LicensePage() {
                 <li>Dizajn, UI/UX, farebnú schému, typografiu</li>
                 <li>Logo TRČ a vizuálnu identitu</li>
                 <li>Texty, popisy, marketingové materiály</li>
-                <li>{t('legal.noDbSchema')}</li>
+                <li>Databázovú schému a štruktúru</li>
                 <li>API a dokumentáciu</li>
               </ul>
             </section>
@@ -82,11 +80,11 @@ export default function LicensePage() {
               <p className="mt-3">Táto licencia <strong style={{ color: FG }}>neoprávňuje</strong> používateľa:</p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>Kopírovať, distribuovať alebo predávať zdrojový kód platformy</li>
-                <li>{t('legal.noReverse')}</li>
+                <li>Vykonávať reverse engineering alebo dekompiláciu</li>
                 <li>Automatizovane sťahovať obsah (scraping, crawling) bez písomného súhlasu</li>
                 <li>Používať logo TRČ alebo ochrannú známku CMEP na komerčné účely</li>
-                <li>{t('legal.noDerived')}</li>
-                <li>{t('legal.noBypass')}</li>
+                <li>Vytvárať odvodené diela bez písomného súhlasu</li>
+                <li>Obchádzať bezpečnostné opatrenia alebo autorizačné mechanizmy</li>
               </ul>
             </section>
 
@@ -98,9 +96,9 @@ export default function LicensePage() {
                 prevádzkovateľovi <strong style={{ color: FG }}>bezplatnú, nevýhradnú licenciu</strong> na:
               </p>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li>{t('legal.viewContent')}</li>
-                <li>{t('legal.storeContent')}</li>
-                <li>{t('legal.notifyContent')}</li>
+                <li>Zobrazenie obsahu v rámci platformy</li>
+                <li>Uloženie obsahu v databáze</li>
+                <li>Zasielanie notifikácií súvisiacich s obsahom</li>
               </ul>
               <p className="mt-3">
                 Táto licencia zaniká v momente, keď používateľ obsah vymaže alebo vymaže svoj účet,

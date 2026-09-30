@@ -90,7 +90,7 @@ export const ChatWindow = ({ threadId }: { threadId: string }) => {
           <textarea
             className="flex-1 resize-none rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 outline-none focus:border-emerald-400"
             rows={2}
-            placeholder={t('chatWidget.placeholder')}
+            placeholder="Napíš správu..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={(e) => {

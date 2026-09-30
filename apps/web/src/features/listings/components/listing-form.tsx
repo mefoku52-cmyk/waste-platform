@@ -143,7 +143,7 @@ export const ListingForm = () => {
         </div>
       )}
 
-      <FormField label={t('listingForm.company')} error={errors.companyId?.message}>
+      <FormField label="Firma" error={errors.companyId?.message}>
         <select
           {...register('companyId')}
           disabled={isPending || isLoadingCompanies}
@@ -162,7 +162,7 @@ export const ListingForm = () => {
         <Input
           {...register('title')}
           disabled={isPending || isLoadingCompanies}
-          placeholder={t('listingForm.titlePh')}
+          placeholder="Zvyšky železa"
           className="rounded-xl"
         />
       </FormField>
@@ -176,7 +176,7 @@ export const ListingForm = () => {
         />
       </FormField>
 
-      <FormField label={t('listingForm.description')} error={errors.description?.message}>
+      <FormField label="Popis" error={errors.description?.message}>
         <textarea
           className="w-full rounded-xl border border-slate-600 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50"
           rows={3}
@@ -185,7 +185,7 @@ export const ListingForm = () => {
         />
       </FormField>
 
-      <FormField label={t('listingForm.imageUrl')} error={(errors as any).imageUrl?.message}>
+      <FormField label="URL fotky (voliteľné)" error={(errors as any).imageUrl?.message}>
         <Input
           placeholder="https://... alebo nahrajte súbor nižšie"
           {...register('imageUrl')}
@@ -218,7 +218,7 @@ export const ListingForm = () => {
       </FormField>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label={t('listingForm.quantity')} error={errors.quantity?.message}>
+        <FormField label="Množstvo" error={errors.quantity?.message}>
           <Input
             type="number"
             step="0.01"
@@ -228,7 +228,7 @@ export const ListingForm = () => {
           />
         </FormField>
 
-        <FormField label={t('listingForm.unit')} error={errors.unit?.message}>
+        <FormField label="Jednotka" error={errors.unit?.message}>
           <Input
             {...register('unit')}
             disabled={isPending || isLoadingCompanies}
@@ -239,7 +239,7 @@ export const ListingForm = () => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label={t('listingForm.price')} error={errors.price?.message}>
+        <FormField label="Cena (voliteľné)" error={errors.price?.message}>
           <Input
             type="number"
             step="0.01"
@@ -249,7 +249,7 @@ export const ListingForm = () => {
           />
         </FormField>
 
-        <FormField label={t('listingForm.currency')} error={errors.currency?.message}>
+        <FormField label="Mena" error={errors.currency?.message}>
           <Input
             {...register('currency')}
             disabled={isPending || isLoadingCompanies}
@@ -268,11 +268,11 @@ export const ListingForm = () => {
           />
         </FormField>
 
-        <FormField label={t('listingForm.location')} error={errors.location?.message}>
+        <FormField label="Lokalita" error={errors.location?.message}>
           <Input
             {...register('location')}
             disabled={isPending || isLoadingCompanies}
-            placeholder={t('listingForm.locationPh')}
+            placeholder="Bratislava"
             className="rounded-xl"
           />
         </FormField>

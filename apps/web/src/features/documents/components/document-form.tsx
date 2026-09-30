@@ -9,7 +9,6 @@ import { config } from '../../../lib/config';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
-import { useT } from '@/lib/i18n/context';
 
 export const DocumentForm = () => {
   const router = useRouter();
@@ -68,7 +67,7 @@ export const DocumentForm = () => {
 
   return (
     <form onSubmit={onSubmit} className="w-full max-w-md space-y-4 rounded-lg bg-white p-6 shadow-md">
-      <h2 className="mb-2 text-2xl font-bold text-gray-900">{t('documentForm.title')}</h2>
+      <h2 className="mb-2 text-2xl font-bold text-gray-900">Pridať dokument</h2>
 
       {(localError || error) && (
         <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-600">
@@ -76,15 +75,15 @@ export const DocumentForm = () => {
         </div>
       )}
 
-      <FormField label={t('documentForm.name')}>
+      <FormField label="Názov">
         <Input value={title} onChange={(e) => setTitle(e.target.value)} disabled={busy} />
       </FormField>
 
-      <FormField label={t('documentForm.type')}>
+      <FormField label="Typ (certificate, invoice, other)">
         <Input value={documentType} onChange={(e) => setDocumentType(e.target.value)} disabled={busy} />
       </FormField>
 
-      <FormField label={t('documentForm.file')}>
+      <FormField label="Súbor (pdf, jpg, png)">
         <input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*"
@@ -98,7 +97,7 @@ export const DocumentForm = () => {
         )}
       </FormField>
 
-      <FormField label={t('documentForm.fileUrl')}>
+      <FormField label="URL súboru">
         <Input
           value={fileUrl}
           onChange={(e) => setFileUrl(e.target.value)}
@@ -107,7 +106,7 @@ export const DocumentForm = () => {
         />
       </FormField>
 
-      <FormField label={t('documentForm.company')}>
+      <FormField label="Firma">
         <select
           className="w-full rounded border border-gray-300 px-3 py-2 text-sm"
           value={companyId}

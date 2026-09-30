@@ -1,7 +1,6 @@
 'use client';
 
 import { useCompliance } from '../hooks/use-compliance';
-import { useT } from '@/lib/i18n/context';
 
 export const ComplianceTable = () => {
   const { data, isLoading, error } = useCompliance();
@@ -15,10 +14,10 @@ export const ComplianceTable = () => {
       <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.regulation')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.document')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.status')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.note')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Regulácia</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Dokument</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">Poznámka</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">

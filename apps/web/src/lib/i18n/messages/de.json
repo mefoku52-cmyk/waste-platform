@@ -185,20 +185,10 @@
     "locationLabel": "Ort",
     "imageLabel": "Foto-URL",
     "submit": "Angebot erstellen",
-    "saving": "Speichern...",
-    "company": "Unternehmen",
-    "titlePh": "Eisenschrott",
-    "description": "Beschreibung",
-    "imageUrl": "Bild-URL (optional)",
-    "quantity": "Menge",
-    "unit": "Einheit",
-    "price": "Preis (optional)",
-    "currency": "Währung",
-    "location": "Standort",
-    "locationPh": "Bratislava"
+    "saving": "Speichern..."
   },
   "companyForm": {
-    "title": "Neues Unternehmen registrieren",
+    "title": "Neue Firma",
     "titleAdd": "Firma hinzufügen",
     "legalNameLabel": "Rechtlicher Name",
     "tradingNameLabel": "Handelsname",
@@ -210,20 +200,7 @@
     "cityLabel": "Stadt",
     "pscLabel": "Postleitzahl",
     "countryLabel": "Land",
-    "submit": "Firma erstellen",
-    "seller": "Verkäufer",
-    "buyer": "Käufer",
-    "logistics": "Logistik",
-    "legalName": "Rechtlicher Name",
-    "legalNamePh": "Firma GmbH",
-    "tradingName": "Handelsname (optional)",
-    "registrationNumber": "Registrierungsnummer",
-    "companyType": "Unternehmenstyp (Rolle)",
-    "countryCode": "Ländercode",
-    "address": "Adresse",
-    "city": "Stadt",
-    "email": "Unternehmens-E-Mail",
-    "phone": "Telefon"
+    "submit": "Firma erstellen"
   },
   "tables": {
     "name": "Name",
@@ -244,22 +221,7 @@
     "adminMode": "Admin-Modus – Sie können Firmen genehmigen.",
     "adminOnly": "Nur ein Administrator kann genehmigen.",
     "companyMustBeVerified": "Firma muss verifiziert sein.",
-    "publishToMarketplace": "Im Marktplatz veröffentlichen",
-    "title": "Titel",
-    "location": "Standort",
-    "material": "Material",
-    "materialType": "Materialtyp",
-    "date": "Datum",
-    "action": "Aktion",
-    "target": "Ziel",
-    "details": "Details",
-    "role": "Rolle",
-    "email": "E-Mail",
-    "phone": "Telefon",
-    "file": "Datei",
-    "regulation": "Vorschrift",
-    "document": "Dokument",
-    "note": "Notiz"
+    "publishToMarketplace": "Im Marktplatz veröffentlichen"
   },
   "docs": {
     "title": "Dokumente",
@@ -271,10 +233,10 @@
     "statUsers": "Benutzer",
     "statListings": "Angebote",
     "statCompanies": "Unternehmen",
-    "statPending": "Ausstehende Prüfungen",
+    "statPending": "Ausstehende Überprüfungen",
     "firmsSection": "UNTERNEHMEN",
     "firmsTitle": "Firmen zur Prüfung",
-    "firmsHint": "Unternehmen, die eine Verifizierung beantragt haben. Klicken Sie auf Bestätigen oder Ablehnen.",
+    "firmsHint": "Unternehmen, die eine Überprüfung beantragt haben. Klicken Sie auf Überprüfen oder Ablehnen.",
     "usersSection": "BENUTZER",
     "usersTitle": "Benutzerverwaltung",
     "legalSection": "RECHTLICHES",
@@ -290,25 +252,7 @@
     "historyTitle": "Änderungsprotokoll",
     "historyHint": "Letzte Admin-Aktionen.",
     "saveMaterials": "Material speichern",
-    "materialsPlaceholder": "bio, holz, metall",
-    "verify": "Bestätigen",
-    "reject": "Ablehnen",
-    "reports": "Meldungen",
-    "recommendationsKicker": "Admin",
-    "recommendationsTitle": "Empfehlungen",
-    "outreachKicker": "Lead Outreach",
-    "outreachTitle": "Unternehmensansprache",
-    "outreachHint": "KI erstellt eine personalisierte E-Mail. Sie prüfen und senden.",
-    "pendingBadge": "📥 Versandbereit",
-    "pendingHint": "KI hat den Text generiert. E-Mail hinzufügen und Senden klicken.",
-    "phEmail": "Empfänger-E-Mail *",
-    "phSubject": "Betreff",
-    "phCompanyName": "Firmenname *",
-    "phCity": "Stadt",
-    "phIndustry": "Branche (z. B. Holzbearbeitung)",
-    "phReason": "Grund der Kontaktaufnahme",
-    "phCsv": "Holz GmbH, Preßburg, Holz, info@holz.de",
-    "phBody": "E-Mail-Text"
+    "materialsPlaceholder": "bio, holz, metall"
   },
   "chat": {
     "section": "NACHRICHTEN",
@@ -486,61 +430,5 @@
     "sentSpamBold": "Spam",
     "sentPromotions": "Werbung",
     "sentValid": "Der Link ist 24 Stunden gültig."
-  },
-  "legal": {
-    "terms": "Bedingungen",
-    "privacy": "Datenschutz",
-    "license": "Lizenz",
-    "notifications": "Benachrichtigungen über Anfragen und Nachrichten",
-    "security": "Sicherheit und Betrugsprävention",
-    "rightAccess": "Recht auf Zugang zu Ihren Daten",
-    "rightCorrect": "Recht auf Berichtigung unrichtiger Daten",
-    "rightObject": "Recht auf Widerspruch gegen die Verarbeitung",
-    "noDbSchema": "Datenbankschema und -struktur",
-    "noReverse": "Reverse Engineering oder Dekompilierung durchführen",
-    "noDerived": "Abgeleitete Werke ohne schriftliche Zustimmung erstellen",
-    "noBypass": "Sicherheitsmaßnahmen oder Autorisierungsmechanismen umgehen",
-    "viewContent": "Inhalt innerhalb der Plattform anzeigen",
-    "storeContent": "Inhalt in der Datenbank speichern",
-    "notifyContent": "Inhaltsbezogene Benachrichtigungen senden",
-    "reactMit": "React — MIT-Lizenz",
-    "photosUnsplash": "Die auf der Landingpage gezeigten Materialfotos sind lizenziert von",
-    "lawSk": "Diese Lizenz unterliegt dem Recht von"
-  },
-  "recommendations": {
-    "kicker": "Empfehlungen",
-    "title": "Mögliche Käufer",
-    "chatDraft": "Chat-Entwurf"
-  },
-  "freight": {
-    "kicker": "Spedition",
-    "title": "Transporteure in der Nähe"
-  },
-  "chatDraftBanner": {
-    "kicker": "Entwurf aus Empfehlungen"
-  },
-  "notifications": {
-    "title": "Benachrichtigungen"
-  },
-  "documentForm": {
-    "title": "Dokument hinzufügen",
-    "name": "Titel",
-    "type": "Typ (Zertifikat, Rechnung, sonstiges)",
-    "file": "Datei (pdf, jpg, png)",
-    "fileUrl": "Datei-URL",
-    "company": "Unternehmen"
-  },
-  "chatWidget": {
-    "placeholder": "Nachricht eingeben...",
-    "ariaOpen": "KI-Chat öffnen"
-  },
-  "aiAssistant": {
-    "placeholder": "Frage eingeben..."
-  },
-  "pagination": {
-    "aria": "Paginierung"
-  },
-  "languageSwitcher": {
-    "aria": "Sprache"
   }
 }

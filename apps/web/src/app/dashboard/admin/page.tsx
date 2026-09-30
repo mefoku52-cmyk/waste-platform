@@ -5,7 +5,6 @@ import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
 
 function AdminReports({ eventType = 'user_reported' }: { eventType?: string }) {
-  const { t } = useT();
   const [items, setItems] = useState<any[]>([]);
   useEffect(() => {
     const token = tokenStore.getToken();
@@ -93,9 +92,9 @@ export default function AdminPage() {
 
           {/* ŠTATISTIKY */}
           <section className="mb-12 grid grid-cols-2 gap-4 md:grid-cols-4">
-            <StatCard label={t('admin.statUsers')} value={safeStats.total_users} loading={isLoadingStats} />
-            <StatCard label={t('admin.statListings')} value={safeStats.total_listings} loading={isLoadingStats} />
-            <StatCard label={t('admin.statCompanies')} value={safeStats.total_companies} loading={isLoadingStats} />
+            <StatCard label="Používatelia" value={safeStats.total_users} loading={isLoadingStats} />
+            <StatCard label="Ponuky" value={safeStats.total_listings} loading={isLoadingStats} />
+            <StatCard label="Firmy" value={safeStats.total_companies} loading={isLoadingStats} />
             <StatCard label={t('admin.pending')} value={safeStats.pending_verifications} loading={isLoadingStats} accent />
           </section>
 
@@ -251,7 +250,7 @@ export default function AdminPage() {
       </section>
 
       <section className="mt-8 rounded-2xl border border-[#d4af37]/25 p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">{t('admin.reports')}</p>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-[#d4af37]">Nahlasenia</p>
         <AdminReports />
       </section>
     </main>
@@ -271,8 +270,7 @@ function StatCard({
   label: string;
   value?: number;
   loading: boolean;
-
-  const { t } = useT();  accent?: boolean;
+  accent?: boolean;
 }) {
   return (
     <div
