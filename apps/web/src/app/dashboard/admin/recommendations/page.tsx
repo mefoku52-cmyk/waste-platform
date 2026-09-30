@@ -1,9 +1,18 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import Link from 'next/link';
+import { DashboardHeader } from '@/components/layout/dashboard-header';
+import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { config } from '@/lib/config';
 import { getListingRecommendations } from '@/features/recommendations/api';
 import { useT } from '@/lib/i18n/context';
+
+const GOLD = '#c9a84c';
+const GOLD_BRIGHT = '#e8d48b';
+const BG = '#090807';
+const FG = '#f3ead8';
+const MUTED = '#9a8f7c';
 
 type ListingRow = { id: string; title: string; materialType?: string; location?: string };
 
@@ -32,24 +41,72 @@ export default function AdminRecommendationsPage() {
   });
 
   return (
-    <main className="mx-auto w-full max-w-4xl bg-[#070707] p-6 text-[#f3e6c4]">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">{t('admin.recommendationsKicker')}</p>
-      <h1 className="mt-1 font-serif text-3xl">{t('admin.recommendationsTitle')}</h1>
-      <p className="mt-2 text-sm text-[#cbb98a]">Prehlad match-ov. Ziadny auto-deal.</p>
-      {listingsQuery.error && <p className="mt-4 text-red-300">{(listingsQuery.error as Error).message}</p>}
-      <ul className="mt-4 space-y-2">
-        {(listingsQuery.data || []).map((row) => (
-          <li key={row.id} className="rounded-xl border border-[#d4af37]/25 p-3">
-            <a href={'/dashboard/listings/' + row.id} className="text-[#d4af37]">{row.title || row.id}</a>
-            <p className="text-xs text-[#9a8b63]">{row.materialType} · {row.location}</p>
-          </li>
-        ))}
-      </ul>
-      {recQuery.data && (
-        <section className="mt-6 rounded-2xl border border-[#d4af37]/35 p-4">
-          <p className="text-sm text-[#cbb98a]">Prva ponuka: {recQuery.data.items.length} kandidatov</p>
-        </section>
-      )}
-    </main>
+    <div className="min-h-screen" style={{ background: BG, color: FG }}>
+      <DashboardHeader />
+      <main className="mx-auto max-w-4xl px-4 py-10">
+        <Link
+          href="/dashboard/admin"
+          className="mb-6 inline-block text-sm"
+          style={{ color: GOLD_BRIGHT }}
+        >
+          ← Späť na admin
+        </Link>
+
+        <p
+          className="mb-2 text-[11px] uppercase tracking-[0.3em]"
+          style={{ color: GOLD }}
+        >
+          {t('admin.recommendationsKicker')}
+        </p>
+        <h1
+          className="mb-2 text-3xl md:text-4xl"
+          style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
+        >
+          {t('admin.recommendationsTitle')}
+        </h1>
+        <p className="mb-8 text-sm" style={{ color: MUTED }}>
+          Prehľad match-ov. Žiadny auto-deal.
+        </p>
+
+        {listingsQuery.error && (
+          <p className="mt-4 text-sm text-red-400">
+            {(listingsQuery.error as Error).message}
+          </p>
+        )}
+
+        <ul className="mt-4 space-y-2">
+          {(listingsQuery.data || []).map((row) => (
+            <li
+              key={row.id}
+              className="rounded-xl border p-4"
+              style={{ borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)', background: '#0b0b0b' }}
+            >
+              <Link
+                href={'/dashboard/listings/' + row.id}
+                className="font-semibold"
+                style={{ color: GOLD_BRIGHT }}
+              >
+                {row.title || row.id}
+              </Link>
+              <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                {row.materialType} · {row.location}
+              </p>
+            </li>
+          ))}
+        </ul>
+
+        {recQuery.data && (
+          <section
+            className="mt-6 rounded-2xl border p-4"
+            style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)' }}
+          >
+            <p className="text-sm" style={{ color: MUTED }}>
+              Prvá ponuka: {recQuery.data.items.length} kandidátov
+            </p>
+          </section>
+        )}
+      </main>
+      <DashboardFooter />
+    </div>
   );
 }

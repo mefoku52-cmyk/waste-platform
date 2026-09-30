@@ -2,10 +2,18 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { DashboardHeader } from "@/components/layout/dashboard-header";
+import { DashboardFooter } from "@/components/layout/dashboard-footer";
 import {
   useAdminUserActivity,
   useAdminUserSummary,
 } from "@/features/admin";
+
+const GOLD = "#c9a84c";
+const GOLD_BRIGHT = "#e8d48b";
+const BG = "#090807";
+const FG = "#f3ead8";
+const MUTED = "#9a8f7c";
 
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
@@ -37,19 +45,33 @@ export default function AdminUserDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#090807] p-8 text-[#f3ead8]">
-        Načítavam používateľa…
+      <div className="min-h-screen" style={{ background: BG, color: FG }}>
+        <DashboardHeader />
+        <div className="mx-auto max-w-5xl px-4 py-16 text-center" style={{ color: MUTED }}>
+          Načítavam používateľa…
+        </div>
+        <DashboardFooter />
       </div>
     );
   }
 
   if (error || !summary) {
     return (
-      <div className="min-h-screen bg-[#090807] p-8 text-[#f3ead8]">
-        <Link href="/dashboard/admin" className="text-[#c9a84c] hover:underline">
-          ← Späť na admin
-        </Link>
-        <p className="mt-4 text-red-400">Používateľ sa nenašiel alebo chyba načítania.</p>
+      <div className="min-h-screen" style={{ background: BG, color: FG }}>
+        <DashboardHeader />
+        <main className="mx-auto max-w-5xl px-4 py-10">
+          <Link
+            href="/dashboard/admin"
+            className="text-sm hover:underline"
+            style={{ color: GOLD_BRIGHT }}
+          >
+            ← Späť na admin
+          </Link>
+          <p className="mt-4 text-red-400">
+            Používateľ sa nenašiel alebo chyba načítania.
+          </p>
+        </main>
+        <DashboardFooter />
       </div>
     );
   }
@@ -58,11 +80,13 @@ export default function AdminUserDetailPage() {
   const activityItems = activity?.items ?? [];
 
   return (
-    <div className="min-h-screen bg-[#090807] p-4 text-[#f3ead8] sm:p-8">
-      <div className="mx-auto max-w-5xl">
+    <div className="min-h-screen" style={{ background: BG, color: FG }}>
+      <DashboardHeader />
+      <main className="mx-auto max-w-5xl px-4 py-10">
         <Link
           href="/dashboard/admin"
-          className="text-sm text-[#c9a84c] hover:underline"
+          className="text-sm hover:underline"
+          style={{ color: GOLD_BRIGHT }}
         >
           ← Späť na admin panel
         </Link>
@@ -164,7 +188,8 @@ export default function AdminUserDetailPage() {
             </ul>
           )}
         </div>
-      </div>
+      </main>
+      <DashboardFooter />
     </div>
   );
 }
