@@ -43,6 +43,30 @@ type CompanyData = {
   createdAt?: string | null;
 };
 
+type CompanyContacts = {
+  companyId: string;
+  revealed: boolean;
+  reason: string;
+  email: string | null;
+  phone: string | null;
+  websiteUrl: string | null;
+};
+
+async function fetchCompanyContacts(id: string): Promise<CompanyContacts> {
+  const token = localStorage.getItem('accessToken');
+  const res = await fetch(`${config.apiBaseUrl}/companies/${id}/contacts`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(typeof body.detail === 'string' ? body.detail : `HTTP ${res.status}`);
+  }
+  return body as CompanyContacts;
+}
+
 async function fetchCompany(id: string): Promise<CompanyData> {
   const token = localStorage.getItem('accessToken');
   const res = await fetch(`${config.apiBaseUrl}/companies/${id}`, {
@@ -106,6 +130,13 @@ export default function CompanyDetailPage() {
     queryFn: () => fetchCompany(companyId),
     enabled: Boolean(companyId),
     retry: 1,
+  });
+
+  const contactsQuery = useQuery({
+    queryKey: ['company-contacts', companyId],
+    queryFn: () => fetchCompanyContacts(companyId),
+    enabled: Boolean(companyId),
+    retry: 0,
   });
 
   const data = query.data;
@@ -226,37 +257,68 @@ export default function CompanyDetailPage() {
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
                 KONTAKTY
               </p>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Email</p>
-                  <p className="mt-1 text-sm">
-                    {data.email ? (
-                      <a href={`mailto:${data.email}`} style={{ color: GOLD_BRIGHT }}>
-                        {data.email}
-                      </a>
-                    ) : '—'}
+
+              {contactsQuery.isLoading ? (
+                <div className="cmep-panel rounded-xl p-4 text-sm" style={{ color: MUTED }}>
+                  Načítavam…
+                </div>
+              ) : contactsQuery.error ? (
+                <div className="cmep-panel rounded-xl p-4 text-sm" style={{ color: MUTED }}>
+                  Kontakty sa nepodarilo načítať.
+                </div>
+              ) : contactsQuery.data?.revealed ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="cmep-panel rounded-xl p-3">
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Email</p>
+                    <p className="mt-1 text-sm">
+                      {contactsQuery.data.email ? (
+                        <a href={`mailto:${contactsQuery.data.email}`} style={{ color: GOLD_BRIGHT }}>
+                          {contactsQuery.data.email}
+                        </a>
+                      ) : '—'}
+                    </p>
+                  </div>
+                  <div className="cmep-panel rounded-xl p-3">
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Telefón</p>
+                    <p className="mt-1 text-sm">{contactsQuery.data.phone || '—'}</p>
+                  </div>
+                  <div className="cmep-panel rounded-xl p-3 sm:col-span-2">
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Web</p>
+                    <p className="mt-1 text-sm">
+                      {contactsQuery.data.websiteUrl ? (
+                        <a
+                          href={contactsQuery.data.websiteUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ color: GOLD_BRIGHT }}
+                        >
+                          {contactsQuery.data.websiteUrl}
+                        </a>
+                      ) : '—'}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="cmep-panel rounded-xl p-5 text-sm">
+                  <p style={{ color: GOLD_BRIGHT, fontWeight: 600 }}>
+                    🔒 Kontakty sú skryté
                   </p>
-                </div>
-                <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Telefón</p>
-                  <p className="mt-1 text-sm">{data.phone || '—'}</p>
-                </div>
-                <div className="cmep-panel rounded-xl p-3 sm:col-span-2">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Web</p>
-                  <p className="mt-1 text-sm">
-                    {data.websiteUrl ? (
-                      <a
-                        href={data.websiteUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: GOLD_BRIGHT }}
-                      >
-                        {data.websiteUrl}
-                      </a>
-                    ) : '—'}
+                  <p className="mt-2" style={{ color: MUTED }}>
+                    {contactsQuery.data?.reason === 'no_relationship'
+                      ? 'Kontakty sa odhalia, keď medzi vami a touto firmou vznikne dopyt a druhá strana naň odpovie.'
+                      : 'Kontakty nie sú dostupné.'}
                   </p>
+                  <div className="mt-4">
+                    <Link
+                      href="/dashboard/listings"
+                      className="inline-flex rounded-full px-4 py-2 text-sm font-semibold"
+                      style={{ background: GOLD, color: '#090807' }}
+                    >
+                      Nájsť ponuku tejto firmy →
+                    </Link>
+                  </div>
                 </div>
-              </div>
+              )}
             </section>
 
             {/* CAPABILITIES */}

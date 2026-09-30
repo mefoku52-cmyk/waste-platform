@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 
 from app.modules.companies.application.rpo import lookup_ico
 from app.modules.companies.presentation.dependencies import (
@@ -29,6 +30,7 @@ from app.shared.presentation.auth_dependencies import (
 )
 from app.shared.presentation.authorization import (
     is_platform_admin,
+    membership_company_ids,
     require_company_admin,
     require_company_member,
 )
@@ -291,3 +293,153 @@ async def set_company_subscription_tier(
     )
 
     return CompanyResponse(data=to_company_data(dto))
+
+
+# ─────────────────────────────────────────────────────────────
+# CONTACT REVEAL
+# ─────────────────────────────────────────────────────────────
+# Kontakty su skryte dokym medzi firmami neexistuje dokonceny
+# vztah (inquiry answered/closed). Vlastna firma vidi vzdy.
+
+
+async def _has_revealed_relationship(
+    *,
+    session,
+    my_company_ids: list[str],
+    target_company_id: str,
+) -> tuple[bool, str]:
+    """Vrati (revealed, reason).
+
+    Reveal nastane ak:
+    - som vlastnik cielovej firmy
+    - existuje inquiry medzi mojou firmou a cielovou firmou
+      so statusom 'answered' alebo 'closed'
+    """
+    target = str(target_company_id)
+
+    # 1. Vlastna firma
+    if target in {str(x) for x in my_company_ids}:
+        return True, "own_company"
+
+    if not my_company_ids:
+        return False, "no_membership"
+
+    # 2. Existuje inquiry kde my sme buyer (company_id) a seller je target company?
+    #    alebo my sme seller a buyer je target?
+    from sqlalchemy import text
+
+    my_ids = [str(x) for x in my_company_ids]
+
+    # 2a. Ja ako buyer, target ako seller (cez listing.company_id)
+    try:
+        r = await session.execute(
+            text(
+                """
+                SELECT i.status
+                FROM inquiries i
+                JOIN listings l ON l.id = i.listing_id
+                WHERE i.company_id = ANY(:my_ids)
+                  AND l.company_id = :target
+                  AND i.status IN ('answered', 'closed')
+                LIMIT 1
+                """
+            ),
+            {"my_ids": my_ids, "target": target},
+        )
+        if r.first() is not None:
+            return True, "inquiry_answered"
+    except Exception:
+        # ANY(:array) nemusi fungovat na vsetkych dialektoch - fallback cez IN
+        placeholders = ",".join(f":c{i}" for i in range(len(my_ids)))
+        params = {f"c{i}": v for i, v in enumerate(my_ids)}
+        params["target"] = target
+        r = await session.execute(
+            text(
+                f"""
+                SELECT i.status
+                FROM inquiries i
+                JOIN listings l ON l.id = i.listing_id
+                WHERE i.company_id IN ({placeholders})
+                  AND l.company_id = :target
+                  AND i.status IN ('answered', 'closed')
+                LIMIT 1
+                """
+            ),
+            params,
+        )
+        if r.first() is not None:
+            return True, "inquiry_answered"
+
+    # 2b. Ja ako seller (moje listings), target ako buyer (i.company_id)
+    placeholders = ",".join(f":m{i}" for i in range(len(my_ids)))
+    params2 = {f"m{i}": v for i, v in enumerate(my_ids)}
+    params2["target"] = target
+    r2 = await session.execute(
+        text(
+            f"""
+            SELECT i.status
+            FROM inquiries i
+            JOIN listings l ON l.id = i.listing_id
+            WHERE l.company_id IN ({placeholders})
+              AND i.company_id = :target
+              AND i.status IN ('answered', 'closed')
+            LIMIT 1
+            """
+        ),
+        params2,
+    )
+    if r2.first() is not None:
+        return True, "inquiry_answered"
+
+    return False, "no_relationship"
+
+
+class CompanyContactsResponse(BaseModel):
+    companyId: UUID
+    revealed: bool
+    reason: str
+    email: str | None = None
+    phone: str | None = None
+    websiteUrl: str | None = None
+
+
+@router.get(
+    "/{company_id}/contacts",
+    response_model=CompanyContactsResponse,
+    responses=error_responses(401, 403, 404, 500),
+)
+async def get_company_contacts(
+    company_id: UUID,
+    current_user=Depends(require_current_user),
+    service=Depends(get_get_company_service),
+    session=Depends(get_db_session),
+):
+    """Vrati kontakty firmy.
+
+    - Vlastna firma -> vzdy vsetko
+    - Existuje inquiry (answered/closed) medzi firmami -> vsetko
+    - Inak -> revealed=false, kontakty=null
+    """
+    company_ids = membership_company_ids(current_user)
+    revealed, reason = await _has_revealed_relationship(
+        session=session,
+        my_company_ids=company_ids,
+        target_company_id=str(company_id),
+    )
+
+    if not revealed:
+        return CompanyContactsResponse(
+            companyId=company_id,
+            revealed=False,
+            reason=reason,
+        )
+
+    dto = await service.execute(company_id)
+    return CompanyContactsResponse(
+        companyId=company_id,
+        revealed=True,
+        reason=reason,
+        email=dto.email,
+        phone=dto.phone,
+        websiteUrl=dto.website_url,
+    )
