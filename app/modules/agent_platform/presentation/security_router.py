@@ -211,3 +211,69 @@ async def security_diagnostics(
         "tables": out,
         "recentSecurityEvents": recent,
     }
+
+
+@router.post("/test-write")
+async def security_test_write(
+    current_user=Depends(require_admin),
+    session: AsyncSession = Depends(get_db_session),
+) -> dict:
+    """Diagnostika: priamo zapise testovaciu observation a vrati vysledok."""
+    from datetime import UTC, datetime
+    from uuid import uuid4
+
+    from app.modules.agent_platform.domain.security.security_observation import (
+        SecurityObservation,
+    )
+    from app.modules.agent_platform.domain.security.security_pattern import (
+        SecurityPattern,
+    )
+    from app.modules.agent_platform.infrastructure.security.security_event_store import (
+        SqlAlchemySecurityEventStore,
+    )
+
+    result: dict = {"steps": []}
+
+    try:
+        obs = SecurityObservation(
+            observation_id=str(uuid4()),
+            pattern=SecurityPattern.PROMPT_INJECTION,
+            source="test",
+            actor_id="test",
+            target="test",
+            evidence={"test": True},
+            observed_at=datetime.now(UTC),
+        )
+        result["steps"].append({"step": "observation_created", "ok": True})
+    except Exception as exc:
+        result["steps"].append(
+            {"step": "observation_created", "ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        )
+        return result
+
+    try:
+        store = SqlAlchemySecurityEventStore(session)
+        await store.store_observation(obs)
+        result["steps"].append({"step": "store_observation", "ok": True})
+    except Exception as exc:
+        result["steps"].append(
+            {"step": "store_observation", "ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        )
+        return result
+
+    # Over ci je v DB
+    try:
+        from sqlalchemy import text
+
+        r = await session.execute(
+            text("SELECT COUNT(*) FROM agent_security_events WHERE event_id = :eid"),
+            {"eid": obs.observation_id},
+        )
+        found = int(r.scalar() or 0)
+        result["steps"].append({"step": "verify_in_db", "ok": found > 0, "found": found})
+    except Exception as exc:
+        result["steps"].append(
+            {"step": "verify_in_db", "ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        )
+
+    return result
