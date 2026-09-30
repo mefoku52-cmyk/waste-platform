@@ -183,6 +183,28 @@ export default function AdminPage() {
 
       <section className="mt-12">
         <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+          AI CONTROL
+        </p>
+        <h2
+          className="mb-3 text-2xl md:text-3xl"
+          style={{ fontFamily: 'DM Serif Display, serif' }}
+        >
+          Riadenie AI a governance
+        </h2>
+        <p className="mb-4 text-sm" style={{ color: MUTED }}>
+          Control mode, security events, alerts, approvals, audit. Len pre platform admina.
+        </p>
+        <Link
+          href="/dashboard/admin/ai-control"
+          className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
+          style={{ background: GOLD, color: BG }}
+        >
+          Otvoriť AI Control →
+        </Link>
+      </section>
+
+      <section className="mt-12">
+        <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
           LEAD OUTREACH
         </p>
         <h2
