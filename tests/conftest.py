@@ -10,6 +10,12 @@ os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-min-32-chars-long-ok")
 os.environ.setdefault("ENV", "test")
 os.environ.setdefault("APP_ENV", "test")
 
+# Testy musia byt hermetic — ziadny realny Redis server.
+# jwt_revocation_store.TokenRevocationStore pouzije _MemoryBackend,
+# ak settings.redis.url zacina s "memory:".
+# Tym padom 9 JWT testov funguje aj v Termuxe bez redis-server.
+os.environ["REDIS_URL"] = "memory://"
+
 # Testy musia byt hermetic — nesmu zavisiet od lokalneho `.env` ani od stavu
 # Redis. Rate limiting je stavova (per-IP/per-email okna) a pod ASGI transportom
 # `client_ip()` spadne na jeden zdielany bucket, takze viacero login testov v
