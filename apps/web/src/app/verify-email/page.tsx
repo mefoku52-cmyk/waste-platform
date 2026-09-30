@@ -10,6 +10,7 @@ import { useT } from '@/lib/i18n/context';
 type Status = 'verifying' | 'success' | 'error';
 
 function VerifyEmailContent() {
+  const { t } = useT();
   const params = useSearchParams();
   const token = params?.get('token') || '';
   const [status, setStatus] = useState<Status>('verifying');

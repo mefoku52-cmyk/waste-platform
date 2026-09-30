@@ -8,6 +8,7 @@ import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 
 function VerifyEmailSentContent() {
+  const { t } = useT();
   const params = useSearchParams();
   const initialEmail = params?.get('email') || '';
   const [email, setEmail] = useState(initialEmail);
