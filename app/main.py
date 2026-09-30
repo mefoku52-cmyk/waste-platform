@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.http_exception_handlers import register_http_exception_handlers
 from app.shared.infrastructure.scheduler import start_scheduler, stop_scheduler
+from app.shared.presentation.rate_limit_middleware import RateLimitMiddleware
 from app.shared.presentation.security_headers import SecurityHeadersMiddleware
 
 logger = logging.getLogger("cmep.main")
@@ -74,6 +75,8 @@ def create_app() -> FastAPI:
 
     # Pridane PO CORS -> v LIFO poradi je SecurityHeaders najvyssi,
     # takze sa aplikuje aj na CORS preflight (OPTIONS) odpovede.
+    # RateLimit je vnutri SecurityHeaders (LIFO), aby 429 odpovede mali hlavicky.
+    app.add_middleware(RateLimitMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
 
     mounted: list[str] = []
