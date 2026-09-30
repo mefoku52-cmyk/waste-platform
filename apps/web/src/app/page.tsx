@@ -142,7 +142,7 @@ export default function LandingPage() {
         <section className="border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
             <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.nowKicker')}</p>
-            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">Materiál, ktorý ešte čaká na svojho kupca.</h2>
+            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.nowTitle')}</h2>
             <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-[color:color-mix(in_srgb,#c9a84c_25%,transparent)]">
               <span
                 className="absolute right-4 top-4 z-10 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
