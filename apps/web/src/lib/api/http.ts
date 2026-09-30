@@ -1,7 +1,9 @@
 import { config } from '../config';
 import { tokenStore } from '../auth/token-store';
 
-async function request<T>(path: string, options: RequestInit & { timeoutMs?: number } = {}): Promise<T> {
+type HttpOptions = RequestInit & { timeoutMs?: number };
+
+async function request<T>(path: string, options: HttpOptions = {}): Promise<T> {
   const baseUrl = config.apiBaseUrl;
   const url = `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
   const token = tokenStore.getToken();
@@ -60,30 +62,30 @@ async function request<T>(path: string, options: RequestInit & { timeoutMs?: num
 }
 
 export const http = {
-  get: <T>(path: string, options?: RequestInit) =>
+  get: <T>(path: string, options?: HttpOptions) =>
     request<T>(path, { ...options, method: 'GET' }),
 
-  post: <T>(path: string, body?: unknown, options?: RequestInit) =>
+  post: <T>(path: string, body?: unknown, options?: HttpOptions) =>
     request<T>(path, {
       ...options,
       method: 'POST',
       body: body ? JSON.stringify(body) : undefined,
     }),
 
-  put: <T>(path: string, body?: unknown, options?: RequestInit) =>
+  put: <T>(path: string, body?: unknown, options?: HttpOptions) =>
     request<T>(path, {
       ...options,
       method: 'PUT',
       body: body ? JSON.stringify(body) : undefined,
     }),
 
-  patch: <T>(path: string, body?: unknown, options?: RequestInit) =>
+  patch: <T>(path: string, body?: unknown, options?: HttpOptions) =>
     request<T>(path, {
       ...options,
       method: 'PATCH',
       body: body ? JSON.stringify(body) : undefined,
     }),
 
-  delete: <T>(path: string, options?: RequestInit) =>
+  delete: <T>(path: string, options?: HttpOptions) =>
     request<T>(path, { ...options, method: 'DELETE' }),
 };
