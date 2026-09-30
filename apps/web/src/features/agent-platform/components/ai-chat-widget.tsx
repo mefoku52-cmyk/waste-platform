@@ -146,7 +146,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
       {open && (
         <div
-          className="fixed bottom-6 right-6 z-50 flex h-[520px] w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border shadow-2xl"
+          className="fixed bottom-6 right-6 z-50 flex h-[440px] w-[330px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border shadow-2xl"
           style={{ borderColor: 'rgba(201,168,76,0.35)', background: '#0b0b0b' }}
         >
           <div
