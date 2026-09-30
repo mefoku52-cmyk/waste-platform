@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -8,6 +9,7 @@ const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 
 export default function TermsPage() {
+  const { t } = useT();
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -19,8 +21,8 @@ export default function TermsPage() {
               <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.25rem' }}>CMEP</span>
             </Link>
             <div className="ml-auto flex gap-4 text-sm">
-              <Link href="/privacy" style={{ color: MUTED }}>Súkromie</Link>
-              <Link href="/license" style={{ color: MUTED }}>Licencia</Link>
+              <Link href="/privacy" style={{ color: MUTED }}>{t('legal.privacy')}</Link>
+              <Link href="/license" style={{ color: MUTED }}>{t('legal.license')}</Link>
             </div>
           </div>
         </header>

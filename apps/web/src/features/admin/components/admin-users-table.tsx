@@ -3,6 +3,7 @@
 import { useAdminUsers } from '../hooks/use-admin-users';
 import type { UserManagement } from '../types';
 import { cn } from '../../../lib/utils/cn';
+import { useT } from '@/lib/i18n/context';
 
 function getUserList(payload: unknown): UserManagement[] {
   if (!payload || typeof payload !== 'object') return [];
@@ -70,10 +71,10 @@ export const AdminUsersTable = () => {
       <table className="min-w-full divide-y divide-gray-200 text-sm">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900">Meno</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-900">{t('tables.name')}</th>
             <th className="px-4 py-3 text-left font-semibold text-gray-900">E-mail</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900">Rola</th>
-            <th className="px-4 py-3 text-left font-semibold text-gray-900">Stav</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-900">{t('tables.role')}</th>
+            <th className="px-4 py-3 text-left font-semibold text-gray-900">{t('tables.status')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">

@@ -185,10 +185,20 @@
     "locationLabel": "Lokalita",
     "imageLabel": "URL fotky",
     "submit": "Vytvoriť ponuku",
-    "saving": "Ukladám..."
+    "saving": "Ukladám...",
+    "company": "Firma",
+    "titlePh": "Zvyšky železa",
+    "description": "Popis",
+    "imageUrl": "URL fotky (voliteľné)",
+    "quantity": "Množstvo",
+    "unit": "Jednotka",
+    "price": "Cena (voliteľné)",
+    "currency": "Mena",
+    "location": "Lokalita",
+    "locationPh": "Bratislava"
   },
   "companyForm": {
-    "title": "Nová firma",
+    "title": "Registrovať novú firmu",
     "titleAdd": "Pridať firmu",
     "legalNameLabel": "Právny názov",
     "tradingNameLabel": "Obchodný názov",
@@ -200,10 +210,23 @@
     "cityLabel": "Mesto",
     "pscLabel": "PSČ",
     "countryLabel": "Krajina",
-    "submit": "Vytvoriť firmu"
+    "submit": "Vytvoriť firmu",
+    "seller": "Predajca",
+    "buyer": "Kupujúci",
+    "logistics": "Logistika",
+    "legalName": "Obchodný názov (legal name)",
+    "legalNamePh": "Firma s.r.o.",
+    "tradingName": "Obchodné meno (voliteľné)",
+    "registrationNumber": "Registracne cislo",
+    "companyType": "Typ firmy (rola)",
+    "countryCode": "Kód krajiny",
+    "address": "Adresa",
+    "city": "Mesto",
+    "email": "E-mail firmy",
+    "phone": "Telefón"
   },
   "tables": {
-    "name": "Názov",
+    "name": "Meno",
     "status": "Status",
     "actions": "Akcie",
     "publish": "Publikovať",
@@ -221,7 +244,22 @@
     "adminMode": "Režim administrátora – môžeš schvaľovať firmy.",
     "adminOnly": "Schválenie môže len administrátor.",
     "companyMustBeVerified": "Firma musí byť overená (verified).",
-    "publishToMarketplace": "Publikovať na trhovisko"
+    "publishToMarketplace": "Publikovať na trhovisko",
+    "title": "Názov",
+    "location": "Lokalita",
+    "material": "Materiál",
+    "materialType": "Typ materiálu",
+    "date": "Dátum",
+    "action": "Akcia",
+    "target": "Cieľ",
+    "details": "Detaily",
+    "role": "Rola",
+    "email": "E-mail",
+    "phone": "Telefón",
+    "file": "Súbor",
+    "regulation": "Regulácia",
+    "document": "Dokument",
+    "note": "Poznámka"
   },
   "docs": {
     "title": "Dokumenty",
@@ -252,7 +290,25 @@
     "historyTitle": "Audit zmien",
     "historyHint": "Posledné akcie administrátorov — kto, kedy, čo zmenil.",
     "saveMaterials": "Uložiť materiál",
-    "materialsPlaceholder": "bio, drevo, kov"
+    "materialsPlaceholder": "bio, drevo, kov",
+    "verify": "Overiť",
+    "reject": "Zamietnuť",
+    "reports": "Nahlasenia",
+    "recommendationsKicker": "Admin",
+    "recommendationsTitle": "Odporucania",
+    "outreachKicker": "Lead Outreach",
+    "outreachTitle": "Oslovenie firiem",
+    "outreachHint": "AI pripraví personalizovaný email. Ty skontroluješ a pošleš.",
+    "pendingBadge": "📥 Pripravené na odoslanie",
+    "pendingHint": "AI vygeneroval text. Doplň email a klikni Poslať.",
+    "phEmail": "Email príjemcu *",
+    "phSubject": "Predmet",
+    "phCompanyName": "Názov firmy *",
+    "phCity": "Mesto",
+    "phIndustry": "Odvetvie (napr. drevospracovanie)",
+    "phReason": "Dôvod kontaktovania",
+    "phCsv": "DrevoSK s.r.o., Prešov, drevo, info@drevo.sk",
+    "phBody": "Telo emailu"
   },
   "chat": {
     "section": "SPRÁVY",
@@ -430,5 +486,61 @@
     "sentSpamBold": "Spam",
     "sentPromotions": "Promócie",
     "sentValid": "Odkaz je platný 24 hodín."
+  },
+  "legal": {
+    "terms": "Podmienky",
+    "privacy": "Súkromie",
+    "license": "Licencia",
+    "notifications": "Zasielanie notifikácií o dopytoch a správach",
+    "security": "Bezpečnosť a prevencia podvodov",
+    "rightAccess": "Právo na prístup k svojim údajom",
+    "rightCorrect": "Právo na opravu nesprávnych údajov",
+    "rightObject": "Právo namietať spracúvanie",
+    "noDbSchema": "Databázovú schému a štruktúru",
+    "noReverse": "Vykonávať reverse engineering alebo dekompiláciu",
+    "noDerived": "Vytvárať odvodené diela bez písomného súhlasu",
+    "noBypass": "Obchádzať bezpečnostné opatrenia alebo autorizačné mechanizmy",
+    "viewContent": "Zobrazenie obsahu v rámci platformy",
+    "storeContent": "Uloženie obsahu v databáze",
+    "notifyContent": "Zasielanie notifikácií súvisiacich s obsahom",
+    "reactMit": "React — MIT License",
+    "photosUnsplash": "Fotografie materiálov zobrazené na landing stránke sú licencované z",
+    "lawSk": "Táto licencia sa riadi právom"
+  },
+  "recommendations": {
+    "kicker": "Odporucania",
+    "title": "Mozni odberatelia",
+    "chatDraft": "Navrh spravy do chatu"
+  },
+  "freight": {
+    "kicker": "Spedicia",
+    "title": "Dopravcovia v okoli"
+  },
+  "chatDraftBanner": {
+    "kicker": "Draft z odporucani"
+  },
+  "notifications": {
+    "title": "Notifikácie"
+  },
+  "documentForm": {
+    "title": "Pridať dokument",
+    "name": "Názov",
+    "type": "Typ (certificate, invoice, other)",
+    "file": "Súbor (pdf, jpg, png)",
+    "fileUrl": "URL súboru",
+    "company": "Firma"
+  },
+  "chatWidget": {
+    "placeholder": "Napíš správu...",
+    "ariaOpen": "Otvoriť AI chat"
+  },
+  "aiAssistant": {
+    "placeholder": "Napíš otázku..."
+  },
+  "pagination": {
+    "aria": "Pagination"
+  },
+  "languageSwitcher": {
+    "aria": "Language"
   }
 }

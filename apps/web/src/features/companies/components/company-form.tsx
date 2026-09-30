@@ -45,7 +45,7 @@ export const CompanyForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-2xl p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900">Registrovať novú firmu</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('companyForm.title')}</h2>
 
       {error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
@@ -53,16 +53,16 @@ export const CompanyForm = () => {
         </div>
       )}
 
-      <FormField label="Obchodný názov (legal name)" error={errors.legalName?.message}>
-        <Input {...register('legalName')} disabled={isPending} placeholder="Firma s.r.o." />
+      <FormField label={t('companyForm.legalName')} error={errors.legalName?.message}>
+        <Input {...register('legalName')} disabled={isPending} placeholder={t('companyForm.legalNamePh')} />
       </FormField>
 
-      <FormField label="Obchodné meno (voliteľné)" error={errors.tradingName?.message}>
+      <FormField label={t('companyForm.tradingName')} error={errors.tradingName?.message}>
         <Input {...register('tradingName')} disabled={isPending} />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Registracne cislo" error={errors.registrationNumber?.message}>
+        <FormField label={t('companyForm.registrationNumber')} error={errors.registrationNumber?.message}>
           <Input {...register('registrationNumber')} disabled={isPending} />
         </FormField>
         <FormField label="IČO" error={errors.taxIdentifier?.message}>
@@ -74,29 +74,29 @@ export const CompanyForm = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Typ firmy (rola)" error={errors.companyType?.message}>
+        <FormField label={t('companyForm.companyType')} error={errors.companyType?.message}>
           <select
             {...register('companyType')}
             disabled={isPending}
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm bg-white"
           >
             <option value="seller_buyer">Predajca + Kupujúci</option>
-            <option value="seller">Predajca</option>
-            <option value="buyer">Kupujúci</option>
-            <option value="logistics_partner">Logistika</option>
+            <option value="seller">{t('companyForm.seller')}</option>
+            <option value="buyer">{t('companyForm.buyer')}</option>
+            <option value="logistics_partner">{t('companyForm.logistics')}</option>
           </select>
         </FormField>
-        <FormField label="Kód krajiny" error={errors.countryCode?.message}>
+        <FormField label={t('companyForm.countryCode')} error={errors.countryCode?.message}>
           <Input {...register('countryCode')} disabled={isPending} placeholder="SK" />
         </FormField>
       </div>
 
-      <FormField label="Adresa" error={errors.addressLine1?.message}>
+      <FormField label={t('companyForm.address')} error={errors.addressLine1?.message}>
         <Input {...register('addressLine1')} disabled={isPending} />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Mesto" error={errors.city?.message}>
+        <FormField label={t('companyForm.city')} error={errors.city?.message}>
           <Input {...register('city')} disabled={isPending} />
         </FormField>
         <FormField label="PSČ" error={errors.postalCode?.message}>
@@ -105,10 +105,10 @@ export const CompanyForm = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="E-mail firmy" error={errors.email?.message}>
+        <FormField label={t('companyForm.email')} error={errors.email?.message}>
           <Input type="email" {...register('email')} disabled={isPending} />
         </FormField>
-        <FormField label="Telefón" error={errors.phone?.message}>
+        <FormField label={t('companyForm.phone')} error={errors.phone?.message}>
           <Input {...register('phone')} disabled={isPending} />
         </FormField>
       </div>

@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useReceivedInquiries, useSentInquiries } from '../hooks/use-inquiries';
 import { inquiriesApi } from '../api';
+import { useT } from '@/lib/i18n/context';
 
 type Props = { mode: 'received' | 'sent' };
 
@@ -66,13 +67,13 @@ export const InquiriesTable = ({ mode }: Props) => {
         <table className="min-w-full text-sm">
           <thead>
             <tr style={{ borderBottom: `1px solid color-mix(in srgb, #c9a84c 25%, transparent)` }}>
-              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Ponuka</th>
-              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Správa</th>
+              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{t('tables.title')}</th>
+              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{t('tables.note')}</th>
               <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>E-mail</th>
-              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Telefón</th>
-              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Status</th>
+              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{t('tables.phone')}</th>
+              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{t('tables.status')}</th>
               {mode === 'received' && (
-                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>Akcie</th>
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: GOLD }}>{t('tables.actions')}</th>
               )}
             </tr>
           </thead>

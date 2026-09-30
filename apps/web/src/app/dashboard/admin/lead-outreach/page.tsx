@@ -8,6 +8,7 @@ import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { http } from '@/lib/api/http';
 import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
 import { redirect } from 'next/navigation';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -53,6 +54,7 @@ type PendingResponse = { count: number; items: PendingItem[] };
 type SendPendingResponse = { ok: boolean; message: string; status: string };
 
 export default function LeadOutreachPage() {
+  const { t } = useT();
   const { user, isLoading } = useAuthRequired();
   const isAdmin = useIsPlatformAdmin();
 
@@ -93,7 +95,8 @@ export default function LeadOutreachPage() {
   if (user && !isAdmin) redirect('/dashboard');
 
 
-  async function loadPending() {
+  async 
+  const { t } = useT();function loadPending() {
     setBusyPending(true);
     try {
       const res = await http.get<PendingResponse>('/admin/lead-outreach/pending?limit=50');
@@ -113,7 +116,8 @@ export default function LeadOutreachPage() {
     }
   }
 
-  async function sendPending(item: PendingItem) {
+ 
+  const { t } = useT(); async function sendPending(item: PendingItem) {
     const to = (pendingEmail[item.id] || '').trim();
     const sub = (pendingSubject[item.id] || item.subject || '').trim();
     if (!to || !to.includes('@')) {
@@ -145,7 +149,8 @@ export default function LeadOutreachPage() {
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Send zlyhal');
     } finally {
-      setBusySendId(null);
+      setBusySe
+  const { t } = useT();ndId(null);
     }
   }
 
@@ -162,7 +167,8 @@ export default function LeadOutreachPage() {
   useEffect(() => {
     if (!isAdmin) return;
     void loadPending();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-d
+  const { t } = useT();isable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
   async function draftFromCsv() {
@@ -205,7 +211,8 @@ export default function LeadOutreachPage() {
           ? e.message
           : typeof e === 'object' && e && 'message' in e
             ? String((e as { message: unknown }).message)
-            : 'Draft z CSV zlyhal';
+            : 'Draft z 
+  const { t } = useT();CSV zlyhal';
       setErr(msg);
     } finally {
       setBusyDraft(false);
@@ -247,7 +254,8 @@ export default function LeadOutreachPage() {
     }
   }
 
-  async function draftFrom(input: {
+  async 
+  const { t } = useT();function draftFrom(input: {
     company_name: string;
     city?: string | null;
     industry?: string | null;
@@ -269,7 +277,8 @@ export default function LeadOutreachPage() {
       });
       setSubject(res.subject || '');
       setBody(res.body || '');
-      setOkMsg('Návrh pripravený. Skontroluj a klikni Poslať.');
+      setOkMsg('Návrh pripravený. Skontroluj a klikni Pos
+  const { t } = useT();lať.');
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'Draft zlyhal');
     } finally {
@@ -414,7 +423,7 @@ export default function LeadOutreachPage() {
                     <div className="mt-3 grid gap-2 md:grid-cols-2">
                       <input
                         type="email"
-                        placeholder="Email príjemcu *"
+                        placeholder={t('admin.phEmail')}
                         value={pendingEmail[item.id] || ''}
                         onChange={(e) =>
                           setPendingEmail((p) => ({ ...p, [item.id]: e.target.value }))
@@ -424,7 +433,7 @@ export default function LeadOutreachPage() {
                       />
                       <input
                         type="text"
-                        placeholder="Predmet"
+                        placeholder={t('admin.phSubject')}
                         value={pendingSubject[item.id] || ''}
                         onChange={(e) =>
                           setPendingSubject((p) => ({ ...p, [item.id]: e.target.value }))
@@ -546,28 +555,28 @@ export default function LeadOutreachPage() {
 
             <div className="grid gap-3 md:grid-cols-2">
               <input
-                placeholder="Názov firmy *"
+                placeholder={t('admin.phCompanyName')}
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 className="h-12 rounded-lg border px-4 text-sm outline-none"
                 style={inputStyle}
               />
               <input
-                placeholder="Mesto"
+                placeholder={t('admin.phCity')}
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 className="h-12 rounded-lg border px-4 text-sm outline-none"
                 style={inputStyle}
               />
               <input
-                placeholder="Odvetvie (napr. drevospracovanie)"
+                placeholder={t('admin.phIndustry')}
                 value={industry}
                 onChange={(e) => setIndustry(e.target.value)}
                 className="h-12 rounded-lg border px-4 text-sm outline-none"
                 style={inputStyle}
               />
               <input
-                placeholder="Email príjemcu *"
+                placeholder={t('admin.phEmail')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="h-12 rounded-lg border px-4 text-sm outline-none"
@@ -662,14 +671,14 @@ export default function LeadOutreachPage() {
             </h2>
 
             <input
-              placeholder="Predmet"
+              placeholder={t('admin.phSubject')}
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               className="h-12 w-full rounded-lg border px-4 text-sm outline-none"
               style={inputStyle}
             />
             <textarea
-              placeholder="Telo emailu"
+              placeholder={t('admin.phBody')}
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={12}

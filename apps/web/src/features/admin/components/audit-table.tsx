@@ -1,6 +1,7 @@
 'use client';
 
 import { useAudit } from '../hooks/use-audit';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -72,11 +73,11 @@ export const AuditTable = () => {
       <table className="min-w-full text-sm" style={{ color: FG }}>
         <thead>
           <tr style={{ borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
-            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>Dátum</th>
-            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>Akcia</th>
-            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>Cieľ</th>
-            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>Detaily</th>
-            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>Stav</th>
+            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.date')}</th>
+            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.action')}</th>
+            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.target')}</th>
+            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.details')}</th>
+            <th className="px-4 py-3 text-left text-[10px] uppercase tracking-[0.2em] font-semibold" style={{ color: GOLD }}>{t('tables.status')}</th>
           </tr>
         </thead>
         <tbody>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useDocuments } from '../hooks/use-documents';
+import { useT } from '@/lib/i18n/context';
 
 export const DocumentsTable = () => {
   const { data, isLoading, error } = useDocuments();
@@ -18,10 +19,10 @@ export const DocumentsTable = () => {
       <table className="min-w-full divide-y divide-gray-200 bg-white text-sm">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Názov</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.title')}</th>
             <th className="px-4 py-2 text-left font-medium text-gray-900">Typ</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Status</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Súbor</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.status')}</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.file')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">

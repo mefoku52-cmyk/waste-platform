@@ -185,10 +185,20 @@
     "locationLabel": "Localisation",
     "imageLabel": "URL de la photo",
     "submit": "Créer l'annonce",
-    "saving": "Enregistrement..."
+    "saving": "Enregistrement...",
+    "company": "Entreprise",
+    "titlePh": "Ferraille",
+    "description": "Description",
+    "imageUrl": "URL de l'image (facultatif)",
+    "quantity": "Quantité",
+    "unit": "Unité",
+    "price": "Prix (facultatif)",
+    "currency": "Devise",
+    "location": "Lieu",
+    "locationPh": "Bratislava"
   },
   "companyForm": {
-    "title": "Nouvelle entreprise",
+    "title": "Enregistrer une nouvelle entreprise",
     "titleAdd": "Ajouter une entreprise",
     "legalNameLabel": "Raison sociale",
     "tradingNameLabel": "Nom commercial",
@@ -200,7 +210,20 @@
     "cityLabel": "Ville",
     "pscLabel": "Code postal",
     "countryLabel": "Pays",
-    "submit": "Créer l'entreprise"
+    "submit": "Créer l'entreprise",
+    "seller": "Vendeur",
+    "buyer": "Acheteur",
+    "logistics": "Logistique",
+    "legalName": "Nom légal",
+    "legalNamePh": "Entreprise SARL",
+    "tradingName": "Nom commercial (facultatif)",
+    "registrationNumber": "Numéro d'enregistrement",
+    "companyType": "Type d'entreprise (rôle)",
+    "countryCode": "Code pays",
+    "address": "Adresse",
+    "city": "Ville",
+    "email": "E-mail de l'entreprise",
+    "phone": "Téléphone"
   },
   "tables": {
     "name": "Nom",
@@ -221,7 +244,22 @@
     "adminMode": "Mode admin – vous pouvez approuver les entreprises.",
     "adminOnly": "Seul un administrateur peut approuver.",
     "companyMustBeVerified": "L'entreprise doit être vérifiée.",
-    "publishToMarketplace": "Publier sur le marché"
+    "publishToMarketplace": "Publier sur le marché",
+    "title": "Titre",
+    "location": "Lieu",
+    "material": "Matériau",
+    "materialType": "Type de matériau",
+    "date": "Date",
+    "action": "Action",
+    "target": "Cible",
+    "details": "Détails",
+    "role": "Rôle",
+    "email": "E-mail",
+    "phone": "Téléphone",
+    "file": "Fichier",
+    "regulation": "Réglementation",
+    "document": "Document",
+    "note": "Note"
   },
   "docs": {
     "title": "Documents",
@@ -236,7 +274,7 @@
     "statPending": "Vérifications en attente",
     "firmsSection": "ENTREPRISES",
     "firmsTitle": "Entreprises à vérifier",
-    "firmsHint": "Entreprises ayant demandé une vérification. Cliquez sur Vérifier ou Refuser.",
+    "firmsHint": "Entreprises ayant demandé une vérification. Cliquez sur Vérifier ou Rejeter.",
     "usersSection": "UTILISATEURS",
     "usersTitle": "Gestion des utilisateurs",
     "legalSection": "MENTIONS LÉGALES",
@@ -252,7 +290,25 @@
     "historyTitle": "Audit des changements",
     "historyHint": "Dernières actions des administrateurs.",
     "saveMaterials": "Enregistrer les matériaux",
-    "materialsPlaceholder": "bio, bois, métal"
+    "materialsPlaceholder": "bio, bois, métal",
+    "verify": "Vérifier",
+    "reject": "Rejeter",
+    "reports": "Signalements",
+    "recommendationsKicker": "Admin",
+    "recommendationsTitle": "Recommandations",
+    "outreachKicker": "Lead Outreach",
+    "outreachTitle": "Approche des entreprises",
+    "outreachHint": "L'IA prépare un e-mail personnalisé. Vous vérifiez et envoyez.",
+    "pendingBadge": "📥 Prêt à envoyer",
+    "pendingHint": "L'IA a généré le texte. Ajoutez l'e-mail et cliquez sur Envoyer.",
+    "phEmail": "E-mail du destinataire *",
+    "phSubject": "Objet",
+    "phCompanyName": "Nom de l'entreprise *",
+    "phCity": "Ville",
+    "phIndustry": "Secteur (ex. travail du bois)",
+    "phReason": "Raison du contact",
+    "phCsv": "Bois SARL, Presov, bois, info@bois.fr",
+    "phBody": "Corps de l'e-mail"
   },
   "chat": {
     "section": "MESSAGES",
@@ -430,5 +486,61 @@
     "sentSpamBold": "Spam",
     "sentPromotions": "Promotions",
     "sentValid": "Le lien est valable 24 heures."
+  },
+  "legal": {
+    "terms": "Conditions",
+    "privacy": "Confidentialité",
+    "license": "Licence",
+    "notifications": "Envoi de notifications sur les demandes et messages",
+    "security": "Sécurité et prévention de la fraude",
+    "rightAccess": "Droit d'accès à vos données",
+    "rightCorrect": "Droit de rectification des données inexactes",
+    "rightObject": "Droit d'opposition au traitement",
+    "noDbSchema": "Schéma et structure de la base de données",
+    "noReverse": "Effectuer l'ingénierie inverse ou la décompilation",
+    "noDerived": "Créer des œuvres dérivées sans consentement écrit",
+    "noBypass": "Contourner les mesures de sécurité ou les mécanismes d'autorisation",
+    "viewContent": "Afficher le contenu sur la plateforme",
+    "storeContent": "Stocker le contenu dans la base de données",
+    "notifyContent": "Envoyer des notifications liées au contenu",
+    "reactMit": "React — Licence MIT",
+    "photosUnsplash": "Les photos de matériaux présentées sur la page d'accueil sont sous licence de",
+    "lawSk": "Cette licence est régie par le droit de"
+  },
+  "recommendations": {
+    "kicker": "Recommandations",
+    "title": "Acheteurs potentiels",
+    "chatDraft": "Brouillon de message"
+  },
+  "freight": {
+    "kicker": "Fret",
+    "title": "Transporteurs à proximité"
+  },
+  "chatDraftBanner": {
+    "kicker": "Brouillon des recommandations"
+  },
+  "notifications": {
+    "title": "Notifications"
+  },
+  "documentForm": {
+    "title": "Ajouter un document",
+    "name": "Titre",
+    "type": "Type (certificat, facture, autre)",
+    "file": "Fichier (pdf, jpg, png)",
+    "fileUrl": "URL du fichier",
+    "company": "Entreprise"
+  },
+  "chatWidget": {
+    "placeholder": "Écrire un message...",
+    "ariaOpen": "Ouvrir le chat IA"
+  },
+  "aiAssistant": {
+    "placeholder": "Poser une question..."
+  },
+  "pagination": {
+    "aria": "Pagination"
+  },
+  "languageSwitcher": {
+    "aria": "Langue"
   }
 }

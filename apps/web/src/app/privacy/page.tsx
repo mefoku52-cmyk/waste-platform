@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -8,6 +9,7 @@ const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 
 export default function PrivacyPage() {
+  const { t } = useT();
   return (
     <>
       <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -19,8 +21,8 @@ export default function PrivacyPage() {
               <span style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.25rem' }}>CMEP</span>
             </Link>
             <div className="ml-auto flex gap-4 text-sm">
-              <Link href="/terms" style={{ color: MUTED }}>Podmienky</Link>
-              <Link href="/license" style={{ color: MUTED }}>Licencia</Link>
+              <Link href="/terms" style={{ color: MUTED }}>{t('legal.terms')}</Link>
+              <Link href="/license" style={{ color: MUTED }}>{t('legal.license')}</Link>
             </div>
           </div>
         </header>
@@ -57,8 +59,8 @@ export default function PrivacyPage() {
               <ul className="mt-3 list-disc space-y-1 pl-6">
                 <li>Poskytovanie služieb platformy (registrácia, prihlásenie, inzeráty)</li>
                 <li>Overenie firiem a IČO</li>
-                <li>Zasielanie notifikácií o dopytoch a správach</li>
-                <li>Bezpečnosť a prevencia podvodov</li>
+                <li>{t('legal.notifications')}</li>
+                <li>{t('legal.security')}</li>
               </ul>
             </section>
 
@@ -74,10 +76,10 @@ export default function PrivacyPage() {
             <section>
               <h2 className="mb-3 text-xl" style={{ color: FG, fontFamily: 'DM Serif Display, serif' }}>5. Vaše práva</h2>
               <ul className="mt-3 list-disc space-y-1 pl-6">
-                <li>Právo na prístup k svojim údajom</li>
-                <li>Právo na opravu nesprávnych údajov</li>
+                <li>{t('legal.rightAccess')}</li>
+                <li>{t('legal.rightCorrect')}</li>
                 <li>Právo na vymazanie („právo byť zabudnutý")</li>
-                <li>Právo namietať spracúvanie</li>
+                <li>{t('legal.rightObject')}</li>
                 <li>Právo podať sťažnosť na Úrad na ochranu osobných údajov SR</li>
               </ul>
               <p className="mt-3">
