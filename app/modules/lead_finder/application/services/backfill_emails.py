@@ -15,6 +15,7 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.lead_finder.application.services.directory_lookup import lookup_public_email
 from app.modules.lead_finder.application.services.email_finder import (
     AsyncLegalEmailFinder,
 )
@@ -71,6 +72,19 @@ async def backfill_emails(
                     city=city,
                 )
                 if not website:
+                    directory_email = lookup_public_email(company_name, city, ico)
+                    if directory_email:
+                        await repo.update_email(candidate_id=m.id, email=directory_email)
+                        found += 1
+                        items.append(
+                            {
+                                "company_name": company_name,
+                                "ico": ico,
+                                "email": directory_email,
+                                "reason": "directory",
+                            }
+                        )
+                        continue
                     no_website += 1
                     items.append(
                         {

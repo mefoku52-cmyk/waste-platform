@@ -1,9 +1,7 @@
-# TODO: nedokonceny repo - chybaju metody get_active_by_user_id a revoke_family,
-#       mapper pouziva nespravne atributy (family_id vs token_family_id).
-#       Refresh flow ide cez JWT+Redis, tento repo sa nikde nepouziva.
 from datetime import datetime
+from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.auth.domain.entities import RefreshSession
@@ -17,32 +15,61 @@ class PostgresRefreshSessionRepository(RefreshSessionRepository):
         self._session = session
 
     async def add(self, session: RefreshSession) -> None:
-        model = RefreshSessionModel(
-            id=session.id,
-            user_id=session.user_id,
-            family_id=session.family_id,
-            jti=session.jti,
-            expires_at=session.expires_at,
-            revoked_at=session.revoked_at,
-            reuse_detected_at=session.reuse_detected_at,
-            created_at=session.created_at,
-            updated_at=session.updated_at,
+        self._session.add(
+            RefreshSessionModel(
+                id=str(session.id),
+                user_id=str(session.user_id),
+                token_family_id=session.family_id,
+                refresh_token_jti=session.jti,
+                refresh_token_hash="unused",
+                expires_at=session.expires_at,
+                revoked_at=session.revoked_at,
+                reuse_detected_at=session.reuse_detected_at,
+                created_at=session.created_at,
+                updated_at=session.updated_at,
+            )
         )
-        self._session.add(model)
 
     async def update(self, session: RefreshSession) -> None:
-        result = await self._session.execute(
-            select(RefreshSessionModel).where(RefreshSessionModel.jti == session.jti)
-        )
-        model = result.scalar_one()
+        model = (
+            await self._session.execute(
+                select(RefreshSessionModel).where(
+                    RefreshSessionModel.refresh_token_jti == session.jti
+                )
+            )
+        ).scalar_one()
         model.revoked_at = session.revoked_at
         model.reuse_detected_at = session.reuse_detected_at
         model.updated_at = datetime.now()
         await self._session.flush()
 
-    async def get_by_jti(self, jti: str) -> RefreshSession | None:
-        result = await self._session.execute(
-            select(RefreshSessionModel).where(RefreshSessionModel.jti == jti)
-        )
-        model = result.scalar_one_or_none()
+    async def get_by_jti(self, jti: str):
+        model = (
+            await self._session.execute(
+                select(RefreshSessionModel).where(RefreshSessionModel.refresh_token_jti == jti)
+            )
+        ).scalar_one_or_none()
         return to_entity(model) if model else None
+
+    async def get_active_by_user_id(self, user_id: UUID):
+        rows = (
+            (
+                await self._session.execute(
+                    select(RefreshSessionModel).where(
+                        RefreshSessionModel.user_id == str(user_id),
+                        RefreshSessionModel.revoked_at.is_(None),
+                    )
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return [to_entity(m) for m in rows]
+
+    async def revoke_family(self, family_id: str, revoked_at) -> None:
+        await self._session.execute(
+            update(RefreshSessionModel)
+            .where(RefreshSessionModel.token_family_id == family_id)
+            .values(revoked_at=revoked_at, updated_at=revoked_at)
+        )
+        await self._session.flush()

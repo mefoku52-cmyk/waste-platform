@@ -73,6 +73,7 @@ export default function LeadOutreachPage() {
   const [err, setErr] = useState<string | null>(null);
   const [okMsg, setOkMsg] = useState<string | null>(null);
   const [busyDiscover, setBusyDiscover] = useState(false);
+  const [busyBackfill, setBusyBackfill] = useState(false);
   const [found, setFound] = useState<DiscoverItem[]>([]);
 
   // Pending (pripravene na odoslanie z DB)
@@ -262,6 +263,19 @@ export default function LeadOutreachPage() {
     }
   }
 
+  type BackfillResponse = {
+    ok: boolean; processed: number; found: number;
+    no_website: number; no_email_on_website: number; failed: number;
+  };
+  async function backfillEmails() {
+    setErr(null); setOkMsg(null); setBusyBackfill(true);
+    try {
+      const res = await http.post<BackfillResponse>('/admin/lead-outreach/backfill-emails?limit=35', {}, { timeoutMs: 120000 });
+      setOkMsg('Backfill: spracovane ' + String(res.processed) + ', najdene ' + String(res.found) + ', bez webu ' + String(res.no_website) + ', bez emailu na webe ' + String(res.no_email_on_website) + ', zlyhania ' + String(res.failed) + '.');
+      await loadPending();
+    } catch (e) { setErr(e instanceof Error ? e.message : 'Backfill zlyhal'); }
+    finally { setBusyBackfill(false); }
+  }
   async function discoverDaily() {
     setErr(null);
     setOkMsg(null);
@@ -563,6 +577,15 @@ export default function LeadOutreachPage() {
               style={{ background: GOLD, color: BG }}
             >
               {busyDiscover ? 'Hľadám…' : 'Nájsť 30 nových firiem'}
+            </button>
+            <button
+              type="button"
+              onClick={() => void backfillEmails()}
+              disabled={busyBackfill}
+              className="inline-flex rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
+              style={{ background: 'transparent', color: GOLD_BRIGHT, border: '1px solid #c9a84c' }}
+            >
+              {busyBackfill ? 'Hľadám emaily…' : 'Nájsť emaily'}
             </button>
           </div>
           {found.length ? (

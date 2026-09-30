@@ -112,14 +112,6 @@ def test_data_model_rejects_invalid_field_type():
         )
 
 
-@pytest.mark.xfail(
-    reason=(
-        "map_entity_to_response passes a NotificationEntity where NotificationData "
-        "is required, so it raises ValidationError. The router uses a local "
-        "_to_data helper instead, leaving this function unreferenced."
-    ),
-    strict=False,
-)
 def test_map_entity_to_response_builds_a_data_model():
     entity = _entity()
 

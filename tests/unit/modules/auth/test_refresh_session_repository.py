@@ -1,15 +1,6 @@
-"""Placeholder pre PostgresRefreshSessionRepository.
-
-Repo je nedokonceny (chybaju metody get_active_by_user_id, revoke_family,
-mapper pouziva nespravne atributy). Refresh flow funguje cez JWT + Redis,
-tento repo sa nikde nepouziva. TODO: dokoncit alebo zmazat.
-
-Tracked: vid TODO komentar v app/modules/auth/infrastructure/repositories.py
-"""
-
-import pytest
+from app.modules.auth.infrastructure.repositories import PostgresRefreshSessionRepository
 
 
-@pytest.mark.skip(reason="PostgresRefreshSessionRepository je nedokonceny (viď TODO v kode)")
-def test_placeholder_until_repo_is_finished():
-    pass
+def test_repo_has_missing_methods():
+    assert hasattr(PostgresRefreshSessionRepository, "get_active_by_user_id")
+    assert hasattr(PostgresRefreshSessionRepository, "revoke_family")

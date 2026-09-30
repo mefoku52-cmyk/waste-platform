@@ -36,7 +36,7 @@ async def _cleanup_pending_users_wrapper() -> None:
     """
     from datetime import UTC, datetime, timedelta
 
-    from sqlalchemy import delete, select
+    from sqlalchemy import select
 
     from app.modules.users.infrastructure.models import UserModel
     from app.shared.infrastructure.db.session import async_session_factory
@@ -54,9 +54,16 @@ async def _cleanup_pending_users_wrapper() -> None:
             if not ids:
                 logger.info("Cleanup pending users: nothing to delete")
                 return
-            await session.execute(delete(UserModel).where(UserModel.id.in_(ids)))
-            await session.commit()
-            logger.info("Cleanup pending users: deleted %d stale accounts", len(ids))
+            from app.modules.users.application.services import DeleteUserService
+
+            deleted = 0
+            for uid in ids:
+                try:
+                    await DeleteUserService(session).execute(user_id=uid)
+                    deleted += 1
+                except Exception:
+                    logger.exception("Cleanup pending user failed id=%s", uid)
+            logger.info("Cleanup pending users: deleted %d stale accounts of %d", deleted, len(ids))
     except Exception:
         logger.exception("Cleanup pending users zlyhal")
 
@@ -148,13 +155,7 @@ def start_scheduler() -> AsyncIOScheduler | None:
             misfire_grace_time=3600,
         )
     if outreach_on:
-        scheduler.add_job(
-            _daily_lead_discover_wrapper,
-            CronTrigger(hour=7, minute=15),
-            id="daily_lead_discover",
-            replace_existing=True,
-            misfire_grace_time=3600,
-        )
+        logger.info("daily_lead_discover 07:15 vypnuty — nahrada je daily_lead_outreach 09:00")
     if cleanup_on:
         scheduler.add_job(
             _cleanup_pending_users_wrapper,
