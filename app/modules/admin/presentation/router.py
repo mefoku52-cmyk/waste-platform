@@ -157,6 +157,117 @@ async def admin_list_users(
 
 
 @router.get(
+    "/users/{user_id}/summary",
+    summary="User summary — profil + pocty aktivit",
+)
+async def admin_user_summary(
+    user_id: str,
+    current_user=Depends(require_admin),
+    session=Depends(get_db_session),
+):
+    from sqlalchemy import text
+
+    # Profil
+    row = (
+        (
+            await session.execute(
+                text(
+                    "SELECT id, email, first_name, last_name, status, "
+                    "last_login_at, created_at, updated_at "
+                    "FROM users WHERE id = :uid"
+                ),
+                {"uid": user_id},
+            )
+        )
+        .mappings()
+        .first()
+    )
+
+    if row is None:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Pocty aktivit
+    counts = {}
+    for label, query in [
+        (
+            "listings",
+            "SELECT COUNT(*) FROM listings WHERE company_id IN "
+            "(SELECT company_id FROM company_memberships WHERE user_id = :uid)",
+        ),
+        (
+            "inquiries",
+            "SELECT COUNT(*) FROM inquiries WHERE company_id IN "
+            "(SELECT company_id FROM company_memberships WHERE user_id = :uid)",
+        ),
+        ("memberships", "SELECT COUNT(*) FROM company_memberships WHERE user_id = :uid"),
+        ("activity_events", "SELECT COUNT(*) FROM activity_events WHERE actor_user_id = :uid"),
+    ]:
+        try:
+            result = await session.execute(text(query), {"uid": user_id})
+            counts[label] = int(result.scalar_one())
+        except Exception:
+            counts[label] = None
+
+    return {
+        "user": {
+            "id": str(row["id"]),
+            "email": row["email"],
+            "firstName": row["first_name"],
+            "lastName": row["last_name"],
+            "status": row["status"],
+            "lastLoginAt": row["last_login_at"].isoformat() if row["last_login_at"] else None,
+            "createdAt": row["created_at"].isoformat() if row["created_at"] else None,
+            "updatedAt": row["updated_at"].isoformat() if row["updated_at"] else None,
+        },
+        "counts": counts,
+    }
+
+
+@router.get(
+    "/users/{user_id}/activity",
+    summary="User activity — poslednych 100 eventov",
+)
+async def admin_user_activity(
+    user_id: str,
+    limit: int = 100,
+    current_user=Depends(require_admin),
+    session=Depends(get_db_session),
+):
+    from sqlalchemy import text
+
+    limit = max(1, min(int(limit), 500))
+
+    rows = (
+        (
+            await session.execute(
+                text(
+                    "SELECT id, event_type, company_id, listing_id, payload, created_at "
+                    "FROM activity_events WHERE actor_user_id = :uid "
+                    "ORDER BY created_at DESC LIMIT :lim"
+                ),
+                {"uid": user_id, "lim": limit},
+            )
+        )
+        .mappings()
+        .all()
+    )
+
+    items = [
+        {
+            "id": str(r["id"]),
+            "eventType": r["event_type"],
+            "companyId": r["company_id"],
+            "listingId": r["listing_id"],
+            "payload": r["payload"],
+            "createdAt": r["created_at"].isoformat() if r["created_at"] else None,
+        }
+        for r in rows
+    ]
+
+    return {"items": items, "total": len(items)}
+
+
+@router.get(
     "/{id}",
     response_model=AdminAuditEntryResponse,
     summary="Get audit entry by ID",

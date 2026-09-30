@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from app.modules.auth.presentation.dependencies import (
     get_email_verification_service,
 )
+from app.modules.users.application.services import DeleteUserService
 from app.modules.users.presentation.dependencies import (
     get_create_user_service,
     get_get_user_service,
@@ -23,6 +24,8 @@ from app.modules.users.presentation.schemas import (
     UserUpdateRequest,
 )
 from app.shared.application.passwords import PasswordService
+from app.shared.domain.exceptions import ForbiddenDomainError
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import current_user_id, is_platform_admin
 from app.shared.presentation.error_schemas import error_responses
@@ -168,3 +171,32 @@ async def transition_user_status(
         user_id=user_id, to_status=payload.toStatus, actor_user_id=current_user.user.id
     )
     return UserResponse(data=to_user_data(dto))
+
+
+@router.delete(
+    "/{user_id}",
+    status_code=204,
+    responses=error_responses(401, 403, 404, 500),
+    summary="Delete user (platform admin only)",
+)
+async def delete_user(
+    user_id: UUID,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+):
+    """Platform-admin only. Tvrdo zmaze usera.
+
+    Bezpecnostne kontroly:
+    - iba platform admin moze mazat
+    - admin nemoze zmazat sam seba (aby si nezamkol pristup)
+    - ak user neexistuje -> 404 (NotFoundDomainError)
+    """
+    if not is_platform_admin(current_user):
+        raise ForbiddenDomainError("Platform admin access required")
+
+    if str(user_id) == str(current_user_id(current_user)):
+        raise ForbiddenDomainError("You cannot delete your own account")
+
+    service = DeleteUserService(session)
+    await service.execute(user_id=user_id)
+    return None
