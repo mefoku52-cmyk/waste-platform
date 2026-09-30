@@ -63,10 +63,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = (key: string, fallback?: string) => {
     const v = get(messages[locale], key);
-    if (typeof v === 'string') return v;
+    if (typeof v === 'string' && v.length > 0) return v;
     const f = get(messages.sk, key);
-    if (typeof f === 'string') return f;
-    return fallback ?? key;
+    if (typeof f === 'string' && f.length > 0) return f;
+    if (fallback && fallback.length > 0) return fallback;
+    const last = key.split('.').pop() || key;
+    return last
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, (c) => c.toUpperCase())
+      .trim();
   };
 
   return (
