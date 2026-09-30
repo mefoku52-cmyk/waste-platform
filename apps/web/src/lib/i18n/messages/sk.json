@@ -18,8 +18,8 @@
     "close": "Zavrieť"
   },
   "login": {
-    "title": "Vstup na burzu",
-    "subtitle": "E-mailom. Žiadny zelený lístok.",
+    "title": "Vstúpte na B2B platformu obehových materiálov",
+    "subtitle": "Prihláste sa e-mailom a začnite obchodovať s obehovými materiálmi.",
     "emailPlaceholder": "vas@email.sk",
     "passwordPlaceholder": "Vaše heslo",
     "submit": "Prihlásiť e-mailom",
