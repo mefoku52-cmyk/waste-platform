@@ -109,6 +109,29 @@ async function fetchListing(listingId: string): Promise<ListingData> {
   return (body.data ?? body) as ListingData;
 }
 
+type ListingStats = {
+  views: number;
+  uniqueViewers: number;
+};
+
+async function fetchListingStats(listingId: string): Promise<ListingStats> {
+  const token = localStorage.getItem('accessToken');
+  const res = await fetch(`${config.apiBaseUrl}/listings/${listingId}/stats`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(typeof body.detail === 'string' ? body.detail : `HTTP ${res.status}`);
+  }
+  return {
+    views: Number(body.views ?? 0),
+    uniqueViewers: Number(body.uniqueViewers ?? 0),
+  };
+}
+
 export default function ListingDetailPage() {
   const params = useParams<{ id: string }>();
   const me = useCurrentUser();
@@ -122,6 +145,26 @@ export default function ListingDetailPage() {
     queryFn: () => fetchListing(listingId),
     enabled: Boolean(listingId),
     retry: 1,
+  });
+
+  const meCompanyIdsForStats = ((me.data as any)?.memberships || [])
+    .map((m: any) => String(m?.companyId || m?.company_id || '').toLowerCase().trim())
+    .filter(Boolean);
+  const listingCompanyIdForStats = String(
+    (query.data as any)?.companyId ||
+    (query.data as any)?.company_id ||
+    (query.data as any)?.company?.id ||
+    ''
+  ).toLowerCase().trim();
+  const amOwnerForStats = Boolean(
+    listingCompanyIdForStats && meCompanyIdsForStats.includes(listingCompanyIdForStats)
+  );
+
+  const statsQuery = useQuery({
+    queryKey: ['listing-stats', listingId, amOwnerForStats],
+    queryFn: () => fetchListingStats(listingId),
+    enabled: Boolean(listingId) && amOwnerForStats,
+    retry: 0,
   });
 
   useEffect(() => {
@@ -275,6 +318,49 @@ export default function ListingDetailPage() {
                     {t('listingMedia.acceptedMaterials')}: {data.company.acceptedMaterialTypes}
                   </p>
                 ) : null}
+              </section>
+            ) : null}
+
+            {isOwner ? (
+              <section className="cmep-panel mt-6 rounded-2xl p-5">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+                  ŠTATISTIKY PONUKY
+                </p>
+                <h2 className="mt-2 font-serif text-2xl" style={{ color: GOLD_BRIGHT }}>
+                  Záujem o túto ponuku
+                </h2>
+                {statsQuery.isLoading ? (
+                  <p className="mt-3 text-sm" style={{ color: MUTED }}>Načítavam…</p>
+                ) : statsQuery.error ? (
+                  <p className="mt-3 text-sm" style={{ color: MUTED }}>
+                    Štatistiky sa nepodarilo načítať.
+                  </p>
+                ) : (
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="cmep-panel rounded-xl p-4">
+                      <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>
+                        ZOBRAZENIA
+                      </p>
+                      <p className="mt-2 font-serif text-3xl" style={{ color: GOLD_BRIGHT }}>
+                        {statsQuery.data?.views ?? 0}
+                      </p>
+                      <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                        Koľkokrát bola ponuka otvorená
+                      </p>
+                    </div>
+                    <div className="cmep-panel rounded-xl p-4">
+                      <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>
+                        UNIKÁTNI DIVÁCI
+                      </p>
+                      <p className="mt-2 font-serif text-3xl" style={{ color: GOLD_BRIGHT }}>
+                        {statsQuery.data?.uniqueViewers ?? 0}
+                      </p>
+                      <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                        Koľko rôznych účtov si ju pozrelo
+                      </p>
+                    </div>
+                  </div>
+                )}
               </section>
             ) : null}
 
