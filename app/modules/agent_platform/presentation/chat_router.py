@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import contextlib
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
@@ -19,6 +21,7 @@ from app.modules.agent_platform.presentation.dependencies import (
 )
 from app.modules.companies.application.entitlements import CompanyEntitlementService
 from app.modules.companies.domain.enums import SubscriptionTier
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import (
     current_user_id,
@@ -144,6 +147,150 @@ def _build_system_prompt(current_user, persona: str | None = None) -> str:
     return BASE_RULES + addendum + _persona_addendum(persona)
 
 
+def _detect_security_patterns(text: str) -> list[tuple[str, float]]:
+    """Heuristicka detekcia podozrivych vzorov v user message.
+
+    Len detekcia - NEBLOKUJE chat. Zapisuje observation + signal
+    + alert do DB.
+    """
+    t = (text or "").lower()
+    findings: list[tuple[str, float]] = []
+
+    injection = (
+        "ignore previous",
+        "ignore all previous",
+        "ignore the instructions",
+        "forget your instructions",
+        "forget previous",
+        "you are now",
+        "new instructions",
+        "predstieraj ze",
+        "zabudni na",
+        "ignoruj predchadzajuce",
+        "ignoruj vsetky",
+    )
+    leaks = (
+        "api key",
+        "api kluč",
+        "api kluc",
+        "jwt secret",
+        ".env",
+        "secret key",
+        "drop table",
+        "admin heslo",
+        "root heslo",
+    )
+    escalation = (
+        "admin pristup",
+        "admin access",
+        "grant me admin",
+        "daj mi admin",
+        "superuser",
+        "root pristup",
+    )
+
+    for phrase in injection:
+        if phrase in t:
+            findings.append(("prompt_injection", 0.9))
+            break
+    for phrase in leaks:
+        if phrase in t:
+            findings.append(("data_leakage", 0.8))
+            break
+    for phrase in escalation:
+        if phrase in t:
+            findings.append(("permission_escalation", 0.85))
+            break
+    return findings
+
+
+async def _apply_security_check(
+    *,
+    session: AsyncSession,
+    text: str,
+    actor_id: str,
+) -> None:
+    """Best-effort security check. Nikdy neblokuje chat."""
+    findings = _detect_security_patterns(text)
+    if not findings:
+        return
+
+    try:
+        from datetime import UTC, datetime
+
+        from app.modules.agent_platform.application.alerts.alert_service import (
+            DefaultAlertService,
+        )
+        from app.modules.agent_platform.application.security.security_signal_service import (
+            DefaultSecuritySignalService,
+        )
+        from app.modules.agent_platform.domain.alerts.alert_record import (
+            AlertRecord,
+        )
+        from app.modules.agent_platform.domain.alerts.alert_severity import (
+            AlertSeverity,
+        )
+        from app.modules.agent_platform.domain.security.security_observation import (
+            SecurityObservation,
+        )
+        from app.modules.agent_platform.domain.security.security_pattern import (
+            SecurityPattern,
+        )
+        from app.modules.agent_platform.infrastructure.persistence.alert_repository import (
+            SqlAlchemyAlertRepository,
+        )
+        from app.modules.agent_platform.infrastructure.security.security_event_store import (
+            SqlAlchemySecurityEventStore,
+        )
+
+        store = SqlAlchemySecurityEventStore(session)
+        signal_svc = DefaultSecuritySignalService(store=store)
+        alert_svc = DefaultAlertService(
+            repository=SqlAlchemyAlertRepository(session),
+        )
+
+        for pattern_name, confidence in findings:
+            try:
+                pattern = SecurityPattern(pattern_name)
+            except ValueError:
+                continue
+
+            observation = SecurityObservation(
+                observation_id=str(uuid.uuid4()),
+                pattern=pattern,
+                source="chat",
+                actor_id=actor_id,
+                target="chat",
+                evidence={"snippet": text[:200]},
+                observed_at=datetime.now(UTC),
+            )
+
+            with contextlib.suppress(Exception):
+                await signal_svc.observe(observation)
+
+            if confidence >= 0.7:
+                try:
+                    alert = AlertRecord(
+                        alert_id=str(uuid.uuid4()),
+                        category=pattern_name,
+                        severity=(
+                            AlertSeverity.HIGH if confidence >= 0.9 else AlertSeverity.MEDIUM
+                        ),
+                        source="chat",
+                        actor_id=actor_id,
+                        target="chat",
+                        event="ai_pattern_detected",
+                        evidence={"snippet": text[:200]},
+                        created_at=datetime.now(UTC),
+                    )
+                    await alert_svc.create(alert)
+                except Exception:
+                    pass
+    except Exception:
+        # Best-effort. Nikdy nezhodi chat.
+        pass
+
+
 class UserAiChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     session_id: str | None = Field(default=None, max_length=64)
@@ -199,6 +346,7 @@ async def user_ai_chat(
     conversations: SqlAlchemyAiConversationRepository = Depends(
         get_ai_conversation_repository,
     ),
+    session: AsyncSession = Depends(get_db_session),
 ) -> UserAiChatResponse:
     text = payload.message.strip()
     if not text:
@@ -243,6 +391,13 @@ async def user_ai_chat(
         history = ()
 
     system_prompt = _build_system_prompt(current_user, persona=payload.persona)
+
+    with contextlib.suppress(Exception):
+        await _apply_security_check(
+            session=session,
+            text=text,
+            actor_id=actor_id,
+        )
 
     try:
         result = await orchestrator.respond(
