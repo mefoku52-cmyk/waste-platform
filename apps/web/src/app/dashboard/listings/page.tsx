@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { AppShell } from '@/components/layout/app-shell';
 import { useListings } from '@/features/listings';
 import { http } from '@/lib/api/http';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -72,6 +73,7 @@ type Listing = {
 };
 
 export default function MyListingsPage() {
+  const { t } = useT();
   const {
     data,
     isLoading,
@@ -154,14 +156,14 @@ export default function MyListingsPage() {
               className="mb-3 text-[11px] uppercase tracking-[0.3em]"
               style={{ color: GOLD }}
             >
-              MOJE PONUKY
+              {t('listings.section')}
             </p>
 
             <h1
               className="text-4xl leading-tight tracking-[-0.02em] md:text-5xl"
               style={{ fontFamily: 'DM Serif Display, serif' }}
             >
-              Ponuky
+              {t('listings.title')}
             </h1>
           </div>
 
@@ -173,12 +175,12 @@ export default function MyListingsPage() {
               color: '#090807',
             }}
           >
-            + Pridať ponuku
+            {t('listings.add')}
           </Link>
         </div>
 
         {isLoading ? (
-          <p style={{ color: MUTED }}>Načítavam…</p>
+          <p style={{ color: MUTED }}>{t('listings.loading')}</p>
         ) : error ? (
           <div
             className="rounded-2xl border p-6"
@@ -188,14 +190,14 @@ export default function MyListingsPage() {
             }}
           >
             <p className="text-sm" style={{ color: '#c45c4a' }}>
-              Nepodarilo sa načítať ponuky.
+              {t('listings.loadFailed')}
             </p>
 
             <p
               className="mt-2 text-xs"
               style={{ color: MUTED }}
             >
-              {String((error as any)?.message || 'Neznáma chyba')}
+              {String((error as any)?.message || t('listings.unknownError'))}
             </p>
           </div>
         ) : items.length === 0 ? (
