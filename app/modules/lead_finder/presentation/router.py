@@ -101,6 +101,7 @@ class DiscoverDailyResponse(BaseModel):
     created: int
     drafted: int
     failed: int
+    emails_found: int = 0
     known_before: int
     send: bool = False
     items: list[DiscoverDailyItem] = []
