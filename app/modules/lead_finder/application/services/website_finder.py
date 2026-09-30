@@ -1,22 +1,16 @@
-"""Find company website via Google Custom Search.
+"""Find company website via DuckDuckGo search.
 
-Používa GoogleWebSearchGateway (agent_platform) na nájdenie
-firemného webu z názvu firmy + mesta. Filtruje katalógy
-a sociálne siete (facebook, linkedin, atď.).
+Používa `duckduckgo-search` (bez API kľúča, bez registrácie).
+Filtruje katalógy a sociálne siete (facebook, linkedin, atď.).
 
-Výsledok sa potom posiela do LegalEmailFinder (scraper).
+Výsledok sa potom posiela do AsyncLegalEmailFinder (scraper).
 """
 
 from __future__ import annotations
 
+import asyncio
 import logging
-import uuid
 from urllib.parse import urlparse
-
-from app.modules.agent_platform.infrastructure.web.web_search_gateway import (
-    GoogleWebSearchGateway,
-    WebSearchRequest,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -66,13 +60,22 @@ def _is_skippable_domain(url: str) -> bool:
 
 
 class WebsiteFinder:
-    """Google CSE -> URL firemného webu."""
+    """DuckDuckGo search -> URL firemného webu."""
 
-    def __init__(self, gateway: GoogleWebSearchGateway | None = None) -> None:
-        self._gateway = gateway or GoogleWebSearchGateway()
+    def __init__(self, timeout: float = 15.0) -> None:
+        self._timeout = timeout
 
     def is_available(self) -> bool:
-        return self._gateway.is_available()
+        import importlib
+
+        for module_name in ("ddgs", "duckduckgo_search"):
+            try:
+                importlib.import_module(module_name)
+                return True
+            except ImportError:
+                continue
+        logger.warning("duckduckgo-search (ddgs) not installed")
+        return False
 
     async def find_website(
         self,
@@ -81,8 +84,6 @@ class WebsiteFinder:
         city: str | None = None,
     ) -> str | None:
         """Vráti URL firemného webu alebo None."""
-        if not self.is_available():
-            return None
         if not company_name.strip():
             return None
 
@@ -93,22 +94,42 @@ class WebsiteFinder:
         query = " ".join(parts)
 
         try:
-            response = await self._gateway.search(
-                WebSearchRequest(
-                    request_id=str(uuid.uuid4()),
-                    query=query,
-                    max_results=10,
-                )
-            )
+            results = await asyncio.to_thread(self._search, query)
         except Exception:
-            logger.exception("Google search failed for %s", query)
+            logger.exception("DuckDuckGo search failed for %s", query)
             return None
 
-        for result in response.results:
-            if not result.url:
+        for result in results:
+            url = str(result.get("href") or result.get("url") or "").strip()
+            if not url:
                 continue
-            if _is_skippable_domain(result.url):
+            if _is_skippable_domain(url):
                 continue
-            return result.url
+            return url
 
         return None
+
+    def _search(self, query: str) -> list[dict]:
+        """Synchrónny DuckDuckGo search — beží v to_thread."""
+        import importlib
+
+        DDGS = None
+        for module_name in ("ddgs", "duckduckgo_search"):
+            try:
+                module = importlib.import_module(module_name)
+                DDGS = getattr(module, "DDGS", None)
+                if DDGS is not None:
+                    break
+            except ImportError:
+                continue
+
+        if DDGS is None:
+            logger.error("Neither ddgs nor duckduckgo_search is installed")
+            return []
+
+        try:
+            with DDGS(timeout=self._timeout) as ddgs:
+                return list(ddgs.text(query, max_results=10))
+        except Exception:
+            logger.exception("DDGS.text failed for %s", query)
+            return []
