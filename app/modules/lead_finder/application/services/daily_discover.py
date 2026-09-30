@@ -5,6 +5,7 @@ Never sends. Skips ICO already stored. RPO has no email.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import UTC
 from typing import Any
@@ -14,6 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.companies.application.rpo import search_rpo
 from app.modules.lead_finder.application.services.email_drafter import EmailDrafter
+from app.modules.lead_finder.application.services.email_finder import LegalEmailFinder
+from app.modules.lead_finder.application.services.website_finder import WebsiteFinder
 from app.modules.lead_finder.infrastructure.persistence.models import (
     OutreachCandidateModel,
 )
@@ -89,55 +92,89 @@ async def run_daily_discover(
                 break
 
     drafter = EmailDrafter()
+    website_finder = WebsiteFinder()
+    email_finder = LegalEmailFinder()
     created = 0
     drafted = 0
     failed = 0
+    emails_found = 0
     items: list[dict[str, Any]] = []
-    for row in picked:
-        try:
-            candidate = await repo.create(
-                company_name=str(row["legalName"]),
-                ico=str(row["ico"]),
-                city=row.get("city"),
-                industry=row.get("activity") or "obehove materialy",
-                email=None,
-            )
-            created += 1
-        except Exception:
-            logger.exception("create candidate failed %s", row.get("ico"))
-            failed += 1
-            continue
-        item = {
-            "id": candidate.id,
-            "company_name": candidate.company_name,
-            "ico": candidate.ico,
-            "city": candidate.city,
-            "industry": candidate.industry,
-            "subject": None,
-            "body": None,
-            "email": None,
-        }
-        if draft:
+
+    try:
+        for row in picked:
             try:
-                mail = await drafter.draft(
+                candidate = await repo.create(
+                    company_name=str(row["legalName"]),
+                    ico=str(row["ico"]),
+                    city=row.get("city"),
+                    industry=row.get("activity") or "obehove materialy",
+                    email=None,
+                )
+                created += 1
+            except Exception:
+                logger.exception("create candidate failed %s", row.get("ico"))
+                failed += 1
+                continue
+
+            # --- Email discovery: Google search -> web -> scrape email ---
+            found_email: str | None = None
+            try:
+                website = await website_finder.find_website(
                     company_name=candidate.company_name,
                     city=candidate.city,
-                    industry=candidate.industry,
-                    reason="platforma na obehove materialy a druhotny odpad",
-                    early_bird=False,
                 )
-                await repo.update_draft(
-                    candidate_id=candidate.id,
-                    subject=mail.subject,
-                    body=mail.body,
-                )
-                drafted += 1
-                item["subject"] = mail.subject
-                item["body"] = mail.body
+                if website:
+                    found_email = await asyncio.to_thread(
+                        email_finder.find_email_for_company, website
+                    )
+                    if found_email:
+                        await repo.update_email(
+                            candidate_id=candidate.id,
+                            email=found_email,
+                        )
+                        emails_found += 1
+                        logger.info(
+                            "Email found for %s (%s): %s",
+                            candidate.company_name,
+                            candidate.ico,
+                            found_email,
+                        )
             except Exception:
-                logger.exception("draft failed %s", candidate.ico)
-                failed += 1
-        items.append(item)
+                logger.exception("email discovery failed for %s", candidate.company_name)
+
+            item = {
+                "id": candidate.id,
+                "company_name": candidate.company_name,
+                "ico": candidate.ico,
+                "city": candidate.city,
+                "industry": candidate.industry,
+                "subject": None,
+                "body": None,
+                "email": found_email,
+            }
+            if draft:
+                try:
+                    mail = await drafter.draft(
+                        company_name=candidate.company_name,
+                        city=candidate.city,
+                        industry=candidate.industry,
+                        reason="platforma na obehove materialy a druhotny odpad",
+                        early_bird=False,
+                    )
+                    await repo.update_draft(
+                        candidate_id=candidate.id,
+                        subject=mail.subject,
+                        body=mail.body,
+                    )
+                    drafted += 1
+                    item["subject"] = mail.subject
+                    item["body"] = mail.body
+                except Exception:
+                    logger.exception("draft failed %s", candidate.ico)
+                    failed += 1
+            items.append(item)
+    finally:
+        email_finder.close()
 
     return {
         "ok": True,
@@ -145,6 +182,7 @@ async def run_daily_discover(
         "created": created,
         "drafted": drafted,
         "failed": failed,
+        "emails_found": emails_found,
         "known_before": len(known) - len(picked),
         "send": False,
         "items": items,
