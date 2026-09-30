@@ -13,7 +13,14 @@ PHONE_RE = re.compile(r"(\+?\d[\d\s\-\(\)]{7,}\d)")
 EMAIL_RE = re.compile(r"[\w\.\-]+@[\w\.\-]+\.\w+")
 
 
-def _sanitize(text: str) -> str:
+def _sanitize(text: str, *, allow_contacts: bool = False) -> str:
+    """Skryje telefon a email z textu.
+
+    Ak allow_contacts=True (firmy maju answered/closed inquiry medzi sebou),
+    text sa necha nezmeneny.
+    """
+    if allow_contacts:
+        return text
     text = PHONE_RE.sub("[telefon skryty]", text)
     text = EMAIL_RE.sub("[email skryty]", text)
     return text
@@ -22,6 +29,42 @@ def _sanitize(text: str) -> str:
 class ChatService:
     def __init__(self, repo):
         self.repo = repo
+
+    async def _has_revealed_relationship(self, thread) -> bool:
+        """True ak medzi firmami v threade existuje inquiry answered/closed.
+
+        Rovnaka logika ako v GET /companies/{id}/contacts.
+        """
+        a = str(thread.initiator_company_id) if thread.initiator_company_id else None
+        b = str(thread.recipient_company_id) if thread.recipient_company_id else None
+        if not a or not b or a == b:
+            return False
+
+        session = getattr(self.repo, "session", None)
+        if session is None:
+            return False
+
+        try:
+            from sqlalchemy import text
+
+            r = await session.execute(
+                text(
+                    """
+                    SELECT 1 FROM inquiries i
+                    JOIN listings l ON l.id = i.listing_id
+                    WHERE (
+                        (i.company_id = :a AND l.company_id = :b)
+                        OR (i.company_id = :b AND l.company_id = :a)
+                    )
+                    AND i.status IN ('answered', 'closed')
+                    LIMIT 1
+                    """
+                ),
+                {"a": a, "b": b},
+            )
+            return r.first() is not None
+        except Exception:
+            return False
 
     async def create_thread(
         self,
@@ -99,7 +142,8 @@ class ChatService:
         if sender_user_id not in (thread.initiator_user_id, thread.recipient_user_id):
             raise ValidationDomainError("Nie si ucastnik tejto konverzacie")
 
-        sanitized = _sanitize(body)
+        allow_contacts = await self._has_revealed_relationship(thread)
+        sanitized = _sanitize(body, allow_contacts=allow_contacts)
         now = datetime.now()
         entity = ChatMessageEntity(
             id=uuid4(),
