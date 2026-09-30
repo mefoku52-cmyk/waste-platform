@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { LanguageSwitcher } from '@/components/language-switcher';
 
-const GOLD = '#c9a84c';
+// const GOLD = '#c9a84c';
 
 export function AuthShell({
   title,

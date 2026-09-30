@@ -11,7 +11,7 @@ const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
-const FAINT = '#6e6658';
+// const FAINT = '#6e6658';
 
 const statusStyle = (status: string): { bg: string; color: string; label: string } => {
   if (status === 'answered') return { bg: 'rgba(110,231,167,0.15)', color: '#6ee7a7', label: 'Odpovedané' };
@@ -50,7 +50,7 @@ export const InquiriesTable = ({ mode }: Props) => {
   }
 
   const items = (q.data as any)?.items ?? [];
-  const colSpan = mode === 'received' ? 6 : 5;
+  // const colSpan = mode === 'received' ? 6 : 5;
 
   return (
     <div className="overflow-x-auto">

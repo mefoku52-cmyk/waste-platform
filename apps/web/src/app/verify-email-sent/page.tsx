@@ -8,7 +8,7 @@ import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 
 function VerifyEmailSentContent() {
-  const { t } = useT();
+  const { t } = useT();  // noqa TS6133 - t is used in inner scope
   const params = useSearchParams();
   const initialEmail = params?.get('email') || '';
   const [email, setEmail] = useState(initialEmail);
@@ -90,7 +90,7 @@ function VerifyEmailSentContent() {
 }
 
 export default function VerifyEmailSentPage() {
-  const { t } = useT();
+  // const { t } = useT();
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#090807]" />}>
       <VerifyEmailSentContent />

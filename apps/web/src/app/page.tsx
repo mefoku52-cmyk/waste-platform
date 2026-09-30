@@ -9,7 +9,7 @@ const BG = '#090807';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 const FAINT = '#6e6658';
-const DANGER = '#c45c4a';
+// const DANGER = '#c45c4a';
 
 const MATERIALS = [
   { key: 'drevo', label: 'Drevo', img: 'https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1200&q=80', desc: 'Piliny, odrezky, palety. Kým ich niekto spáli, niekto iný ich hľadá na dosky.' },

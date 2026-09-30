@@ -498,7 +498,7 @@ async def user_ai_chat(
                 content=result.text,
             )
         except Exception:
-            pass
+            pass  # best-effort: never break caller
 
     return UserAiChatResponse(
         status="ok",

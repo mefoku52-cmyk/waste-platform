@@ -31,7 +31,7 @@ const TONE_PREFIX: Record<string, string> = {
   lenivy: 'Odpovedaj kratko, jednoducho, po slovensky.',
 };
 
-export function AiAssistantPanel({ listingId, listingTitle }: Props) {
+export function AiAssistantPanel({ listingTitle }: Props) {
   const { t } = useT();
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -48,11 +48,13 @@ export function AiAssistantPanel({ listingId, listingTitle }: Props) {
     setError(null);
     setReply(null);
     setUnavailable(false);
+
     const prefix = TONE_PREFIX[tone] || TONE_PREFIX.vecny;
     const context = listingTitle ? ` Kontext ponuky: ${listingTitle}.` : '';
+
     try {
       const res = await http.post<ChatResponse>('/agent-platform/chat', {
-        message: `\( {prefix} \){context} Otazka: ${text}`,
+        message: `${prefix}${context} Otazka: ${text}`,
       });
       if (res?.status === 'ok' && res.reply) {
         setReply(res.reply);

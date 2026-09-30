@@ -302,7 +302,7 @@ async def publish_listing(
             details=f"title={getattr(result, 'title', '')}",
         )
     except Exception:
-        pass
+        pass  # best-effort: never break caller
 
     return ListingResponse(data=_to_listing_data(result))
 

@@ -212,7 +212,7 @@ async def send_message(
         )
         await NotificationRepositoryImpl(session).create(notif)
     except Exception:
-        pass
+        pass  # best-effort: never break caller
 
     return ChatMessageResponse(data=_message_data(msg))
 

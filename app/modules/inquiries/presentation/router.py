@@ -222,7 +222,7 @@ async def create_inquiry(
             exclude_user_id=actor,
         )
     except Exception:
-        pass
+        pass  # best-effort: never break caller
 
     return InquiryResponse(data=_to_data(created))
 
@@ -273,7 +273,7 @@ async def update_inquiry_status(
                 related_entity_id=result.id,
             )
     except Exception:
-        pass
+        pass  # best-effort: never break caller
 
     return InquiryResponse(data=_to_data(result))
 

@@ -10,7 +10,7 @@ import { useT } from '@/lib/i18n/context';
 type Status = 'verifying' | 'success' | 'error';
 
 function VerifyEmailContent() {
-  const { t } = useT();
+  const { t } = useT();  // noqa TS6133
   const params = useSearchParams();
   const token = params?.get('token') || '';
   const [status, setStatus] = useState<Status>('verifying');
@@ -101,7 +101,7 @@ function VerifyEmailContent() {
 }
 
 export default function VerifyEmailPage() {
-  const { t } = useT();
+  // const { t } = useT();
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#090807]" />}>
       <VerifyEmailContent />

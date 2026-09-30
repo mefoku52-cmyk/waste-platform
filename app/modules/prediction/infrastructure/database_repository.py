@@ -141,7 +141,7 @@ class PredictionDataRepository:
                 return schema
 
         except Exception:
-            pass
+            pass  # best-effort: never break caller
 
         self._schema_cache[table_name] = None
 

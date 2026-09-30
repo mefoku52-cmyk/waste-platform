@@ -257,7 +257,7 @@ async def transition_company_status(
                 exclude_user_id=actor,
             )
     except Exception:
-        pass
+        pass  # best-effort: never break caller
     return CompanyResponse(data=to_company_data(dto))
 
 

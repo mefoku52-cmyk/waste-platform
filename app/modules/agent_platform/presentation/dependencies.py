@@ -194,7 +194,7 @@ async def get_agent_orchestrator(
             svc = DefaultAuditService(store=SqlAlchemyAuditStore(session))
             await svc.record(record)
         except Exception:
-            pass
+            pass  # best-effort: never break caller
 
     return AgentOrchestrator(
         gateway=GroqModelGateway(),

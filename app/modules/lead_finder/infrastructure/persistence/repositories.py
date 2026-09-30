@@ -167,6 +167,29 @@ class SqlAlchemyOutreachCandidateRepository(OutreachCandidateRepository):
             raise
         return _to_domain(m)
 
+    async def update_email(
+        self,
+        *,
+        candidate_id: str,
+        email: str,
+    ) -> OutreachCandidate | None:
+        """Update only the email field of a candidate."""
+        try:
+            cid = uuid.UUID(candidate_id)
+        except (ValueError, TypeError):
+            return None
+        m = await self._session.get(OutreachCandidateModel, cid)
+        if m is None:
+            return None
+        m.email = email.strip() or None
+        m.updated_at = datetime.now(UTC).replace(tzinfo=None)
+        try:
+            await self._session.commit()
+        except Exception:
+            await self._session.rollback()
+            raise
+        return _to_domain(m)
+
     async def update_status(
         self,
         *,
