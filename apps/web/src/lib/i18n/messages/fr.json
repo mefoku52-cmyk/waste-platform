@@ -328,7 +328,14 @@
       "until": "Jusqu'à",
       "remove": "Retirer",
       "loading": "Traitement…"
-    }
+    },
+    "section": "MES ANNONCES",
+    "title": "Annonces",
+    "add": "+ Ajouter une annonce",
+    "verifyLink": "Demander la vérification de l'entreprise →",
+    "loading": "Chargement…",
+    "loadFailed": "Échec du chargement des annonces.",
+    "unknownError": "Erreur inconnue"
   },
   "documents": {
     "section": "DOCUMENTS",
@@ -406,14 +413,17 @@
     "marketplace": "Marché",
     "myListings": "Mes annonces",
     "addCompany": "Ajouter une entreprise",
-    "legalSection": "MENTIONS LÉGALES",
-    "terms": "Conditions d'utilisation",
-    "privacy": "Protection des données",
+    "legalSection": "LÉGAL",
+    "terms": "Conditions",
+    "privacy": "Confidentialité",
     "license": "Licence",
     "contactSection": "CONTACT",
     "address": "",
     "country": "République slovaque",
-    "about": "À propos"
+    "about": "À propos",
+    "langLabel": "LANGUE",
+    "verifiedIco": "IČO vérifié",
+    "trust": "CONFIANCE"
   },
   "header": {
     "brand": "CMEP · MATÉRIAUX CIRCULAIRES",
@@ -450,7 +460,36 @@
     "phName": "Nom",
     "phEmail": "E-mail",
     "phCompany": "Entreprise",
-    "phMessage": "Message"
+    "phMessage": "Message",
+    "heroKicker": "BIENVENUE SUR LA PLATEFORME",
+    "heroTitle": "TRČ · CMEP",
+    "heroSlogan": "Moins de déchets. Plus de commerce.",
+    "heroSubtitle": "Marché d'entreprises et de matériaux circulaires — filtrer, chercher, conclure.",
+    "heroDesc": "Bourse privée pour matériaux circulaires. Entreprises vérifiées, contacts cachés, pas de spam. Filtrer, chercher, conclure — tout en un seul endroit.",
+    "heroCtaAdd": "➕ Ajouter une annonce",
+    "heroCtaMarket": "Voir le marché en direct",
+    "statsTons": "TONNES SUR LE MARCHÉ",
+    "statsVerified": "ENTREPRISES VÉRIFIÉES",
+    "statsLive": "ANNONCES EN DIRECT",
+    "nowKicker": "EN CE MOMENT",
+    "nowTitle": "Matériau qui attend encore son acheteur.",
+    "nowBadge": "EXEMPLE · à quoi ressemble une vraie annonce",
+    "nowOnTable": "AUJOURD'HUI SUR LA TABLE",
+    "nowDesc": "J'ai de la sciure à vendre, environ 300 t.",
+    "nowMeta": "Žilina · Bois · 300 t",
+    "whyKicker": "POURQUOI CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyP1": "Le monde produit plus de déchets qu'il ne peut en traiter. Les entreprises paient pour l'élimination de matériaux que d'autres pourraient utiliser.",
+    "whyP1Bold": "Nous changeons cela.",
+    "whyP2Bold": "CMEP connecte les entreprises ayant un surplus à celles qui en ont besoin.",
+    "whyP2Rest": "Sans intermédiaires. Sans coûts inutiles. Sans impact sur la planète.",
+    "forCompaniesDesc": "Coûts réduits, nouveaux revenus, approvisionnement facilité.",
+    "forPeopleDesc": "Environnement plus propre, moins de décharges, meilleur avenir.",
+    "forPlanetDesc": "Moins de déchets, plus de circulation, plus de temps.",
+    "whyFooter": "CMEP — parce que la propreté n'est pas un luxe. C'est une responsabilité.",
+    "flowsKicker": "CE QUI BOUGE ICI",
+    "flowsTitle": "Cinq flux. Un marché. Possibilités infinies.",
+    "footerTagline": "Bourse privée. Entreprises vérifiées. Contacts qui vous appartiennent."
   },
   "auth": {
     "backToLogin": "Connexion",
@@ -518,5 +557,25 @@
   },
   "languageSwitcher": {
     "aria": "Langue"
+  },
+  "nav": {
+    "overview": "Aperçu",
+    "listings": "Annonces",
+    "companies": "Entreprises",
+    "documents": "Documents",
+    "inquiries": "Demandes",
+    "chat": "Chat",
+    "admin": "Admin",
+    "whyKicker": "POURQUOI CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyDesc": "Le monde produit plus de déchets qu'il ne peut en traiter. Les entreprises paient pour l'élimination de matériaux que d'autres pourraient utiliser. Nous changeons cela. CMEP connecte les entreprises ayant un surplus à celles qui en ont besoin. Sans intermédiaires. Sans coûts inutiles. Sans impact sur la planète."
+  },
+  "report": {
+    "button": "Signaler",
+    "done": "Signalé. L'admin va examiner.",
+    "reasonHarassment": "Harcèlement",
+    "reasonFake": "Faux compte",
+    "reasonSpam": "Spam",
+    "sendFailed": "Échec du signalement"
   }
 }

@@ -328,7 +328,14 @@
       "until": "Do",
       "remove": "Zrušiť zvýraznenie",
       "loading": "Spracúvam…"
-    }
+    },
+    "section": "MOJE PONUKY",
+    "title": "Ponuky",
+    "add": "+ Pridať ponuku",
+    "verifyLink": "Požiadať o overenie firmy →",
+    "loading": "Načítavam…",
+    "loadFailed": "Nepodarilo sa načítať ponuky.",
+    "unknownError": "Neznáma chyba"
   },
   "documents": {
     "section": "DOKUMENTY",
@@ -413,7 +420,10 @@
     "contactSection": "KONTAKT",
     "address": "",
     "country": "Slovenská republika",
-    "about": "O nás"
+    "about": "O nás",
+    "langLabel": "JAZYK",
+    "verifiedIco": "Overené IČO",
+    "trust": "DÔVERA"
   },
   "header": {
     "brand": "CMEP · OBEHOVÉ MATERIÁLY",
@@ -450,7 +460,36 @@
     "phName": "Meno",
     "phEmail": "E-mail",
     "phCompany": "Firma",
-    "phMessage": "Správa"
+    "phMessage": "Správa",
+    "heroKicker": "VITAJTE NA PLATFORME",
+    "heroTitle": "TRČ · CMEP",
+    "heroSlogan": "Menej odpadu. Viac obchodu.",
+    "heroSubtitle": "Trhovisko firiem a obehových materiálov — filtruj, hľadaj, dohodni.",
+    "heroDesc": "Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty, žiadny spam. Filtruj, hľadaj, dohodni — všetko na jednom mieste.",
+    "heroCtaAdd": "➕ Pridať ponuku",
+    "heroCtaMarket": "Pozrieť živý trh",
+    "statsTons": "TON NA TRHU",
+    "statsVerified": "OVERENÝCH FIRIEM",
+    "statsLive": "ŽIVÝCH PONÚK",
+    "nowKicker": "PRÁVE TERAZ",
+    "nowTitle": "Materiál, ktorý ešte čaká na svojho kupcu.",
+    "nowBadge": "VZOR · takto vyzerá reálna ponuka",
+    "nowOnTable": "DNES NA STOLE",
+    "nowDesc": "Mám na ponuku predaj pilovín, asi 300 t.",
+    "nowMeta": "Žilina · Drevo · 300 t",
+    "whyKicker": "PREČO CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyP1": "Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu materiálu, ktorý by iný dokázal využiť.",
+    "whyP1Bold": "My to meníme.",
+    "whyP2Bold": "CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú.",
+    "whyP2Rest": "Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.",
+    "forCompaniesDesc": "Nižšie náklady, nové príjmy, jednoduchšie hľadanie surovín.",
+    "forPeopleDesc": "Čistejšie prostredie, menej skládok, lepšia budúcnosť.",
+    "forPlanetDesc": "Menej odpadu, viac obehu, viac času.",
+    "whyFooter": "CMEP — pretože čistota nie je luxus. Je to zodpovednosť.",
+    "flowsKicker": "ČO SA TU HÝBE",
+    "flowsTitle": "Päť prúdov. Jeden trh. Nekonečné možnosti.",
+    "footerTagline": "Súkromná burza. Overené firmy. Kontakty, ktoré patria vám."
   },
   "auth": {
     "backToLogin": "Prihlásenie",
@@ -518,5 +557,25 @@
   },
   "languageSwitcher": {
     "aria": "Language"
+  },
+  "nav": {
+    "overview": "Prehľad",
+    "listings": "Ponuky",
+    "companies": "Firmy",
+    "documents": "Dokumenty",
+    "inquiries": "Dopyty",
+    "chat": "Chat",
+    "admin": "Admin",
+    "whyKicker": "PREČO CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyDesc": "Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu materiálu, ktorý by iný dokázal využiť. My to meníme. CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú. Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu."
+  },
+  "report": {
+    "button": "Nahlásiť",
+    "done": "Nahlásené. Pozrie to admin.",
+    "reasonHarassment": "Obtazovanie",
+    "reasonFake": "Fejk ucet",
+    "reasonSpam": "Spam",
+    "sendFailed": "Nahradenie zlyhalo"
   }
 }

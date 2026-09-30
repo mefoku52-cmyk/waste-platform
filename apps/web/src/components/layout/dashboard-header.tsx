@@ -23,13 +23,13 @@ const NAV_HREFS: Record<string, string | undefined> = {
   chat: '/dashboard/chat',
 };
 
-const NAV_LABELS: Record<string, string> = {
-  overview: 'Prehľad',
-  listings: 'Ponuky',
-  companies: 'Firmy',
-  documents: 'Dokumenty',
-  inquiries: 'Dopyty',
-  chat: 'Chat',
+const NAV_LABEL_KEYS: Record<string, string> = {
+  overview: 'nav.overview',
+  listings: 'nav.listings',
+  companies: 'nav.companies',
+  documents: 'nav.documents',
+  inquiries: 'nav.inquiries',
+  chat: 'nav.chat',
 };
 
 export function DashboardHeader() {
@@ -52,13 +52,12 @@ export function DashboardHeader() {
         <Link href="/dashboard" className="flex max-w-xl items-start gap-3">
           <img src="/trc-mark.jpg" alt="TRČ" className="h-16 w-16 rounded-2xl object-cover" />
           <div className="rounded-2xl border px-3 py-2" style={{ borderColor: "color-mix(in srgb, #c9a84c 35%, transparent)" }}>
-            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>PREČO CMEP</p>
+            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t('nav.whyKicker')}</p>
             <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "DM Serif Display, serif", color: GOLD_BRIGHT }}>
               CMEP — Circular Materials Exchange Platform.
             </p>
             <p className="mt-2 text-[11px] leading-relaxed" style={{ color: MUTED }}>
-              Svet produkuje viac odpadu, než dokáže spracovať. Firmy platia za likvidáciu materiálu, ktorý by iný dokázal využiť. My to meníme.
-              CMEP prepája firmy, ktoré majú prebytky, s tými, ktoré ich potrebujú. Bez prostredníka. Bez zbytočných nákladov. Bez dopadu na planétu.
+              {t('nav.whyDesc')}
             </p>
           </div>
         </Link>
@@ -103,7 +102,7 @@ export function DashboardHeader() {
           {NAV_KEYS.map((k) => {
             const href = NAV_HREFS[k];
             if (!href) return null;
-            const label = NAV_LABELS[k] || k;
+            const label = t(NAV_LABEL_KEYS[k] || k);
             const active = pathname === href || pathname.startsWith(href + '/');
             return (
               <Link

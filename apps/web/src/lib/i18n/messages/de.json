@@ -328,7 +328,14 @@
       "until": "Bis",
       "remove": "Hervorhebung entfernen",
       "loading": "Verarbeite…"
-    }
+    },
+    "section": "MEINE ANGEBOTE",
+    "title": "Angebote",
+    "add": "+ Angebot hinzufügen",
+    "verifyLink": "Unternehmensverifizierung anfordern →",
+    "loading": "Lädt…",
+    "loadFailed": "Angebote konnten nicht geladen werden.",
+    "unknownError": "Unbekannter Fehler"
   },
   "documents": {
     "section": "DOKUMENTE",
@@ -401,19 +408,22 @@
     }
   },
   "footer": {
-    "tagline": "Private Börse. Verifizierte Unternehmen. Versteckte Kontakte.",
+    "tagline": "Private Börse. Verifizierte Unternehmen. Verborgene Kontakte.",
     "marketSection": "MARKT",
     "marketplace": "Marktplatz",
     "myListings": "Meine Angebote",
     "addCompany": "Unternehmen hinzufügen",
     "legalSection": "RECHTLICHES",
-    "terms": "Nutzungsbedingungen",
+    "terms": "AGB",
     "privacy": "Datenschutz",
     "license": "Lizenz",
     "contactSection": "KONTAKT",
     "address": "",
     "country": "Slowakische Republik",
-    "about": "Über uns"
+    "about": "Über uns",
+    "langLabel": "SPRACHE",
+    "verifiedIco": "Verifizierte IČO",
+    "trust": "VERTRAUEN"
   },
   "header": {
     "brand": "CMEP · KREISLAUFMATERIALIEN",
@@ -450,7 +460,36 @@
     "phName": "Name",
     "phEmail": "E-Mail",
     "phCompany": "Unternehmen",
-    "phMessage": "Nachricht"
+    "phMessage": "Nachricht",
+    "heroKicker": "WILLKOMMEN AUF DER PLATTFORM",
+    "heroTitle": "TRČ · CMEP",
+    "heroSlogan": "Weniger Abfall. Mehr Geschäft.",
+    "heroSubtitle": "Marktplatz für Unternehmen und Kreislaufmaterialien — filtern, suchen, abschließen.",
+    "heroDesc": "Private Börse für Kreislaufmaterialien. Verifizierte Unternehmen, verborgene Kontakte, kein Spam. Filtern, suchen, abschließen — alles an einem Ort.",
+    "heroCtaAdd": "➕ Angebot hinzufügen",
+    "heroCtaMarket": "Live-Markt ansehen",
+    "statsTons": "TONNEN AUF DEM MARKT",
+    "statsVerified": "VERIFIZIERTE UNTERNEHMEN",
+    "statsLive": "LIVE-ANGEBOTE",
+    "nowKicker": "JETZT",
+    "nowTitle": "Material, das noch auf seinen Käufer wartet.",
+    "nowBadge": "BEISPIEL · so sieht ein echtes Angebot aus",
+    "nowOnTable": "HEUTE AUF DEM TISCH",
+    "nowDesc": "Ich habe Sägespäne zum Verkauf, ca. 300 t.",
+    "nowMeta": "Žilina · Holz · 300 t",
+    "whyKicker": "WARUM CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyP1": "Die Welt produziert mehr Abfall als sie verarbeiten kann. Unternehmen zahlen für die Entsorgung von Material, das andere nutzen könnten.",
+    "whyP1Bold": "Wir ändern das.",
+    "whyP2Bold": "CMEP verbindet Unternehmen mit Überschuss mit denen, die ihn brauchen.",
+    "whyP2Rest": "Ohne Zwischenhändler. Ohne unnötige Kosten. Ohne Auswirkungen auf den Planeten.",
+    "forCompaniesDesc": "Niedrigere Kosten, neue Einnahmen, einfachere Beschaffung.",
+    "forPeopleDesc": "Sauberere Umwelt, weniger Deponien, bessere Zukunft.",
+    "forPlanetDesc": "Weniger Abfall, mehr Kreislauf, mehr Zeit.",
+    "whyFooter": "CMEP — denn Sauberkeit ist kein Luxus. Sie ist Verantwortung.",
+    "flowsKicker": "WAS SICH HIER BEWEGT",
+    "flowsTitle": "Fünf Ströme. Ein Markt. Endlose Möglichkeiten.",
+    "footerTagline": "Private Börse. Verifizierte Unternehmen. Kontakte, die Ihnen gehören."
   },
   "auth": {
     "backToLogin": "Anmeldung",
@@ -518,5 +557,25 @@
   },
   "languageSwitcher": {
     "aria": "Sprache"
+  },
+  "nav": {
+    "overview": "Übersicht",
+    "listings": "Angebote",
+    "companies": "Unternehmen",
+    "documents": "Dokumente",
+    "inquiries": "Anfragen",
+    "chat": "Chat",
+    "admin": "Admin",
+    "whyKicker": "WARUM CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyDesc": "Die Welt produziert mehr Abfall als sie verarbeiten kann. Unternehmen zahlen für die Entsorgung von Material, das andere nutzen könnten. Wir ändern das. CMEP verbindet Unternehmen mit Überschuss mit denen, die ihn brauchen. Ohne Zwischenhändler. Ohne unnötige Kosten. Ohne Auswirkungen auf den Planeten."
+  },
+  "report": {
+    "button": "Melden",
+    "done": "Gemeldet. Admin wird es prüfen.",
+    "reasonHarassment": "Belästigung",
+    "reasonFake": "Fake-Konto",
+    "reasonSpam": "Spam",
+    "sendFailed": "Meldung fehlgeschlagen"
   }
 }

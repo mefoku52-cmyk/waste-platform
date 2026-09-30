@@ -328,7 +328,14 @@
       "until": "Until",
       "remove": "Remove highlight",
       "loading": "Processing…"
-    }
+    },
+    "section": "MY LISTINGS",
+    "title": "Listings",
+    "add": "+ Add listing",
+    "verifyLink": "Request company verification →",
+    "loading": "Loading…",
+    "loadFailed": "Failed to load listings.",
+    "unknownError": "Unknown error"
   },
   "documents": {
     "section": "DOCUMENTS",
@@ -413,7 +420,10 @@
     "contactSection": "CONTACT",
     "address": "",
     "country": "Slovak Republic",
-    "about": "About"
+    "about": "About",
+    "langLabel": "LANGUAGE",
+    "verifiedIco": "Verified IČO",
+    "trust": "TRUST"
   },
   "header": {
     "brand": "CMEP · CIRCULAR MATERIALS",
@@ -450,7 +460,36 @@
     "phName": "Name",
     "phEmail": "Email",
     "phCompany": "Company",
-    "phMessage": "Message"
+    "phMessage": "Message",
+    "heroKicker": "WELCOME TO THE PLATFORM",
+    "heroTitle": "TRČ · CMEP",
+    "heroSlogan": "Less waste. More business.",
+    "heroSubtitle": "Marketplace of companies and circular materials — filter, search, deal.",
+    "heroDesc": "Private exchange for circular materials. Verified companies, hidden contacts, no spam. Filter, search, deal — all in one place.",
+    "heroCtaAdd": "➕ Add listing",
+    "heroCtaMarket": "View live market",
+    "statsTons": "TONS ON MARKET",
+    "statsVerified": "VERIFIED COMPANIES",
+    "statsLive": "LIVE LISTINGS",
+    "nowKicker": "RIGHT NOW",
+    "nowTitle": "Material still waiting for its buyer.",
+    "nowBadge": "SAMPLE · this is what a real listing looks like",
+    "nowOnTable": "TODAY ON THE TABLE",
+    "nowDesc": "I have sawdust for sale, about 300 t.",
+    "nowMeta": "Žilina · Wood · 300 t",
+    "whyKicker": "WHY CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyP1": "The world produces more waste than it can process. Companies pay for disposal of material that others could use.",
+    "whyP1Bold": "We're changing that.",
+    "whyP2Bold": "CMEP connects companies with surplus to those who need it.",
+    "whyP2Rest": "Without middlemen. Without unnecessary costs. Without impact on the planet.",
+    "forCompaniesDesc": "Lower costs, new revenue, easier sourcing.",
+    "forPeopleDesc": "Cleaner environment, fewer landfills, better future.",
+    "forPlanetDesc": "Less waste, more circulation, more time.",
+    "whyFooter": "CMEP — because cleanliness isn't a luxury. It's a responsibility.",
+    "flowsKicker": "WHAT'S MOVING HERE",
+    "flowsTitle": "Five streams. One market. Endless possibilities.",
+    "footerTagline": "Private exchange. Verified companies. Contacts that belong to you."
   },
   "auth": {
     "backToLogin": "Sign in",
@@ -518,5 +557,25 @@
   },
   "languageSwitcher": {
     "aria": "Language"
+  },
+  "nav": {
+    "overview": "Overview",
+    "listings": "Listings",
+    "companies": "Companies",
+    "documents": "Documents",
+    "inquiries": "Inquiries",
+    "chat": "Chat",
+    "admin": "Admin",
+    "whyKicker": "WHY CMEP",
+    "whyTitle": "CMEP — Circular Materials Exchange Platform.",
+    "whyDesc": "The world produces more waste than it can process. Companies pay for disposal of material that others could use. We're changing that. CMEP connects companies with surplus to those who need it. Without middlemen. Without unnecessary costs. Without impact on the planet."
+  },
+  "report": {
+    "button": "Report",
+    "done": "Reported. Admin will review.",
+    "reasonHarassment": "Harassment",
+    "reasonFake": "Fake account",
+    "reasonSpam": "Spam",
+    "sendFailed": "Report failed"
   }
 }
