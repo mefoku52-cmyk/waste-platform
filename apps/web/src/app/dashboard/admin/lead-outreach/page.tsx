@@ -125,34 +125,87 @@ export default function LeadOutreachPage() {
   async function sendPending(item: PendingItem) {
     const to = (pendingEmail[item.id] || '').trim();
     const sub = (pendingSubject[item.id] || item.subject || '').trim();
+    const body = (item.body || '').trim();
+
     if (!to || !to.includes('@')) {
       setErr(`Doplň email pre ${item.company_name}`);
       return;
     }
+
     if (!sub) {
       setErr(`Chýba predmet pre ${item.company_name}`);
       return;
     }
-    if (!item.body) {
+
+    if (!body) {
       setErr(`Chýba telo emailu pre ${item.company_name}`);
       return;
     }
+
     setErr(null);
     setOkMsg(null);
     setBusySendId(item.id);
+
     try {
+      // Vždy najprv ulozime aktualne skontrolovane hodnoty
+      // a nastavime kandidatovi APPROVED.
+      const approved = await http.post<{
+        ok: boolean;
+        message: string;
+        status: string;
+      }>(
+        `/admin/lead-outreach/candidates/${item.id}/approve`,
+        {
+          email: to,
+          subject: sub,
+          body,
+        },
+      );
+
+      if (!approved.ok) {
+        throw new Error(
+          approved.message || 'Schválenie kandidáta zlyhalo.',
+        );
+      }
+
+      // SEND uz nema vlastny recipient/subject/body.
+      // Backend pouzije iba schvalene hodnoty z DB.
       const res = await http.post<SendPendingResponse>(
         `/admin/lead-outreach/candidates/${item.id}/send`,
-        { to, subject: sub, body: item.body },
+        {},
       );
+
       if (res.ok) {
-        setOkMsg(`Odoslané: ${item.company_name} — ${res.message}`);
-        setPending((prev) => prev.filter((x) => x.id !== item.id));
+        setOkMsg(
+          `Odoslané: ${item.company_name} — ${res.message}`,
+        );
+
+        setPending((prev) =>
+          prev.filter((x) => x.id !== item.id),
+        );
       } else {
-        setErr(res.message || 'Odoslanie zlyhalo');
+        setErr(
+          res.message || 'Odoslanie zlyhalo',
+        );
+
+        // Ak approve presiel, kandidat ostava APPROVED
+        // a zostane v zozname na retry.
+        await loadPending();
       }
     } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Send zlyhal');
+      setErr(
+        e instanceof Error
+          ? e.message
+          : 'Odoslanie zlyhalo',
+      );
+
+      // Ak schvalenie preslo a samotne odoslanie zlyhalo,
+      // backend ma kandidata v APPROVED.
+      try {
+        await loadPending();
+      } catch {
+        // Pôvodnú chybu nechávame používateľovi.
+      }
     } finally {
       setBusySendId(null);
     }
@@ -160,30 +213,84 @@ export default function LeadOutreachPage() {
 
   async function sendSelected() {
     const toSend = pending.filter(
-      (item) => selectedPending[item.id] && (pendingEmail[item.id] || '').includes('@'),
+      (item) =>
+        selectedPending[item.id] &&
+        (pendingEmail[item.id] || '').trim().includes('@'),
     );
+
     if (toSend.length === 0) {
-      setErr('Nie je vybraný žiadny kandidát s platným emailom.');
+      setErr(
+        'Nie je vybraný žiadny kandidát s platným emailom.',
+      );
       return;
     }
+
     setErr(null);
     setOkMsg(null);
     setBusySendAll(true);
+
     let sent = 0;
     let failed = 0;
+
     for (let i = 0; i < toSend.length; i++) {
       const item = toSend[i];
-      setSendAllProgress({ current: i + 1, total: toSend.length });
+
+      setSendAllProgress({
+        current: i + 1,
+        total: toSend.length,
+      });
+
       const to = (pendingEmail[item.id] || '').trim();
-      const sub = (pendingSubject[item.id] || item.subject || '').trim();
+      const sub = (
+        pendingSubject[item.id] ||
+        item.subject ||
+        ''
+      ).trim();
+      const body = (item.body || '').trim();
+
       try {
+        if (!to || !to.includes('@')) {
+          failed += 1;
+          continue;
+        }
+
+        if (!sub || !body) {
+          failed += 1;
+          continue;
+        }
+
+        // Najprv ulozit presne skontrolovane udaje
+        // a previest kandidata do APPROVED.
+        const approved = await http.post<{
+          ok: boolean;
+          message: string;
+          status: string;
+        }>(
+          `/admin/lead-outreach/candidates/${item.id}/approve`,
+          {
+            email: to,
+            subject: sub,
+            body,
+          },
+        );
+
+        if (!approved.ok) {
+          failed += 1;
+          continue;
+        }
+
+        // Send uz pouziva iba data z DB.
         const res = await http.post<SendPendingResponse>(
           `/admin/lead-outreach/candidates/${item.id}/send`,
-          { to, subject: sub, body: item.body || '' },
+          {},
         );
+
         if (res.ok) {
           sent += 1;
-          setPending((prev) => prev.filter((x) => x.id !== item.id));
+
+          setPending((prev) =>
+            prev.filter((x) => x.id !== item.id),
+          );
         } else {
           failed += 1;
         }
@@ -191,8 +298,18 @@ export default function LeadOutreachPage() {
         failed += 1;
       }
     }
+
+    // Refresh je dolezity hlavne pri chybe odoslania:
+    // APPROVED kandidati zostanu viditelni na retry.
+    try {
+      await loadPending();
+    } catch {
+      // Vysledok odoslania uz mame, refresh nie je kriticky.
+    }
+
     setSendAllProgress(null);
     setBusySendAll(false);
+
     setOkMsg(
       failed === 0
         ? `Odoslaných ${sent} z ${toSend.length}.`
@@ -297,7 +414,9 @@ export default function LeadOutreachPage() {
         setIndustry(items[0].industry || '');
         setSubject(items[0].subject || '');
         setBody(items[0].body || '');
-      }
+
+    await loadPending();
+}
     } catch (e) {
       const msg =
         e instanceof Error
@@ -393,71 +512,7 @@ export default function LeadOutreachPage() {
           >
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ background: GOLD_BRIGHT }}
-                  />
-                  <h2 className="text-lg font-semibold">
-                    Automatické vyhľadávanie emailov
-                  </h2>
-                </div>
-
-                <p className="mt-2 max-w-3xl text-sm opacity-70">
-                  Vyhľadávanie verejných firemných emailových adries
-                  prostredníctvom Lead Finder a spracovanie výsledkov
-                  v systéme Lead Outreach.
-                </p>
-              </div>
-
-              <a
-                href="#automatic-email-tools"
-                className="inline-flex w-fit items-center rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10"
-              >
-                Zobraziť nástroje
-              </a>
-            </div>
-
-            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {[
-                {
-                  title: "Directory lookup",
-                  description: "Vyhľadávanie vo verejných zdrojoch",
-                },
-                {
-                  title: "Email discovery",
-                  description: "Vyhľadávanie firemných kontaktov",
-                },
-                {
-                  title: "Email backfill",
-                  description: "Dopĺňanie chýbajúcich emailov",
-                },
-                {
-                  title: "Daily discovery",
-                  description: "Automatické denné objavovanie leadov",
-                },
-              ].map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-xl border border-white/10 bg-black/10 p-4"
-                >
-                  <div className="text-sm font-semibold">
-                    {item.title}
-                  </div>
-                  <div className="mt-2 text-xs leading-relaxed opacity-65">
-                    {item.description}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <Link
-            href="/dashboard/admin"
-            className="mb-6 inline-block text-sm"
-            style={{ color: GOLD_BRIGHT }}
-          >
-            ← Späť na admin
+                ← Späť na admin
           </Link>
 
           <p
@@ -466,6 +521,39 @@ export default function LeadOutreachPage() {
           >
             LEAD OUTREACH
           </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => void discoverDaily()}
+                disabled={busyDiscover}
+                className="rounded-lg px-4 py-2 font-medium disabled:opacity-50"
+              >
+                {busyDiscover
+                  ? 'Hľadám nové firmy…'
+                  : 'Nájsť 30 nových firiem'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void backfillEmails()}
+                disabled={busyBackfill}
+                className="rounded-lg px-4 py-2 font-medium disabled:opacity-50"
+              >
+                {busyBackfill
+                  ? 'Hľadám emaily…'
+                  : 'Nájsť chýbajúce emaily'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => void loadPending()}
+                className="rounded-lg px-4 py-2 font-medium"
+              >
+                Obnoviť kandidátov
+              </button>
+            </div>
+
           <h1
             className="mb-4 text-3xl md:text-4xl"
             style={{ fontFamily: 'DM Serif Display, serif', color: GOLD_BRIGHT }}
@@ -525,7 +613,7 @@ export default function LeadOutreachPage() {
 
             {pending.length === 0 ? (
               <p className="text-sm" style={{ color: MUTED }}>
-                Žiadne čakajúce drafty. Automaticky sa naplnia o 7:15 (alebo klikni „Nájsť 30 nových firiem“ nižšie).
+                Žiadne čakajúce drafty. Klikni „Nájsť 30 nových firiem“ a vytvorí sa nová dávka kandidátov s draftmi.
               </p>
             ) : (
               <ul className="space-y-3">
@@ -654,7 +742,7 @@ export default function LeadOutreachPage() {
               className="inline-flex rounded-full px-5 py-2 text-sm font-semibold disabled:opacity-40"
               style={{ background: 'transparent', color: GOLD_BRIGHT, border: '1px solid #c9a84c' }}
             >
-              {busyBackfill ? 'Hľadám emaily…' : 'Nájsť emaily'}
+              {busyBackfill ? 'Hľadám chýbajúce emaily…' : 'Nájsť chýbajúce emaily'}
             </button>
           </div>
           {found.length ? (

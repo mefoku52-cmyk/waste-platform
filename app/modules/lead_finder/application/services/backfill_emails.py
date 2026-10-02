@@ -71,6 +71,7 @@ async def backfill_emails(
                 website = await website_finder.find_website(
                     company_name=company_name,
                     city=city,
+                    ico=ico,
                 )
 
                 found_email = None

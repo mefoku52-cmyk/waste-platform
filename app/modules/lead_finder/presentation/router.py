@@ -117,7 +117,10 @@ async def discover_daily(
         run_daily_discover,
     )
 
-    result = await run_daily_discover(session, draft=False)
+    # Jedno kliknutie = kompletný discovery workflow:
+    # RPO -> kandidát -> web -> verejný email -> AI draft -> DB.
+    # Nikdy neposiela email automaticky.
+    result = await run_daily_discover(session, limit=30, draft=True)
     return DiscoverDailyResponse(**result)
 
 
@@ -279,10 +282,16 @@ class PendingCandidatesResponse(BaseModel):
     items: list[PendingCandidateItem]
 
 
-class SendCandidateRequest(BaseModel):
-    to: str = Field(min_length=3, max_length=255)
+class ApproveCandidateRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=255)
     subject: str = Field(min_length=1, max_length=255)
     body: str = Field(min_length=1, max_length=20000)
+
+
+class ApproveCandidateResponse(BaseModel):
+    ok: bool
+    message: str
+    status: str
 
 
 class SendCandidateResponse(BaseModel):
@@ -315,9 +324,10 @@ async def backfill_emails_endpoint(
     session=Depends(get_db_session),
     limit: int = 35,
 ) -> BackfillEmailsResponse:
-    """Najde emaily pre existujucich kandidatov, ktori ich nemaju.
+    """Doplní chýbajúce verejné firemné emaily existujúcim kandidátom.
 
-    Google CSE -> firemny web -> scrape email -> uloz.
+    Web -> verejný firemný email -> Zlaté stránky fallback -> DB.
+    Nič neposiela.
     Limit max 100, default 35.
     """
     _require_admin(current_user)
@@ -347,10 +357,21 @@ async def list_pending_candidates(
     )
 
     repo = SqlAlchemyOutreachCandidateRepository(session)
-    rows = await repo.list_by_status(
+
+    drafted_rows = await repo.list_by_status(
         status=OutreachStatus.DRAFTED,
         limit=limit,
     )
+    approved_rows = await repo.list_by_status(
+        status=OutreachStatus.APPROVED,
+        limit=limit,
+    )
+
+    rows = sorted(
+        [*drafted_rows, *approved_rows],
+        key=lambda row: row.created_at,
+        reverse=True,
+    )[:limit]
 
     items = [
         PendingCandidateItem(
@@ -371,14 +392,17 @@ async def list_pending_candidates(
     return PendingCandidatesResponse(count=len(items), items=items)
 
 
-@router.post("/candidates/{candidate_id}/send", response_model=SendCandidateResponse)
-async def send_candidate_email(
+@router.post(
+    "/candidates/{candidate_id}/approve",
+    response_model=ApproveCandidateResponse,
+)
+async def approve_candidate(
     candidate_id: str,
-    payload: SendCandidateRequest,
+    payload: ApproveCandidateRequest,
     current_user=Depends(require_current_user),
     session=Depends(get_db_session),
-) -> SendCandidateResponse:
-    """Odesle jeden pripraveny email a oznaci kandidata ako 'sent'."""
+) -> ApproveCandidateResponse:
+    """Ulozi skontrolovane udaje a nastavi kandidata na APPROVED."""
     _require_admin(current_user)
 
     from app.modules.lead_finder.domain.entities.outreach_candidate import (
@@ -389,29 +413,184 @@ async def send_candidate_email(
     )
 
     repo = SqlAlchemyOutreachCandidateRepository(session)
+
     candidate = await repo.get_by_id(candidate_id)
+
     if candidate is None:
-        raise HTTPException(status_code=404, detail="Kandidat sa nenasiel")
+        raise HTTPException(
+            status_code=404,
+            detail="Kandidat sa nenasiel",
+        )
+
+    # Draft mozeme schvalit.
+    # Approved mozeme znovu schvalit, ak administrator zmenil
+    # email/predmet pred opakovaným odoslanim.
+    if candidate.status not in (
+        OutreachStatus.DRAFTED,
+        OutreachStatus.APPROVED,
+    ):
+        raise HTTPException(
+            status_code=409,
+            detail=(f"Kandidata nie je mozne schvalit v tomto stave: {candidate.status.value}"),
+        )
+
+    email = payload.email.strip().lower()
+    subject = payload.subject.strip()
+    body = payload.body.strip()
+
+    if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+        raise HTTPException(
+            status_code=422,
+            detail="Neplatny email.",
+        )
+
+    if not subject:
+        raise HTTPException(
+            status_code=422,
+            detail="Chyba predmet emailu.",
+        )
+
+    if not body:
+        raise HTTPException(
+            status_code=422,
+            detail="Chyba telo emailu.",
+        )
+
+    # Najprv ulozime presne to, co administrator skontroloval.
+    await repo.update_email(
+        candidate_id=candidate_id,
+        email=email,
+    )
+
+    await repo.update_draft(
+        candidate_id=candidate_id,
+        subject=subject,
+        body=body,
+    )
+
+    updated = await repo.update_status(
+        candidate_id=candidate_id,
+        status=OutreachStatus.APPROVED,
+    )
+
+    if updated is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Kandidat sa nenasiel",
+        )
+
+    await write_audit(
+        session=session,
+        actor_user_id=current_user_id(current_user),
+        action="lead_outreach.approve_candidate",
+        target_type="outreach_candidate",
+        target_id=candidate_id,
+        details=f"to={email},company={candidate.company_name}",
+    )
+
+    return ApproveCandidateResponse(
+        ok=True,
+        message="Kandidat bol schvaleny na odoslanie.",
+        status=OutreachStatus.APPROVED.value,
+    )
+
+
+@router.post(
+    "/candidates/{candidate_id}/send",
+    response_model=SendCandidateResponse,
+)
+async def send_candidate_email(
+    candidate_id: str,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> SendCandidateResponse:
+    """Odosle iba APPROVED kandidata a pouzije udaje ulozene v DB."""
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.domain.entities.outreach_candidate import (
+        OutreachStatus,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+
+    candidate = await repo.get_by_id(candidate_id)
+
+    if candidate is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Kandidat sa nenasiel",
+        )
+
+    # Toto je hlavna ochrana proti obchadzaniu approval workflow.
+    if candidate.status != OutreachStatus.APPROVED:
+        raise HTTPException(
+            status_code=409,
+            detail=(f"Kandidat musi byt najprv schvaleny. Aktualny stav: {candidate.status.value}"),
+        )
+
+    # SEND NESMIE POUZIVAT DATA Z REQUESTU.
+    # Pouzivame iba data, ktore boli ulozene pri approve.
+    to = (candidate.email or "").strip().lower()
+    subject = (candidate.draft_subject or "").strip()
+    body = (candidate.draft_body or "").strip()
+
+    if "@" not in to or "." not in to.rsplit("@", 1)[-1]:
+        raise HTTPException(
+            status_code=422,
+            detail="Schvaleny kandidat nema platny email.",
+        )
+
+    if not subject:
+        raise HTTPException(
+            status_code=422,
+            detail="Schvaleny kandidat nema predmet emailu.",
+        )
+
+    if not body:
+        raise HTTPException(
+            status_code=422,
+            detail="Schvaleny kandidat nema telo emailu.",
+        )
 
     result = await send_via_resend(
         session=session,
-        to=payload.to,
-        subject=payload.subject,
-        body=payload.body,
+        to=to,
+        subject=subject,
+        body=body,
     )
 
     if not result.ok:
         if "nie je nakonfigurovany" in result.message:
-            ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
-            if not ok:
-                return SendCandidateResponse(ok=False, message="SMTP zlyhalo.")
-        else:
-            return SendCandidateResponse(ok=False, message=result.message)
+            ok = send_email(
+                to=to,
+                subject=subject,
+                body=body,
+            )
 
-    await repo.update_status(
+            if not ok:
+                return SendCandidateResponse(
+                    ok=False,
+                    message="SMTP zlyhalo.",
+                )
+        else:
+            return SendCandidateResponse(
+                ok=False,
+                message=result.message,
+            )
+
+    updated = await repo.update_status(
         candidate_id=candidate_id,
         status=OutreachStatus.SENT,
     )
+
+    if updated is None:
+        raise HTTPException(
+            status_code=500,
+            detail=("Email bol odoslany, ale stav kandidata sa nepodarilo ulozit."),
+        )
 
     await write_audit(
         session=session,
@@ -419,15 +598,21 @@ async def send_candidate_email(
         action="lead_outreach.send_candidate",
         target_type="outreach_candidate",
         target_id=candidate_id,
-        details=f"to={payload.to},company={candidate.company_name}",
+        details=f"to={to},company={candidate.company_name}",
     )
 
     remaining = getattr(result, "remaining_today", None)
-    msg = result.message if result.ok else "Email odoslaný cez SMTP."
-    if remaining is not None:
-        msg = f"{msg} Zostáva dnes: {remaining}."
 
-    return SendCandidateResponse(ok=True, message=msg, status="sent")
+    msg = result.message if result.ok else "Email odoslany cez SMTP."
+
+    if remaining is not None:
+        msg = f"{msg} Zostava dnes: {remaining}."
+
+    return SendCandidateResponse(
+        ok=True,
+        message=msg,
+        status=OutreachStatus.SENT.value,
+    )
 
 
 class SkipCandidateResponse(BaseModel):

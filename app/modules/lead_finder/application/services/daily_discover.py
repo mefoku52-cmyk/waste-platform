@@ -10,7 +10,7 @@ import logging
 from datetime import UTC
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.companies.application.rpo import search_rpo
@@ -98,6 +98,20 @@ async def run_daily_discover(
     drafter = EmailDrafter()
     website_finder = WebsiteFinder()
     email_finder = AsyncLegalEmailFinder()
+
+    # Rovnaká Early Bird logika ako manuálny /draft endpoint.
+    # Discovery nesmie používať inú konfiguráciu draftov.
+    early_bird = False
+    try:
+        result = await session.execute(
+            text("SELECT COUNT(*) FROM companies WHERE status = 'verified'")
+        )
+        verified_count = int(result.scalar() or 0)
+        early_bird = verified_count < 10
+    except Exception:
+        # Ak DB dotaz zlyhá, bezpečný fallback = bez Early Bird ponuky.
+        early_bird = False
+
     created = 0
     drafted = 0
     failed = 0
@@ -134,6 +148,7 @@ async def run_daily_discover(
                 website = await website_finder.find_website(
                     company_name=candidate.company_name,
                     city=candidate.city,
+                    ico=candidate.ico,
                 )
 
                 if website:
@@ -201,7 +216,7 @@ async def run_daily_discover(
                         city=candidate.city,
                         industry=industry,
                         reason=reason,
-                        early_bird=False,
+                        early_bird=early_bird,
                     )
                     await repo.update_draft(
                         candidate_id=candidate.id,
