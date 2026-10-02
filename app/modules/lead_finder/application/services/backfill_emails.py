@@ -10,6 +10,7 @@ Vracia pocet najdenych.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from sqlalchemy import select
@@ -71,20 +72,51 @@ async def backfill_emails(
                     company_name=company_name,
                     city=city,
                 )
-                if not website:
-                    directory_email = lookup_public_email(company_name, city, ico)
+
+                found_email = None
+
+                if website:
+                    found_email = await email_finder.find_email_for_company(
+                        website,
+                        company_name=company_name,
+                    )
+
+                # Directory lookup is the final fallback:
+                # - no company website found
+                # - website found but no usable email found there
+                if not found_email:
+                    directory_email = await asyncio.to_thread(
+                        lookup_public_email,
+                        company_name,
+                        city,
+                        ico,
+                    )
+
                     if directory_email:
-                        await repo.update_email(candidate_id=m.id, email=directory_email)
+                        await repo.update_email(
+                            candidate_id=str(m.id),
+                            email=directory_email,
+                        )
                         found += 1
+
                         items.append(
                             {
                                 "company_name": company_name,
                                 "ico": ico,
+                                "website": website,
                                 "email": directory_email,
                                 "reason": "directory",
                             }
                         )
+
+                        logger.info(
+                            "Backfill directory email: %s -> %s",
+                            company_name,
+                            directory_email,
+                        )
                         continue
+
+                if not website:
                     no_website += 1
                     items.append(
                         {
@@ -96,9 +128,6 @@ async def backfill_emails(
                     )
                     continue
 
-                found_email = await email_finder.find_email_for_company(
-                    website, company_name=company_name
-                )
                 if not found_email:
                     no_email_on_website += 1
                     items.append(
@@ -117,6 +146,7 @@ async def backfill_emails(
                     email=found_email,
                 )
                 found += 1
+
                 items.append(
                     {
                         "company_name": company_name,
@@ -126,7 +156,12 @@ async def backfill_emails(
                         "reason": "found",
                     }
                 )
-                logger.info("Backfill email: %s -> %s", company_name, found_email)
+
+                logger.info(
+                    "Backfill email: %s -> %s",
+                    company_name,
+                    found_email,
+                )
 
             except Exception:
                 logger.exception("Backfill failed for %s", company_name)

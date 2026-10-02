@@ -8,8 +8,8 @@ from app.modules.lead_finder.application.services.daily_discover import (
 )
 
 
-def test_max_daily_is_35():
-    assert MAX_DAILY == 35
+def test_max_daily_is_50():
+    assert MAX_DAILY == 50
 
 
 def test_queries_not_empty():

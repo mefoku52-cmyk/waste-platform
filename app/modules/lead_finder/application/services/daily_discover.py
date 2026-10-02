@@ -5,6 +5,7 @@ Never sends. Skips ICO already stored. RPO has no email.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import UTC
 from typing import Any
@@ -13,6 +14,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.companies.application.rpo import search_rpo
+from app.modules.lead_finder.application.services.directory_lookup import (
+    lookup_public_email,
+)
 from app.modules.lead_finder.application.services.email_drafter import EmailDrafter
 from app.modules.lead_finder.application.services.email_finder import AsyncLegalEmailFinder
 from app.modules.lead_finder.application.services.website_finder import WebsiteFinder
@@ -25,7 +29,8 @@ from app.modules.lead_finder.infrastructure.persistence.repositories import (
 
 logger = logging.getLogger(__name__)
 
-MAX_DAILY = 35
+DEFAULT_DAILY = 30
+MAX_DAILY = 50
 SKIP_MARKERS = ("konkurz", "likvidac", "vzniku")
 QUERIES: tuple[dict[str, str], ...] = (
     {"full_name": "recykl"},
@@ -59,9 +64,9 @@ def _usable(row: dict[str, Any], known: set[str]) -> bool:
 async def run_daily_discover(
     session: AsyncSession,
     *,
-    limit: int = MAX_DAILY,
+    limit: int = DEFAULT_DAILY,
     draft: bool = False,
-) -> dict[str, Any] | None:
+) -> dict[str, Any]:
     cap = max(1, min(int(limit), MAX_DAILY))
     repo = SqlAlchemyOutreachCandidateRepository(session)
     existing = await session.execute(
@@ -115,31 +120,60 @@ async def run_daily_discover(
                 failed += 1
                 continue
 
-            # --- Email discovery: Google search -> web -> scrape email ---
+            # --- Email discovery ---
+            # 1. Find the company's website.
+            # 2. Search the website for a real public company email.
+            # 3. If the website has no usable email, try the public-directory
+            #    fallback already used by backfill_emails.py.
+            #
+            # Never construct or guess an email address.
             found_email: str | None = None
+            website: str | None = None
+
             try:
                 website = await website_finder.find_website(
                     company_name=candidate.company_name,
                     city=candidate.city,
                 )
+
                 if website:
                     found_email = await email_finder.find_email_for_company(
-                        website, company_name=candidate.company_name
+                        website,
+                        company_name=candidate.company_name,
                     )
-                    if found_email:
-                        await repo.update_email(
-                            candidate_id=candidate.id,
-                            email=found_email,
-                        )
-                        emails_found += 1
-                        logger.info(
-                            "Email found for %s (%s): %s",
-                            candidate.company_name,
-                            candidate.ico,
-                            found_email,
-                        )
+
+                if not found_email:
+                    found_email = await asyncio.to_thread(
+                        lookup_public_email,
+                        candidate.company_name,
+                        candidate.city,
+                        candidate.ico,
+                    )
+
+                if found_email:
+                    await repo.update_email(
+                        candidate_id=candidate.id,
+                        email=found_email,
+                    )
+                    emails_found += 1
+                    logger.info(
+                        "Public email found for %s (%s): %s",
+                        candidate.company_name,
+                        candidate.ico,
+                        found_email,
+                    )
+                else:
+                    logger.info(
+                        "No public email found for %s (%s)",
+                        candidate.company_name,
+                        candidate.ico,
+                    )
+
             except Exception:
-                logger.exception("email discovery failed for %s", candidate.company_name)
+                logger.exception(
+                    "email discovery failed for %s",
+                    candidate.company_name,
+                )
 
             item = {
                 "id": candidate.id,
@@ -153,11 +187,20 @@ async def run_daily_discover(
             }
             if draft:
                 try:
+                    # Keep the draft company-specific using facts already
+                    # obtained from RPO. No invented company facts.
+                    industry = candidate.industry or "obehove materialy"
+                    city = candidate.city or "Slovensko"
+                    reason = (
+                        "platforma na obehove materialy a druhotny odpad; "
+                        f"relevantne pre oblast {industry} v lokalite {city}"
+                    )
+
                     mail = await drafter.draft(
                         company_name=candidate.company_name,
                         city=candidate.city,
-                        industry=candidate.industry,
-                        reason="platforma na obehove materialy a druhotny odpad",
+                        industry=industry,
+                        reason=reason,
                         early_bird=False,
                     )
                     await repo.update_draft(

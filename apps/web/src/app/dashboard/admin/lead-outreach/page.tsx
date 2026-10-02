@@ -380,9 +380,78 @@ export default function LeadOutreachPage() {
   return (
     <>
       <div className="min-h-screen" style={{ background: BG, color: FG }}>
+
+
         <DashboardHeader />
 
         <main className="mx-auto max-w-4xl px-4 py-10">
+
+          <section
+            data-cmep-ui="automatic-email-lookup"
+            aria-label="Automatické vyhľadávanie firemných emailov"
+            className="mb-8 rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+          >
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-2.5 w-2.5 rounded-full"
+                    style={{ background: GOLD_BRIGHT }}
+                  />
+                  <h2 className="text-lg font-semibold">
+                    Automatické vyhľadávanie emailov
+                  </h2>
+                </div>
+
+                <p className="mt-2 max-w-3xl text-sm opacity-70">
+                  Vyhľadávanie verejných firemných emailových adries
+                  prostredníctvom Lead Finder a spracovanie výsledkov
+                  v systéme Lead Outreach.
+                </p>
+              </div>
+
+              <a
+                href="#automatic-email-tools"
+                className="inline-flex w-fit items-center rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold transition hover:bg-white/10"
+              >
+                Zobraziť nástroje
+              </a>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {[
+                {
+                  title: "Directory lookup",
+                  description: "Vyhľadávanie vo verejných zdrojoch",
+                },
+                {
+                  title: "Email discovery",
+                  description: "Vyhľadávanie firemných kontaktov",
+                },
+                {
+                  title: "Email backfill",
+                  description: "Dopĺňanie chýbajúcich emailov",
+                },
+                {
+                  title: "Daily discovery",
+                  description: "Automatické denné objavovanie leadov",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-xl border border-white/10 bg-black/10 p-4"
+                >
+                  <div className="text-sm font-semibold">
+                    {item.title}
+                  </div>
+                  <div className="mt-2 text-xs leading-relaxed opacity-65">
+                    {item.description}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           <Link
             href="/dashboard/admin"
             className="mb-6 inline-block text-sm"
