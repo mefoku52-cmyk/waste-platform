@@ -16,24 +16,11 @@ from urllib.parse import quote
 import httpx
 from bs4 import BeautifulSoup
 
-_EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$")
+from app.modules.lead_finder.application.services.email_finder import (
+    _FREE_EMAIL_DOMAINS,
+)
 
-_FREE_EMAIL_DOMAINS = {
-    "gmail.com",
-    "googlemail.com",
-    "yahoo.com",
-    "hotmail.com",
-    "outlook.com",
-    "live.com",
-    "azet.sk",
-    "zoznam.sk",
-    "centrum.sk",
-    "post.sk",
-    "seznam.cz",
-    "proton.me",
-    "protonmail.com",
-    "icloud.com",
-}
+_EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$")
 
 _JUNK_EMAIL_MARKERS = (
     "noreply",
@@ -162,9 +149,9 @@ def _extract_card_email(card) -> str | None:
         domain = email.rsplit("@", 1)[-1]
 
         if domain in _FREE_EMAIL_DOMAINS:
-            # Public company directories sometimes contain Gmail/etc.
-            # They are still valid company contacts, so do not reject them.
-            pass
+            # Consumer/telco mailboxes (Gmail, mail.t-com.sk, …) are not
+            # valid B2B company contacts; skip this mailto anchor.
+            continue
 
         if any(marker in email for marker in _JUNK_EMAIL_MARKERS):
             continue
