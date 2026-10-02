@@ -135,35 +135,36 @@ async def run_daily_discover(
                 continue
 
             # --- Email discovery ---
-            # 1. Find the company's website.
-            # 2. Search the website for a real public company email.
-            # 3. If the website has no usable email, try the public-directory
-            #    fallback already used by backfill_emails.py.
+            # 1. Ask the public directory (Zlaté stránky) for the company's
+            #    public email. This is the PRIMARY source — pure httpx/bs4,
+            #    unaffected by the DuckDuckGo/primp breakage.
+            # 2. Only if the directory has no email, fall back to website
+            #    discovery via DuckDuckGo and scrape the site for an email.
             #
             # Never construct or guess an email address.
             found_email: str | None = None
             website: str | None = None
 
             try:
-                website = await website_finder.find_website(
-                    company_name=candidate.company_name,
-                    city=candidate.city,
-                    ico=candidate.ico,
+                found_email = await asyncio.to_thread(
+                    lookup_public_email,
+                    candidate.company_name,
+                    candidate.city,
+                    candidate.ico,
                 )
 
-                if website:
-                    found_email = await email_finder.find_email_for_company(
-                        website,
+                if not found_email:
+                    website = await website_finder.find_website(
                         company_name=candidate.company_name,
+                        city=candidate.city,
+                        ico=candidate.ico,
                     )
 
-                if not found_email:
-                    found_email = await asyncio.to_thread(
-                        lookup_public_email,
-                        candidate.company_name,
-                        candidate.city,
-                        candidate.ico,
-                    )
+                    if website:
+                        found_email = await email_finder.find_email_for_company(
+                            website,
+                            company_name=candidate.company_name,
+                        )
 
                 if found_email:
                     await repo.update_email(

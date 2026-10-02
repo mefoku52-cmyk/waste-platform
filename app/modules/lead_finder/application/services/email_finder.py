@@ -111,6 +111,13 @@ _FREE_EMAIL_DOMAINS = {
     "wp.pl",
     "o2.pl",
     "interia.pl",
+    # Slovak consumer/telco mail — not B2B company addresses
+    "t-com.sk",
+    "mail.t-com.sk",
+    "telekom.sk",
+    "orangemail.sk",
+    "o2.sk",
+    "o2online.sk",
 }
 
 

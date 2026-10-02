@@ -68,61 +68,52 @@ async def backfill_emails(
             ico = m.ico
 
             try:
+                # Directory (Zlaté stránky) is the PRIMARY source: pure
+                # httpx + bs4, unaffected by the DuckDuckGo/primp breakage.
+                found_email = await asyncio.to_thread(
+                    lookup_public_email,
+                    company_name,
+                    city,
+                    ico,
+                )
+
+                if found_email:
+                    await repo.update_email(
+                        candidate_id=str(m.id),
+                        email=found_email,
+                    )
+                    found += 1
+
+                    items.append(
+                        {
+                            "company_name": company_name,
+                            "ico": ico,
+                            "website": None,
+                            "email": found_email,
+                            "reason": "directory",
+                        }
+                    )
+
+                    logger.info(
+                        "Backfill directory email: %s -> %s",
+                        company_name,
+                        found_email,
+                    )
+                    continue
+
+                # Directory has no usable email — fall back to DuckDuckGo
+                # website discovery + scraping. DDG is only the fallback.
                 website = await website_finder.find_website(
                     company_name=company_name,
                     city=city,
                     ico=ico,
                 )
 
-                if not website:
-                    logger.info(
-                        "No website pre %s (%s) — skusam directory_lookup",
-                        company_name,
-                        ico,
-                    )
-
-                found_email = None
-
                 if website:
                     found_email = await email_finder.find_email_for_company(
                         website,
                         company_name=company_name,
                     )
-
-                # Directory lookup is the final fallback:
-                # - no company website found
-                # - website found but no usable email found there
-                if not found_email:
-                    directory_email = await asyncio.to_thread(
-                        lookup_public_email,
-                        company_name,
-                        city,
-                        ico,
-                    )
-
-                    if directory_email:
-                        await repo.update_email(
-                            candidate_id=str(m.id),
-                            email=directory_email,
-                        )
-                        found += 1
-
-                        items.append(
-                            {
-                                "company_name": company_name,
-                                "ico": ico,
-                                "website": website,
-                                "email": directory_email,
-                                "reason": "directory",
-                            }
-                        )
-
-                        logger.info(
-                            "Backfill directory email: %s -> %s",
-                            company_name,
-                            directory_email,
-                        )
-                        continue
 
                 if not website:
                     no_website += 1
