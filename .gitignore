@@ -327,3 +327,10 @@ patch_company_search_phase5.py
 *.before_*
 backups/
 .repair-backup-*/
+
+# Termux / Atuin AI artefakty
+.atuin/
+=*
+dump.sh
+page.tsx.bak.*
+*.bak.*
