@@ -19,3 +19,9 @@ alembic>=1.12.0
 
 # Redis Python client used by password reset and caching
 redis>=5,<8
+
+# Website discovery + email scraping (used by lead_finder)
+httpx>=0.25.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+duckduckgo-search>=6.0.0,<8.0.0
