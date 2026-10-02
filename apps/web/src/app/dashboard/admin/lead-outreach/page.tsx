@@ -512,8 +512,13 @@ export default function LeadOutreachPage() {
           >
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                ← Späť na admin
-          </Link>
+                <Link
+                  href="/dashboard/admin"
+                  className="text-sm text-white/60 transition hover:text-white"
+                >
+                  ← Späť na admin
+                </Link>
+              </div>
 
           <p
             className="mb-2 text-[11px] uppercase tracking-[0.3em]"
