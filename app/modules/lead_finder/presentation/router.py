@@ -16,7 +16,7 @@ from app.modules.lead_finder.application.services.batch_drafter import (
 from app.modules.lead_finder.application.services.email_drafter import (
     EmailDrafter,
 )
-from app.shared.application.side_effects import write_audit
+from app.shared.application.side_effects import write_activity_event, write_audit
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.infrastructure.email.resend_sender import send_via_resend
 from app.shared.infrastructure.email.sender import send_email
@@ -185,6 +185,14 @@ async def send_outreach_email(
                     target_id=payload.to,
                     details=f"via=smtp,subject={payload.subject[:80]}",
                 )
+                await write_activity_event(
+                    session=session,
+                    event_type="lead_outreach.send",
+                    actor_user_id=current_user_id(current_user),
+                    company_id=None,
+                    listing_id=None,
+                    payload=f"to={payload.to},via=smtp",
+                )
                 return SendResponse(ok=True, message="Email odoslaný cez SMTP.")
             return SendResponse(ok=False, message="SMTP zlyhalo.")
         return SendResponse(ok=False, message=result.message)
@@ -196,6 +204,14 @@ async def send_outreach_email(
         target_type="email",
         target_id=payload.to,
         details=f"via=resend,subject={payload.subject[:80]}",
+    )
+    await write_activity_event(
+        session=session,
+        event_type="lead_outreach.send",
+        actor_user_id=current_user_id(current_user),
+        company_id=None,
+        listing_id=None,
+        payload=f"to={payload.to},via=resend",
     )
 
     remaining = result.remaining_today
@@ -599,6 +615,15 @@ async def send_candidate_email(
         target_type="outreach_candidate",
         target_id=candidate_id,
         details=f"to={to},company={candidate.company_name}",
+    )
+
+    await write_activity_event(
+        session=session,
+        event_type="lead_outreach.send",
+        actor_user_id=current_user_id(current_user),
+        company_id=None,
+        listing_id=None,
+        payload=f"to={to},company={candidate.company_name}",
     )
 
     remaining = getattr(result, "remaining_today", None)

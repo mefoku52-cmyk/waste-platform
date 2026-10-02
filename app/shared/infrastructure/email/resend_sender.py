@@ -29,14 +29,18 @@ class SendResult:
 
 
 async def count_sent_today(session: AsyncSession) -> int:
-    """Count lead_outreach.send events in the last 24h window (UTC day)."""
+    """Count lead_outreach.send events in the last 24h window (UTC day).
+
+    Cita z activity_events.event_type (stlpec je event_type, NIE action —
+    action je stlpec v admin_audit_entries a v activity_events neexistuje).
+    """
     start_of_day = datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
     try:
         r = await session.execute(
             text(
                 """
                 SELECT COUNT(*) FROM activity_events
-                WHERE action = 'lead_outreach.send'
+                WHERE event_type = 'lead_outreach.send'
                   AND created_at >= :start
                 """
             ),

@@ -15,6 +15,20 @@ def _uuid(v):
     return v if isinstance(v, UUID) else UUID(str(v))
 
 
+def _uuid_safe(value):
+    """Vrati UUID, alebo None ak hodnota nie je platne UUID.
+
+    Pouziva sa pre nullable UUID stlpce (napr. admin_audit_entries.target_id),
+    kde ne-UUID hodnota (email, ICO, ...) nesmie zhodit zapis celeho riadku.
+    """
+    if value is None:
+        return None
+    try:
+        return value if isinstance(value, UUID) else UUID(str(value))
+    except (ValueError, TypeError):
+        return None
+
+
 async def write_audit(
     *,
     session,
@@ -35,12 +49,17 @@ async def write_audit(
 
         now = datetime.now()
         aid = _uuid(actor_user_id)
+        safe_target_id = _uuid_safe(target_id)
+        if safe_target_id is None and target_id:
+            # target_id nie je UUID (napr. email) → do UUID stlpca sa neda ulozit.
+            # Zachovame hodnotu aspon v details, nezahodime cely audit riadok.
+            details = f"target_raw={target_id}; {details or ''}"
         entity = AdminAuditEntryEntity(
             id=uuid4(),
             actor_user_id=aid,
             action=action,
             target_type=target_type,
-            target_id=_uuid(target_id),
+            target_id=safe_target_id,
             details=details,
             status=AdminAuditEntryStatus.SUCCESS,
             created_at=now,
@@ -184,3 +203,37 @@ async def _send_transactional_emails_to_members(
                 logger.exception("transactional email to %s failed (company_id=%s)", email, cid)
     except Exception:
         logger.exception("_send_transactional_emails_to_members failed")
+
+
+async def write_activity_event(
+    *,
+    session,
+    event_type: str,
+    actor_user_id=None,
+    company_id=None,
+    listing_id=None,
+    payload: str | None = None,
+) -> None:
+    """Best-effort zapis do activity_events.
+
+    Pouziva sa napr. na denny limit outreachu (event_type="lead_outreach.send").
+    Nikdy nezlyha, nikdy nezablokuje volajuceho.
+    """
+    try:
+        from app.modules.events.infrastructure.models import ActivityEventModel
+
+        row = ActivityEventModel(
+            event_type=event_type,
+            actor_user_id=str(actor_user_id) if actor_user_id else None,
+            company_id=str(company_id) if company_id else None,
+            listing_id=str(listing_id) if listing_id else None,
+            payload=payload,
+        )
+        session.add(row)
+        commit = getattr(session, "commit", None)
+        if commit:
+            result = commit()
+            if hasattr(result, "__await__"):
+                await result
+    except Exception:
+        logger.exception("write_activity_event failed: %s", event_type)
