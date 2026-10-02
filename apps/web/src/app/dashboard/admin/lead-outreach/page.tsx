@@ -93,9 +93,436 @@ export default function LeadOutreachPage() {
     total: number;
   } | null>(null);
 
+  if (user && !isAdmin) redirect("/dashboard");
+
+  async function loadPending() {
+    setBusyPending(true);
+    try {
+      const res = await http.get<PendingResponse>(
+        "/admin/lead-outreach/pending?limit=50",
+      );
+      setPending(res.items || []);
+      const emails: Record<string, string> = {};
+      const subjects: Record<string, string> = {};
+      const selected: Record<string, boolean> = {};
+      for (const it of res.items || []) {
+        emails[it.id] = it.email || "";
+        subjects[it.id] = it.subject || "";
+        selected[it.id] = !!it.email;
+      }
+      setPendingEmail(emails);
+      setPendingSubject(subjects);
+      setSelectedPending(selected);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Pending zlyhal");
+    } finally {
+      setBusyPending(false);
+    }
+  }
+
+  async function sendPending(item: PendingItem) {
+    const to = (pendingEmail[item.id] || "").trim();
+    const sub = (pendingSubject[item.id] || item.subject || "").trim();
+    const body = (item.body || "").trim();
+
+    if (!to || !to.includes("@")) {
+      setErr(`Doplň email pre ${item.company_name}`);
+      return;
+    }
+
+    if (!sub) {
+      setErr(`Chýba predmet pre ${item.company_name}`);
+      return;
+    }
+
+    if (!body) {
+      setErr(`Chýba telo emailu pre ${item.company_name}`);
+      return;
+    }
+
+    setErr(null);
+    setOkMsg(null);
+    setBusySendId(item.id);
+
+    try {
+      // Vždy najprv ulozime aktualne skontrolovane hodnoty
+      // a nastavime kandidatovi APPROVED.
+      const approved = await http.post<{
+        ok: boolean;
+        message: string;
+        status: string;
+      }>(`/admin/lead-outreach/candidates/${item.id}/approve`, {
+        email: to,
+        subject: sub,
+        body,
+      });
+
+      if (!approved.ok) {
+        throw new Error(approved.message || "Schválenie kandidáta zlyhalo.");
+      }
+
+      // SEND uz nema vlastny recipient/subject/body.
+      // Backend pouzije iba schvalene hodnoty z DB.
+      const res = await http.post<SendPendingResponse>(
+        `/admin/lead-outreach/candidates/${item.id}/send`,
+        {},
+      );
+
+      if (res.ok) {
+        setOkMsg(`Odoslané: ${item.company_name} — ${res.message}`);
+
+        setPending((prev) => prev.filter((x) => x.id !== item.id));
+      } else {
+        setErr(res.message || "Odoslanie zlyhalo");
+
+        // Ak approve presiel, kandidat ostava APPROVED
+        // a zostane v zozname na retry.
+        await loadPending();
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Odoslanie zlyhalo");
+
+      // Ak schvalenie preslo a samotne odoslanie zlyhalo,
+      // backend ma kandidata v APPROVED.
+      try {
+        await loadPending();
+      } catch {
+        // Pôvodnú chybu nechávame používateľovi.
+      }
+    } finally {
+      setBusySendId(null);
+    }
+  }
+
+  async function sendSelected() {
+    const toSend = pending.filter(
+      (item) =>
+        selectedPending[item.id] &&
+        (pendingEmail[item.id] || "").trim().includes("@"),
+    );
+
+    if (toSend.length === 0) {
+      setErr("Nie je vybraný žiadny kandidát s platným emailom.");
+      return;
+    }
+
+    setErr(null);
+    setOkMsg(null);
+    setBusySendAll(true);
+
+    let sent = 0;
+    let failed = 0;
+
+    for (let i = 0; i < toSend.length; i++) {
+      const item = toSend[i];
+
+      setSendAllProgress({
+        current: i + 1,
+        total: toSend.length,
+      });
+
+      const to = (pendingEmail[item.id] || "").trim();
+      const sub = (pendingSubject[item.id] || item.subject || "").trim();
+      const body = (item.body || "").trim();
+
+      try {
+        if (!to || !to.includes("@")) {
+          failed += 1;
+          continue;
+        }
+
+        if (!sub || !body) {
+          failed += 1;
+          continue;
+        }
+
+        // Najprv ulozit presne skontrolovane udaje
+        // a previest kandidata do APPROVED.
+        const approved = await http.post<{
+          ok: boolean;
+          message: string;
+          status: string;
+        }>(`/admin/lead-outreach/candidates/${item.id}/approve`, {
+          email: to,
+          subject: sub,
+          body,
+        });
+
+        if (!approved.ok) {
+          failed += 1;
+          continue;
+        }
+
+        // Send uz pouziva iba data z DB.
+        const res = await http.post<SendPendingResponse>(
+          `/admin/lead-outreach/candidates/${item.id}/send`,
+          {},
+        );
+
+        if (res.ok) {
+          sent += 1;
+
+          setPending((prev) => prev.filter((x) => x.id !== item.id));
+        } else {
+          failed += 1;
+        }
+      } catch {
+        failed += 1;
+      }
+    }
+
+    // Refresh je dolezity hlavne pri chybe odoslania:
+    // APPROVED kandidati zostanu viditelni na retry.
+    try {
+      await loadPending();
+    } catch {
+      // Vysledok odoslania uz mame, refresh nie je kriticky.
+    }
+
+    setSendAllProgress(null);
+    setBusySendAll(false);
+
+    setOkMsg(
+      failed === 0
+        ? `Odoslaných ${sent} z ${toSend.length}.`
+        : `Odoslaných ${sent} z ${toSend.length}. Zlyhalo: ${failed}.`,
+    );
+  }
+
+  async function skipPending(item: PendingItem) {
+    setErr(null);
+    try {
+      await http.post(`/admin/lead-outreach/candidates/${item.id}/skip`, {});
+      setPending((prev) => prev.filter((x) => x.id !== item.id));
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Skip zlyhal");
+    }
+  }
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    void loadPending();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
+
+  async function draftFromCsv() {
+    const rows = batchText
+      .split(/\n/)
+      .map((ln) => ln.trim())
+      .filter(
+        (ln) =>
+          ln &&
+          !ln.toLowerCase().startsWith("nazov") &&
+          !ln.toLowerCase().startsWith("názov"),
+      );
+    const companies = rows
+      .slice(0, 30)
+      .map((ln) => {
+        const parts = ln.split(",").map((x) => x.trim());
+        return {
+          company_name: parts[0] || "",
+          city: parts[1] || "",
+          industry: parts[2] || "",
+          reason: parts[3] || "Pozvánka na CMEP",
+        };
+      })
+      .filter((c) => c.company_name);
+    if (!companies.length) {
+      setErr("CSV box je prázdny.");
+      return;
+    }
+    setBusyDraft(true);
+    setErr(null);
+    setOkMsg(null);
+    try {
+      const res = await http.post<{
+        items?: { company_name: string; subject: string; body: string }[];
+        count?: number;
+      }>(
+        "/admin/lead-outreach/draft-batch",
+        { companies },
+        { timeoutMs: 60000 },
+      );
+      const first = res.items?.[0];
+      if (first) {
+        setCompanyName(first.company_name || "");
+        setSubject(first.subject || "");
+        setBody(first.body || "");
+      }
+      setOkMsg(
+        "Draftov " +
+          String(res.count ?? res.items?.length ?? 0) +
+          ". Skontroluj náhľad a pošli.",
+      );
+    } catch (e) {
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === "object" && e && "message" in e
+            ? String((e as { message: unknown }).message)
+            : "Draft z CSV zlyhal";
+      setErr(msg);
+    } finally {
+      setBusyDraft(false);
+    }
+  }
+
+  type BackfillResponse = {
+    ok: boolean;
+    processed: number;
+    found: number;
+    no_website: number;
+    no_email_on_website: number;
+    failed: number;
+  };
+  async function backfillEmails() {
+    setErr(null);
+    setOkMsg(null);
+    setBusyBackfill(true);
+    try {
+      const res = await http.post<BackfillResponse>(
+        "/admin/lead-outreach/backfill-emails?limit=35",
+        {},
+        { timeoutMs: 120000 },
+      );
+      setOkMsg(
+        "Backfill: spracovane " +
+          String(res.processed) +
+          ", najdene " +
+          String(res.found) +
+          ", bez webu " +
+          String(res.no_website) +
+          ", bez emailu na webe " +
+          String(res.no_email_on_website) +
+          ", zlyhania " +
+          String(res.failed) +
+          ".",
+      );
+      await loadPending();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Backfill zlyhal");
+    } finally {
+      setBusyBackfill(false);
+    }
+  }
+  async function discoverDaily() {
+    setErr(null);
+    setOkMsg(null);
+    setBusyDiscover(true);
+    try {
+      const res = await http.post<DiscoverResponse>(
+        "/admin/lead-outreach/discover-daily",
+        {},
+        { timeoutMs: 60000 },
+      );
+      const items = res.items || [];
+      setFound(items);
+      setOkMsg(
+        `Nájdených ${res.created} firiem, draftov ${res.drafted}. Doplň email a pošli.`,
+      );
+      if (items[0]) {
+        setCompanyName(items[0].company_name || "");
+        setCity(items[0].city || "");
+        setIndustry(items[0].industry || "");
+        setSubject(items[0].subject || "");
+        setBody(items[0].body || "");
+
+        await loadPending();
+      }
+    } catch (e) {
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === "object" && e && "message" in e
+            ? String((e as { message: unknown }).message)
+            : "Hľadanie firiem zlyhalo";
+      setErr(msg);
+    } finally {
+      setBusyDiscover(false);
+    }
+  }
+
+  async function draftFrom(input: {
+    company_name: string;
+    city?: string | null;
+    industry?: string | null;
+    reason?: string | null;
+  }) {
+    setErr(null);
+    setOkMsg(null);
+    if (!input.company_name.trim()) {
+      setErr("Zadaj názov firmy.");
+      return;
+    }
+    setBusyDraft(true);
+    try {
+      const res = await http.post<DraftResponse>("/admin/lead-outreach/draft", {
+        company_name: input.company_name.trim(),
+        city: input.city?.trim() || undefined,
+        industry: input.industry?.trim() || undefined,
+        reason: input.reason?.trim() || undefined,
+      });
+      setSubject(res.subject || "");
+      setBody(res.body || "");
+      setOkMsg("Návrh pripravený. Skontroluj a klikni Poslať.");
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Draft zlyhal");
+    } finally {
+      setBusyDraft(false);
+    }
+  }
+
+  async function send() {
+    setErr(null);
+    setOkMsg(null);
+    if (!email.trim() || !email.includes("@")) {
+      setErr("Zadaj platný email príjemcu.");
+      return;
+    }
+    if (!subject.trim() || !body.trim()) {
+      setErr("Chýba predmet alebo telo emailu.");
+      return;
+    }
+    setBusySend(true);
+    try {
+      const res = await http.post<SendResponse>("/admin/lead-outreach/send", {
+        to: email.trim(),
+        subject: subject.trim(),
+        body,
+      });
+      if (res.ok) {
+        setOkMsg(res.message || "Email odoslaný.");
+      } else {
+        setErr(res.message || "Email sa nepodarilo odoslať.");
+      }
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Send zlyhal");
+    } finally {
+      setBusySend(false);
+    }
+  }
+
+  const inputStyle = {
+    borderColor: "color-mix(in srgb, #c9a84c 25%, transparent)",
+    background: "#0b0b0b",
+    color: FG,
+  };
+
   if (isLoading) {
     return (
-      <>
+      <div className="min-h-screen" style={{ background: BG, color: FG }}>
+        <DashboardHeader />
+        <div
+          className="mx-auto max-w-6xl px-4 py-16 text-center"
+          style={{ color: MUTED }}
+        >
+          Načítavam…
+        </div>
+      </div>
+    );
+  }
+  return (
+    <>
         <div
           className="min-h-screen"
           style={{
@@ -918,7 +1345,6 @@ export default function LeadOutreachPage() {
 
           <DashboardFooter />
         </div>
-      </>
-    );
-  }
+    </>
+  );
 }
