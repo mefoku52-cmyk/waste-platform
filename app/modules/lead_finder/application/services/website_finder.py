@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+import importlib
 import logging
-import os
 import re
 from urllib.parse import unquote, urlparse
 
@@ -14,13 +14,11 @@ logger = logging.getLogger(__name__)
 
 class WebsiteFinder:
     """
-    Finds a company's official website using Brave Search API.
+    Finds a company's official website using DuckDuckGo search.
 
     The public interface intentionally stays compatible with the existing
     lead discovery/backfill services.
     """
-
-    _SEARCH_URL = "https://api.search.brave.com/res/v1/web/search"
 
     _SKIP_DOMAINS = (
         "facebook.com",
@@ -99,7 +97,14 @@ class WebsiteFinder:
 
     @staticmethod
     def is_available() -> bool:
-        return bool(os.getenv("BRAVE_SEARCH_API_KEY"))
+        for module_name in ("ddgs", "duckduckgo_search"):
+            try:
+                importlib.import_module(module_name)
+                return True
+            except ImportError:
+                continue
+        logger.warning("duckduckgo-search (ddgs) not installed")
+        return False
 
     @staticmethod
     def _normalise_name(value: str) -> str:
@@ -184,7 +189,8 @@ class WebsiteFinder:
     def _decode_url(url: str) -> str:
         """
         Keep this defensive decoder for compatibility with URLs returned by
-        search providers. Brave normally returns the final URL directly.
+        search providers. DuckDuckGo may return final URLs directly; the
+        `uddg` wrapper is unwrapped when present.
         """
         try:
             value = unquote(url)
@@ -207,53 +213,37 @@ class WebsiteFinder:
 
     def _search(self, query: str) -> list[dict]:
         """
-        Search Brave for possible official company websites.
+        Search DuckDuckGo for possible official company websites.
 
         This method only discovers candidates. It does NOT decide whether
         a result is the company's official website. That decision belongs
         exclusively to find_website() direct verification.
+
+        Synchronous by design — callers run it via asyncio.to_thread.
         """
-        import os
+        DDGS = None
+        for module_name in ("ddgs", "duckduckgo_search"):
+            try:
+                module = importlib.import_module(module_name)
+                DDGS = getattr(module, "DDGS", None)
+                if DDGS is not None:
+                    break
+            except ImportError:
+                continue
 
-        import httpx
-
-        api_key = os.getenv("BRAVE_SEARCH_API_KEY")
-        if not api_key:
-            logger.warning("BRAVE_SEARCH_API_KEY is not configured")
+        if DDGS is None:
+            logger.error("Neither ddgs nor duckduckgo_search is installed")
             return []
-
-        headers = {
-            "Accept": "application/json",
-            "X-Subscription-Token": api_key,
-        }
 
         try:
-            response = httpx.get(
-                "https://api.search.brave.com/res/v1/web/search",
-                headers=headers,
-                params={
-                    "q": query,
-                    "count": 20,
-                    "search_lang": "sk",
-                },
-                timeout=20,
-            )
-
-            response.raise_for_status()
-            payload = response.json()
-
-        except Exception as exc:
-            logger.warning(
-                "Brave search failed: query=%r error=%s",
-                query,
-                exc,
-            )
+            with DDGS(timeout=self._timeout) as ddgs:
+                results = list(ddgs.text(query, max_results=10))
+        except Exception:
+            logger.exception("DDGS.text failed for %s", query)
             return []
 
-        results = payload.get("web", {}).get("results", [])
-
         logger.info(
-            "Brave search: query=%r results=%d",
+            "DuckDuckGo search: query=%r results=%d",
             query,
             len(results),
         )
@@ -268,7 +258,7 @@ class WebsiteFinder:
         ico: str | None = None,
     ) -> str | None:
         """
-        Discover candidate URLs through Brave and verify them directly.
+        Discover candidate URLs through DuckDuckGo and verify them directly.
 
         Search-engine mentions are not treated as proof that a domain is
         the company's official website. Candidate pages are fetched and
@@ -276,7 +266,9 @@ class WebsiteFinder:
         """
 
         if not self.is_available():
-            logger.error("WebsiteFinder unavailable: BRAVE_SEARCH_API_KEY is not set")
+            logger.error(
+                "WebsiteFinder unavailable: neither ddgs nor duckduckgo_search is installed"
+            )
             return None
 
         # Discovery queries are deliberately broad enough to find
@@ -328,11 +320,13 @@ class WebsiteFinder:
                 self._search,
                 query,
             )
+            if not found:
+                logger.warning("DuckDuckGo vratilo 0 vysledkov pre query: %s", query)
             all_results.extend(found)
 
         if not all_results:
             logger.warning(
-                "No Brave results for company=%r ico=%r city=%r",
+                "No DuckDuckGo results for company=%r ico=%r city=%r",
                 company_name,
                 ico,
                 city,
@@ -529,7 +523,7 @@ class WebsiteFinder:
 
         if not candidates:
             logger.warning(
-                "Brave candidates found, but no candidate passed "
+                "DuckDuckGo candidates found, but no candidate passed "
                 "DIRECT WEBSITE VERIFICATION: company=%r ico=%r",
                 company_name,
                 ico,

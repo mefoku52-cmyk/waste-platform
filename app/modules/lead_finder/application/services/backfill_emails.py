@@ -74,6 +74,13 @@ async def backfill_emails(
                     ico=ico,
                 )
 
+                if not website:
+                    logger.info(
+                        "No website pre %s (%s) — skusam directory_lookup",
+                        company_name,
+                        ico,
+                    )
+
                 found_email = None
 
                 if website:
