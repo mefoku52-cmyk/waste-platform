@@ -313,36 +313,44 @@ def _card_matches(
     return _names_match(company_name, card_name)
 
 
-def _pick(
+def _match_card(
     html: str,
     company_name: str,
     ico: str | None = None,
-) -> str | None:
-    """Return an email only from a matching company profile card."""
+):
+    """Return the first directory card matching the company, else None."""
     if not html:
         return None
 
     soup = BeautifulSoup(html, "html.parser")
 
     for card in soup.select("div.profile-holder"):
-        if not _card_matches(card, company_name, ico):
-            continue
-
-        email = _extract_card_email(card)
-
-        if email:
-            return email
-
-        website = _extract_card_website(card)
-
-        if website:
-            website_html = _get(website)
-            email = _extract_joomla_cloak_email(website_html)
-
-            if email:
-                return email
+        if _card_matches(card, company_name, ico):
+            return card
 
     return None
+
+
+def _pick(
+    html: str,
+    company_name: str,
+    ico: str | None = None,
+) -> str | None:
+    """Return the email published directly on a matching company card.
+
+    Only the card's own ``mailto:`` link is used here -- no extra HTTP.
+
+    Homepage extraction lives in ``website_contact_crawler``, which is the
+    single component allowed to fetch company websites. Keeping this
+    function HTTP-free means the "crawl the homepage" decision is made in
+    exactly one place.
+    """
+    card = _match_card(html, company_name, ico)
+
+    if card is None:
+        return None
+
+    return _extract_card_email(card)
 
 
 def _get(url: str) -> str:
