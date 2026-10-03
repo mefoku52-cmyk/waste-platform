@@ -72,10 +72,10 @@ out/
 *.tsbuildinfo
 
 # --- Environment & Secrets ---
+# Secrets — nikdy necommitovať
 .env
-.env.local
-.env.*.local
-.env.backup
+.env.*
+!.env.example
 *.pem
 *.key
 *.crt
@@ -142,13 +142,9 @@ var/uploads/*
 !var/uploads/.gitkeep
 
 # --- Additional env backups ---
-.env.*
 *.env.bak
 
 # local / termux noise
-.env
-.env.*
-!.env.example
 *.bak
 *.bak.*
 app/main.py.bak*
@@ -209,15 +205,6 @@ apps/web/.next/
 apps/web/out/
 apps/web/tsconfig.tsbuildinfo
 
-.env
-.env.*
-!.env.example
-!**/.env.example
-apps/web/.env.local
-apps/web/.env*.local
-.env.production
-.env.compose
-
 audit-output/
 _quarantine/
 *.bak
@@ -250,9 +237,6 @@ STEP-09-SCHEMA-PROVENANCE-AUDIT*.txt
 fix_report.txt
 audit_report.json
 # Tajomstvá
-.env
-.env.*
-!.env.example
 *.key
 *.pem
 *.p12
@@ -270,9 +254,6 @@ token*.txt
 .gnupg/
 
 # Backupy s tajomstvami
-.env.backup*
-.env.bak*
-.env.*bak
 # Ruff cache
 .ruff_cache/
 # Pytest cache
