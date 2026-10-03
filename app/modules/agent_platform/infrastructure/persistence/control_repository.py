@@ -1,3 +1,5 @@
+from datetime import UTC
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.infrastructure.db.timezone import to_naive_utc
@@ -29,6 +31,10 @@ class SqlAlchemyControlRepository(ControlRepository):
 
     Pouziva jeden riadok v `agent_control_state` s id='current'.
     Ak riadok neexistuje, vrati normalny stav a nezapisuje.
+
+    Stlpce su TIMESTAMP WITHOUT TIME ZONE, takze zapis normalizujeme cez
+    to_naive_utc() a citanie doplnuje tzinfo=UTC (aby domain validacia
+    EmergencyState, ktora vyzaduje tz-aware, presla).
     """
 
     _SINGLETON_ID = "current"
@@ -55,7 +61,7 @@ class SqlAlchemyControlRepository(ControlRepository):
             self._session.add(m)
         else:
             m.mode = state.mode.value
-            m.changed_at = state.changed_at
+            m.changed_at = to_naive_utc(state.changed_at)
             m.changed_by = state.changed_by
             m.reason = state.reason
         try:
@@ -71,9 +77,12 @@ class SqlAlchemyControlRepository(ControlRepository):
         m = await self._session.get(ControlStateModel, self._SINGLETON_ID)
         if m is None:
             return EmergencyState.normal()
+        changed_at = m.changed_at
+        if changed_at is not None and changed_at.tzinfo is None:
+            changed_at = changed_at.replace(tzinfo=UTC)
         return EmergencyState(
             mode=ControlMode(m.mode),
-            changed_at=m.changed_at,
+            changed_at=changed_at,
             changed_by=m.changed_by,
             reason=m.reason,
         )

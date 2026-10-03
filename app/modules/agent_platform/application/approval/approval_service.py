@@ -29,5 +29,6 @@ class DefaultApprovalService(ApprovalService):
         await self._repository.update_status(
             decision.approval_id,
             decision.status,
+            decided_at=decision.decided_at,
         )
         return decision

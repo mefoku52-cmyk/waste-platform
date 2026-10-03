@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.infrastructure.db.timezone import to_naive_utc
@@ -24,12 +26,18 @@ class ApprovalRepository(ABC):
         self,
         approval_id: str,
         status: ApprovalStatus,
+        decided_at: datetime | None = None,
     ) -> ApprovalRequest:
         raise NotImplementedError
 
 
 class SqlAlchemyApprovalRepository(ApprovalRepository):
-    """SQLAlchemy implementation of approval persistence."""
+    """SQLAlchemy implementation of approval persistence.
+
+    Stlpce created_at / expires_at / decided_at su TIMESTAMP WITHOUT TIME ZONE.
+    Zapis preto normalizujeme cez to_naive_utc() a citanie doplnuje tzinfo=UTC,
+    aby domain validacia ApprovalRequest (tz-aware) presla.
+    """
 
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
@@ -71,6 +79,7 @@ class SqlAlchemyApprovalRepository(ApprovalRepository):
         self,
         approval_id: str,
         status: ApprovalStatus,
+        decided_at: datetime | None = None,
     ) -> ApprovalRequest:
         from app.modules.agent_platform.infrastructure.models import (
             ApprovalRequestModel,
@@ -80,6 +89,8 @@ class SqlAlchemyApprovalRepository(ApprovalRepository):
         if m is None:
             raise ValueError(f"Approval {approval_id} not found")
         m.status = status.value
+        if decided_at is not None:
+            m.decided_at = to_naive_utc(decided_at)
         try:
             await self._session.commit()
         except Exception:
@@ -88,7 +99,14 @@ class SqlAlchemyApprovalRepository(ApprovalRepository):
         return self._to_domain(m)
 
     @staticmethod
-    def _to_domain(m) -> ApprovalRequest:
+    def _as_aware_utc(dt: datetime | None) -> datetime | None:
+        """Normalize a naive DB column value back to tz-aware UTC on read."""
+        if dt is None:
+            return None
+        return dt if dt.tzinfo is not None else dt.replace(tzinfo=UTC)
+
+    @classmethod
+    def _to_domain(cls, m) -> ApprovalRequest:
         return ApprovalRequest(
             approval_id=m.approval_id,
             requested_by=m.requested_by,
@@ -97,7 +115,7 @@ class SqlAlchemyApprovalRepository(ApprovalRepository):
             target=m.target,
             reason=m.reason,
             risk_level=m.risk_level,
-            created_at=m.created_at,
-            expires_at=m.expires_at,
+            created_at=cls._as_aware_utc(m.created_at),
+            expires_at=cls._as_aware_utc(m.expires_at),
             status=ApprovalStatus(m.status),
         )
