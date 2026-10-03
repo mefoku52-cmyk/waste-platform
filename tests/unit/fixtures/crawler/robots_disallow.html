@@ -1,0 +1,9 @@
+# NOTE: this file holds robots.txt text, not HTML. The capture tool saved
+# every fetched body with an .html suffix, so the name is historical.
+#
+# Used by tests/unit/test_homepage_crawler.py to prove that the crawler
+# honours robots.txt (decision D5 asks for polite crawling): when robots.txt
+# disallows the page, the crawler returns (None, None) WITHOUT fetching it.
+
+User-agent: *
+Disallow: /

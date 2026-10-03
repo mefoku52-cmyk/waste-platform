@@ -1,0 +1,30 @@
+<!--
+Contact page whose only email is Joomla-cloaked JavaScript (no literal
+`mailto:` anywhere in the markup).
+
+Used by tests/unit/test_homepage_crawler.py to prove that the crawler is the
+single component that fetches homepages (decision D3): it follows the
+/kontakt link and decodes the cloak via
+directory_lookup._extract_joomla_cloak_email, which was removed from
+directory_lookup._pick.
+-->
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <title>Kontakt - EKOL RECYKLAČNÉ SYSTÉMY s.r.o.</title>
+</head>
+<body>
+  <h1>Kontakt</h1>
+  <p>EKOL RECYKLAČNÉ SYSTÉMY s.r.o., Košická, 08504 Prešov</p>
+  <p>Telefón: +421517732918</p>
+  <script type="text/javascript">
+    var addye6f0620f845c3f2a783276ad01d35c01 = 'info' + '&#64;';
+    addye6f0620f845c3f2a783276ad01d35c01 =
+        addye6f0620f845c3f2a783276ad01d35c01
+        + 'ekolpresov'
+        + '&#46;'
+        + 'sk';
+  </script>
+</body>
+</html>

@@ -407,7 +407,13 @@ def lookup_public_email(
     city: str | None = None,
     ico: str | None = None,
 ) -> str | None:
-    """Find a company-related public email in Zlaté stránky."""
+    """Find a company-related public email via Zlaté stránky.
+
+    Two stages:
+    1. the email published directly on the matched directory card, then
+    2. the company homepage linked from that card, crawled by
+       ``website_contact_crawler``.
+    """
     if not company_name or not company_name.strip():
         return None
 
@@ -420,6 +426,14 @@ def lookup_public_email(
     # already returns city-specific profile URLs. It remains part of the API
     # for future stricter card validation.
     _ = city
+
+    # Lazy import on purpose: website_contact_crawler imports helpers from
+    # this module (_extract_joomla_cloak_email, _normalize_name,
+    # _JUNK_EMAIL_MARKERS, _EMAIL_RE). A module-level import would create a
+    # circular import.
+    from app.modules.lead_finder.application.services.website_contact_crawler import (
+        crawl_contact_email,
+    )
 
     for query in queries:
         url = "https://www.zlatestranky.sk/Search?what=" + quote(query, safe="")
@@ -434,5 +448,22 @@ def lookup_public_email(
 
         if email:
             return email
+
+        card = _match_card(html, company_name=company_name, ico=ico)
+
+        if card is None:
+            continue
+
+        homepage_url = _extract_card_website(card)
+
+        if not homepage_url:
+            return None
+
+        email, _source_url = crawl_contact_email(homepage_url, company_name)
+
+        if email:
+            return email
+
+        return None
 
     return None

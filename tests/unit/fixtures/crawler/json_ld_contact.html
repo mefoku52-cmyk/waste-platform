@@ -1,0 +1,35 @@
+<!--
+Company page whose email is published ONLY as schema.org LocalBusiness
+JSON-LD (the pattern modern business sites use instead of a mailto: link).
+
+Used by tests/unit/test_homepage_crawler.py to prove the crawler reads
+`<script type="application/ld+json">` blocks and tolerates the `mailto:`
+prefix that schema.org's `email` property allows.
+-->
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <title>EKOL RECYKLAČNÉ SYSTÉMY s.r.o.</title>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "EKOL RECYKLAČNÉ SYSTÉMY s.r.o.",
+    "url": "https://www.ekolpresov.sk",
+    "email": "mailto:info@ekolpresov.sk",
+    "telephone": "+421517732918",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Košická",
+      "postalCode": "08504",
+      "addressLocality": "Prešov"
+    }
+  }
+  </script>
+</head>
+<body>
+  <h1>EKOL RECYKLAČNÉ SYSTÉMY s.r.o.</h1>
+  <p>Zber a recyklácia odpadov.</p>
+</body>
+</html>

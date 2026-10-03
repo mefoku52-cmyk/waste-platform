@@ -1,0 +1,28 @@
+<!--
+Company page that mentions the company name but carries NO email in any
+form (no mailto:, no JSON-LD, no cloaked script, no plain-text address) and
+no contact sub-page link.
+
+Used by tests/unit/test_homepage_crawler.py to prove that a negative result
+is cached (second call returns the cached None without any HTTP) and that
+only 5xx responses are exempt from caching.
+-->
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <title>Firma s.r.o. - priemyselné služby</title>
+</head>
+<body>
+  <header>
+    <h1>Firma s.r.o.</h1>
+  </header>
+  <main>
+    <p>Poskytujeme priemyselné služby od roku 1998.</p>
+    <p>Telefón: +421900000000</p>
+  </main>
+  <footer>
+    Firma s.r.o., Priemyselná 1, 01001 Žilina
+  </footer>
+</body>
+</html>

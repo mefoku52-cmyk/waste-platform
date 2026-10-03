@@ -1,0 +1,30 @@
+<!--
+Faithful-style capture of a company homepage whose contact email sits in a
+plain `mailto:` link on the company's OWN domain.
+
+Used by tests/unit/test_homepage_crawler.py to prove decision D1
+(DOMAIN-MATCH is the primary rule): info@ekolpresov.sk found on
+https://www.ekolpresov.sk is accepted because the email domain equals the
+page domain, without needing any name matching at all.
+-->
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <title>EKOL RECYKLAČNÉ SYSTÉMY s.r.o. - zber a recyklácia odpadov</title>
+</head>
+<body>
+  <header>
+    <h1>EKOL RECYKLAČNÉ SYSTÉMY s.r.o.</h1>
+  </header>
+  <main>
+    <p>Zber, triedenie a recyklácia odpadov v Prešove a okolí.</p>
+    <p>Kontakt:
+      <a href="mailto:info@ekolpresov.sk">info@ekolpresov.sk</a>
+    </p>
+  </main>
+  <footer>
+    EKOL RECYKLAČNÉ SYSTÉMY s.r.o., Košická, 08504 Prešov
+  </footer>
+</body>
+</html>
