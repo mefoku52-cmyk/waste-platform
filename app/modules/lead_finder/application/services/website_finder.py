@@ -50,6 +50,8 @@ class WebsiteFinder:
         "wikipedia.org",
         "wikidata.org",
         "seznam.cz",
+        # URL shorteners / link redirectors (never a company homepage)
+        "hst.link",
         # Slovak company registers/directories
         "valida.sk",
         "finstat.sk",
