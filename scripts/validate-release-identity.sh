@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-set -euo pipefail
+set -Eeuo pipefail
 
 fail() {
     printf 'RELEASE_IDENTITY_ERROR: %s\n' "$*" >&2

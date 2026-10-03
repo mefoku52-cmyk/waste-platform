@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -Eeuo pipefail
 
 ROOT="${ROOT:-$HOME/waste-platform}"
 SOCKET="${DOCKER_HOST:-unix:///data/data/com.termux/files/usr/var/run/docker.sock}"

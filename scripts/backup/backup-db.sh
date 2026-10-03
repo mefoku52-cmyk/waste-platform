@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-set -euo pipefail
+set -Eeuo pipefail
 STAMP=$(date +%Y%m%d_%H%M%S)
 OUT_DIR="${HOME}/cmep-backups"
 mkdir -p "$OUT_DIR"

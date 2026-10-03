@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-set -u
+set -Eeuo pipefail
 
 echo "============================================================"
 echo "COMPANIES SCHEMA | KOMPLETNÁ DIAGNOSTIKA"

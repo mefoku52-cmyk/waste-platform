@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -Eeuo pipefail
 
 PROJECT_DIR="${PROJECT_DIR:-/data/data/com.termux/files/home/waste-platform}"
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -Eeuo pipefail
 
 VM_DIR="$HOME/alpine-vm/qemu-docker"
 HOST_PORT="32376"

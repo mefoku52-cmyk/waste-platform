@@ -3,7 +3,7 @@
 # CMEP — Security Audit Script
 # =============================================================================
 
-set -euo pipefail
+set -Eeuo pipefail
 
 ERRORS=0
 WARNINGS=0

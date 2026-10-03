@@ -1,6 +1,6 @@
 #!/bin/bash
 # Lokálna simulácia CI pipeline
-set -e
+set -Eeuo pipefail
 
 echo "=== 1. Ruff format ==="
 ruff format --check .

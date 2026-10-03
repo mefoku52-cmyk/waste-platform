@@ -5,7 +5,7 @@
 # Pouzitie: bash scripts/security/rotate-secrets.sh [environment]
 # =============================================================================
 
-set -euo pipefail
+set -Eeuo pipefail
 
 ENV_FILE="${1:-.env.production}"
 BACKUP_DIR="logs/backups/secrets-$(date +%Y%m%d-%H%M%S)"

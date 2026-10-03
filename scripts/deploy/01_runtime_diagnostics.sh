@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -u
+set -Eeuo pipefail
 
 ROOT="$HOME/waste-platform"
 OUT="$ROOT/reports/runtime-diagnostics-$(date +%Y%m%d-%H%M%S).txt"

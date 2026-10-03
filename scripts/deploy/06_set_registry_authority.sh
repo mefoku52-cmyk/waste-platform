@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
 
 ROOT="${ROOT:-$HOME/waste-platform}"
 ENV_FILE="${ENV_FILE:-$ROOT/.env.production}"

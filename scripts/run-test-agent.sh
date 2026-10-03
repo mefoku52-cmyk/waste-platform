@@ -1,5 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
-set -euo pipefail
+set -Eeuo pipefail
 cd "$(dirname "$0")/.."
 
 PROMPT='You are working in the waste-platform repository.
