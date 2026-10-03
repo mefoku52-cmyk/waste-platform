@@ -1,0 +1,36 @@
+<!--
+Faithful capture of a real zlatestranky.sk profile card with NO company homepage.
+
+Source: https://www.zlatestranky.sk/hladanie/ekol/  (cards 2, 6, 8 — 3 of 9 cards)
+
+These cards have no `li.link` slot and no `span[itemprop="url"]`. Their ONLY
+external anchor is the business-register cross-link:
+
+  https://www.indexpodnikatela.sk/...
+
+The old _extract_card_website() returned the first external anchor, so it
+returned the register URL here — not a company website. The fix must return
+None so the caller skips the crawl instead of crawling a register page.
+-->
+<div class="col12 profile-holder" itemprop="itemListElement" itemscope itemtype="https://schema.org/LocalBusiness">
+  <div class="row">
+    <h1 class="fl" itemprop="name">
+      <a class="t-fpbc" href="/firmy/Bratislava/H3100001/EKOL+TRADE+s.r.o./">EKOL TRADE s.r.o.</a>
+    </h1>
+    <div class="row profile-inner">
+      <div class="col6-10">
+        <ul>
+          <li class="poi"><span>Ružinovská 1, 820 09 Bratislava</span></li>
+          <li class="tel"><span>+421212345678</span></li>
+          <li></li>
+          <li class="result-item-btn go2profile bubble-holder">
+            <a href="/firmy/Bratislava/H3100001/EKOL+TRADE+s.r.o./">Pozrieť profil</a>
+          </li>
+          <li class="result-item-btn go2eko bubble-holder">
+            <a href="https://www.indexpodnikatela.sk/31000001" target="_blank">Ekonomické záznamy</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

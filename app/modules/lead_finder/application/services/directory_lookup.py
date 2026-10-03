@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
@@ -55,6 +55,15 @@ _HEADERS = {
     "User-Agent": ("Mozilla/5.0 (Linux; Android 16) AppleWebKit/537.36 Chrome/140 Safari/537.36"),
     "Accept": "text/html",
 }
+
+# Domains that are never a company's own homepage: business registers and
+# directory cross-links. website_finder keeps its own (broader) skip list;
+# this one only guards _extract_card_website, which previously returned the
+# first external link on the card (often an indexpodnikatela.sk register URL).
+_NON_COMPANY_WEBSITE_DOMAINS = (
+    "zlatestranky.sk",
+    "indexpodnikatela.sk",
+)
 
 
 def _ascii(text: str) -> str:
@@ -161,14 +170,46 @@ def _extract_card_email(card) -> str | None:
     return None
 
 
+def _is_non_company_website(href: str) -> bool:
+    """Reject register/directory cross-links that are not a company homepage."""
+    try:
+        domain = urlparse(href).netloc.lower().split(":")[0]
+    except Exception:
+        return True
+
+    if not domain:
+        return True
+
+    return any(
+        domain == blocked or domain.endswith("." + blocked)
+        for blocked in _NON_COMPANY_WEBSITE_DOMAINS
+    )
+
+
 def _extract_card_website(card) -> str | None:
-    for anchor in card.select("a[href]"):
+    """Return the company's own homepage URL from a directory card.
+
+    Uses the dedicated ``li.link`` slot rather than the first external anchor:
+    cards without a homepage still link to indexpodnikatela.sk (business
+    register), which is NOT the company website. Microdata
+    ``span[itemprop="url"]`` is used as a fallback because it survives CSS
+    class renames.
+    """
+    for anchor in card.select('li.link a[href^="http"]'):
         href = str(anchor.get("href") or "").strip()
+
+        if _is_non_company_website(href):
+            continue
+
+        return href
+
+    for span in card.select('span[itemprop="url"]'):
+        href = str(span.get("content") or span.get_text(" ", strip=True) or "").strip()
 
         if not href.startswith(("http://", "https://")):
             continue
 
-        if "zlatestranky.sk" in href.lower():
+        if _is_non_company_website(href):
             continue
 
         return href

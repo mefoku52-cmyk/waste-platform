@@ -1,0 +1,45 @@
+<!--
+Faithful capture of a real zlatestranky.sk profile card (div.profile-holder),
+trimmed to the elements directory_lookup inspects.
+
+Source: https://www.zlatestranky.sk/hladanie/ekol/  (card 1, EKOL RECYKLAČNÉ SYSTÉMY s.r.o.)
+
+The card contains TWO external anchors, in this DOM order:
+  1. https://www.ekolpresov.sk               <- company homepage (li.link)
+  2. https://www.indexpodnikatela.sk/36507440 <- business register cross-link
+
+The homepage lives in the dedicated `li.link` slot; the register link is a
+separate `result-item-btn go2eko` button that appears later. _extract_card_website()
+must return the homepage, never the register URL.
+The name anchor uses the `a[href*="/firmy/"]` + `/firmy/{city}/{H|T}{id}/`
+pattern that _extract_card_name() relies on.
+-->
+<div class="col12 profile-holder" itemprop="itemListElement" itemscope itemtype="https://schema.org/LocalBusiness">
+  <div class="row">
+    <h1 class="fl" itemprop="name">
+      <a class="t-fpbc" href="/firmy/Pre%C5%A1ov/H1012003/EKOL+RECYKLA%C4%8CN%C3%89+SYST%C3%89MY+s.r.o./">EKOL RECYKLAČNÉ SYSTÉMY s.r.o.</a>
+    </h1>
+    <div class="row profile-inner">
+      <div class="col6-10">
+        <ul>
+          <li class="poi"><span>Košická, 08504 Prešov</span></li>
+          <li class="tel"><span>+421517732918</span></li>
+          <li class="mail">
+            <a href="mailto:ekolpresov@mail.t-com.sk">ekolpresov@mail.t-com.sk</a>
+          </li>
+          <li class="link">
+            <a data-ta="LinkClick" data-tc="SEARCH" href="https://www.ekolpresov.sk" target="_blank">
+              <span itemprop="url">https://www.ekolpresov.sk</span>
+            </a>
+          </li>
+          <li class="result-item-btn go2profile bubble-holder">
+            <a href="/firmy/Pre%C5%A1ov/H1012003/EKOL+RECYKLA%C4%8CN%C3%89+SYST%C3%89MY+s.r.o./">Pozrieť profil</a>
+          </li>
+          <li class="result-item-btn go2eko bubble-holder">
+            <a href="https://www.indexpodnikatela.sk/36507440" target="_blank">Ekonomické záznamy</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

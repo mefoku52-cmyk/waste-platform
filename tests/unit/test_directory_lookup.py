@@ -1,6 +1,23 @@
+from pathlib import Path
+
+from bs4 import BeautifulSoup
+
 from app.modules.lead_finder.application.services.directory_lookup import (
+    _extract_card_website,
     _extract_joomla_cloak_email,
 )
+
+_FIXTURE_DIR = Path(__file__).parent / "fixtures" / "directory"
+
+
+def _load_card(name: str):
+    """Parse a captured Zlaté stránky card fixture into its card element."""
+    html = (_FIXTURE_DIR / name).read_text(encoding="utf-8")
+    cards = BeautifulSoup(html, "html.parser").select("div.profile-holder")
+
+    assert cards, f"fixture {name} contains no profile-holder card"
+
+    return cards[0]
 
 
 def test_extract_joomla_cloak_email_simple():
@@ -98,3 +115,64 @@ def test_directory_lookup_accepts_business_email(monkeypatch):
         ico="36507440",
     )
     assert result == "info@ekolpresov.sk"
+
+
+def test_extract_card_website_prefers_homepage_over_register():
+    """Regresia: karta s homepage aj registrom musi vratit homepage.
+
+    Stara logika brala PRVY externy link; na realnych kartach by vsak
+    indexpodnikatela.sk mohol vyhrat. Fix cita dedikovany `li.link` slot.
+    """
+    card = _load_card("ekol_card.html")
+
+    result = _extract_card_website(card)
+
+    assert result == "https://www.ekolpresov.sk"
+    assert "indexpodnikatela.sk" not in result
+
+
+def test_extract_card_website_returns_none_when_only_register_link():
+    """Karta bez homepage nesmie vratit registrovu URL.
+
+    3 z 9 realnych kariet maju ako jediny externy link indexpodnikatela.sk.
+    Vratit ju by znamenalo crawlovat obchodny register namiesto firmy.
+    """
+    card = _load_card("register_only_card.html")
+
+    assert _extract_card_website(card) is None
+
+
+def test_extract_card_website_falls_back_to_microdata():
+    """Fallback: ak `li.link` chyba, pouzi microdata span[itemprop=url]."""
+    html = """
+    <html><body>
+      <div class="profile-holder">
+        <h1 itemprop="name">
+          <a href="/firmy/Presov/H1012003/EKOL+RECYKLACNE+SYSTEMY+s.r.o./">EKOL s.r.o.</a>
+        </h1>
+        <a href="https://www.ekolpresov.sk" target="_blank">
+            <span itemprop="url">https://www.ekolpresov.sk</span>
+        </a>
+        <a href="https://www.indexpodnikatela.sk/36507440" target="_blank">Ekonomicke zaznamy</a>
+      </div>
+    </body></html>
+    """
+
+    card = BeautifulSoup(html, "html.parser").select("div.profile-holder")[0]
+
+    assert _extract_card_website(card) == "https://www.ekolpresov.sk"
+
+
+def test_extract_card_website_ignores_zlatestranky_internal_links():
+    """Interny odkaz na zlatestranky nesmie byt povazovany za firemnu stranku."""
+    html = """
+    <html><body>
+      <div class="profile-holder">
+        <li class="link"><a href="https://www.zlatestranky.sk/firmy/Presov/H1/EKOL/">profil</a></li>
+      </div>
+    </body></html>
+    """
+
+    card = BeautifulSoup(html, "html.parser").select("div.profile-holder")[0]
+
+    assert _extract_card_website(card) is None
