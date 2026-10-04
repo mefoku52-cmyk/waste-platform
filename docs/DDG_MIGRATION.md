@@ -71,6 +71,51 @@ Identical to 8.x, per backend implementation:
 - `primp` (native extension crashes on Python 3.14)
 - `ddgs` package / module name (9.x line, primp-based)
 
+## Production constraint (Render)
+
+Render runs on AWS datacenter IPs. DuckDuckGo detects those and stops
+answering — the request either times out or comes back rate-limited:
+
+```
+DuckDuckGoSearchException: https://duckduckgo.com Timed out
+curl: (28) Connection timed out after 10000 milliseconds
+```
+
+**Consequence:** `WebsiteFinder.find_website()` returns `None` in
+production. Website discovery does not work there. The public directory
+(Zlaté stránky) is the primary email source; directory-only yield is
+roughly 31 % (~10-12 emails per run of 35 companies).
+
+To get 30+ emails/day, one of these is required:
+
+- **SerpAPI** — ~$75/month (Developer plan) for 5 000 queries, works from
+  cloud IPs (cenník overený 2026-10-04; starší údaj $50/5K už neplatí)
+- **Brave Search API** — metered, ~$5/month free credits (~1 000 queries)
+- **Google Programmable Search (CSE)** — 100 queries/day free, needs a
+  billing-enabled Google Cloud project
+- **self-hosted SearXNG** — free, but needs custom Docker on Render
+
+### Timeout guard
+
+Because a dead DDG costs `timeout` seconds per query (13 queries per
+company × 35 companies ≈ minutes of pure waste), `website_finder.py`
+keeps a module-level circuit breaker:
+
+- `_ddg_disabled` — set to `True` on the first DDG failure
+- `_search()` checks the flag and returns `[]` immediately when tripped
+- `find_website()` checks the flag before building the query list
+- first failure logs `WARNING`, later ones log `DEBUG`
+
+Callers (`backfill_emails.py`, `daily_discover.py`) already treat
+`None`/no-email as "directory only" and continue — no crash, no invented
+email addresses.
+
+**This is not a permanent fix.** It makes a broken DDG cheap instead of
+expensive. Swap in a cloud-capable provider above to restore website
+discovery.
+
 ## Validation
 
-`pytest tests/unit -q --no-cov` → 654 passed, 1 xfailed.
+`pytest tests/unit -q --no-cov` → 660 passed, 1 xfailed
+(654 pred pridaním 6 breaker testov v
+`tests/unit/test_website_finder_ddg_breaker.py`).

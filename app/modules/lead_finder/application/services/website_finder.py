@@ -11,6 +11,28 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# DuckDuckGo circuit breaker
+#
+# Render runs on datacenter IPs (AWS). DuckDuckGo detects those and refuses
+# to answer: the request either times out or comes back rate limited.
+#
+# A single timeout is enough signal. Retrying the remaining queries only
+# burns wall-clock time (35 companies x 10s timeout = ~350s wasted per run)
+# and gets the exit code / logs nowhere, so we trip this breaker on the
+# first DDG failure and short-circuit every later lookup for the rest of
+# the process lifetime.
+#
+# Consequence: website discovery is a no-op in production. The public
+# directory (Zlate stranky) stays the primary email source.
+# ---------------------------------------------------------------------------
+_ddg_disabled = False
+
+
+def _ddg_is_disabled() -> bool:
+    """True once DuckDuckGo has proven unreachable in this process."""
+    return _ddg_disabled
+
 
 class WebsiteFinder:
     """
@@ -223,6 +245,14 @@ class WebsiteFinder:
 
         Synchronous by design — callers run it via asyncio.to_thread.
         """
+        global _ddg_disabled
+
+        # Circuit breaker: production (Render/AWS datacenter IP) is blocked by
+        # DuckDuckGo. Once that is established, stop paying the timeout cost.
+        if _ddg_disabled:
+            logger.debug("DDG disabled (datacenter IP block), skipping query: %s", query)
+            return []
+
         DDGS = None
         for module_name in ("duckduckgo_search",):
             try:
@@ -240,8 +270,14 @@ class WebsiteFinder:
         try:
             with DDGS(timeout=self._timeout) as ddgs:
                 results = list(ddgs.text(query, max_results=10))
-        except Exception:
-            logger.exception("DDGS.text failed for %s", query)
+        except Exception as exc:
+            _ddg_disabled = True
+            logger.warning(
+                "DuckDuckGo unreachable (%s: %s) — disabling DDG for this "
+                "process, website discovery falls back to directory only",
+                type(exc).__name__,
+                exc,
+            )
             return []
 
         logger.info(
@@ -269,6 +305,16 @@ class WebsiteFinder:
 
         if not self.is_available():
             logger.error("WebsiteFinder unavailable: duckduckgo_search is not installed")
+            return None
+
+        # Same circuit breaker as _search: no point building 13 queries when
+        # the first one already proved DDG is unreachable from this host.
+        if _ddg_disabled:
+            logger.debug(
+                "Website discovery skipped (DDG disabled): company=%r ico=%r",
+                company_name,
+                ico,
+            )
             return None
 
         # Discovery queries are deliberately broad enough to find
@@ -549,7 +595,7 @@ class WebsiteFinder:
         return best_url
 
 
-__all__ = ["WebsiteFinder"]
+__all__ = ["WebsiteFinder", "_ddg_is_disabled"]
 
 # Backward-compatible module-level API used by unit tests and older callers.
 _SKIP_DOMAINS = WebsiteFinder._SKIP_DOMAINS
