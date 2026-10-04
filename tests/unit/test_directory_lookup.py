@@ -80,14 +80,18 @@ def _profile_html(mailto: str) -> str:
     """
 
 
-def test_directory_lookup_rejects_consumer_emails(monkeypatch):
-    """Slovak Telekom / O2 / Orange consumer mails sa nesmu
-    dostat cez mailto vetvu."""
+def test_directory_lookup_rejects_non_matching_consumer_email(monkeypatch):
+    """D2: consumer mailbox, ktorej local-part nesedi s nazvom firmy,
+    sa nadalej nesmie dostat cez mailto vetvu.
+
+    (Pozor: od zavedenia D2 sa free provider s *zhodnym* local-partom
+    PRIJIMA — vid test nizsie. Tento test pokryva nezhodny pripad.)
+    """
     from app.modules.lead_finder.application.services import directory_lookup
 
     class FakeResp:
         status_code = 200
-        text = _profile_html("ekolpresov@mail.t-com.sk")
+        text = _profile_html("jan.novak@mail.t-com.sk")
 
     monkeypatch.setattr(directory_lookup.httpx, "get", lambda *a, **kw: FakeResp())
 
@@ -97,6 +101,67 @@ def test_directory_lookup_rejects_consumer_emails(monkeypatch):
         ico="36507440",
     )
     assert result is None
+
+
+def test_extract_card_email_accepts_gmail_when_local_matches():
+    """D2: mikrofirmy komunikuju cez Gmail; adresa prejde, ak local-part
+    obsahuje aspon 3 znaky z normalizovaneho nazvu firmy."""
+    from app.modules.lead_finder.application.services.directory_lookup import (
+        _extract_card_email,
+    )
+
+    html = """
+    <html><body>
+      <div class="profile-holder">
+        <a href="/firmy/Poprad/H1234567890/">ODPADY TATRY, s. r. o.</a>
+        <a href="mailto:odpadytatry@gmail.com">email</a>
+      </div>
+    </body></html>
+    """
+
+    card = BeautifulSoup(html, "html.parser").select("div.profile-holder")[0]
+
+    assert _extract_card_email(card, "ODPADY TATRY, s. r. o.") == "odpadytatry@gmail.com"
+
+
+def test_extract_card_email_rejects_gmail_when_local_does_not_match():
+    """D2: Gmail od cudzej osoby (jan.novak) neprejde."""
+    from app.modules.lead_finder.application.services.directory_lookup import (
+        _extract_card_email,
+    )
+
+    html = """
+    <html><body>
+      <div class="profile-holder">
+        <a href="/firmy/Poprad/H1234567890/">ODPADY TATRY, s. r. o.</a>
+        <a href="mailto:jan.novak@gmail.com">email</a>
+      </div>
+    </body></html>
+    """
+
+    card = BeautifulSoup(html, "html.parser").select("div.profile-holder")[0]
+
+    assert _extract_card_email(card, "ODPADY TATRY, s. r. o.") is None
+
+
+def test_extract_card_email_without_company_name_stays_strict():
+    """Bez nazvu firmy sa neda overit D2 → free provider sa zahodi."""
+    from app.modules.lead_finder.application.services.directory_lookup import (
+        _extract_card_email,
+    )
+
+    html = """
+    <html><body>
+      <div class="profile-holder">
+        <a href="/firmy/Poprad/H1234567890/">ODPADY TATRY, s. r. o.</a>
+        <a href="mailto:odpadytatry@gmail.com">email</a>
+      </div>
+    </body></html>
+    """
+
+    card = BeautifulSoup(html, "html.parser").select("div.profile-holder")[0]
+
+    assert _extract_card_email(card) is None
 
 
 def test_directory_lookup_accepts_business_email(monkeypatch):

@@ -146,7 +146,15 @@ def _extract_card_name(card) -> str | None:
     return None
 
 
-def _extract_card_email(card) -> str | None:
+def _extract_card_email(card, company_name: str | None = None) -> str | None:
+    """Return the email published on a directory card.
+
+    D2: free/consumer providers (Gmail, Zoznam, Centrum, mail.t-com.sk, …)
+    are accepted only when the address's local-part still identifies the
+    company — micro-companies in this sector run their business from
+    webmail. Without ``company_name`` the strict B2B rule applies and every
+    free provider is skipped.
+    """
     for anchor in card.select('a[href^="mailto:"]'):
         href = anchor.get("href", "")
 
@@ -158,9 +166,18 @@ def _extract_card_email(card) -> str | None:
         domain = email.rsplit("@", 1)[-1]
 
         if domain in _FREE_EMAIL_DOMAINS:
-            # Consumer/telco mailboxes (Gmail, mail.t-com.sk, …) are not
-            # valid B2B company contacts; skip this mailto anchor.
-            continue
+            if not company_name:
+                continue
+
+            # Lazy import: website_contact_crawler imports this module.
+            from app.modules.lead_finder.application.services.website_contact_crawler import (
+                _local_part_matches_company,
+            )
+
+            local = email.rsplit("@", 1)[0]
+
+            if not _local_part_matches_company(local, company_name):
+                continue
 
         if any(marker in email for marker in _JUNK_EMAIL_MARKERS):
             continue
@@ -350,7 +367,7 @@ def _pick(
     if card is None:
         return None
 
-    return _extract_card_email(card)
+    return _extract_card_email(card, company_name)
 
 
 def _get(url: str) -> str:
