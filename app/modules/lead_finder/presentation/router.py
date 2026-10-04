@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
+from app.core.config import settings
 from app.modules.lead_finder.application.services.batch_drafter import (
     BatchDrafter,
     CompanyInput,
@@ -18,7 +19,10 @@ from app.modules.lead_finder.application.services.email_drafter import (
 )
 from app.shared.application.side_effects import write_activity_event, write_audit
 from app.shared.infrastructure.db.session import get_db_session
-from app.shared.infrastructure.email.resend_sender import send_via_resend
+from app.shared.infrastructure.email.resend_sender import (
+    count_sent_today,
+    send_via_resend,
+)
 from app.shared.infrastructure.email.sender import send_email
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import (
@@ -50,6 +54,29 @@ class SendRequest(BaseModel):
 class SendResponse(BaseModel):
     ok: bool
     message: str
+
+
+class ProviderStatus(BaseModel):
+    """Stav jedneho providera — NIKDY neobsahuje hodnotu kluca."""
+
+    is_set: bool
+
+
+class LeadOutreachStatusResponse(BaseModel):
+    """Diagnostika pre admin UI. Zamerne bez akychkolvek tajomstiev.
+
+    Vsetky polia su bud bool, alebo negatívne/nepriamé — endpoint nikdy
+    nevrati hodnotu API kluca, len informaciu ci je nastaveny.
+    """
+
+    outreach_enabled: bool
+    email_provider: ProviderStatus
+    from_email: ProviderStatus
+    ai_provider: ProviderStatus
+    ai_fallback_active: bool
+    daily_limit: int
+    sent_today: int
+    remaining_today: int
 
 
 def _require_admin(current_user) -> None:
@@ -105,6 +132,38 @@ class DiscoverDailyResponse(BaseModel):
     known_before: int
     send: bool = False
     items: list[DiscoverDailyItem] = []
+
+
+@router.get("/status", response_model=LeadOutreachStatusResponse)
+async def lead_outreach_status(
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> LeadOutreachStatusResponse:
+    """Diagnostika outreach pipeline pre admin UI.
+
+    Bezpecnost: vracia VYLUCNE booly a cisla. Nikdy nenavracia hodnotu
+    API kluca, jeho cast ani dlzku — len ci je nastaveny.
+    """
+    _require_admin(current_user)
+
+    ai_provider_set = EmailDrafter.is_provider_configured()
+    daily_limit = max(1, int(settings.LEAD_OUTREACH_DAILY_LIMIT or 30))
+    sent_today = await count_sent_today(session)
+
+    return LeadOutreachStatusResponse(
+        outreach_enabled=bool(settings.LEAD_OUTREACH_ENABLED),
+        email_provider=ProviderStatus(
+            is_set=bool((settings.RESEND_API_KEY or "").strip()),
+        ),
+        from_email=ProviderStatus(
+            is_set=bool((settings.RESEND_FROM_EMAIL or "").strip()),
+        ),
+        ai_provider=ProviderStatus(is_set=ai_provider_set),
+        ai_fallback_active=not ai_provider_set,
+        daily_limit=daily_limit,
+        sent_today=sent_today,
+        remaining_today=max(0, daily_limit - sent_today),
+    )
 
 
 @router.post("/discover-daily", response_model=DiscoverDailyResponse)

@@ -52,6 +52,17 @@ type PendingItem = {
 };
 type PendingResponse = { count: number; items: PendingItem[] };
 type SendPendingResponse = { ok: boolean; message: string; status: string };
+type ProviderStatus = { is_set: boolean };
+type OutreachStatus = {
+  outreach_enabled: boolean;
+  email_provider: ProviderStatus;
+  from_email: ProviderStatus;
+  ai_provider: ProviderStatus;
+  ai_fallback_active: boolean;
+  daily_limit: number;
+  sent_today: number;
+  remaining_today: number;
+};
 
 export default function LeadOutreachPage() {
   const { t } = useT();
@@ -93,7 +104,23 @@ export default function LeadOutreachPage() {
     total: number;
   } | null>(null);
 
+  // Diagnostika providerov — len varovanie, nikdy nie blokuje UI.
+  const [status, setStatus] = useState<OutreachStatus | null>(null);
+  const [statusDismissed, setStatusDismissed] = useState(false);
+
   if (user && !isAdmin) redirect("/dashboard");
+
+  async function loadStatus() {
+    try {
+      const res = await http.get<OutreachStatus>(
+        "/admin/lead-outreach/status",
+      );
+      setStatus(res);
+    } catch {
+      // Status je len diagnostika. Ak zlyha, outreach funguje dalej.
+      setStatus(null);
+    }
+  }
 
   async function loadPending() {
     setBusyPending(true);
@@ -302,6 +329,7 @@ export default function LeadOutreachPage() {
   useEffect(() => {
     if (!isAdmin) return;
     void loadPending();
+    void loadStatus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin]);
 
@@ -624,6 +652,67 @@ export default function LeadOutreachPage() {
                 </div>
               </div>
             ) : null}
+
+            {/* PROVIDER WARNING — len ked nieco chyba, nikdy neblokuje */}
+            {status && !statusDismissed
+              ? (() => {
+                  const warnings: string[] = [];
+
+                  if (!status.outreach_enabled) {
+                    warnings.push(
+                      "Odosielanie je vypnuté (LEAD_OUTREACH_ENABLED=false). Návrhy sa pripravia, ale neodošlú.",
+                    );
+                  }
+                  if (!status.email_provider.is_set) {
+                    warnings.push(
+                      "Chýba RESEND_API_KEY — emaily sa nedajú odoslať.",
+                    );
+                  }
+                  if (!status.from_email.is_set) {
+                    warnings.push(
+                      "Chýba RESEND_FROM_EMAIL — emaily sa nedajú odoslať.",
+                    );
+                  }
+                  if (status.ai_fallback_active) {
+                    warnings.push(
+                      "AI provider nie je nastavený (GROQ_API_KEY) — návrhy sa tvoria deterministicky bez AI.",
+                    );
+                  }
+
+                  if (warnings.length === 0) return null;
+
+                  return (
+                    <div
+                      className="mb-6 rounded-2xl border px-4 py-3 text-sm"
+                      style={{
+                        borderColor: "rgba(201,168,76,0.35)",
+                        background: "rgba(201,168,76,0.06)",
+                        color: GOLD_BRIGHT,
+                      }}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em]">
+                            Konfigurácia
+                          </div>
+                          <ul className="space-y-1 text-[13px] leading-5">
+                            {warnings.map((w) => (
+                              <li key={w}>• {w}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setStatusDismissed(true)}
+                          className="shrink-0 text-xs opacity-70 hover:opacity-100"
+                        >
+                          Zavrieť
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()
+              : null}
 
             {/* AUTOMATION */}
             <section
