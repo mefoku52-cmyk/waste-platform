@@ -99,6 +99,78 @@ def test_filter_emails_no_company_name():
     assert "info@firma.sk" in result
 
 
+# ---------------------------------------------------------------------------
+# Free TLDs (_FREE_TLDS) — suffixova zhoda, nie presna
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "email",
+    [
+        "info@ralenplus.sbs",
+        "kontakt@mail.tk",
+        "predaj@firma.xyz",
+        "obchod@nieco.top",
+        "info@klik.click",
+        "a@b.icu",
+        "a@b.cf",
+        "a@b.ml",
+        "a@b.ga",
+        "a@b.gq",
+        "a@firma.work",
+        "a@firma.online",
+    ],
+)
+def test_is_free_email_true_for_free_tlds(email):
+    assert _is_free_email(email) is True
+
+
+def test_is_free_email_tld_is_suffix_not_substring():
+    """'.sbs' je TLD — nesmie blokovat domenu ktora ho obsahuje uprostred."""
+    assert _is_free_email("info@sbsfirma.sk") is False
+    assert _is_free_email("info@firma.xyzsk.sk") is False
+
+
+def test_is_free_email_case_insensitive_tld():
+    assert _is_free_email("info@firma.XYZ") is True
+
+
+def test_is_free_email_empty_domain():
+    assert _is_free_email("user@") is True
+
+
+def test_filter_emails_removes_free_tlds():
+    emails = ["info@ralenplus.sbs", "kontakt@mail.tk", "info@firma.sk"]
+    result = LegalEmailFinder._filter_emails(emails, "Firma s.r.o.")
+    assert "info@ralenplus.sbs" not in result
+    assert "kontakt@mail.tk" not in result
+    assert "info@firma.sk" in result
+
+
+# ---------------------------------------------------------------------------
+# D2 rule — free provider + local-part match na nazov firmy
+# ---------------------------------------------------------------------------
+
+
+def test_gmail_rejected_when_local_part_does_not_match():
+    """ralenplus.sbs@gmail.com pre firmu ODPADY TATRY -> reject."""
+    emails = ["ralenplus.sbs@gmail.com"]
+    result = LegalEmailFinder._filter_emails(emails, "ODPADY TATRY")
+    assert result == []
+
+
+@pytest.mark.xfail(
+    reason="D2 nie je implementovana: _filter_emails zahodí KAŽDÝ free provider "
+    "ešte pred kontrolou local-partu. Viď report KROK A.",
+    strict=True,
+)
+def test_gmail_accepted_when_local_part_matches_company():
+    """D2: odpadytatry@gmail.com pre firmu ODPADY TATRY -> accept."""
+    emails = ["odpadytatry@gmail.com"]
+    result = LegalEmailFinder._filter_emails(emails, "ODPADY TATRY")
+    assert result == ["odpadytatry@gmail.com"]
+
+
 def test_free_domains_contains_core():
     assert "gmail.com" in _FREE_EMAIL_DOMAINS
     assert "yahoo.com" in _FREE_EMAIL_DOMAINS

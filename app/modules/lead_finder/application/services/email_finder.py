@@ -120,14 +120,47 @@ _FREE_EMAIL_DOMAINS = {
     "o2online.sk",
 }
 
+# Free / abuse-heavy TLDs. Registracia je zdarma alebo takmer zdarma,
+# takze domena nesie nulovu vypovednu hodnotu o firme.
+# POZOR: toto su TLD (zaciatok s bodkou), NIE cele domeny. Kontrola
+# preto musi byt suffixova (endswith), nie presna zhoda.
+_FREE_TLDS = (
+    ".sbs",
+    ".xyz",
+    ".top",
+    ".click",
+    ".icu",
+    ".cf",
+    ".tk",
+    ".ml",
+    ".ga",
+    ".gq",
+    ".work",
+    ".online",
+)
+
 
 def _is_free_email(email: str) -> bool:
-    """True ak email je z free providera (gmail, yahoo, atd.)."""
+    """True ak email je z free providera (gmail, yahoo, atd.).
+
+    Kontroluje dve veci:
+      1. presna zhoda domeny s _FREE_EMAIL_DOMAINS (gmail.com, ...)
+      2. suffixova zhoda s _FREE_TLDS (.sbs, .xyz, ...)
+
+    Neplatny vstup sa povazuje za free (defenzivne).
+    """
     try:
         domain = email.rsplit("@", 1)[1].lower()
     except (IndexError, AttributeError):
         return True
-    return domain in _FREE_EMAIL_DOMAINS
+
+    if not domain:
+        return True
+
+    if domain in _FREE_EMAIL_DOMAINS:
+        return True
+
+    return domain.endswith(_FREE_TLDS)
 
 
 def _email_matches_company(email: str, company_name: str) -> bool:
