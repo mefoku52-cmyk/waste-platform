@@ -99,13 +99,13 @@ class WebsiteFinder:
 
     @staticmethod
     def is_available() -> bool:
-        for module_name in ("ddgs", "duckduckgo_search"):
+        for module_name in ("duckduckgo_search",):
             try:
                 importlib.import_module(module_name)
                 return True
             except ImportError:
                 continue
-        logger.warning("duckduckgo-search (ddgs) not installed")
+        logger.warning("duckduckgo_search not installed")
         return False
 
     @staticmethod
@@ -224,7 +224,7 @@ class WebsiteFinder:
         Synchronous by design — callers run it via asyncio.to_thread.
         """
         DDGS = None
-        for module_name in ("ddgs", "duckduckgo_search"):
+        for module_name in ("duckduckgo_search",):
             try:
                 module = importlib.import_module(module_name)
                 DDGS = getattr(module, "DDGS", None)
@@ -234,7 +234,7 @@ class WebsiteFinder:
                 continue
 
         if DDGS is None:
-            logger.error("Neither ddgs nor duckduckgo_search is installed")
+            logger.error("duckduckgo_search is not installed")
             return []
 
         try:
@@ -268,9 +268,7 @@ class WebsiteFinder:
         """
 
         if not self.is_available():
-            logger.error(
-                "WebsiteFinder unavailable: neither ddgs nor duckduckgo_search is installed"
-            )
+            logger.error("WebsiteFinder unavailable: duckduckgo_search is not installed")
             return None
 
         # Discovery queries are deliberately broad enough to find
