@@ -18,6 +18,9 @@ class OutreachCandidateModel(Base):
     city = Column(String(128), nullable=True, index=True)
     industry = Column(String(128), nullable=True, index=True)
     email = Column(String(255), nullable=True, index=True)
+    phone = Column(String(64), nullable=True)
+    website = Column(String(512), nullable=True)
+    source_url = Column(String(512), nullable=True)
 
     status = Column(String(32), nullable=False, default="new", server_default="new")
 

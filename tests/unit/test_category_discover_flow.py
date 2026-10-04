@@ -179,3 +179,85 @@ async def test_run_category_discover_survives_category_failure(monkeypatch):
 
     assert result["saved"] == 1
     assert result["per_category"] == {"odpady": 0, "Recyklácia": 1}
+
+
+def test_create_from_discovery_saves_all_fields():
+    """Repository uklada vsetky polia z discovery (phone, website, source_url)."""
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    captured = {}
+
+    class FakeSession:
+        def add(self, m):
+            captured["model"] = m
+
+        async def flush(self):
+            pass
+
+    class FakeRepo(SqlAlchemyOutreachCandidateRepository):
+        def __init__(self):
+            self._session = FakeSession()
+
+    import asyncio
+
+    repo = FakeRepo()
+    asyncio.run(
+        repo.create_from_discovery(
+            company_name="EKOL s.r.o.",
+            email="info@ekol.sk",
+            phone="+421900000000",
+            website="https://ekol.sk",
+            city="Presov",
+            source_url="https://www.zlatestranky.sk/firmy/Presov/H123/EKOL/",
+        )
+    )
+
+    m = captured["model"]
+    assert m.company_name == "EKOL s.r.o."
+    assert m.email == "info@ekol.sk"
+    assert m.phone == "+421900000000"
+    assert m.website == "https://ekol.sk"
+    assert m.city == "Presov"
+    assert m.source_url == "https://www.zlatestranky.sk/firmy/Presov/H123/EKOL/"
+
+
+def test_create_from_discovery_empty_fields_become_none():
+    """Prazdne stringy z discovery -> None (nie prazdny string)."""
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    captured = {}
+
+    class FakeSession:
+        def add(self, m):
+            captured["model"] = m
+
+        async def flush(self):
+            pass
+
+    class FakeRepo(SqlAlchemyOutreachCandidateRepository):
+        def __init__(self):
+            self._session = FakeSession()
+
+    import asyncio
+
+    repo = FakeRepo()
+    asyncio.run(
+        repo.create_from_discovery(
+            company_name="Test s.r.o.",
+            email="test@test.sk",
+            phone="",
+            website="",
+            city="",
+            source_url="",
+        )
+    )
+
+    m = captured["model"]
+    assert m.phone is None
+    assert m.website is None
+    assert m.source_url is None
+    assert m.city is None

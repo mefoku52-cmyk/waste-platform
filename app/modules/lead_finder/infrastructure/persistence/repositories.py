@@ -247,36 +247,21 @@ class SqlAlchemyOutreachCandidateRepository(OutreachCandidateRepository):
     ) -> OutreachCandidate:
         """Vytvor nového kandidáta z directory discovery (status NEW).
 
-        POZOR: ``OutreachCandidateModel`` zatiaľ NEMÁ stĺpce pre
-        ``phone``, ``website`` ani ``source_url``. Tie hodnoty sa preto
-        neukladajú a len sa zalogujú — na ich uloženie treba Alembic
-        migráciu. Ukladá sa company_name, email, city, status a timestampy.
+        Ukladá všetky polia, ktoré discovery extrahuje: company_name,
+        email, phone, website, city a source_url (GDPR provenance).
 
         Metóda len ``flush``-uje; commituje volajúci (endpoint), aby sa
         celý beh dal vrátiť späť ako jedna transakcia.
         """
-        dropped = [
-            label
-            for label, value in (
-                ("phone", phone),
-                ("website", website),
-                ("source_url", source_url),
-            )
-            if value
-        ]
-        if dropped:
-            logger.warning(
-                "Discovery polia bez stĺpca v DB (zahodené): %s pre %r",
-                ", ".join(dropped),
-                company_name,
-            )
-
         now = datetime.now(UTC).replace(tzinfo=None)
         m = OutreachCandidateModel(
             id=uuid.uuid4(),
             company_name=company_name.strip(),
             city=(city or "").strip() or None,
             email=(email or "").strip() or None,
+            phone=(phone or "").strip() or None,
+            website=(website or "").strip() or None,
+            source_url=(source_url or "").strip() or None,
             status=OutreachStatus.NEW.value,
             created_at=now,
             updated_at=now,
