@@ -58,6 +58,7 @@ type PendingItem = {
   created_at?: string | null;
 };
 type PendingResponse = { count: number; items: PendingItem[] };
+type DraftNewResponse = { drafted: number; failed: number; skipped: number };
 type SendPendingResponse = { ok: boolean; message: string; status: string };
 type ProviderStatus = { is_set: boolean };
 type OutreachStatus = {
@@ -94,6 +95,11 @@ export default function LeadOutreachPage() {
   const [busyBackfill, setBusyBackfill] = useState(false);
   const [busyCategoryDiscover, setBusyCategoryDiscover] = useState(false);
   const [found, setFound] = useState<DiscoverItem[]>([]);
+
+  // Kandidati so statusom "new" (objaveni, ale bez draftu).
+  // Admin sa sam rozhodne, kedy pre nich pripravi drafty.
+  const [busyDraftNew, setBusyDraftNew] = useState(false);
+  const [newCount, setNewCount] = useState(0);
 
   // Pending (pripravene na odoslanie z DB)
   const [pending, setPending] = useState<PendingItem[]>([]);
@@ -134,7 +140,7 @@ export default function LeadOutreachPage() {
     setBusyPending(true);
     try {
       const res = await http.get<PendingResponse>(
-        "/admin/lead-outreach/pending?limit=50",
+        "/admin/lead-outreach/pending?limit=50&include_new=true",
       );
       setPending(res.items || []);
       const emails: Record<string, string> = {};
@@ -143,15 +149,44 @@ export default function LeadOutreachPage() {
       for (const it of res.items || []) {
         emails[it.id] = it.email || "";
         subjects[it.id] = it.subject || "";
-        selected[it.id] = !!it.email;
+        // Kandidat so statusom "new" nema draft ani email — do davky
+        // na odoslanie sa nesmie zaradit, kym pre neho draft nevznikne.
+        selected[it.id] = it.status !== "new" && !!it.email;
       }
       setPendingEmail(emails);
       setPendingSubject(subjects);
       setSelectedPending(selected);
+      setNewCount(
+        (res.items || []).filter((it) => it.status === "new").length,
+      );
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Pending zlyhal");
     } finally {
       setBusyPending(false);
+    }
+  }
+
+  async function draftNew() {
+    setErr(null);
+    setOkMsg(null);
+    setBusyDraftNew(true);
+    try {
+      const res = await http.post<DraftNewResponse>(
+        "/admin/lead-outreach/draft-new",
+        { limit: 30 },
+        { timeoutMs: 180000 },
+      );
+      const parts = [
+        `Pripravených ${res.drafted}`,
+        `zlyhalo ${res.failed}`,
+      ];
+      if (res.skipped) parts.push(`preskočených ${res.skipped}`);
+      setOkMsg(`Drafty pre nové firmy: ${parts.join(", ")}.`);
+      await loadPending();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Draft pre nové firmy zlyhal");
+    } finally {
+      setBusyDraftNew(false);
     }
   }
 
@@ -232,6 +267,7 @@ export default function LeadOutreachPage() {
   async function sendSelected() {
     const toSend = pending.filter(
       (item) =>
+        item.status !== "new" &&
         selectedPending[item.id] &&
         (pendingEmail[item.id] || "").trim().includes("@"),
     );
@@ -969,32 +1005,52 @@ export default function LeadOutreachPage() {
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => void sendSelected()}
-                  disabled={
-                    busySendAll ||
-                    busyPending ||
-                    pending.length === 0 ||
-                    pending.filter(
-                      (i) =>
-                        selectedPending[i.id] &&
-                        (pendingEmail[i.id] || "").trim().includes("@"),
-                    ).length === 0
-                  }
-                  className="min-h-11 rounded-xl px-5 text-sm font-semibold transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-35"
-                  style={{ background: GOLD, color: BG }}
-                >
-                  {busySendAll
-                    ? `Posielam ${sendAllProgress?.current ?? 0}/${sendAllProgress?.total ?? 0}…`
-                    : `Poslať vybrané (${
-                        pending.filter(
-                          (i) =>
-                            selectedPending[i.id] &&
-                            (pendingEmail[i.id] || "").trim().includes("@"),
-                        ).length
-                      })`}
-                </button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                  {newCount > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => void draftNew()}
+                      disabled={busyDraftNew || busySendAll}
+                      className="min-h-11 rounded-xl border px-5 text-sm font-semibold transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-35"
+                      style={{
+                        borderColor: "rgba(201,168,76,0.45)",
+                        background: "rgba(201,168,76,0.08)",
+                        color: GOLD_BRIGHT,
+                      }}
+                    >
+                      {busyDraftNew
+                        ? "Pripravujem drafty…"
+                        : `Draft pre nové firmy (${Math.min(newCount, 30)})`}
+                    </button>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => void sendSelected()}
+                    disabled={
+                      busySendAll ||
+                      busyPending ||
+                      busyDraftNew ||
+                      pending.filter(
+                        (i) =>
+                          selectedPending[i.id] &&
+                          (pendingEmail[i.id] || "").trim().includes("@"),
+                      ).length === 0
+                    }
+                    className="min-h-11 rounded-xl px-5 text-sm font-semibold transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-35"
+                    style={{ background: GOLD, color: BG }}
+                  >
+                    {busySendAll
+                      ? `Posielam ${sendAllProgress?.current ?? 0}/${sendAllProgress?.total ?? 0}…`
+                      : `Poslať vybrané (${
+                          pending.filter(
+                            (i) =>
+                              selectedPending[i.id] &&
+                              (pendingEmail[i.id] || "").trim().includes("@"),
+                          ).length
+                        })`}
+                  </button>
+                </div>
               </div>
 
               {pending.length === 0 ? (
@@ -1027,6 +1083,9 @@ export default function LeadOutreachPage() {
                     const selected = !!selectedPending[item.id];
                     const isSending = busySendId === item.id;
                     const isApproved = item.status === "APPROVED";
+                    // "new" = firma objavena discovery, ale draft pre nu
+                    // este neexistuje. Neda sa odoslat, kym draft nevznikne.
+                    const isNew = item.status === "new";
 
                     return (
                       <article
@@ -1053,12 +1112,14 @@ export default function LeadOutreachPage() {
                                     [item.id]: e.target.checked,
                                   }))
                                 }
-                                disabled={!hasEmail || busySendAll}
+                                disabled={!hasEmail || isNew || busySendAll}
                                 className="mt-1 h-5 w-5 accent-[#c9a84c]"
                                 title={
-                                  hasEmail
-                                    ? "Zaradiť do dávky"
-                                    : "Najprv doplň platný email"
+                                  isNew
+                                    ? "Najprv priprav draft (Draft pre nové firmy)"
+                                    : hasEmail
+                                      ? "Zaradiť do dávky"
+                                      : "Najprv doplň platný email"
                                 }
                               />
 
@@ -1074,13 +1135,19 @@ export default function LeadOutreachPage() {
                                   <span
                                     className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
                                     style={{
-                                      background: isApproved
-                                        ? "rgba(110,231,167,0.12)"
-                                        : "rgba(201,168,76,0.12)",
-                                      color: isApproved ? OK : GOLD,
+                                      background: isNew
+                                        ? "rgba(240,187,176,0.12)"
+                                        : isApproved
+                                          ? "rgba(110,231,167,0.12)"
+                                          : "rgba(201,168,76,0.12)",
+                                      color: isNew
+                                        ? DANGER
+                                        : isApproved
+                                          ? OK
+                                          : GOLD,
                                     }}
                                   >
-                                    {item.status}
+                                    {isNew ? "bez draftu" : item.status}
                                   </span>
                                 </div>
 
@@ -1128,7 +1195,15 @@ export default function LeadOutreachPage() {
                                 className="h-11 w-full rounded-xl border px-3 text-sm outline-none transition focus:ring-1 focus:ring-[#c9a84c]/50 disabled:opacity-50"
                                 style={inputStyle}
                               />
-                              {!hasEmail ? (
+                              {isNew ? (
+                                <p
+                                  className="mt-1.5 text-xs"
+                                  style={{ color: DANGER }}
+                                >
+                                  Zatiaľ bez draftu. Klikni na „Draft pre nové
+                                  firmy“ vyššie.
+                                </p>
+                              ) : !hasEmail ? (
                                 <p
                                   className="mt-1.5 text-xs"
                                   style={{ color: DANGER }}
@@ -1213,9 +1288,11 @@ export default function LeadOutreachPage() {
                             style={{ borderColor: "rgba(255,255,255,0.08)" }}
                           >
                             <div className="text-xs" style={{ color: MUTED }}>
-                              {isApproved
-                                ? "Kandidát je schválený. Odoslanie môžeš zopakovať."
-                                : "Pri odoslaní sa najprv uložia tvoje upravené údaje."}
+                              {isNew
+                                ? "Bez draftu — najprv ho priprav hromadne vyššie."
+                                : isApproved
+                                  ? "Kandidát je schválený. Odoslanie môžeš zopakovať."
+                                  : "Pri odoslaní sa najprv uložia tvoje upravené údaje."}
                             </div>
 
                             <button
@@ -1223,6 +1300,7 @@ export default function LeadOutreachPage() {
                               disabled={
                                 busySendAll ||
                                 isSending ||
+                                isNew ||
                                 !hasEmail ||
                                 !(
                                   pendingSubject[item.id] ||

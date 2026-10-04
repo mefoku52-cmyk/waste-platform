@@ -5,6 +5,8 @@ Platform-admin only. One email per request. No bulk auto-send.
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import text
@@ -29,6 +31,8 @@ from app.shared.presentation.authorization import (
     current_user_id,
     is_platform_admin,
 )
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/admin/lead-outreach", tags=["admin-lead-outreach"])
 
@@ -96,6 +100,20 @@ class DiscoverCategoriesResponse(BaseModel):
 def _require_admin(current_user) -> None:
     if not is_platform_admin(current_user):
         raise HTTPException(status_code=403, detail="Platform admin access required")
+
+
+async def _is_early_bird(session) -> bool:
+    """True, ak je na platforme menej ako EARLY_BIRD_LIMIT overenych firiem.
+
+    Zdielana logika pre /draft, /draft-batch a /draft-new, aby sa drafty
+    z roznych ciest nerozisli. Pri chybe DB vraciame False — nikdy
+    neslubujeme bonus, ktory nevieme dolozit.
+    """
+    try:
+        r = await session.execute(text("SELECT COUNT(*) FROM companies WHERE status = 'verified'"))
+        return int(r.scalar() or 0) < EARLY_BIRD_LIMIT
+    except Exception:
+        return False
 
 
 class BatchCompanyItem(BaseModel):
@@ -206,13 +224,7 @@ async def draft_email(
     _require_admin(current_user)
 
     # Zisti, kolko overenych firiem je na platforme.
-    early_bird = False
-    try:
-        r = await session.execute(text("SELECT COUNT(*) FROM companies WHERE status = 'verified'"))
-        verified_count = int(r.scalar() or 0)
-        early_bird = verified_count < EARLY_BIRD_LIMIT
-    except Exception:
-        early_bird = False
+    early_bird = await _is_early_bird(session)
 
     try:
         draft = await EmailDrafter().draft(
@@ -304,13 +316,7 @@ async def draft_batch(
     _require_admin(current_user)
 
     # Early bird detection (rovnaka logika ako v /draft)
-    early_bird = False
-    try:
-        r = await session.execute(text("SELECT COUNT(*) FROM companies WHERE status = 'verified'"))
-        verified_count = int(r.scalar() or 0)
-        early_bird = verified_count < EARLY_BIRD_LIMIT
-    except Exception:
-        early_bird = False
+    early_bird = await _is_early_bird(session)
 
     companies = [
         CompanyInput(
@@ -369,6 +375,18 @@ class PendingCandidateItem(BaseModel):
 class PendingCandidatesResponse(BaseModel):
     count: int
     items: list[PendingCandidateItem]
+
+
+class DraftNewRequest(BaseModel):
+    """Davkovy draft pre kandidatov so statusom new."""
+
+    limit: int = Field(default=30, ge=1, le=50)
+
+
+class DraftNewResponse(BaseModel):
+    drafted: int
+    failed: int
+    skipped: int
 
 
 class ApproveCandidateRequest(BaseModel):
@@ -457,13 +475,37 @@ async def discover_categories(
     return DiscoverCategoriesResponse(**result)
 
 
+def _pending_item(r) -> PendingCandidateItem:
+    return PendingCandidateItem(
+        id=r.id,
+        company_name=r.company_name,
+        ico=r.ico,
+        city=r.city,
+        industry=r.industry,
+        email=r.email,
+        subject=r.draft_subject,
+        body=r.draft_body,
+        status=r.status.value,
+        created_at=r.created_at.isoformat() if r.created_at else None,
+    )
+
+
 @router.get("/pending", response_model=PendingCandidatesResponse)
 async def list_pending_candidates(
     current_user=Depends(require_current_user),
     session=Depends(get_db_session),
     limit: int = 50,
+    include_new: bool = False,
 ):
-    """Vrati vsetkych kandidatov so statusom drafted, ktori cakaju na odoslanie."""
+    """Vrati kandidatov cakajucich na odoslanie (drafted + approved).
+
+    Ak `include_new=True`, pribudnu aj kandidati so statusom `new` —
+    teda firmy, ktore objavila discovery, ale email draft pre ne este
+    nikto nevytvoril. Admin ich vidi v tom istom zozname a jednym
+    klikom pre ne pripravi drafty (POST /draft-new).
+
+    Default `False` zachovava presne povodne spravanie endpointu.
+    """
     _require_admin(current_user)
 
     from app.modules.lead_finder.domain.entities.outreach_candidate import (
@@ -475,38 +517,142 @@ async def list_pending_candidates(
 
     repo = SqlAlchemyOutreachCandidateRepository(session)
 
-    drafted_rows = await repo.list_by_status(
+    rows = await repo.list_by_status(
         status=OutreachStatus.DRAFTED,
         limit=limit,
     )
-    approved_rows = await repo.list_by_status(
-        status=OutreachStatus.APPROVED,
-        limit=limit,
-    )
 
+    rows = [
+        *rows,
+        *await repo.list_by_status(
+            status=OutreachStatus.APPROVED,
+            limit=limit,
+        ),
+    ]
+
+    if include_new:
+        rows = [
+            *rows,
+            *await repo.list_by_status(
+                status=OutreachStatus.NEW,
+                limit=limit,
+            ),
+        ]
+
+    # Najnovsie hore. Pri rovnakom created_at drzime poradie new pred
+    # drafted (cakaju na akciu), aby sa zoznam pri refreshi neskakal.
     rows = sorted(
-        [*drafted_rows, *approved_rows],
-        key=lambda row: row.created_at,
+        rows,
+        key=lambda row: (row.created_at, row.status == OutreachStatus.NEW),
         reverse=True,
     )[:limit]
 
-    items = [
-        PendingCandidateItem(
-            id=r.id,
-            company_name=r.company_name,
-            ico=r.ico,
-            city=r.city,
-            industry=r.industry,
-            email=r.email,
-            subject=r.draft_subject,
-            body=r.draft_body,
-            status=r.status.value,
-            created_at=r.created_at.isoformat() if r.created_at else None,
-        )
-        for r in rows
-    ]
+    items = [_pending_item(r) for r in rows]
 
     return PendingCandidatesResponse(count=len(items), items=items)
+
+
+DRAFT_NEW_CHUNK = 5
+
+
+@router.post("/draft-new", response_model=DraftNewResponse)
+async def draft_new_candidates(
+    payload: DraftNewRequest,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> DraftNewResponse:
+    """Pripravi drafty pre kandidatov so statusom `new`.
+
+    Discovery vytvara kandidatov bez draftu — admin sa sam rozhodne,
+    kedy pre nich email pripravit. Tento endpoint je ta davkova akcia:
+    zoberie max `limit` (max 50) firiem so statusom `new`, pre kazdu
+    zavola EmailDrafter.draft() a ulozi vysledok cez repo.update_draft()
+    (ktory kandidata posunie do `drafted`).
+
+    Bezi po CHUNKOCH (DRAFT_NEW_CHUNK) aby sme jednorazovo nespalili
+    AI kvotu. Nikdy neposiela email.
+
+    `skipped` = kandidati, ktori draft dostali uz predtym (napr. medzi
+    nami dvaja admini) alebo medzitym zmizli — preskocime ich namiesto
+    prepisovania hotovej prace.
+    """
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.domain.entities.outreach_candidate import (
+        OutreachStatus,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+
+    candidates = await repo.list_by_status(
+        status=OutreachStatus.NEW,
+        limit=payload.limit,
+    )
+
+    if not candidates:
+        return DraftNewResponse(drafted=0, failed=0, skipped=0)
+
+    early_bird = await _is_early_bird(session)
+    drafter = EmailDrafter()
+
+    drafted = 0
+    failed = 0
+    skipped = 0
+
+    for start in range(0, len(candidates), DRAFT_NEW_CHUNK):
+        chunk = candidates[start : start + DRAFT_NEW_CHUNK]
+
+        for candidate in chunk:
+            # Stav sa mohol medzitym zmenit (iny admin, iny beh).
+            # Nikdy neprepisujeme existujuci draft ani iny stav.
+            if candidate.status != OutreachStatus.NEW:
+                skipped += 1
+                continue
+
+            try:
+                draft = await drafter.draft(
+                    company_name=candidate.company_name,
+                    city=candidate.city,
+                    industry=candidate.industry,
+                    reason=None,
+                    early_bird=early_bird,
+                )
+            except Exception:
+                # draft() ma vlastny deterministicky fallback, takze sem
+                # sa dostaneme len pri skutocne neocakavanej chybe.
+                logger.exception(
+                    "draft-new zlyhal pre kandidata %s",
+                    candidate.ico,
+                )
+                failed += 1
+                continue
+
+            updated = await repo.update_draft(
+                candidate_id=candidate.id,
+                subject=draft.subject,
+                body=draft.body,
+            )
+
+            if updated is None:
+                # Kandidat medzitym zmizol — neratame ako draft.
+                skipped += 1
+                continue
+
+            drafted += 1
+
+    await write_audit(
+        session=session,
+        actor_user_id=current_user_id(current_user),
+        action="lead_outreach.draft_new",
+        target_type="outreach_candidate",
+        target_id=None,
+        details=f"drafted={drafted},failed={failed},skipped={skipped}",
+    )
+
+    return DraftNewResponse(drafted=drafted, failed=failed, skipped=skipped)
 
 
 @router.post(
