@@ -13,6 +13,8 @@ alebo zlyha, vrati False a hlavny flow pokracuje.
 from __future__ import annotations
 
 import logging
+import time
+from collections import defaultdict, deque
 
 from app.core.config import settings
 from app.modules.notifications.infrastructure.telegram_client import (
@@ -20,6 +22,27 @@ from app.modules.notifications.infrastructure.telegram_client import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Rate limit: max 20 sprav / hodinu na chat_id. Chrani admina pred
+# spamom, ak by nejaky bug sposobil notifikacnu slucku.
+_RATE_LIMIT_MAX = 20
+_RATE_LIMIT_WINDOW = 3600.0
+_RATE_TIMESTAMPS: dict[str, deque[float]] = defaultdict(deque)
+
+
+def _rate_allowed(chat_id: str) -> bool:
+    """True ak chat_id este nespotreboval limit v okne."""
+    now = time.monotonic()
+    bucket = _RATE_TIMESTAMPS[chat_id]
+
+    while bucket and (now - bucket[0]) > _RATE_LIMIT_WINDOW:
+        bucket.popleft()
+
+    if len(bucket) >= _RATE_LIMIT_MAX:
+        return False
+
+    bucket.append(now)
+    return True
 
 
 class TelegramService:
@@ -40,11 +63,17 @@ class TelegramService:
         if not TelegramService.is_enabled():
             return False
 
+        chat_id = settings.TELEGRAM_ADMIN_CHAT_ID
+
+        if not _rate_allowed(chat_id):
+            logger.warning(
+                "Telegram rate limit (%s msgs/h) — sprava zahodena",
+                _RATE_LIMIT_MAX,
+            )
+            return False
+
         client = TelegramClient(settings.TELEGRAM_BOT_TOKEN)
-        return await client.send_message(
-            chat_id=settings.TELEGRAM_ADMIN_CHAT_ID,
-            text=text,
-        )
+        return await client.send_message(chat_id=chat_id, text=text)
 
     @staticmethod
     async def notify_discovery(

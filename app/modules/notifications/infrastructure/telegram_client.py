@@ -16,6 +16,18 @@ _API_BASE = "https://api.telegram.org"
 _TIMEOUT = 10.0
 
 
+def _mask_url(url: str) -> str:
+    """Skry token v URL pre logy. Vzdy vracia bezpecny tvar."""
+    if "/bot" in url:
+        # telegram API: /bot<TOKEN>/method
+        parts = url.split("/bot", 1)
+        if len(parts) == 2:
+            return (
+                f"{parts[0]}/bot[REDACTED]/{parts[1].split('/', 1)[-1] if '/' in parts[1] else ''}"
+            )
+    return "[REDACTED_URL]"
+
+
 class TelegramClient:
     """Tenky wrapper nad Telegram Bot API."""
 
@@ -51,7 +63,7 @@ class TelegramClient:
                     },
                 )
         except Exception as exc:
-            logger.warning("Telegram send_message failed: %s", exc)
+            logger.warning("Telegram send_message failed: %s", _mask_url(str(exc)))
             return False
 
         if resp.status_code != 200:
@@ -79,7 +91,7 @@ class TelegramClient:
             async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
                 resp = await client.get(self._url("getMe"))
         except Exception as exc:
-            logger.warning("Telegram get_me failed: %s", exc)
+            logger.warning("Telegram get_me failed: %s", _mask_url(str(exc)))
             return None
 
         if resp.status_code != 200:

@@ -185,6 +185,7 @@ class Settings(BaseSettings):
     TELEGRAM_BOT_TOKEN: str = ""
     TELEGRAM_ADMIN_CHAT_ID: str = ""
     TELEGRAM_ENABLED: bool = False
+    TELEGRAM_WEBHOOK_SECRET: str = ""
 
     @property
     def is_development(self) -> bool:

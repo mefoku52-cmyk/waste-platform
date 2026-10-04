@@ -5,7 +5,9 @@ Bezpecnost: NIKDY nevracia hodnotu tokenu ani cast. Len booly.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException
+import logging
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel
 
 from app.core.config import settings
@@ -14,6 +16,8 @@ from app.modules.notifications.application.telegram_service import (
 )
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import is_platform_admin
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/admin/telegram", tags=["admin-telegram"])
 
@@ -71,3 +75,47 @@ async def telegram_status(
         bot_configured=bool((settings.TELEGRAM_BOT_TOKEN or "").strip()),
         chat_configured=bool((settings.TELEGRAM_ADMIN_CHAT_ID or "").strip()),
     )
+
+
+class TelegramWebhookAck(BaseModel):
+    ok: bool
+
+
+@router.post("/webhook", response_model=TelegramWebhookAck)
+async def telegram_webhook(
+    request: Request,
+    x_telegram_bot_api_secret_token: str = Header(default=""),
+) -> TelegramWebhookAck:
+    """Webhook od Telegramu. Verejny endpoint — chraneny secret tokenom.
+
+    Telegram posle hlavicku X-Telegram-Bot-Api-Secret-Token, ktoru sme
+    nastavili pri registracii webhooku. Ak sa nezhoduje alebo nie je
+    nakonfigurovana, vratime 403 a NIC nerobime.
+
+    Body sa zatial iba zaloguje (DEBUG). Buduce rozsirenia (AI chat
+    cez Telegram) sem pridaju spracovanie prikazov.
+    """
+    expected = (settings.TELEGRAM_WEBHOOK_SECRET or "").strip()
+
+    # Ak secret nie je nakonfigurovany, endpoint je uplne vypnuty
+    # (nedovolime "open" webhook).
+    if not expected:
+        raise HTTPException(
+            status_code=503,
+            detail="Telegram webhook nie je nakonfigurovany.",
+        )
+
+    if x_telegram_bot_api_secret_token != expected:
+        # Bezpecnost: NIKDY neloguj poslany token.
+        logger.warning("Telegram webhook: invalid secret token (rejected)")
+        raise HTTPException(status_code=403, detail="Forbidden")
+
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {}
+
+    update_id = payload.get("update_id") if isinstance(payload, dict) else None
+    logger.debug("Telegram webhook update_id=%s (ignored for now)", update_id)
+
+    return TelegramWebhookAck(ok=True)
