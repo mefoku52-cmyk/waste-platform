@@ -79,6 +79,20 @@ class LeadOutreachStatusResponse(BaseModel):
     remaining_today: int
 
 
+class DiscoverCategoriesRequest(BaseModel):
+    """Kategórie Zlatých stránok na prejdenie. None = default top 3."""
+
+    categories: list[str] | None = Field(default=None, max_length=10)
+    max_pages: int = Field(default=20, ge=1, le=30)
+
+
+class DiscoverCategoriesResponse(BaseModel):
+    discovered: int
+    saved: int
+    duplicates: int
+    per_category: dict[str, int]
+
+
 def _require_admin(current_user) -> None:
     if not is_platform_admin(current_user):
         raise HTTPException(status_code=403, detail="Platform admin access required")
@@ -413,6 +427,34 @@ async def backfill_emails_endpoint(
 
     result = await backfill_emails(session, limit=limit)
     return BackfillEmailsResponse(**result)
+
+
+@router.post("/discover-categories", response_model=DiscoverCategoriesResponse)
+async def discover_categories(
+    payload: DiscoverCategoriesRequest,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> DiscoverCategoriesResponse:
+    """Spusti category discovery z Zlatých stránok. Admin only.
+
+    Prejde zadané kategórie (default: odpady, Recyklácia, kovový odpad),
+    vytvorí nových kandidátov s verejným emailom z karty. Nikdy
+    neposiela email a nikdy nevymýšľa adresu.
+    """
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.application.services.daily_discover import (
+        run_category_discover,
+    )
+
+    result = await run_category_discover(
+        session,
+        categories=payload.categories,
+        max_pages_per_category=payload.max_pages,
+    )
+    await session.commit()
+
+    return DiscoverCategoriesResponse(**result)
 
 
 @router.get("/pending", response_model=PendingCandidatesResponse)

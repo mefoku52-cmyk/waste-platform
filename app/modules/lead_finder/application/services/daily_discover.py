@@ -245,3 +245,91 @@ async def run_daily_discover(
         "send": False,
         "items": items,
     }
+
+
+DEFAULT_CATEGORIES: tuple[str, ...] = ("odpady", "Recyklácia", "kový odpad")
+
+
+async def run_category_discover(
+    session: AsyncSession,
+    *,
+    categories: list[str] | None = None,
+    max_pages_per_category: int = 20,
+) -> dict[str, Any]:
+    """Discovery z kategórií Zlaté stránky. Uloží nových kandidátov do DB.
+
+    ``discover_from_category`` je synchrónne (httpx + 1s pauza medzi
+    stránkami), preto beží cez ``asyncio.to_thread`` — inak by zablokoval
+    event loop na celý beh.
+
+    Commit necháva na volajúcom (endpoint), aby bol celý beh jedna
+    transakcia.
+    """
+    from app.modules.lead_finder.application.services.zs_category_discovery import (
+        discover_from_category,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    slugs = [
+        s
+        for s in (list(DEFAULT_CATEGORIES) if categories is None else categories)
+        if s and s.strip()
+    ]
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+
+    seen_emails: set[str] = set()
+    saved = 0
+    duplicates = 0
+    per_category: dict[str, int] = {}
+
+    for slug in slugs:
+        try:
+            found = await asyncio.to_thread(
+                discover_from_category,
+                slug,
+                max_pages=max_pages_per_category,
+            )
+        except Exception:
+            logger.exception("category discovery failed for %r", slug)
+            per_category[slug] = 0
+            continue
+
+        per_category[slug] = len(found)
+
+        for company in found:
+            email = (company.email or "").strip().lower()
+            if not email or email in seen_emails:
+                continue
+            seen_emails.add(email)
+
+            # Dedup proti DB (a proti uz flushnutym riadkom v tejto session).
+            if await repo.find_by_email(email):
+                duplicates += 1
+                continue
+
+            await repo.create_from_discovery(
+                company_name=company.company_name,
+                email=company.email,
+                phone=company.phone,
+                website=company.website,
+                city=company.city,
+                source_url=company.source_url,
+            )
+            saved += 1
+
+    logger.info(
+        "Category discovery: categories=%s discovered=%d saved=%d duplicates=%d",
+        slugs,
+        len(seen_emails),
+        saved,
+        duplicates,
+    )
+
+    return {
+        "discovered": len(seen_emails),
+        "saved": saved,
+        "duplicates": duplicates,
+        "per_category": per_category,
+    }

@@ -38,6 +38,13 @@ type DiscoverResponse = {
   items?: DiscoverItem[];
 };
 
+type DiscoverCategoriesResponse = {
+  discovered: number;
+  saved: number;
+  duplicates: number;
+  per_category: Record<string, number>;
+};
+
 type PendingItem = {
   id: string;
   company_name: string;
@@ -85,6 +92,7 @@ export default function LeadOutreachPage() {
   const [okMsg, setOkMsg] = useState<string | null>(null);
   const [busyDiscover, setBusyDiscover] = useState(false);
   const [busyBackfill, setBusyBackfill] = useState(false);
+  const [busyCategoryDiscover, setBusyCategoryDiscover] = useState(false);
   const [found, setFound] = useState<DiscoverItem[]>([]);
 
   // Pending (pripravene na odoslanie z DB)
@@ -470,6 +478,42 @@ export default function LeadOutreachPage() {
     }
   }
 
+  async function runCategoryDiscover() {
+    setErr(null);
+    setOkMsg(null);
+    setBusyCategoryDiscover(true);
+    try {
+      const res = await http.post<DiscoverCategoriesResponse>(
+        "/admin/lead-outreach/discover-categories",
+        {
+          categories: ["odpady", "Recyklácia", "kový odpad"],
+          max_pages: 20,
+        },
+        // 3 kategórie × 20 stránok × 1s pauza medzi stránkami > default 20s.
+        { timeoutMs: 180000 },
+      );
+      const perCategory = Object.entries(res.per_category || {})
+        .map(([slug, count]) => `${slug}: ${count}`)
+        .join(", ");
+      setOkMsg(
+        `ZS discovery: ${res.saved} nových, ${res.duplicates} duplikátov, ` +
+          `${res.discovered} celkom` +
+          (perCategory ? ` (${perCategory})` : ""),
+      );
+      await loadPending();
+    } catch (e) {
+      const msg =
+        e instanceof Error
+          ? e.message
+          : typeof e === "object" && e && "message" in e
+            ? String((e as { message: unknown }).message)
+            : "Category discovery zlyhal";
+      setErr(msg);
+    } finally {
+      setBusyCategoryDiscover(false);
+    }
+  }
+
   async function draftFrom(input: {
     company_name: string;
     city?: string | null;
@@ -754,7 +798,9 @@ export default function LeadOutreachPage() {
                     <button
                       type="button"
                       onClick={() => void discoverDaily()}
-                      disabled={busyDiscover || busyBackfill}
+                      disabled={
+                        busyDiscover || busyBackfill || busyCategoryDiscover
+                      }
                       className="inline-flex min-h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
                       style={{ background: GOLD, color: BG }}
                     >
@@ -765,8 +811,27 @@ export default function LeadOutreachPage() {
 
                     <button
                       type="button"
+                      onClick={() => void runCategoryDiscover()}
+                      disabled={
+                        busyCategoryDiscover || busyDiscover || busyBackfill
+                      }
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl border px-5 text-sm font-semibold transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+                      style={{
+                        borderColor: GOLD,
+                        color: GOLD_BRIGHT,
+                      }}
+                    >
+                      {busyCategoryDiscover
+                        ? "Načítavam z kategórií…"
+                        : "Načítať z kategórií ZS"}
+                    </button>
+
+                    <button
+                      type="button"
                       onClick={() => void backfillEmails()}
-                      disabled={busyBackfill || busyDiscover}
+                      disabled={
+                        busyBackfill || busyDiscover || busyCategoryDiscover
+                      }
                       className="inline-flex min-h-11 items-center justify-center rounded-xl border px-5 text-sm font-semibold transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
                       style={{
                         borderColor: GOLD,
@@ -781,7 +846,10 @@ export default function LeadOutreachPage() {
                     <button
                       type="button"
                       onClick={() => void loadPending()}
-                      disabled={busyPending || busyDiscover || busyBackfill}
+                      disabled={
+                        busyPending || busyDiscover || busyBackfill ||
+                        busyCategoryDiscover
+                      }
                       className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/10 px-4 text-sm font-semibold transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
                       style={{ color: FG }}
                     >

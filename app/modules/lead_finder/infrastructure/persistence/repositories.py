@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import uuid
 from abc import ABC, abstractmethod
 from datetime import UTC, datetime
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.lead_finder.domain.entities.outreach_candidate import (
@@ -16,6 +17,8 @@ from app.modules.lead_finder.domain.entities.outreach_candidate import (
 from app.modules.lead_finder.infrastructure.persistence.models import (
     OutreachCandidateModel,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _to_domain(m: OutreachCandidateModel) -> OutreachCandidate:
@@ -215,4 +218,69 @@ class SqlAlchemyOutreachCandidateRepository(OutreachCandidateRepository):
         except Exception:
             await self._session.rollback()
             raise
+        return _to_domain(m)
+
+    async def find_by_email(self, email: str) -> OutreachCandidate | None:
+        """Nájdi kandidáta podľa emailu (case-insensitive).
+
+        Používa sa na deduplikáciu pri category discovery. Prázdny email
+        nikdy nematchuje — inak by sa zlúčili všetci kandidáti bez emailu.
+        """
+        cleaned = (email or "").strip().lower()
+        if not cleaned:
+            return None
+        stmt = select(OutreachCandidateModel).where(
+            func.lower(OutreachCandidateModel.email) == cleaned
+        )
+        m = (await self._session.execute(stmt)).scalars().first()
+        return _to_domain(m) if m else None
+
+    async def create_from_discovery(
+        self,
+        *,
+        company_name: str,
+        email: str,
+        phone: str | None = None,
+        website: str | None = None,
+        city: str | None = None,
+        source_url: str = "",
+    ) -> OutreachCandidate:
+        """Vytvor nového kandidáta z directory discovery (status NEW).
+
+        POZOR: ``OutreachCandidateModel`` zatiaľ NEMÁ stĺpce pre
+        ``phone``, ``website`` ani ``source_url``. Tie hodnoty sa preto
+        neukladajú a len sa zalogujú — na ich uloženie treba Alembic
+        migráciu. Ukladá sa company_name, email, city, status a timestampy.
+
+        Metóda len ``flush``-uje; commituje volajúci (endpoint), aby sa
+        celý beh dal vrátiť späť ako jedna transakcia.
+        """
+        dropped = [
+            label
+            for label, value in (
+                ("phone", phone),
+                ("website", website),
+                ("source_url", source_url),
+            )
+            if value
+        ]
+        if dropped:
+            logger.warning(
+                "Discovery polia bez stĺpca v DB (zahodené): %s pre %r",
+                ", ".join(dropped),
+                company_name,
+            )
+
+        now = datetime.now(UTC).replace(tzinfo=None)
+        m = OutreachCandidateModel(
+            id=uuid.uuid4(),
+            company_name=company_name.strip(),
+            city=(city or "").strip() or None,
+            email=(email or "").strip() or None,
+            status=OutreachStatus.NEW.value,
+            created_at=now,
+            updated_at=now,
+        )
+        self._session.add(m)
+        await self._session.flush()
         return _to_domain(m)
