@@ -60,8 +60,12 @@ _REQUEST_DELAY = 1.0
 _MAX_PAGES_PER_DOMAIN = 4
 
 # Kontakty sa menia málo -> dlhý TTL. robots.txt sa mení -> kratší.
-_EMAIL_CACHE_TTL = 2592000  # 30 dní
+_EMAIL_CACHE_TTL = 2592000  # 30 dní (pozitívny výsledok = nájdený email)
 _ROBOTS_CACHE_TTL = 86400  # 24h
+
+# Negatívny výsledok (definitívny miss) držíme krátko: firma, ktorá raz
+# nemala email na webe, ho môže doplniť o pár dní. Mesiac je príliš dlho.
+_MISS_CACHE_TTL = 604800  # 7 dní
 
 _EMAIL_CACHE_PREFIX = "waste:contacts:v1:"
 _ROBOTS_CACHE_PREFIX = "waste:robots:v1:"
@@ -675,7 +679,7 @@ def crawl_contact_email(
     # Ak všetko zlyhalo na sieti alebo to zakázal robots, je to
     # transient a necachujeme.
     if getattr(_CRAWL_STATE, "saw_html", False):
-        _cache_set(key, _MISS_SENTINEL, _EMAIL_CACHE_TTL)
+        _cache_set(key, _MISS_SENTINEL, _MISS_CACHE_TTL)
     else:
         logger.warning("transient crawl failure, not caching: %s", origin)
 

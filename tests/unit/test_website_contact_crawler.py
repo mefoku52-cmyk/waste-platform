@@ -277,3 +277,68 @@ def test_crawler_works_without_redis(monkeypatch):
 
     assert email == "info@ekolpresov.sk"
     assert source_url is not None
+
+
+# ---------------------------------------------------------------------------
+# TTL split: pozitívny výsledok dlho, negatívny krátko
+# ---------------------------------------------------------------------------
+
+
+def _record_cache_set(monkeypatch):
+    """Nahradí _cache_set zberačom (key, value, ttl) volaní."""
+    recorded: list[tuple[str, str, int]] = []
+
+    def fake_cache_set(key, value, ttl=crawler._EMAIL_CACHE_TTL):
+        recorded.append((key, value, ttl))
+
+    monkeypatch.setattr(crawler, "_cache_set", fake_cache_set)
+
+    return recorded
+
+
+def _email_writes(recorded):
+    """Len zápisy do email cache (nie robots.txt)."""
+    return [entry for entry in recorded if entry[0].startswith(crawler._EMAIL_CACHE_PREFIX)]
+
+
+def test_ttl_constants_have_expected_values():
+    assert crawler._EMAIL_CACHE_TTL == 2592000  # 30 dní
+    assert crawler._MISS_CACHE_TTL == 604800  # 7 dní
+
+
+def test_cache_set_miss_uses_short_ttl(monkeypatch):
+    """Definitívny miss sa cachuje s krátkym TTL (7 dní)."""
+    html = load_fixture("page_without_email.html")
+    fake_get, _calls = _serve_pages(html)
+
+    monkeypatch.setattr(httpx, "get", fake_get)
+
+    recorded = _record_cache_set(monkeypatch)
+
+    assert crawler.crawl_contact_email(_SITE, _COMPANY) == (None, None)
+
+    writes = _email_writes(recorded)
+    miss_writes = [entry for entry in writes if entry[1] == crawler._MISS_SENTINEL]
+
+    assert len(miss_writes) == 1
+    assert miss_writes[0][2] == 604800
+
+
+def test_cache_set_hit_uses_long_ttl(monkeypatch):
+    """Nájdený email sa cachuje s dlhým TTL (30 dní)."""
+    html = load_fixture("homepage_with_mailto.html")
+    fake_get, _calls = _serve_pages(html)
+
+    monkeypatch.setattr(httpx, "get", fake_get)
+
+    recorded = _record_cache_set(monkeypatch)
+
+    email, _source_url = crawler.crawl_contact_email(_SITE, _COMPANY)
+
+    assert email == "info@ekolpresov.sk"
+
+    writes = _email_writes(recorded)
+
+    assert len(writes) == 1
+    assert writes[0][2] == 2592000
+    assert writes[0][1] != crawler._MISS_SENTINEL
