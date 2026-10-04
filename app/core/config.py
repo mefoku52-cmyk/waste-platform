@@ -181,6 +181,11 @@ class Settings(BaseSettings):
     LEAD_OUTREACH_DAILY_LIMIT: int = 30
     LEAD_OUTREACH_ENABLED: bool = False
 
+    # --- Telegram ---
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_ADMIN_CHAT_ID: str = ""
+    TELEGRAM_ENABLED: bool = False
+
     @property
     def is_development(self) -> bool:
         return self.app_env.lower() in {"development", "dev", "local", "test"}

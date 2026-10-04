@@ -5,6 +5,7 @@ Platform-admin only. One email per request. No bulk auto-send.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -18,6 +19,9 @@ from app.modules.lead_finder.application.services.batch_drafter import (
 )
 from app.modules.lead_finder.application.services.email_drafter import (
     EmailDrafter,
+)
+from app.modules.notifications.application.telegram_service import (
+    TelegramService,
 )
 from app.shared.application.side_effects import write_activity_event, write_audit
 from app.shared.infrastructure.db.session import get_db_session
@@ -33,6 +37,39 @@ from app.shared.presentation.authorization import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+# Drzime silnu referenciu na beziace tasky, aby ich GC nezrusil pred
+# dokoncenim (ruff RUF006). Task sa po dokonceni sam odstrani.
+_BACKGROUND_TASKS: set[asyncio.Task] = set()
+
+
+# Drzime silnu referenciu na beziace tasky, aby ich GC nezrusil pred
+# dokoncenim (ruff RUF006). Task sa po dokonceni sam odstrani.
+_BACKGROUND_TASKS: set[asyncio.Task] = set()
+
+
+async def _notify_safe(coro) -> None:
+    """Fire-and-forget Telegram notifikacia. Nikdy nezlyha request."""
+    try:
+        await coro
+    except Exception:
+        logger.warning("Telegram notify failed (ignored)", exc_info=True)
+
+
+def _fire_and_forget(coro) -> None:
+    """Spusti korutinu na pozadi a drz na nu referenciu."""
+    task = asyncio.create_task(_notify_safe(coro))
+    _BACKGROUND_TASKS.add(task)
+    task.add_done_callback(_BACKGROUND_TASKS.discard)
+
+
+def _fire_and_forget(coro) -> None:
+    """Spusti korutinu na pozadi a drz na nu referenciu."""
+    task = asyncio.create_task(_notify_safe(coro))
+    _BACKGROUND_TASKS.add(task)
+    task.add_done_callback(_BACKGROUND_TASKS.discard)
+
 
 router = APIRouter(prefix="/admin/lead-outreach", tags=["admin-lead-outreach"])
 
@@ -278,6 +315,7 @@ async def send_outreach_email(
                     listing_id=None,
                     payload=f"to={payload.to},via=smtp",
                 )
+                _fire_and_forget(TelegramService.notify_sent(payload.to, ok=True))
                 return SendResponse(ok=True, message="Email odoslaný cez SMTP.")
             return SendResponse(ok=False, message="SMTP zlyhalo.")
         return SendResponse(ok=False, message=result.message)
@@ -298,6 +336,8 @@ async def send_outreach_email(
         listing_id=None,
         payload=f"to={payload.to},via=resend",
     )
+
+    _fire_and_forget(TelegramService.notify_sent(payload.to, ok=True))
 
     remaining = result.remaining_today
     msg = result.message
@@ -471,6 +511,14 @@ async def discover_categories(
         max_pages_per_category=payload.max_pages,
     )
     await session.commit()
+
+    _fire_and_forget(
+        TelegramService.notify_discovery(
+            saved=result["saved"],
+            duplicates=result["duplicates"],
+            per_category=result.get("per_category") or {},
+        )
+    )
 
     return DiscoverCategoriesResponse(**result)
 
@@ -650,6 +698,14 @@ async def draft_new_candidates(
         target_type="outreach_candidate",
         target_id=None,
         details=f"drafted={drafted},failed={failed},skipped={skipped}",
+    )
+
+    _fire_and_forget(
+        TelegramService.notify_drafts(
+            drafted=drafted,
+            failed=failed,
+            skipped=skipped,
+        )
     )
 
     return DraftNewResponse(drafted=drafted, failed=failed, skipped=skipped)

@@ -22,6 +22,9 @@ from app.modules.lead_finder.presentation.router import (
 )
 from app.modules.listings.presentation.router import router as listings_router
 from app.modules.notifications.presentation.router import router as notifications_router
+from app.modules.notifications.presentation.telegram_router import (
+    router as telegram_router,
+)
 from app.modules.prediction.presentation.router import router as prediction_router
 from app.modules.recommendations.presentation.router import router as recommendations_router
 from app.modules.uploads.presentation.router import router as uploads_router
@@ -42,6 +45,7 @@ api_router.include_router(chat_router)
 api_router.include_router(inquiries_router)
 api_router.include_router(listings_router)
 api_router.include_router(notifications_router)
+api_router.include_router(telegram_router)
 api_router.include_router(uploads_router)
 api_router.include_router(recommendations_router)
 api_router.include_router(prediction_router)
