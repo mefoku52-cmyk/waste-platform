@@ -75,7 +75,7 @@ export function SignedImage({
           fontSize: '0.75rem',
         }}
       >
-        obrázok nedostupný
+        podpis fotky zlyhal
       </div>
     );
   }
