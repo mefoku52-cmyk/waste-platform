@@ -59,14 +59,7 @@ async def _notify_safe(coro) -> None:
 
 def _fire_and_forget(coro) -> None:
     """Spusti korutinu na pozadi a drz na nu referenciu."""
-    task = asyncio.create_task(_notify_safe(coro))
-    _BACKGROUND_TASKS.add(task)
-    task.add_done_callback(_BACKGROUND_TASKS.discard)
-
-
-def _fire_and_forget(coro) -> None:
-    """Spusti korutinu na pozadi a drz na nu referenciu."""
-    task = asyncio.create_task(_notify_safe(coro))
+    task = asyncio.create_task(coro)
     _BACKGROUND_TASKS.add(task)
     task.add_done_callback(_BACKGROUND_TASKS.discard)
 
@@ -429,6 +422,37 @@ class DraftNewResponse(BaseModel):
     skipped: int
 
 
+class AutoApproveRequest(BaseModel):
+    """Automaticke schvalenie kandidatov s platnym emailom."""
+
+    limit: int = Field(default=100, ge=1, le=500)
+    dry_run: bool = Field(default=False)
+
+
+class AutoApproveResponse(BaseModel):
+    approved: int
+    skipped_no_email: int
+    skipped_junk: int
+    skipped_invalid: int
+    total_checked: int
+    sample_approved: list[dict]
+
+
+class AutoSendBatchRequest(BaseModel):
+    """Batch send s oneskorenim medzi emailmi (rate limit safe)."""
+
+    limit: int = Field(default=30, ge=1, le=50)
+    delay_seconds: float = Field(default=2.0, ge=0.5, le=10.0)
+
+
+class AutoSendBatchResponse(BaseModel):
+    sent: int
+    failed: int
+    skipped: int
+    total_checked: int
+    duration_seconds: float
+
+
 class ApproveCandidateRequest(BaseModel):
     email: str = Field(min_length=3, max_length=255)
     subject: str = Field(min_length=1, max_length=255)
@@ -709,6 +733,158 @@ async def draft_new_candidates(
     )
 
     return DraftNewResponse(drafted=drafted, failed=failed, skipped=skipped)
+
+
+@router.post("/auto-approve", response_model=AutoApproveResponse)
+async def auto_approve_candidates(
+    payload: AutoApproveRequest,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> AutoApproveResponse:
+    """Hromadne schval kandidatov s platnym emailom. Admin only.
+
+    Kandidati so statusom `new`, ktori maju platny email (nie junk,
+    nie invalid), sa posunu na `approved`. Zvysok zostava v `new`
+    a caka na manualne rozhodnutie.
+
+    Idempotentne — opatovne spustenie nic nepokazi.
+
+    Ak dry_run=True, len reportuje co by sa stalo (ziadne zmeny).
+    """
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.application.services.auto_approve import (
+        run_auto_approve,
+    )
+
+    result = await run_auto_approve(
+        session,
+        limit=payload.limit,
+        dry_run=payload.dry_run,
+    )
+
+    if not payload.dry_run:
+        await session.commit()
+
+        # Telegram notifikacia (fire-and-forget)
+        _fire_and_forget(
+            TelegramService.notify(
+                f"✅ <b>Auto-approve</b>\n"
+                f"Schválených: <b>{result['approved']}</b>\n"
+                f"Bez emailu: {result['skipped_no_email']}\n"
+                f"Junk: {result['skipped_junk']}\n"
+                f"Invalid: {result['skipped_invalid']}"
+            )
+        )
+
+    return AutoApproveResponse(**result)
+
+
+@router.post("/auto-send-batch", response_model=AutoSendBatchResponse)
+async def auto_send_batch(
+    payload: AutoSendBatchRequest,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+) -> AutoSendBatchResponse:
+    """Batch send schvalenych kandidatov s oneskorenim. Admin only.
+
+    Posiela `approved` kandidatov jeden po druhom s `delay_seconds`
+    pauzou medzi requestami. Riesi Resend rate limit (2 req/s).
+
+    Max 50 emailov za jeden beh. Pri 2s delay to trva ~2 minuty.
+
+    Nikdy neposiela na `new` alebo `drafted` kandidatov — tie musia
+    byt najprv schvalene (auto-approve alebo manualne).
+    """
+    import time as _time
+
+    _require_admin(current_user)
+
+    from app.modules.lead_finder.domain.entities.outreach_candidate import (
+        OutreachStatus,
+    )
+    from app.modules.lead_finder.infrastructure.persistence.repositories import (
+        SqlAlchemyOutreachCandidateRepository,
+    )
+
+    started = _time.monotonic()
+    repo = SqlAlchemyOutreachCandidateRepository(session)
+
+    candidates = await repo.list_by_status(
+        status=OutreachStatus.APPROVED,
+        limit=payload.limit,
+    )
+
+    if not candidates:
+        return AutoSendBatchResponse(
+            sent=0,
+            failed=0,
+            skipped=0,
+            total_checked=0,
+            duration_seconds=0.0,
+        )
+
+    sent = 0
+    failed = 0
+    skipped = 0
+
+    for i, candidate in enumerate(candidates):
+        if not candidate.email:
+            skipped += 1
+            continue
+
+        try:
+            result = await send_via_resend(
+                session=session,
+                to=candidate.email,
+                subject=candidate.draft_subject or f"Pozvánka na CMEP pre {candidate.company_name}",
+                body=candidate.draft_body or "",
+            )
+
+            if result.ok:
+                await repo.update_status(
+                    candidate_id=candidate.id,
+                    status=OutreachStatus.SENT,
+                )
+                sent += 1
+            else:
+                failed += 1
+                logger.warning(
+                    "auto-send-batch: %s -> %s failed: %s",
+                    candidate.company_name,
+                    candidate.email,
+                    result.message,
+                )
+        except Exception:
+            failed += 1
+            logger.exception("auto-send-batch exception pre %s", candidate.email)
+
+        # Delay medzi emailmi (okrem posledneho)
+        if i < len(candidates) - 1:
+            await asyncio.sleep(payload.delay_seconds)
+
+    await session.commit()
+
+    duration = _time.monotonic() - started
+
+    # Telegram notifikacia
+    _fire_and_forget(
+        TelegramService.notify(
+            f"📧 <b>Batch send hotový</b>\n"
+            f"Odoslaných: <b>{sent}</b>\n"
+            f"Zlyhalo: {failed}\n"
+            f"Preskočených: {skipped}\n"
+            f"Trvanie: {duration:.1f}s"
+        )
+    )
+
+    return AutoSendBatchResponse(
+        sent=sent,
+        failed=failed,
+        skipped=skipped,
+        total_checked=len(candidates),
+        duration_seconds=round(duration, 1),
+    )
 
 
 @router.post(

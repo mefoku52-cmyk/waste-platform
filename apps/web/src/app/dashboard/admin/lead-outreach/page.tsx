@@ -58,6 +58,24 @@ type PendingItem = {
   created_at?: string | null;
 };
 type PendingResponse = { count: number; items: PendingItem[] };
+
+type AutoApproveResponse = {
+  approved: number;
+  skipped_no_email: number;
+  skipped_junk: number;
+  skipped_invalid: number;
+  total_checked: number;
+  sample_approved: Array<{ company_name: string; email: string }>;
+};
+
+type AutoSendBatchResponse = {
+  sent: number;
+  failed: number;
+  skipped: number;
+  total_checked: number;
+  duration_seconds: number;
+};
+
 type DraftNewResponse = { drafted: number; failed: number; skipped: number };
 type SendPendingResponse = { ok: boolean; message: string; status: string };
 type ProviderStatus = { is_set: boolean };
@@ -98,6 +116,9 @@ export default function LeadOutreachPage() {
 
   // Kandidati so statusom "new" (objaveni, ale bez draftu).
   // Admin sa sam rozhodne, kedy pre nich pripravi drafty.
+  const [busyAutoApprove, setBusyAutoApprove] = useState(false);
+  const [busyAutoSend, setBusyAutoSend] = useState(false);
+  const [autoApproveInfo, setAutoApproveInfo] = useState<string | null>(null);
   const [busyDraftNew, setBusyDraftNew] = useState(false);
   const [newCount, setNewCount] = useState(0);
 
@@ -163,6 +184,99 @@ export default function LeadOutreachPage() {
       setErr(e instanceof Error ? e.message : "Pending zlyhal");
     } finally {
       setBusyPending(false);
+    }
+  }
+
+
+  async function runAutoApprove() {
+    setErr(null);
+    setOkMsg(null);
+    setAutoApproveInfo(null);
+    setBusyAutoApprove(true);
+    try {
+      // 1) Dry-run najprv — ukáž adminovi čo sa schváli
+      const preview = await http.post<AutoApproveResponse>(
+        "/admin/lead-outreach/auto-approve",
+        { limit: 500, dry_run: true },
+      );
+
+      if (preview.approved === 0) {
+        setOkMsg(
+          `Žiadnych kandidátov na auto-schválenie (${preview.total_checked} skontrolovaných).`,
+        );
+        return;
+      }
+
+      // 2) Potvrdenie cez confirm()
+      const confirmed = window.confirm(
+        `Auto-schváliť ${preview.approved} kandidátov?\n\n` +
+        `Bez emailu: ${preview.skipped_no_email}\n` +
+        `Junk: ${preview.skipped_junk}\n` +
+        `Invalid: ${preview.skipped_invalid}\n\n` +
+        `Prvých 5:\n` +
+        preview.sample_approved
+          .slice(0, 5)
+          .map((c) => `  • ${c.company_name} <${c.email}>`)
+          .join("\n"),
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      // 3) Reálne schválenie
+      const res = await http.post<AutoApproveResponse>(
+        "/admin/lead-outreach/auto-approve",
+        { limit: 500, dry_run: false },
+        { timeoutMs: 120000 },
+      );
+
+      setOkMsg(
+        `Auto-schválených: ${res.approved}, ` +
+        `bez emailu: ${res.skipped_no_email}, ` +
+        `junk: ${res.skipped_junk}, ` +
+        `invalid: ${res.skipped_invalid}`,
+      );
+      await loadPending();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Auto-approve zlyhal");
+    } finally {
+      setBusyAutoApprove(false);
+    }
+  }
+
+  async function runAutoSendBatch() {
+    setErr(null);
+    setOkMsg(null);
+    setAutoApproveInfo(null);
+    setBusyAutoSend(true);
+    try {
+      const limit = 30;
+      const confirmed = window.confirm(
+        `Poslať až ${limit} schválených emailov?\n\n` +
+        `S 2s pauzou medzi emailmi (rate limit safe).\n` +
+        `Trvanie: ~${Math.round((limit * 2) / 60)} min.`,
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const res = await http.post<AutoSendBatchResponse>(
+        "/admin/lead-outreach/auto-send-batch",
+        { limit, delay_seconds: 2.0 },
+        { timeoutMs: 300000 },
+      );
+
+      setOkMsg(
+        `Batch send: odoslaných ${res.sent}, zlyhalo ${res.failed}, ` +
+        `preskočených ${res.skipped} (za ${res.duration_seconds}s)`,
+      );
+      await loadPending();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Batch send zlyhal");
+    } finally {
+      setBusyAutoSend(false);
     }
   }
 
