@@ -8,6 +8,7 @@ from app.modules.agent_platform.presentation.control_router import (
 from app.modules.agent_platform.presentation.router import router as agent_platform_router
 from app.modules.analytics.presentation.router import router as analytics_router
 from app.modules.auth.presentation.router import router as auth_router
+from app.modules.billing.presentation.router import router as billing_router
 from app.modules.chat.presentation.router import router as chat_router
 from app.modules.companies.presentation.router import router as companies_router
 from app.modules.company_memberships.presentation.router import (
@@ -52,6 +53,7 @@ api_router.include_router(telegram_router)
 api_router.include_router(summary_router)
 api_router.include_router(uploads_router)
 api_router.include_router(recommendations_router)
+api_router.include_router(billing_router)
 api_router.include_router(prediction_router)
 api_router.include_router(metrics_router)
 api_router.include_router(events_router)

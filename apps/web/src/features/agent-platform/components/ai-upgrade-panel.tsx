@@ -1,3 +1,4 @@
+import { http } from '@/lib/api/http';
 'use client';
 
 import { useState } from 'react';
@@ -113,7 +114,18 @@ export function AiUpgradePanel({ reason = 'free' }: Props) {
                   </a>
                 </div>
                 <p className="text-[11px]" style={{ color: MUTED }}>
-                  Online platba (GoPay) — pripravujeme.
+                  Online platba (GoPay)
+                    <button
+                      type="button"
+                      className="mt-2 block rounded-full px-4 py-2 text-sm"
+                      onClick={() => {
+                        void http.post<{ gw_url?: string }>("/billing/checkout", { company_id: "", tier: "pro" })
+                          .then((r) => { if (r.gw_url) window.location.href = r.gw_url; })
+                          .catch(() => { window.alert("GoPay nie je nakonfigurovany."); });
+                      }}
+                    >
+                      Pokračovať na GoPay
+                    </button>
                 </p>
               </>
             )}
