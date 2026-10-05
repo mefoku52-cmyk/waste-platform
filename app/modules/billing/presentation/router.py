@@ -5,7 +5,7 @@ import uuid
 from urllib.parse import urlencode
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
@@ -120,3 +120,54 @@ async def billing_checkout(
         "gw_url": data.get("gw_url"),
         "payment_id": data.get("id"),
     }
+
+
+@router.api_route("/notify", methods=["GET", "POST"])
+async def billing_notify(request: Request, session=Depends(get_db_session)):
+    cfg = _cfg()
+    if not _ready(cfg):
+        raise HTTPException(status_code=503, detail="gopay_not_configured")
+    payment_id = request.query_params.get("id") or ""
+    if not payment_id and request.method == "POST":
+        form = await request.form()
+        payment_id = str(form.get("id") or "")
+    if not payment_id:
+        raise HTTPException(status_code=400, detail="payment_id_missing")
+    data = await _payment(cfg, payment_id)
+    state = str(data.get("state") or "")
+    company_id = _param(data, "company_id")
+    tier = _param(data, "tier") or "pro"
+    updated = 0
+    if state == "PAID" and company_id and tier == "pro":
+        result = await session.execute(
+            text(
+                """
+                UPDATE companies
+                SET subscription_tier = 'pro'
+                WHERE id::text = :company_id
+                """
+            ),
+            {"company_id": company_id},
+        )
+        updated = int(result.rowcount or 0)
+        await session.commit()
+    return {"ok": True, "state": state, "updated": updated}
+
+
+async def _payment(cfg: dict[str, str], payment_id: str) -> dict:
+    token = await _token(cfg)
+    async with httpx.AsyncClient(timeout=20) as client:
+        resp = await client.get(
+            f"{cfg['api']}/api/payments/payment/{payment_id}",
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+        )
+    if resp.status_code >= 300:
+        raise HTTPException(status_code=502, detail="gopay_status_failed")
+    return resp.json()
+
+
+def _param(data: dict, name: str) -> str:
+    for row in data.get("additional_params") or []:
+        if str(row.get("name")) == name:
+            return str(row.get("value") or "")
+    return ""
