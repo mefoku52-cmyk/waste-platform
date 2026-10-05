@@ -1005,6 +1005,33 @@ export default function LeadOutreachPage() {
                     >
                       {busyPending ? "Obnovujem…" : "Obnoviť"}
                     </button>
+
+                    <button
+                      type="button"
+                      onClick={() => void runAutoApprove()}
+                      disabled={busyAutoApprove || busyAutoSend}
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl border px-5 text-sm font-semibold transition hover:bg-white/[0.04] disabled:cursor-not-allowed disabled:opacity-40"
+                      style={{
+                        borderColor: GOLD,
+                        color: GOLD_BRIGHT,
+                      }}
+                    >
+                      {busyAutoApprove
+                        ? "Schvaľujem…"
+                        : "Auto-schváliť s emailom"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => void runAutoSendBatch()}
+                      disabled={busyAutoSend || busyAutoApprove}
+                      className="inline-flex min-h-11 items-center justify-center rounded-xl px-5 text-sm font-semibold transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+                      style={{ background: GOLD, color: BG }}
+                    >
+                      {busyAutoSend
+                        ? "Odosielam batch…"
+                        : "Auto-send batch (30)"}
+                    </button>
                   </div>
                 </div>
               </div>
