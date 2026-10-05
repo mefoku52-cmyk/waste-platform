@@ -7,10 +7,18 @@ import os
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.responses import FileResponse
+from pydantic import BaseModel
 
+from app.core.config import settings
+from app.modules.uploads.application.signing import (
+    DEFAULT_TTL_SECONDS,
+    sign_file_url,
+    verify_file_url,
+)
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import is_platform_admin
 from app.shared.presentation.error_schemas import error_responses
 
 from .schemas import UploadResponse
@@ -108,12 +116,68 @@ async def upload_file(
     )
 
 
+class SignedUrlResponse(BaseModel):
+    fileId: str
+    urlPath: str
+    expiresAt: int
+
+
+@router.post(
+    "/{file_id}/sign",
+    response_model=SignedUrlResponse,
+    responses=error_responses(400, 401, 403, 404, 500),
+)
+async def sign_uploaded_file(
+    file_id: str,
+    ttl_seconds: int = DEFAULT_TTL_SECONDS,
+    current_user=Depends(require_current_user),
+):
+    """Generate a short-lived signed URL for a file. Admin only."""
+    if not is_platform_admin(current_user):
+        raise HTTPException(status_code=403, detail="Platform admin access required")
+
+    safe = _validate_file_id(file_id)
+    path = UPLOAD_ROOT / safe
+    if not path.is_file():
+        raise HTTPException(status_code=404, detail="File not found")
+
+    signed = sign_file_url(
+        file_id=safe,
+        secret=settings.uploads_signing_secret,
+        ttl_seconds=ttl_seconds,
+    )
+
+    return SignedUrlResponse(
+        fileId=signed["file_id"],
+        urlPath=f"/api/v1{signed['url_path']}",
+        expiresAt=signed["expires_at"],
+    )
+
+
 @router.get(
     "/{file_id}",
-    responses=error_responses(400, 404, 500),
+    responses=error_responses(400, 403, 404, 500),
 )
-async def get_uploaded_file(file_id: str):
+async def get_uploaded_file(
+    file_id: str,
+    expires: int | None = Query(default=None),
+    sig: str | None = Query(default=None),
+):
     safe = _validate_file_id(file_id)
+
+    if settings.UPLOADS_REQUIRE_SIGNED:
+        ok, reason = verify_file_url(
+            file_id=safe,
+            secret=settings.uploads_signing_secret,
+            expires_at=expires if expires is not None else 0,
+            signature=sig or "",
+        )
+        if not ok:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Signed URL required ({reason})",
+            )
+
     path = UPLOAD_ROOT / safe
     if not path.is_file():
         raise HTTPException(status_code=404, detail="File not found")

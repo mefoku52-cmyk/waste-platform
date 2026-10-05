@@ -187,6 +187,17 @@ class Settings(BaseSettings):
     TELEGRAM_ENABLED: bool = False
     TELEGRAM_WEBHOOK_SECRET: str = ""
 
+    # Signed URL pre uploads. Ak nie je nastavené, použije sa JWT_SECRET_KEY.
+    UPLOADS_SIGNING_SECRET: str = ""
+    # Ak True, GET /uploads/{id} vyžaduje platný podpis. Zapni po
+    # aktualizácii frontendu (aby staré <img src> neprestali fungovať).
+    UPLOADS_REQUIRE_SIGNED: bool = False
+
+    @property
+    def uploads_signing_secret(self) -> str:
+        """Returns UPLOADS_SIGNING_SECRET or falls back to JWT_SECRET_KEY."""
+        return (self.UPLOADS_SIGNING_SECRET or self.JWT_SECRET_KEY or "").strip()
+
     @property
     def is_development(self) -> bool:
         return self.app_env.lower() in {"development", "dev", "local", "test"}
