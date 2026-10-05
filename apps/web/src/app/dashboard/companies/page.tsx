@@ -28,7 +28,7 @@ function cleanFilter(raw: string): string {
 
 async function fetchCompanies(page: number): Promise<{ items: Company[]; total: number }> {
   const token = localStorage.getItem('accessToken');
-  const res = await fetch(`${config.apiBaseUrl}/companies?page=${page}&pageSize=${PAGE_SIZE}`, {
+  const res = await fetch(`${config.apiBaseUrl}/companies?page=${page}&pageSize=${PAGE_SIZE}&directory=true`, {
     headers: {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),

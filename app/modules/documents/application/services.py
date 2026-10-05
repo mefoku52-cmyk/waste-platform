@@ -15,6 +15,9 @@ class DocumentService:
     async def get_by_id(self, id: str) -> DocumentEntity | None:
         return await self.repository.get_by_id(id)
 
+    async def get_by_file_url(self, file_url: str) -> DocumentEntity | None:
+        return await self.repository.get_by_file_url(file_url)
+
     async def list_all(self, page: int = 1, limit: int = 20) -> list[DocumentEntity]:
         return await self.repository.list_all(page, limit)
 

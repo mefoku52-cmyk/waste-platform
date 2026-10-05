@@ -14,6 +14,9 @@ class DocumentRepository(ABC):
     async def get_by_id(self, id: str): ...
 
     @abstractmethod
+    async def get_by_file_url(self, file_url: str): ...
+
+    @abstractmethod
     async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20): ...
 
     @abstractmethod

@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 
 import { AppShell } from '@/components/layout/app-shell';
-import { useListings } from '@/features/listings';
+import { useListings, useMarketplace } from '@/features/listings';
+import { useState } from 'react';
 import { http } from '@/lib/api/http';
 import { useT } from '@/lib/i18n/context';
 import { SignedImage } from '@/features/uploads/components/signed-image';
@@ -77,15 +78,19 @@ type Listing = {
 
 export default function MyListingsPage() {
   const { t } = useT();
-  const {
-    data,
-    isLoading,
-    error,
-  } = useListings() as {
+  const [mine, setMine] = useState(false);
+  const own = useListings() as {
     data?: unknown;
     isLoading?: boolean;
     error?: unknown;
   };
+  const market = useMarketplace() as {
+    data?: unknown;
+    isLoading?: boolean;
+    error?: unknown;
+  };
+  const selected = mine ? own : market;
+  const { data, isLoading, error } = selected;
 
   const { data: companiesData } = useQuery({
     queryKey: ['companies', 'my'],
@@ -179,7 +184,10 @@ export default function MyListingsPage() {
             }}
           >
             {t('listings.add')}
-          </Link>
+            </Link>
+            <button type="button" onClick={() => setMine((v) => !v)} className="rounded-full px-4 py-2 text-sm" style={{ color: GOLD }}>
+              {mine ? 'Všetky ponuky' : 'Moje ponuky'}
+            </button>
         </div>
 
         {isLoading ? (

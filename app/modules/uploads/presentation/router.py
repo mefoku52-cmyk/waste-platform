@@ -12,6 +12,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 from app.core.config import settings
+from app.modules.documents.application.services import DocumentService
+from app.modules.documents.presentation.dependencies import get_documents_service
 from app.modules.uploads.application.signing import (
     DEFAULT_TTL_SECONDS,
     sign_file_url,
@@ -38,6 +40,41 @@ ALLOWED_MIME = {
 }
 MAX_BYTES = 8 * 1024 * 1024
 CHUNK_BYTES = 64 * 1024
+
+
+async def _authorize_document_file(
+    file_id: str,
+    current_user,
+    service: DocumentService,
+) -> None:
+    document_url = f"/api/v1/uploads/{file_id}"
+    document = await service.get_by_file_url(document_url)
+
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document file not found")
+
+    status_value = getattr(document.status, "value", document.status)
+
+    # Approved documents are public to authenticated platform users.
+    if status_value == "approved":
+        return
+
+    # Platform administrators may access every document state.
+    from app.shared.presentation.authorization import is_platform_admin
+
+    if is_platform_admin(current_user):
+        return
+
+    # Pending/rejected documents require membership in the owning company.
+    from app.shared.presentation.authorization import membership_company_ids
+
+    allowed_company_ids = membership_company_ids(current_user)
+
+    if document.company_id not in allowed_company_ids:
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have access to this document",
+        )
 
 
 def _validate_file_id(file_id: str) -> str:
@@ -130,6 +167,7 @@ async def sign_uploaded_file(
     file_id: str,
     ttl_seconds: int = DEFAULT_TTL_SECONDS,
     current_user=Depends(require_current_user),
+    document_service: DocumentService = Depends(get_documents_service),
 ):
     """Generate a short-lived signed URL for a file.
 
@@ -140,6 +178,12 @@ async def sign_uploaded_file(
     path = UPLOAD_ROOT / safe
     if not path.is_file():
         raise HTTPException(status_code=404, detail="File not found")
+
+    await _authorize_document_file(
+        file_id=safe,
+        current_user=current_user,
+        service=document_service,
+    )
 
     signed = sign_file_url(
         file_id=safe,
@@ -162,8 +206,16 @@ async def get_uploaded_file(
     file_id: str,
     expires: int | None = Query(default=None),
     sig: str | None = Query(default=None),
+    current_user=Depends(require_current_user),
+    document_service: DocumentService = Depends(get_documents_service),
 ):
     safe = _validate_file_id(file_id)
+
+    await _authorize_document_file(
+        file_id=safe,
+        current_user=current_user,
+        service=document_service,
+    )
 
     if settings.UPLOADS_REQUIRE_SIGNED:
         ok, reason = verify_file_url(
@@ -200,5 +252,13 @@ async def get_uploaded_file(
     "/files/{file_id}",
     include_in_schema=False,
 )
-async def get_uploaded_file_legacy(file_id: str):
-    return await get_uploaded_file(file_id=file_id)
+async def get_uploaded_file_legacy(
+    file_id: str,
+    current_user=Depends(require_current_user),
+    document_service: DocumentService = Depends(get_documents_service),
+):
+    return await get_uploaded_file(
+        file_id=file_id,
+        current_user=current_user,
+        document_service=document_service,
+    )

@@ -5,6 +5,7 @@ from fastapi import status as http_status
 
 from app.shared.domain.exceptions import NotFoundDomainError
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import is_platform_admin, membership_company_ids
 from app.shared.presentation.error_schemas import error_responses
 
 from ..application.services import DocumentService
@@ -66,9 +67,14 @@ async def list_documents(
     service: DocumentService = Depends(get_documents_service),
 ):
     effective_page_size = limit or pageSize
-    company_ids = list(_allowed_company_ids(current_user))
-    items = await service.list_by_company_ids(company_ids, page, effective_page_size)
-    total = await service.count_by_company_ids(company_ids)
+
+    if is_platform_admin(current_user):
+        items = await service.list_all(page, effective_page_size)
+        total = await service.count_all()
+    else:
+        company_ids = membership_company_ids(current_user)
+        items = await service.list_by_company_ids(company_ids, page, effective_page_size)
+        total = await service.count_by_company_ids(company_ids)
     return PaginatedDocumentsResponse(
         items=[_to_data(e) for e in items],
         meta=PaginationMeta(page=page, pageSize=effective_page_size, total=total),
@@ -88,7 +94,11 @@ async def get_document(
     entity = await service.get_by_id(id)
     if entity is None:
         raise NotFoundDomainError(f"Document {id} not found")
-    _ensure_document_access(entity, current_user)
+    if not is_platform_admin(current_user):
+        status_value = getattr(entity.status, "value", entity.status)
+        if status_value != "approved":
+            _ensure_document_access(entity, current_user)
+
     return DocumentResponse(data=_to_data(entity))
 
 
@@ -137,6 +147,11 @@ async def update_document(
 
     _ensure_document_access(existing, current_user)
 
+    from app.shared.domain.exceptions import ForbiddenDomainError
+
+    if request.status is not None and not is_platform_admin(current_user):
+        raise ForbiddenDomainError("Only platform administrators can change document status")
+
     target_company_id = request.companyId if request.companyId is not None else existing.company_id
     if target_company_id not in _allowed_company_ids(current_user):
         from app.shared.domain.exceptions import ForbiddenDomainError
@@ -170,5 +185,6 @@ async def delete_document(
     entity = await service.get_by_id(id)
     if entity is None:
         raise NotFoundDomainError(f"Document {id} not found")
-    _ensure_document_access(entity, current_user)
+    if not is_platform_admin(current_user):
+        _ensure_document_access(entity, current_user)
     await service.delete(id)

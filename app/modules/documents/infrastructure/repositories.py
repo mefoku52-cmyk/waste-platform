@@ -21,6 +21,13 @@ class DocumentRepositoryImpl(DocumentRepository):
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
+    async def get_by_file_url(self, file_url: str) -> DocumentEntity | None:
+        result = await self.session.execute(
+            select(DocumentModel).where(DocumentModel.file_url == file_url)
+        )
+        model = result.scalar_one_or_none()
+        return to_domain(model) if model else None
+
     async def list_by_company_ids(self, company_ids, page: int = 1, limit: int = 20):
         if not company_ids:
             return []

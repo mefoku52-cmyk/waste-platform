@@ -61,6 +61,7 @@ async def rpo_check(ico: str, current_user=Depends(require_current_user)):
 async def list_companies(
     page: int = Query(default=1, ge=1),
     pageSize: int = Query(default=25, ge=1, le=100),
+    directory: bool = Query(default=False),
     status: str | None = None,
     companyType: str | None = None,
     sellerCapability: bool | None = None,
@@ -70,7 +71,7 @@ async def list_companies(
     current_user=Depends(require_current_user),
     service=Depends(get_list_companies_service),
 ):
-    if _is_admin(current_user):
+    if _is_admin(current_user) or directory:
         company_ids = None
     else:
         company_ids = [

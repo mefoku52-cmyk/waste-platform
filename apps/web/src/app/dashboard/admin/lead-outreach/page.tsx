@@ -91,8 +91,8 @@ type OutreachStatus = {
 };
 
 function QuotaLine() {
-  const [line, setLine] = React.useState("Limit dnes: načítavam…");
-  React.useEffect(() => {
+  const [line, setLine] = useState("Limit dnes: načítavam…");
+  useEffect(() => {
     let stop = false;
     http.get<{ limit: number; sent_today: number; rejected_today: number; remaining: number }>(
       "/admin/lead-outreach/quota",
@@ -1038,8 +1038,12 @@ export default function LeadOutreachPage() {
                     >
                       {busyAutoApprove
                         ? "Schvaľujem…"
-                        : "<QuotaLine />
-            Auto-schváliť s emailom"}
+                        : (
+                            <>
+                              <QuotaLine />
+                              Auto-schváliť s emailom
+                            </>
+                          )}
                     </button>
 
                     <button
