@@ -16,6 +16,7 @@ import { postListingViewed } from '@/features/recommendations/api';
 import { ListingInquiryButton } from '@/features/inquiries/components/listing-inquiry-button';
 import { DeleteListingButton } from '@/features/listings/components/delete-listing-button';
 import { PromoteListingButton } from '@/features/listings/components/promote-listing-button';
+import { SignedImage } from '@/features/uploads/components/signed-image';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -226,7 +227,7 @@ export default function ListingDetailPage() {
                   onClick={() => setSelectedPhoto(gallery[0])}
                   aria-label={t('listingMedia.openPhoto')}
                 >
-                  <img src={gallery[0]} alt={title} className="h-full w-full object-cover" />
+                  <SignedImage src={gallery[0]} alt={title} className="h-full w-full object-cover" />
                 </button>
               ) : (
                 <div className="flex aspect-[16/9] items-center justify-center bg-[#17140d] text-xs uppercase tracking-[0.2em]" style={{ color: MUTED }}>
@@ -297,7 +298,7 @@ export default function ListingDetailPage() {
                       onClick={() => setSelectedPhoto(photo)}
                       aria-label={`${t('listingMedia.openPhoto')} ${index + 1}`}
                     >
-                      <img src={photo} alt={`${title} ${index + 1}`} className="aspect-square h-full w-full object-cover" />
+                      <SignedImage src={photo} alt={`${title} ${index + 1}`} className="aspect-square h-full w-full object-cover" />
                     </button>
                   ))}
                 </div>
@@ -390,11 +391,10 @@ export default function ListingDetailPage() {
           >
             × {t('common.close')}
           </button>
-          <img
+          <SignedImage
             src={selectedPhoto}
             alt={title}
             className="max-h-[88dvh] max-w-full rounded-xl object-contain"
-            onClick={(event) => event.stopPropagation()}
           />
         </div>
       ) : null}

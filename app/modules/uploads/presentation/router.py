@@ -18,7 +18,6 @@ from app.modules.uploads.application.signing import (
     verify_file_url,
 )
 from app.shared.presentation.auth_dependencies import require_current_user
-from app.shared.presentation.authorization import is_platform_admin
 from app.shared.presentation.error_schemas import error_responses
 
 from .schemas import UploadResponse
@@ -132,10 +131,11 @@ async def sign_uploaded_file(
     ttl_seconds: int = DEFAULT_TTL_SECONDS,
     current_user=Depends(require_current_user),
 ):
-    """Generate a short-lived signed URL for a file. Admin only."""
-    if not is_platform_admin(current_user):
-        raise HTTPException(status_code=403, detail="Platform admin access required")
+    """Generate a short-lived signed URL for a file.
 
+    Any authenticated user can sign — the raw UUID is the capability
+    (you must know it), auth adds a layer, signature adds expiry.
+    """
     safe = _validate_file_id(file_id)
     path = UPLOAD_ROOT / safe
     if not path.is_file():

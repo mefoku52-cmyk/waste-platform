@@ -8,6 +8,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { useT } from '@/lib/i18n/context';
 import { useMarketplace } from '@/features/listings';
 import { http } from '@/lib/api/http';
+import { SignedImage } from '@/features/uploads/components/signed-image';
 
 type Listing = {
   id: string;
@@ -553,15 +554,10 @@ export default function DashboardPage() {
                     >
                       {heroImage ? (
                         <div className="relative aspect-[16/10] w-full">
-                          <img
+                          <SignedImage
                             src={heroImage}
                             alt={item.title}
                             className="h-full w-full object-cover opacity-90"
-                            onError={(event) => {
-                              (
-                                event.currentTarget as HTMLImageElement
-                              ).style.display = 'none';
-                            }}
                           />
 
                           <div
@@ -697,7 +693,7 @@ export default function DashboardPage() {
                                       : 'transparent',
                                 }}
                               >
-                                <img
+                                <SignedImage
                                   src={image}
                                   alt=""
                                   className="h-16 w-16 rounded-md object-cover"
