@@ -299,12 +299,12 @@ export default function MyListingsPage() {
                     {(item.imageUrl || item.image_url) ? (
                       <Link
                         href={`/dashboard/listings/${item.id}`}
-                        className="hidden flex-shrink-0 self-center sm:block"
+                        className="flex-shrink-0 self-center"
                       >
                         <SignedImage
                           src={item.imageUrl || item.image_url || null}
                           alt={item.title || 'Ponuka'}
-                          className="h-24 w-24 rounded-xl object-cover"
+                          className="h-16 w-16 rounded-xl object-cover sm:h-24 sm:w-24"
                         />
                       </Link>
                     ) : null}
