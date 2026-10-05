@@ -159,11 +159,6 @@ def test_gmail_rejected_when_local_part_does_not_match():
     assert result == []
 
 
-@pytest.mark.xfail(
-    reason="D2 nie je implementovana: _filter_emails zahodí KAŽDÝ free provider "
-    "ešte pred kontrolou local-partu. Viď report KROK A.",
-    strict=True,
-)
 def test_gmail_accepted_when_local_part_matches_company():
     """D2: odpadytatry@gmail.com pre firmu ODPADY TATRY -> accept."""
     emails = ["odpadytatry@gmail.com"]
@@ -217,3 +212,56 @@ def test_find_email_none_url():
     assert finder.find_email_for_company(None) is None
     assert finder.find_email_for_company("") is None
     finder.close()
+
+
+def test_d2_rejects_gmail_without_match():
+    """D2: jan.novak@gmail.com pre ODPADY TATRY -> reject."""
+    emails = ["jan.novak@gmail.com"]
+    result = LegalEmailFinder._filter_emails(emails, "ODPADY TATRY")
+    assert result == []
+
+
+def test_d2_no_company_name_rejects_all_free():
+    """Bez nazvu firmy sa D2 neda overit -> free sa zahodi."""
+    emails = ["odpadytatry@gmail.com"]
+    result = LegalEmailFinder._filter_emails(emails, None)
+    assert result == []
+
+
+def test_d2_non_free_uses_name_match():
+    """Non-free domena pouziva _email_matches_company."""
+    # zhoda cez domenu
+    r = LegalEmailFinder._filter_emails(["info@ekol.sk"], "EKOL s.r.o.")
+    assert r == ["info@ekol.sk"]
+
+    # ziadna zhoda -> reject
+    r = LegalEmailFinder._filter_emails(["support@discord.com"], "EKOL s.r.o.")
+    assert r == []
+
+
+def test_d2_gmail_accepted_with_name_token():
+    """Gmail prejde ak local-part obsahuje token z nazvu firmy."""
+    result = LegalEmailFinder._filter_emails(["ekolrecycling@gmail.com"], "EKOL RECYCLING s.r.o.")
+    assert result == ["ekolrecycling@gmail.com"]
+
+
+def test_d2_gmail_rejected_with_short_token():
+    """Kratke tokeny (< 3 znaky) sa ignoruju."""
+    # 'ab' je 2 znaky, 'abfirma' nebude match
+    result = LegalEmailFinder._filter_emails(["xy@gmail.com"], "AB s.r.o.")
+    assert result == []
+
+
+def test_d2_mixed_list():
+    """Mix free/non-free/junk - spravne sa prefiltruje."""
+    emails = [
+        "info@odpady-tatry.sk",  # non-free, name-match -> OK
+        "odpadytatry@gmail.com",  # free, name-match -> OK
+        "random@gmail.com",  # free, no match -> reject
+        "support@discord.com",  # non-free, no match -> reject
+    ]
+    result = LegalEmailFinder._filter_emails(emails, "ODPADY TATRY")
+    assert "info@odpady-tatry.sk" in result
+    assert "odpadytatry@gmail.com" in result
+    assert "random@gmail.com" not in result
+    assert "support@discord.com" not in result

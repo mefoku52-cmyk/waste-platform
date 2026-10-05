@@ -279,11 +279,32 @@ class LegalEmailFinder:
 
     @staticmethod
     def _filter_emails(emails: list[str], company_name: str | None) -> list[str]:
-        """Filtruj: ziadny free provider + musi mat suvislost s firmou."""
+        """Filtruj emaily podla D2 pravidla.
+
+        Non-free domena: musi mat suvislost s firmou (name-match).
+        Free domena: prejde IBA ak local-part obsahuje aspon 3 znaky
+        z normalizovaneho nazvu firmy.
+
+        Priklad: 'odpadytatry@gmail.com' pre 'ODPADY TATRY' -> accept
+                 'jan.novak@gmail.com'    pre 'ODPADY TATRY' -> reject
+        """
+        # Lazy import: website_contact_crawler importuje tento modul,
+        # takze na module-level by vznikol cyklus.
+        from app.modules.lead_finder.application.services.website_contact_crawler import (
+            _local_part_matches_company,
+        )
+
         result: list[str] = []
         for e in emails:
             if _is_free_email(e):
+                if not company_name:
+                    continue
+                local = e.rsplit("@", 1)[0]
+                if not _local_part_matches_company(local, company_name):
+                    continue
+                result.append(e)
                 continue
+
             if company_name and not _email_matches_company(e, company_name):
                 continue
             result.append(e)
