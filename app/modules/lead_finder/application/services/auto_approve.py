@@ -29,6 +29,9 @@ from app.modules.lead_finder.domain.entities.outreach_candidate import (
 from app.modules.lead_finder.infrastructure.persistence.repositories import (
     SqlAlchemyOutreachCandidateRepository,
 )
+from app.shared.presentation.business_metrics import (
+    AUTO_APPROVE_TOTAL,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -137,6 +140,18 @@ async def run_auto_approve(
                     "email": candidate.email,
                 }
             )
+
+    # Prometheus increments — skip in dry_run so preview does not
+    # pollute production metrics.
+    if not dry_run:
+        if approved:
+            AUTO_APPROVE_TOTAL.labels(result="approved").inc(approved)
+        if skipped_no_email:
+            AUTO_APPROVE_TOTAL.labels(result="skipped_no_email").inc(skipped_no_email)
+        if skipped_junk:
+            AUTO_APPROVE_TOTAL.labels(result="skipped_junk").inc(skipped_junk)
+        if skipped_invalid:
+            AUTO_APPROVE_TOTAL.labels(result="skipped_invalid").inc(skipped_invalid)
 
     logger.info(
         "Auto-approve: checked=%d approved=%d skipped_no_email=%d "

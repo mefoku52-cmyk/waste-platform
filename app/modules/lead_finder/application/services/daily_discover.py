@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from datetime import UTC
 from typing import Any
 
@@ -25,6 +26,11 @@ from app.modules.lead_finder.infrastructure.persistence.models import (
 )
 from app.modules.lead_finder.infrastructure.persistence.repositories import (
     SqlAlchemyOutreachCandidateRepository,
+)
+from app.shared.presentation.business_metrics import (
+    DISCOVERY_SAVED_TOTAL,
+    DISCOVERY_TOTAL,
+    PIPELINE_DURATION,
 )
 
 logger = logging.getLogger(__name__)
@@ -272,6 +278,8 @@ async def run_category_discover(
         SqlAlchemyOutreachCandidateRepository,
     )
 
+    _t_started = time.monotonic()
+
     slugs = [
         s
         for s in (list(DEFAULT_CATEGORIES) if categories is None else categories)
@@ -298,6 +306,8 @@ async def run_category_discover(
 
         per_category[slug] = len(found)
 
+        DISCOVERY_TOTAL.labels(source="zs_category").inc(len(found))
+
         for company in found:
             email = (company.email or "").strip().lower()
             if not email or email in seen_emails:
@@ -318,6 +328,9 @@ async def run_category_discover(
                 source_url=company.source_url,
             )
             saved += 1
+            DISCOVERY_SAVED_TOTAL.labels(source="zs_category").inc()
+
+    PIPELINE_DURATION.labels(stage="zs_discovery").observe(time.monotonic() - _t_started)
 
     logger.info(
         "Category discovery: categories=%s discovered=%d saved=%d duplicates=%d",

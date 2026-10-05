@@ -114,5 +114,26 @@ class TelegramService:
         """Testovacia sprava pre UI tlacidlo."""
         return await TelegramService.notify("🔔 <b>CMEP test</b>\nTelegram bot funguje správne.")
 
+    @staticmethod
+    async def notify_alert(
+        *,
+        title: str,
+        message: str,
+        level: str = "warning",
+    ) -> bool:
+        """Generic alert with severity icon. Levels: info, warning, error."""
+        icons = {"info": "ℹ️", "warning": "⚠️", "error": "🚨"}
+        icon = icons.get(level, "⚠️")
+        return await TelegramService.notify(f"{icon} <b>{title}</b>\n\n{message}")
+
+    @staticmethod
+    async def notify_pipeline_failure(*, job_name: str, error: str) -> bool:
+        """Scheduled job failure alert. Error is truncated to 500 chars."""
+        return await TelegramService.notify_alert(
+            title=f"Pipeline zlyhal: {job_name}",
+            message=f"<code>{(error or 'unknown')[:500]}</code>",
+            level="error",
+        )
+
 
 __all__ = ["TelegramService"]

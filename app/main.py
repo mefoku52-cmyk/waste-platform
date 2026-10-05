@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text as _sql_text
 
 from app.core.config import settings
 from app.core.http_exception_handlers import register_http_exception_handlers
@@ -117,6 +118,54 @@ def create_app() -> FastAPI:
             "mounted_routers": mounted,
             "skipped_routers": skipped,
         }
+
+    @app.get("/ready")
+    async def ready():
+        """Kubernetes-style readiness probe.
+
+        Returns 200 only when the app can actually serve traffic:
+        database reachable via SELECT 1 and Redis responds to PING.
+        Returns 503 otherwise with a breakdown of which dependency
+        failed. Never raises.
+        """
+        from fastapi.responses import JSONResponse
+
+        checks: dict[str, str] = {}
+
+        # --- Database ---
+        try:
+            from app.shared.infrastructure.db.session import (
+                async_session_factory,
+            )
+
+            async with async_session_factory() as session:
+                await session.execute(_sql_text("SELECT 1"))
+            checks["database"] = "ok"
+        except Exception as exc:
+            checks["database"] = f"fail: {type(exc).__name__}"
+
+        # --- Redis ---
+        try:
+            import redis as _redis
+
+            client = _redis.from_url(settings.REDIS_URL, socket_timeout=2)
+            client.ping()
+            checks["redis"] = "ok"
+        except Exception as exc:
+            checks["redis"] = f"fail: {type(exc).__name__}"
+
+        healthy = all(v == "ok" or v == "disabled" for v in checks.values())
+        status_code = 200 if healthy else 503
+
+        return JSONResponse(
+            status_code=status_code,
+            content={
+                "status": "ready" if healthy else "not-ready",
+                "checks": checks,
+                "env": settings.app_env,
+                "version": settings.app_version,
+            },
+        )
 
     try:
         from app.shared.presentation.api_router import api_router

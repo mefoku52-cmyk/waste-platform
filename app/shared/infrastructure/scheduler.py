@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -12,6 +13,36 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 _scheduler: AsyncIOScheduler | None = None
+_BACKGROUND_ALERT_TASKS: set[asyncio.Task] = set()
+
+
+def _notify_scheduler_failure(job_name: str, error: BaseException) -> None:
+    """Fire-and-forget Telegram alert when a scheduled job fails."""
+    try:
+        from app.modules.notifications.application.telegram_service import (
+            TelegramService,
+        )
+    except Exception:
+        return
+
+    async def _send() -> None:
+        try:
+            await TelegramService.notify_pipeline_failure(
+                job_name=job_name,
+                error=f"{type(error).__name__}: {error}",
+            )
+        except Exception:
+            logger.debug("Telegram scheduler alert failed", exc_info=True)
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        logger.debug("No running loop for scheduler alert")
+        return
+
+    task = loop.create_task(_send())
+    _BACKGROUND_ALERT_TASKS.add(task)
+    task.add_done_callback(_BACKGROUND_ALERT_TASKS.discard)
 
 
 async def _daily_lead_discover_wrapper() -> None:
@@ -25,8 +56,9 @@ async def _daily_lead_discover_wrapper() -> None:
         async with async_session_factory() as session:
             result = await run_daily_discover(session)
             logger.info("Daily lead discover result: %s", result)
-    except Exception:
+    except Exception as exc:
         logger.exception("Daily lead discover zlyhal")
+        _notify_scheduler_failure("daily_lead_discover", exc)
 
 
 async def _cleanup_pending_users_wrapper() -> None:
@@ -64,8 +96,9 @@ async def _cleanup_pending_users_wrapper() -> None:
                 except Exception:
                     logger.exception("Cleanup pending user failed id=%s", uid)
             logger.info("Cleanup pending users: deleted %d stale accounts of %d", deleted, len(ids))
-    except Exception:
+    except Exception as exc:
         logger.exception("Cleanup pending users zlyhal")
+        _notify_scheduler_failure("cleanup_pending_users", exc)
 
 
 async def _daily_lead_outreach_wrapper() -> None:
@@ -105,8 +138,9 @@ async def _daily_lead_outreach_wrapper() -> None:
                     "found": bf.get("found"),
                 },
             )
-    except Exception:
+    except Exception as exc:
         logger.exception("Daily lead outreach zlyhal")
+        _notify_scheduler_failure("daily_lead_outreach", exc)
 
 
 async def _daily_matching_wrapper() -> None:
@@ -118,8 +152,9 @@ async def _daily_matching_wrapper() -> None:
         async with async_session_factory() as session:
             result = await run_daily_matching(session)
             logger.info("Daily matching result: %s", result)
-    except Exception:
+    except Exception as exc:
         logger.exception("Daily matching job zlyhal")
+        _notify_scheduler_failure("daily_matching", exc)
 
 
 async def run_lead_discover_job() -> None:

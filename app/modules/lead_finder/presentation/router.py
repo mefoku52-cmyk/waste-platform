@@ -35,6 +35,12 @@ from app.shared.presentation.authorization import (
     current_user_id,
     is_platform_admin,
 )
+from app.shared.presentation.business_metrics import (
+    BOUNCE_TOTAL,
+    DRAFTS_TOTAL,
+    PIPELINE_DURATION,
+    SEND_TOTAL,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -329,6 +335,14 @@ async def send_outreach_email(
         listing_id=None,
         payload=f"to={payload.to},via=resend",
     )
+
+    SEND_TOTAL.labels(result="ok").inc()
+
+    # Bounce detection: ak Resend hlási odmietnutie, započítaj bounce.
+    if result.message and (
+        "bounce" in result.message.lower() or "odmietol" in result.message.lower()
+    ):
+        BOUNCE_TOTAL.inc()
 
     _fire_and_forget(TelegramService.notify_sent(payload.to, ok=True))
 
@@ -732,6 +746,13 @@ async def draft_new_candidates(
         )
     )
 
+    if drafted:
+        DRAFTS_TOTAL.labels(result="ok").inc(drafted)
+    if failed:
+        DRAFTS_TOTAL.labels(result="failed").inc(failed)
+    if skipped:
+        DRAFTS_TOTAL.labels(result="skipped").inc(skipped)
+
     return DraftNewResponse(drafted=drafted, failed=failed, skipped=skipped)
 
 
@@ -877,6 +898,13 @@ async def auto_send_batch(
             f"Trvanie: {duration:.1f}s"
         )
     )
+
+    if sent:
+        SEND_TOTAL.labels(result="ok").inc(sent)
+    if failed:
+        SEND_TOTAL.labels(result="failed").inc(failed)
+
+    PIPELINE_DURATION.labels(stage="send_batch").observe(duration)
 
     return AutoSendBatchResponse(
         sent=sent,
