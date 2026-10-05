@@ -90,6 +90,26 @@ type OutreachStatus = {
   remaining_today: number;
 };
 
+function QuotaLine() {
+  const [line, setLine] = React.useState("Limit dnes: načítavam…");
+  React.useEffect(() => {
+    let stop = false;
+    http.get<{ limit: number; sent_today: number; rejected_today: number; remaining: number }>(
+      "/admin/lead-outreach/quota",
+    ).then((q) => {
+      if (!stop) {
+        setLine(`Dnes odoslané ${q.sent_today} / ${q.limit}, odmietnuté ${q.rejected_today}, ostáva ${q.remaining}`);
+      }
+    }).catch(() => {
+      if (!stop) setLine("Limit dnes sa nepodarilo načítať");
+    });
+    return () => {
+      stop = true;
+    };
+  }, []);
+  return <p className="mt-2 text-xs" style={{ color: MUTED }}>{line}</p>;
+}
+
 export default function LeadOutreachPage() {
   const { t } = useT();
   const { user, isLoading } = useAuthRequired();
@@ -1018,7 +1038,8 @@ export default function LeadOutreachPage() {
                     >
                       {busyAutoApprove
                         ? "Schvaľujem…"
-                        : "Auto-schváliť s emailom"}
+                        : "<QuotaLine />
+            Auto-schváliť s emailom"}
                     </button>
 
                     <button

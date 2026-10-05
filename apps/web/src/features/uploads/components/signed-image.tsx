@@ -57,9 +57,13 @@ export function SignedImage({
     };
   }, [src, ttlSeconds]);
 
+  if (!src) {
+    return <div className={className} style={style}>nemá fotku</div>;
+  }
   if (error) {
     return (
       <div
+        data-sign-failed="1"
         className={className}
         style={{
           ...style,
