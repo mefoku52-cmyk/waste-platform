@@ -234,6 +234,42 @@ async def lead_outreach_status(
     )
 
 
+@router.get("/quota")
+async def outreach_quota(
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+):
+    _require_admin(current_user)
+    from app.core.config import settings
+
+    limit = max(1, int(getattr(settings, "LEAD_OUTREACH_DAILY_LIMIT", 30) or 30))
+    sent = 0
+    rejected = 0
+    try:
+        row = await session.execute(
+            text(
+                """
+                SELECT
+                  COUNT(*) FILTER (WHERE action = 'lead_outreach.send') AS sent,
+                  COUNT(*) FILTER (WHERE action = 'lead_outreach.reject') AS rejected
+                FROM audit_logs
+                WHERE created_at >= date_trunc('day', now() AT TIME ZONE 'UTC')
+                """
+            )
+        )
+        found = row.mappings().first() or {}
+        sent = int(found.get("sent") or 0)
+        rejected = int(found.get("rejected") or 0)
+    except Exception:
+        await session.rollback()
+    return {
+        "limit": limit,
+        "sent_today": sent,
+        "rejected_today": rejected,
+        "remaining": max(0, limit - sent),
+    }
+
+
 @router.post("/discover-daily", response_model=DiscoverDailyResponse)
 async def discover_daily(
     current_user=Depends(require_current_user),
