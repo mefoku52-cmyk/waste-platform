@@ -7,6 +7,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { useListings } from '@/features/listings';
 import { http } from '@/lib/api/http';
 import { useT } from '@/lib/i18n/context';
+import { SignedImage } from '@/features/uploads/components/signed-image';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -61,6 +62,8 @@ const COMPANY_STATUS_WARN: Record<string, string> = {
 type Listing = {
   id: string;
   title?: string;
+  imageUrl?: string | null;
+  image_url?: string | null;
   description?: string;
   material_type?: string;
   materialType?: string;
@@ -230,65 +233,97 @@ export default function MyListingsPage() {
 
               return (
                 <li key={item.id}>
-                  <Link
-                    href={`/dashboard/listings/${item.id}`}
-                    className="block rounded-2xl border p-5 transition-colors hover:bg-white/5"
+                  <div
+                    className="flex gap-4 rounded-2xl border p-5 transition-colors hover:bg-white/5"
                     style={{
                       borderColor:
                         'color-mix(in srgb, #c9a84c 25%, transparent)',
                     }}
                   >
-                    <p
-                      className="text-[10px] uppercase tracking-[0.25em]"
-                      style={{ color: GOLD }}
+                    <Link
+                      href={`/dashboard/listings/${item.id}`}
+                      className="min-w-0 flex-1 block"
                     >
-                      {item.material_type ||
-                        item.materialType ||
-                        '—'}
-                    </p>
+                      <p
+                        className="text-[10px] uppercase tracking-[0.25em]"
+                        style={{ color: GOLD }}
+                      >
+                        {item.material_type ||
+                          item.materialType ||
+                          '—'}
+                      </p>
 
-                    <h3
-                      className="mt-2 text-2xl"
-                      style={{
-                        fontFamily: 'DM Serif Display, serif',
-                        color: GOLD_BRIGHT,
-                      }}
-                    >
-                      {item.title || 'Ponuka'}
-                    </h3>
-
-                    <p
-                      className="mt-2 line-clamp-2 text-sm"
-                      style={{ color: MUTED }}
-                    >
-                      {item.description || '—'}
-                    </p>
-
-                    <div
-                      className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs"
-                      style={{ color: FAINT }}
-                    >
-                      <span>{item.location || '—'}</span>
-
-                      <span>
-                        {item.quantity || '—'} {item.unit || ''}
-                      </span>
-
-                      <span
-                        className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em]"
+                      <h3
+                        className="mt-2 text-2xl"
                         style={{
-                          background:
-                            statusMeta?.bg ||
-                            'rgba(110,102,88,0.15)',
-                          color:
-                            statusMeta?.color ||
-                            '#9a8f7c',
+                          fontFamily: 'DM Serif Display, serif',
+                          color: GOLD_BRIGHT,
                         }}
                       >
-                        {statusMeta?.label || status}
-                      </span>
+                        {item.title || 'Ponuka'}
+                      </h3>
+
+                      <p
+                        className="mt-2 line-clamp-2 text-sm"
+                        style={{ color: MUTED }}
+                      >
+                        {item.description || '—'}
+                      </p>
+
+                      <div
+                        className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs"
+                        style={{ color: FAINT }}
+                      >
+                        <span>{item.location || '—'}</span>
+
+                        <span>
+                          {item.quantity || '—'} {item.unit || ''}
+                        </span>
+
+                        <span
+                          className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.1em]"
+                          style={{
+                            background:
+                              statusMeta?.bg ||
+                              'rgba(110,102,88,0.15)',
+                            color:
+                              statusMeta?.color ||
+                              '#9a8f7c',
+                          }}
+                        >
+                          {statusMeta?.label || status}
+                        </span>
+                      </div>
+                    </Link>
+
+                    {(item.imageUrl || item.image_url) ? (
+                      <Link
+                        href={`/dashboard/listings/${item.id}`}
+                        className="hidden flex-shrink-0 self-center sm:block"
+                      >
+                        <SignedImage
+                          src={item.imageUrl || item.image_url || null}
+                          alt={item.title || 'Ponuka'}
+                          className="h-24 w-24 rounded-xl object-cover"
+                        />
+                      </Link>
+                    ) : null}
+
+                    <div className="flex flex-shrink-0 flex-col items-center justify-center gap-2 self-center">
+                      <Link
+                        href={`/dashboard/listings/${item.id}/edit`}
+                        className="rounded-lg border px-3 py-1.5 text-xs font-semibold transition hover:bg-white/5"
+                        style={{
+                          borderColor:
+                            'color-mix(in srgb, #c9a84c 45%, transparent)',
+                          color: GOLD_BRIGHT,
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Upraviť
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                 </li>
               );
             })}

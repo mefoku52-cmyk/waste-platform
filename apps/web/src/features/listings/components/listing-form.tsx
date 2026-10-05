@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { listingSchema, ListingInput } from '../schemas';
 import { useCreateListing } from '../hooks/use-create-listing';
+import { useUpdateListing } from '../hooks/use-update-listing';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
@@ -14,9 +16,33 @@ import { uploadFile } from '../../uploads/api';
 import { config } from '../../../lib/config';
 import { useT } from "@/lib/i18n/context";
 
-export const ListingForm = () => {
+type Props = {
+  listingId?: string;
+  initialData?: Partial<ListingInput>;
+};
+
+export const ListingForm = ({ listingId, initialData }: Props = {}) => {
   const { t } = useT();
-  const { mutate: createListing, isPending, error } = useCreateListing();
+  const isEdit = Boolean(listingId);
+
+  const createResult = useCreateListing();
+  const updateResult = useUpdateListing(listingId || '');
+
+  const {
+    mutate: createListing,
+    isPending: createPending,
+    error: createError,
+  } = createResult;
+
+  const {
+    mutate: updateListing,
+    isPending: updatePending,
+    error: updateError,
+  } = updateResult;
+
+  const isPending = isEdit ? updatePending : createPending;
+  const error = isEdit ? updateError : createError;
+
   const router = useRouter();
 
   const { data: companiesData, isLoading: isLoadingCompanies } = useQuery({
@@ -35,28 +61,61 @@ export const ListingForm = () => {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors },
   } = useForm<ListingInput>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
-      imageUrl: '',
-      quantity: 0,
-      unit: 'kg',
-      currency: 'EUR',
-      condition: 'použité',
+      title: initialData?.title ?? '',
+      materialType: initialData?.materialType ?? '',
+      quantity: initialData?.quantity ?? 0,
+      unit: initialData?.unit ?? 'kg',
+      price: initialData?.price,
+      currency: initialData?.currency ?? 'EUR',
+      condition: initialData?.condition ?? 'použité',
+      location: initialData?.location ?? '',
+      companyId: initialData?.companyId ?? '',
+      description: initialData?.description ?? '',
+      imageUrl: initialData?.imageUrl ?? '',
     },
   });
+
+  useEffect(() => {
+    if (!initialData) return;
+    reset({
+      title: initialData.title ?? '',
+      materialType: initialData.materialType ?? '',
+      quantity: initialData.quantity ?? 0,
+      unit: initialData.unit ?? 'kg',
+      price: initialData.price,
+      currency: initialData.currency ?? 'EUR',
+      condition: initialData.condition ?? 'použité',
+      location: initialData.location ?? '',
+      companyId: initialData.companyId ?? '',
+      description: initialData.description ?? '',
+      imageUrl: initialData.imageUrl ?? '',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listingId]);
 
   const onSubmit = (data: ListingInput) => {
     if (!hasCompanies) {
       return;
     }
 
-    createListing(data as any, {
-      onSuccess: () => {
+    const onSuccess = () => {
+      if (isEdit && listingId) {
+        router.push(`/dashboard/listings/${listingId}`);
+      } else {
         router.push('/dashboard');
-      },
-    });
+      }
+    };
+
+    if (isEdit && listingId) {
+      updateListing(data as any, { onSuccess });
+    } else {
+      createListing(data as any, { onSuccess });
+    }
   };
 
   if (!isLoadingCompanies && !hasCompanies) {
@@ -124,7 +183,7 @@ export const ListingForm = () => {
     >
       <div className="border-b border-slate-300 pb-4">
         <p className="text-[10px] font-semibold uppercase tracking-wider">
-          Nová ponuka
+          {isEdit ? 'Upraviť ponuku' : 'Nová ponuka'}
         </p>
         <h2 className="mt-1 text-xl font-bold text-slate-900">{t('listingForm.titleAdd')}</h2>
         <p className="mt-1 text-sm text-slate-600">
@@ -295,7 +354,11 @@ export const ListingForm = () => {
           className="font-semibold text-[#090807] hover:opacity-90"
           style={{ background: '#c9a84c' }}
         >
-          {isPending ? 'Ukladám...' : 'Vytvoriť ponuku'}
+          {isPending
+            ? 'Ukladám...'
+            : isEdit
+              ? 'Uložiť zmeny'
+              : 'Vytvoriť ponuku'}
         </Button>
       </div>
     </form>

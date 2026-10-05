@@ -10,3 +10,4 @@ export * from './hooks/use-marketplace'
 export * from './hooks/use-matches'
 export * from './schemas'
 export * from './types'
+export { useUpdateListing } from './hooks/use-update-listing';
