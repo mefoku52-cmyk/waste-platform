@@ -12,11 +12,12 @@ const GOLD_BRIGHT = '#e8d48b';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 
-const NAV_KEYS = ['overview', 'listings', 'companies', 'documents', 'inquiries', 'chat'] as const;
+const NAV_KEYS = ['overview', 'listings', 'my-listings', 'companies', 'documents', 'inquiries', 'chat'] as const;
 
 const NAV_HREFS: Record<string, string | undefined> = {
   overview: '/dashboard',
   listings: '/dashboard/listings',
+  'my-listings': '/dashboard/listings/mine',
   companies: '/dashboard/companies',
   documents: '/dashboard/documents',
   inquiries: '/dashboard/inquiries',
@@ -26,6 +27,7 @@ const NAV_HREFS: Record<string, string | undefined> = {
 const NAV_LABEL_KEYS: Record<string, string> = {
   overview: 'nav.overview',
   listings: 'nav.listings',
+  'my-listings': 'nav.myListings',
   companies: 'nav.companies',
   documents: 'nav.documents',
   inquiries: 'nav.inquiries',
