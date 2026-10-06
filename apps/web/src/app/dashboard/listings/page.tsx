@@ -78,7 +78,7 @@ type Listing = {
 
 export default function MyListingsPage() {
   const { t } = useT();
-  const [mine, setMine] = useState(false);
+  const [mine, setMine] = useState(true);
   const own = useListings() as {
     data?: unknown;
     isLoading?: boolean;
