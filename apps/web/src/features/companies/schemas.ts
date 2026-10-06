@@ -14,7 +14,7 @@ export const companySchema = z.object({
   buyerCapability: z.boolean().default(true),
   logisticsCapability: z.boolean().default(false),
   tradingName: z.string().optional(),
-  taxIdentifier: z.string().regex(/^\\d{8}$/, 'ICO musi mat 8 cislic'),
+  taxIdentifier: z.string().regex(/^\d{8}$/, 'ICO musi mat 8 cislic'),
   vatIdentifier: z.string().optional(),
   email: z.string().email('Neplatný e-mail').optional().or(z.literal('')),
   phone: z.string().optional(),
