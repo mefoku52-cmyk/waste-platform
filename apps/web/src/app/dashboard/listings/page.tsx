@@ -78,7 +78,7 @@ type Listing = {
 
 export default function MyListingsPage() {
   const { t } = useT();
-  const [mine, setMine] = useState(false);
+  const [mine, setMine] = useState(true);
   const own = useListings() as {
     data?: unknown;
     isLoading?: boolean;
@@ -185,9 +185,30 @@ export default function MyListingsPage() {
           >
             {t('listings.add')}
             </Link>
-            <button type="button" onClick={() => setMine((v) => !v)} className="rounded-full px-4 py-2 text-sm" style={{ color: GOLD }}>
-              {mine ? 'Všetky ponuky' : 'Moje ponuky'}
-            </button>
+            <div className="flex gap-1 rounded-full border p-1" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)' }}>
+              <button
+                type="button"
+                onClick={() => setMine(true)}
+                className="rounded-full px-4 py-2 text-sm font-semibold transition"
+                style={{
+                  background: mine ? GOLD : 'transparent',
+                  color: mine ? '#090807' : GOLD,
+                }}
+              >
+                Moje ponuky
+              </button>
+              <button
+                type="button"
+                onClick={() => setMine(false)}
+                className="rounded-full px-4 py-2 text-sm font-semibold transition"
+                style={{
+                  background: !mine ? GOLD : 'transparent',
+                  color: !mine ? '#090807' : GOLD,
+                }}
+              >
+                Marketplace
+              </button>
+            </div>
         </div>
 
         {isLoading ? (
