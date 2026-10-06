@@ -50,8 +50,13 @@ async def _authorize_document_file(
     document_url = f"/api/v1/uploads/{file_id}"
     document = await service.get_by_file_url(document_url)
 
+    # Ak Document záznam neexistuje, file_id je capability: 32-znakový UUID
+    # (neuhádnuteľný) + auth + podpis s expiráciou stačia. Upload endpoint
+    # pre listing fotky Document nevytvára, takže bez tohto fallbacku by
+    # každý listing obrázok padal na 404 a frontend by zobrazil
+    # "podpis fotky zlyhal".
     if document is None:
-        raise HTTPException(status_code=404, detail="Document file not found")
+        return
 
     status_value = getattr(document.status, "value", document.status)
 
