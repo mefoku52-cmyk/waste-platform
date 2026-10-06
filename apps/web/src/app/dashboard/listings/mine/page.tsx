@@ -5,7 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { useListings } from '@/features/listings';
-import { useState } from 'react';
 import { http } from '@/lib/api/http';
 import { useT } from '@/lib/i18n/context';
 import { SignedImage } from '@/features/uploads/components/signed-image';
@@ -83,13 +82,7 @@ export default function MyListingsPage() {
     isLoading?: boolean;
     error?: unknown;
   };
-  const market = useMarketplace() as {
-    data?: unknown;
-    isLoading?: boolean;
-    error?: unknown;
-  };
-  const selected = mine ? own : market;
-  const { data, isLoading, error } = selected;
+  const { data, isLoading, error } = own;
 
   const { data: companiesData } = useQuery({
     queryKey: ['companies', 'my'],
@@ -184,30 +177,6 @@ export default function MyListingsPage() {
           >
             {t('listings.add')}
             </Link>
-            <div className="flex gap-1 rounded-full border p-1" style={{ borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)' }}>
-              <button
-                type="button"
-                onClick={() => setMine(true)}
-                className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                style={{
-                  background: mine ? GOLD : 'transparent',
-                  color: mine ? '#090807' : GOLD,
-                }}
-              >
-                Moje ponuky
-              </button>
-              <button
-                type="button"
-                onClick={() => setMine(false)}
-                className="rounded-full px-4 py-2 text-sm font-semibold transition"
-                style={{
-                  background: !mine ? GOLD : 'transparent',
-                  color: !mine ? '#090807' : GOLD,
-                }}
-              >
-                Marketplace
-              </button>
-            </div>
         </div>
 
         {isLoading ? (
