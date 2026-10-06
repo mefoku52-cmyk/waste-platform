@@ -1,7 +1,10 @@
 """analytics API router."""
 
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status as http_status
+from pydantic import BaseModel, Field
 
 from app.shared.domain.exceptions import (
     ForbiddenDomainError,
@@ -16,9 +19,13 @@ from app.shared.presentation.authorization import (
 )
 from app.shared.presentation.error_schemas import error_responses
 
+from ..application.acquisition import (
+    AcquisitionEventInput,
+    AcquisitionTrackingService,
+)
 from ..application.services import AnalyticsEventService
 from ..domain.entities import AnalyticsEventEntity
-from .dependencies import get_analytics_service
+from .dependencies import get_analytics_repo, get_analytics_service
 from .schemas import (
     AnalyticsEventCreateRequest,
     AnalyticsEventData,
@@ -210,3 +217,65 @@ async def delete_analytic(
         await service.delete(id)
     except NotFoundDomainError as exc:
         raise HTTPException(status_code=http_status.HTTP_404_NOT_FOUND, detail=exc.message) from exc
+
+
+# Acquisition tracking endpoint.
+
+
+class AcquisitionEventRequest(BaseModel):
+    event_type: str = Field(min_length=1, max_length=120)
+    entity_type: str = Field(default="acquisition", max_length=120)
+    entity_id: UUID | None = None
+    company_id: UUID | None = None
+
+    utm_source: str | None = Field(default=None, max_length=255)
+    utm_medium: str | None = Field(default=None, max_length=255)
+    utm_campaign: str | None = Field(default=None, max_length=255)
+    utm_content: str | None = Field(default=None, max_length=255)
+    utm_term: str | None = Field(default=None, max_length=255)
+
+    anonymous_id: str | None = Field(default=None, max_length=255)
+    fbp: str | None = Field(default=None, max_length=255)
+    fbc: str | None = Field(default=None, max_length=255)
+
+    landing_page: str | None = Field(default=None, max_length=2000)
+    referrer: str | None = Field(default=None, max_length=2000)
+
+
+@router.post(
+    "/acquisition/events",
+    status_code=http_status.HTTP_201_CREATED,
+    summary="Record acquisition event",
+    operation_id="recordAcquisitionEvent",
+)
+async def record_acquisition_event(
+    request: AcquisitionEventRequest,
+    repository=Depends(get_analytics_repo),
+):
+    service = AcquisitionTrackingService(repository)
+
+    event = await service.record(
+        AcquisitionEventInput(
+            event_type=request.event_type,
+            entity_type=request.entity_type,
+            entity_id=request.entity_id,
+            company_id=request.company_id,
+            utm_source=request.utm_source,
+            utm_medium=request.utm_medium,
+            utm_campaign=request.utm_campaign,
+            utm_content=request.utm_content,
+            utm_term=request.utm_term,
+            anonymous_id=request.anonymous_id,
+            fbp=request.fbp,
+            fbc=request.fbc,
+            landing_page=request.landing_page,
+            referrer=request.referrer,
+        )
+    )
+
+    return {
+        "id": str(event.id),
+        "event_type": event.event_type,
+        "entity_type": event.entity_type,
+        "recorded_at": event.recorded_at.isoformat(),
+    }
