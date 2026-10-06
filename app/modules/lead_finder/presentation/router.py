@@ -837,6 +837,29 @@ async def auto_approve_candidates(
     return AutoApproveResponse(**result)
 
 
+def _default_outreach_body(company_name: str, city: str | None = None) -> str:
+    """Základný fallback text, keď kandidát nemá vygenerovaný draft.
+
+    Používa sa v batch send, aby Resend neodmietol prázdne telo (422).
+    Admin môže neskôr spustiť /draft-new pre personalizované texty.
+    """
+    location = f" ({city})" if city else ""
+    return (
+        f"Dobrý deň,\n\n"
+        f"oslovujeme Vás z platformy CMEP (Circular Materials Exchange Platform) "
+        f"— trhovisko s druhotnými materiálmi.\n\n"
+        f"Všimli sme si, že firma {company_name}{location} pôsobí v oblasti, "
+        f"kde môže mať zmysel zapojiť sa do obehového hospodárstva. "
+        f"CMEP spája firmy, ktoré majú prebytky materiálu, s tými, "
+        f"ktoré ich dokážu ďalej využiť — bez zbytočných nákladov.\n\n"
+        f"Ak máte záujem, zaregistrujte sa na https://trc-cmep.sk "
+        f"a pridajte svoju firmu. Je to zdarma.\n\n"
+        f"S pozdravom,\n"
+        f"Tím CMEP\n"
+        f"https://trc-cmep.sk"
+    )
+
+
 @router.post("/auto-send-batch", response_model=AutoSendBatchResponse)
 async def auto_send_batch(
     payload: AutoSendBatchRequest,
@@ -890,22 +913,26 @@ async def auto_send_batch(
             skipped += 1
             continue
 
-        # Bez tela emailu Resend odmietne request (422). Radšej skip s warningom.
-        if not candidate.draft_body or not candidate.draft_body.strip():
-            skipped += 1
-            logger.warning(
-                "auto-send-batch: %s -> %s SKIPPED (draft_body je prázdny). Spusti /draft-new najprv.",
+        # Ak kandidát nemá draft_body (napr. /draft-new ešte nebežal),
+        # použijeme bezpečný fallback text. Resend vyžaduje neprázdne telo.
+        body_text = candidate.draft_body
+        if not body_text or not body_text.strip():
+            body_text = _default_outreach_body(
+                company_name=candidate.company_name,
+                city=getattr(candidate, "city", None),
+            )
+            logger.info(
+                "auto-send-batch: %s -> %s použil fallback body (draft chýbal).",
                 candidate.company_name,
                 candidate.email,
             )
-            continue
 
         try:
             result = await send_via_resend(
                 session=session,
                 to=candidate.email,
                 subject=candidate.draft_subject or f"Pozvánka na CMEP pre {candidate.company_name}",
-                body=candidate.draft_body,
+                body=body_text,
             )
 
             if result.ok:
