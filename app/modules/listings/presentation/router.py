@@ -97,8 +97,11 @@ async def list_marketplace(
     service: ListingsService = Depends(get_listings_service),
 ):
     effective_page_size = limit or pageSize
-    items = await service.list_marketplace(page, effective_page_size, exclude_company_ids=[])
-    total = await service.count_marketplace(exclude_company_ids=[])
+    company_ids = _membership_company_ids(current_user)
+    items = await service.list_marketplace(
+        page, effective_page_size, exclude_company_ids=company_ids
+    )
+    total = await service.count_marketplace(exclude_company_ids=company_ids)
     return PaginatedListingsResponse(
         items=[_to_listing_data(e) for e in items],
         meta=PaginationMeta(page=page, pageSize=effective_page_size, total=total),
