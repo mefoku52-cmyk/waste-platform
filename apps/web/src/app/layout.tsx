@@ -2,6 +2,7 @@ import "./globals.css";
 import { ReactNode } from "react";
 
 import { AppProviders } from "@/components/providers/app-providers";
+import { AnalyticsProvider } from "@/lib/analytics";
 import { LanguageProvider } from "@/lib/i18n/context";
 
 export const metadata = {
@@ -14,7 +15,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="sk">
       <body>
         <AppProviders>
-          <LanguageProvider>{children}</LanguageProvider>
+          <LanguageProvider>
+            <AnalyticsProvider>{children}</AnalyticsProvider>
+          </LanguageProvider>
         </AppProviders>
       </body>
     </html>
