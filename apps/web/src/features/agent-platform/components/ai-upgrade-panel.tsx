@@ -1,5 +1,5 @@
-import { http } from '@/lib/api/http';
 'use client';
+import { http } from '@/lib/api/http';
 
 import { useState } from 'react';
 import { useT } from '@/lib/i18n/context';
