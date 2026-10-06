@@ -84,6 +84,13 @@ async def send_via_resend(
             remaining_today=0,
         )
 
+    # Resend odmieta prázdne telo (422 Missing html or text). Over to pred requestom.
+    if not body or not body.strip():
+        return SendResult(
+            ok=False,
+            message="Email nemá telo (draft_body je prázdny). Vygeneruj draft alebo vyplň text.",
+        )
+
     from_header = f"{settings.RESEND_FROM_NAME} <{from_email}>"
 
     reply_to = (getattr(settings, "RESEND_REPLY_TO", "") or "").strip()

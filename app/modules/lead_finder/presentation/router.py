@@ -890,12 +890,22 @@ async def auto_send_batch(
             skipped += 1
             continue
 
+        # Bez tela emailu Resend odmietne request (422). Radšej skip s warningom.
+        if not candidate.draft_body or not candidate.draft_body.strip():
+            skipped += 1
+            logger.warning(
+                "auto-send-batch: %s -> %s SKIPPED (draft_body je prázdny). Spusti /draft-new najprv.",
+                candidate.company_name,
+                candidate.email,
+            )
+            continue
+
         try:
             result = await send_via_resend(
                 session=session,
                 to=candidate.email,
                 subject=candidate.draft_subject or f"Pozvánka na CMEP pre {candidate.company_name}",
-                body=candidate.draft_body or "",
+                body=candidate.draft_body,
             )
 
             if result.ok:
