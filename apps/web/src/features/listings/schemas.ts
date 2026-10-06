@@ -11,7 +11,22 @@ export const listingSchema = z.object({
   location: z.string().min(2, 'Lokalita je povinná'),
   companyId: z.string().uuid('Vyber firmu'),
   description: z.string().optional(),
-  imageUrl: z.string().url().optional().or(z.literal('')),
+  // imageUrl môže byť:
+  //   - prázdny string (bez fotky)
+  //   - plná URL (https://...)
+  //   - relatívna cesta z API ("/api/v1/uploads/<file_id>")
+  // SignedImage potrebuje file_id v ceste, preto relatívna cesta je preferovaná.
+  imageUrl: z
+    .string()
+    .refine(
+      (v) =>
+        v === '' ||
+        /^https?:\/\//.test(v) ||
+        /^\/api\/v1\/uploads\//.test(v),
+      { message: 'Neplatná URL fotky' },
+    )
+    .optional(),
+
 });
 
 export type ListingInput = z.infer<typeof listingSchema>;
