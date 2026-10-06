@@ -264,12 +264,9 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
 
             try {
               const response = await uploadFile(file);
-              const base = config.apiBaseUrl;
-              const url = response.url.startsWith('http')
-                ? response.url
-                : base + response.url;
-
-              setValue('imageUrl', url as any, { shouldValidate: true });
+              // Backend vracia "/api/v1/uploads/{file_id}" — relatívnu cestu z API.
+              // Pridávať config.apiBaseUrl by vytvorilo "/api/v1/api/v1/...".
+              setValue('imageUrl', response.url as any, { shouldValidate: true });
             } catch (uploadError: any) {
               alert(uploadError?.message || 'Nahranie súboru zlyhalo');
             }
