@@ -5,6 +5,8 @@ import { listingsApi, type AiDraftData } from '../api';
 import { useT } from '@/lib/i18n/context';
 import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
+import { personaStore, type Persona } from '@/features/agent-platform/lib/persona-store';
+import { PersonaPicker } from '@/features/agent-platform/components/persona-picker';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -25,8 +27,14 @@ export function AiDraftPanel({ onGenerated }: Props) {
   const [err, setErr] = useState<string | null>(null);
   const [lastProvider, setLastProvider] = useState<string | null>(null);
   const [typed, setTyped] = useState('');
+  const [persona, setPersona] = useState<Persona>('bystry');
   const bufferRef = useRef('');
   const abortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setPersona(personaStore.get());
+  }, []);
 
   // A4: typing efekt — postupne prelevame buffer do zobrazeneho textu
   useEffect(() => {
@@ -68,7 +76,7 @@ export function AiDraftPanel({ onGenerated }: Props) {
           'Content-Type': 'application/json',
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ prompt: text }),
+        body: JSON.stringify({ prompt: text, persona }),
         signal: controller.signal,
       });
 
@@ -116,7 +124,7 @@ export function AiDraftPanel({ onGenerated }: Props) {
       } else {
         // A2.4 fallback: klasicky ne-stream endpoint
         try {
-          const res = await listingsApi.aiDraft(text);
+          const res = await listingsApi.aiDraft(text, persona);
           onGenerated(res.data);
           setLastProvider(res.provider);
         } catch (e2: any) {
@@ -148,6 +156,19 @@ export function AiDraftPanel({ onGenerated }: Props) {
       <p className="mt-1 text-sm" style={{ color: MUTED }}>
         {t('listings.aiDraft.desc')}
       </p>
+
+      <div className="mt-3 flex items-center gap-2">
+        <span className="text-[10px] uppercase tracking-wider" style={{ color: MUTED }}>
+          Persona
+        </span>
+        <PersonaPicker
+          current={persona}
+          onChange={(p) => {
+            setPersona(p);
+            personaStore.set(p);
+          }}
+        />
+      </div>
 
       <textarea
         value={prompt}

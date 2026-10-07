@@ -36,8 +36,8 @@ export const listingsApi = {
     http.get<PaginatedResponse<Listing>>(`/listings/matches?materialType=${encodeURIComponent(materialType)}`, { ...params }),
 
   // AI draft — vyžaduje AI tier firmy (backend vráti 409 pre FREE/PRO)
-  aiDraft: (prompt: string) =>
-    http.post<{ data: AiDraftData; provider: string }>('/listings/ai-draft', { prompt }),
+  aiDraft: (prompt: string, persona?: string) =>
+    http.post<{ data: AiDraftData; provider: string }>('/listings/ai-draft', { prompt, persona: persona || 'bystry' }),
 };
 
 export type AiDraftData = {

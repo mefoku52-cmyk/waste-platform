@@ -46,6 +46,19 @@ FORMAT JSON:
 }
 """
 
+_PERSONA_PROMPTS: dict[str, str] = {
+    "bystry": "Ton: vyvazeny, profesionalny, VSETKY polia vyplnene realnymi hodnotami.",
+    "drzy": "Ton: priamy, usecny, bez omacok. Kratke vety, fakty bez marketingu.",
+    "lenivy": "Ton: minimalny. Title kratky, description 1 veta. Nic viac.",
+    "op": "Ton: cisto strukturovany. Ziadne ozdobne slova, len surovy obsah poli.",
+}
+
+
+def _build_system(persona: str) -> str:
+    """System prompt + persona-specificke pravidla."""
+    extra = _PERSONA_PROMPTS.get(persona, _PERSONA_PROMPTS["bystry"])
+    return _SYSTEM.rstrip() + f"\n\nPERSONA: {extra}\n"
+
 
 @dataclass(frozen=True, slots=True)
 class DraftedListing:
@@ -88,14 +101,14 @@ class ListingDrafter:
     def is_provider_configured() -> bool:
         return bool(os.getenv("GROQ_API_KEY", "").strip())
 
-    async def draft(self, *, prompt: str) -> DraftedListing:
+    async def draft(self, *, prompt: str, persona: str = "bystry") -> DraftedListing:
         try:
             response: ModelResponse = await self._gateway.generate(
                 ModelRequest(
                     request_id="listing-draft",
                     model="openai/gpt-oss-120b",
                     messages=(
-                        ModelMessage(role="system", content=_SYSTEM),
+                        ModelMessage(role="system", content=_build_system(persona)),
                         ModelMessage(role="user", content=prompt),
                     ),
                     temperature=0.4,
@@ -112,7 +125,7 @@ class ListingDrafter:
 
         return _parse_draft(text, prompt)
 
-    async def stream(self, *, prompt: str):
+    async def stream(self, *, prompt: str, persona: str = "bystry"):
         """Stream draft generation (A1).
 
         Yields dicts:
@@ -137,7 +150,7 @@ class ListingDrafter:
                     request_id="listing-draft-stream",
                     model="openai/gpt-oss-120b",
                     messages=(
-                        ModelMessage(role="system", content=_SYSTEM),
+                        ModelMessage(role="system", content=_build_system(persona)),
                         ModelMessage(role="user", content=prompt),
                     ),
                     temperature=0.4,

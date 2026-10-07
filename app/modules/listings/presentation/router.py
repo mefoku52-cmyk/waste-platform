@@ -113,7 +113,9 @@ async def ai_draft_listing(
 
     drafter = ListingDrafter()
     provider = "groq" if drafter.is_provider_configured() else "fallback"
-    draft = await drafter.draft(prompt=payload.prompt)
+    draft = await drafter.draft(
+        prompt=payload.prompt, persona=getattr(payload, "persona", "bystry")
+    )
 
     return AiDraftResponse(
         data=AiDraftData(
@@ -479,6 +481,7 @@ from app.modules.listings.application.listing_drafter import ListingDrafter
 class AiDraftStreamRequest(BaseModel):
     prompt: str = Field(min_length=3, max_length=2000)
     company_id: str | None = None
+    persona: str = Field(default="bystry", max_length=20)
 
 
 @router.post(
@@ -497,7 +500,7 @@ async def ai_draft_stream(
     async def event_source() -> AsyncIterator[str]:
         drafter = ListingDrafter()
         try:
-            async for event in drafter.stream(prompt=payload.prompt):
+            async for event in drafter.stream(prompt=payload.prompt, persona=payload.persona):
                 yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
         except Exception as exc:  # posledna brana — klient dostane chybu v SSE
             yield f"data: {json.dumps({'error': str(exc)}, ensure_ascii=False)}\n\n"

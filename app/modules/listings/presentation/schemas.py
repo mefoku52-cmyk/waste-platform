@@ -90,6 +90,7 @@ class PromoteListingResponse(BaseModel):
 class AiDraftRequest(BaseModel):
     prompt: str = Field(min_length=3, max_length=2000)
     companyId: UUID | None = None
+    persona: str = Field(default="bystry", max_length=20)
 
 
 class AiDraftData(BaseModel):

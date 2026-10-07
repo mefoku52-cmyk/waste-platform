@@ -72,7 +72,7 @@ def test_ai_draft_prefers_membership_with_ai_tier(client):
         def is_provider_configured():
             return False
 
-        async def draft(self, *, prompt):
+        async def draft(self, *, prompt, persona="bystry"):
             class _D:
                 title = "t"
                 description = "d"
@@ -108,7 +108,7 @@ def test_ai_draft_ok_with_ai_tier(client):
         def is_provider_configured():
             return False
 
-        async def draft(self, *, prompt):
+        async def draft(self, *, prompt, persona="bystry"):
             class _D:
                 title = "Oceľový šrot"
                 description = "Predám"
@@ -132,3 +132,41 @@ def test_ai_draft_ok_with_ai_tier(client):
     body = r.json()
     assert body["provider"] == "fallback"
     assert body["data"]["title"] == "Oceľový šrot"
+
+
+def test_ai_draft_persona_forwarded(client):
+    """Persona v request body sa preposle do draftera."""
+    _override_user([{"companyId": "c1"}])
+    _override_entitlement({"c1"})
+
+    seen = {}
+
+    class _FakeDrafter:
+        @staticmethod
+        def is_provider_configured():
+            return False
+
+        async def draft(self, *, prompt, persona="bystry"):
+            seen["persona"] = persona
+
+            class _D:
+                title = "x"
+                description = "y"
+                materialType = None
+                quantity = None
+                unit = None
+                location = None
+                condition = None
+                currency = "EUR"
+                price = None
+
+            return _D()
+
+    with patch("app.modules.listings.application.listing_drafter.ListingDrafter", _FakeDrafter):
+        r = client.post(
+            "/api/v1/listings/ai-draft",
+            json={"prompt": "Predám šrot", "persona": "drzy"},
+        )
+
+    assert r.status_code == 200, r.text
+    assert seen.get("persona") == "drzy"
