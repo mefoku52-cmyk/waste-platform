@@ -1,7 +1,7 @@
 # Session State
 
 **Aktualizované:** 2026-10-07
-**Posledný commit:** 2bc27ce (i18n dashboard tile labels)
+**Posledný commit:** b6f90b5 (feat listings: publish button, AI draft)
 **Branch:** main == origin/main
 **Alembic head:** ab3fa1390046
 
@@ -23,10 +23,16 @@
 - **Preklady** — hardcoded texty v landing krokoch, listings status, companies, admin, auth, features
 - **Detail firmy — logo, "Aktívne ponuky tejto firmy"**
 - **Android app** — rozrobená, nie hotová
+- **`listings/presentation/router.py`** — docstring AI draft route hovorí „403", ale kód hádže `ConflictDomainError` (pravdepodobne 409)
 
-## Posledná session (2026-10-05 → 10-07)
-24 commitov: Render build fix, marketplace split, acquisition tracking,
-batch send fix (30/30 emailov), entity_type firmy, dashboard tiles, header
-simplified, i18n ru/fr.
+## Posledná session (2026-10-07)
+E2E verifikácia AI draft + publish na produkcii:
+- `POST /api/v1/listings/ai-draft` → 200, `provider=groq`
+- `POST /api/v1/listings/{id}/publish` → 200, `status=published`, viditeľný v marketplace
+- cleanup (DELETE) OK
+
+Predtým (2026-10-05 → 10-07): 24 commitov — Render build fix, marketplace
+split, acquisition tracking, batch send fix (30/30 emailov), entity_type
+firmy, dashboard tiles, header simplified, i18n ru/fr.
 
 Detaily: `docs/HISTORY/`
