@@ -217,3 +217,109 @@ LISTING_TRANSPORT_SCHEMA: dict[str, Any] = {
 def build_transport_tools() -> tuple[dict[str, Any], ...]:
     """Transport + nearby tools. Available to every authenticated user."""
     return (NEARBY_COMPANIES_SCHEMA, LISTING_TRANSPORT_SCHEMA)
+
+
+# ─── CLIENT-SIDE ACTIONS (Comet-style) ─────────────────────
+# Tieto tooly sa nevykonávajú na serveri. Orchestrátor ich vráti
+# vo `tool_calls`, frontend ich aplikuje na aktuálnu stránku.
+
+FILL_FORM_FIELD_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "fill_form_field",
+        "description": (
+            "Vyplní jedno pole vo formulári, ktorý používateľ práve vidí. "
+            "Použi keď vieš hodnotu, ktorá patrí do formulára (title, description, "
+            "materialType, quantity, unit, location, price, currency, condition). "
+            "Volaj toľkokrát, koľko polí chceš vyplniť. Po každom volaní povedz "
+            "používateľovi krátko ČO si vyplnil."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string",
+                    "description": "Názov poľa (musí byť jedno z polí aktuálneho formulára).",
+                },
+                "value": {
+                    "description": "Hodnota poľa (string, number, boolean).",
+                },
+            },
+            "required": ["field", "value"],
+        },
+    },
+}
+
+
+NAVIGATE_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "navigate",
+        "description": (
+            "Presmeruje používateľa na inú stránku CMEP. Použi iba keď "
+            "používateľ výslovne chce niekam ísť, alebo keď mu chceš niečo ukázať."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "description": "Relatívna cesta v rámci CMEP, napr. '/dashboard/listings/new'.",
+                },
+            },
+            "required": ["url"],
+        },
+    },
+}
+
+
+HIGHLIGHT_FIELD_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "highlight_field",
+        "description": (
+            "Zvýrazní pole vo formulári na 1 sekundu (zelený rámik). "
+            "Použi keď chceš používateľovi ukázať, ktoré pole má vyplniť ručne."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "field": {"type": "string"},
+            },
+            "required": ["field"],
+        },
+    },
+}
+
+
+SHOW_TOAST_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "show_toast",
+        "description": (
+            "Zobrazí krátky toast (oznam) v rohu obrazovky. "
+            "Použi na potvrdenie akcie alebo upozornenie."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "message": {"type": "string"},
+                "level": {"type": "string", "enum": ["info", "success", "warning", "error"]},
+            },
+            "required": ["message"],
+        },
+    },
+}
+
+
+CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
+    FILL_FORM_FIELD_SCHEMA,
+    NAVIGATE_SCHEMA,
+    HIGHLIGHT_FIELD_SCHEMA,
+    SHOW_TOAST_SCHEMA,
+)
+
+
+CLIENT_ACTION_NAMES: frozenset[str] = frozenset(
+    s["function"]["name"] for s in CLIENT_ACTION_SCHEMAS
+)

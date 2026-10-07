@@ -69,6 +69,7 @@ class AgentOrchestrator:
         tool_scopes: dict[str, tuple[str, str]] | None = None,
         audit: Callable[[str, str, str, float], Awaitable[None]] | None = None,
         event_publisher: EventPublisher | None = None,
+        client_tool_names: frozenset[str] | None = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
@@ -79,6 +80,7 @@ class AgentOrchestrator:
         self._tool_scopes = dict(tool_scopes or {})
         self._audit = audit
         self._event_publisher = event_publisher
+        self._client_tool_names: frozenset[str] = frozenset(client_tool_names or ())
 
     async def _safe_audit(
         self,
@@ -309,6 +311,30 @@ class AgentOrchestrator:
                                 )
                             )
                             continue
+
+                    # Client-side action: nevykonávame handler, iba
+                    # potvrdíme modelu že frontend to vykoná.
+                    if tool_name in self._client_tool_names:
+                        outcome = "dispatched_to_client"
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "success": True,
+                                        "client_action": True,
+                                        "note": (
+                                            "Client action dispatched to frontend. "
+                                            "It will be executed on the current page. "
+                                            "You may now summarize or ask a follow-up."
+                                        ),
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
 
                     handler = self._tool_handlers.get(tool_name)
                     if handler is None:

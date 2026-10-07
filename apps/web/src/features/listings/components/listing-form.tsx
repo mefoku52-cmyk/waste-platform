@@ -16,6 +16,7 @@ import { uploadFile } from '../../uploads/api';
 import { config } from '../../../lib/config';
 import { useT } from "@/lib/i18n/context";
 import type { AiDraftData } from '../api';
+import { cmepAI } from '@/lib/ai-agent/dispatcher';
 
 type Props = {
   listingId?: string;
@@ -86,6 +87,43 @@ export const ListingForm = ({
       imageUrl: initialData?.imageUrl ?? '',
     },
   });
+
+  // AI Agent — client-side action handlers
+  useEffect(() => {
+    const unreg = cmepAI.register('fill_form_field', (args) => {
+      const field = String(args.field || '');
+      const value = args.value;
+      if (!field) return;
+      try {
+        setValue(field as keyof ListingInput as never, value as never, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+        // highlight
+        const el = document.querySelector(`[name="${field}"]`) as HTMLElement | null;
+        if (el) {
+          el.style.transition = 'box-shadow 0.3s';
+          el.style.boxShadow = '0 0 0 3px rgba(95, 209, 122, 0.8)';
+          window.setTimeout(() => { el.style.boxShadow = ''; }, 1200);
+        }
+      } catch {
+        // ignore invalid field
+      }
+    });
+
+    const unregHighlight = cmepAI.register('highlight_field', (args) => {
+      const field = String(args.field || '');
+      const el = document.querySelector(`[name="${field}"]`) as HTMLElement | null;
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.transition = 'box-shadow 0.3s';
+        el.style.boxShadow = '0 0 0 3px rgba(201, 168, 76, 0.9)';
+        window.setTimeout(() => { el.style.boxShadow = ''; }, 1500);
+      }
+    });
+
+    return () => { unreg(); unregHighlight(); };
+  }, [setValue]);
 
   useEffect(() => {
     if (!initialData) return;

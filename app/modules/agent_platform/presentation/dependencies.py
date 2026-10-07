@@ -39,6 +39,8 @@ from app.modules.agent_platform.infrastructure.tools.cmep_nearby_companies_handl
     CmepNearbyCompaniesHandler,
 )
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+    CLIENT_ACTION_NAMES,
+    CLIENT_ACTION_SCHEMAS,
     build_admin_tools,
     build_default_tools,
     build_transport_tools,
@@ -98,7 +100,7 @@ async def get_agent_orchestrator(
         "search_companies": ("companies", "search"),
         "search_listings": ("listings", "search"),
     }
-    tool_schemas: tuple[dict[str, object], ...] = build_default_tools()
+    tool_schemas: tuple[dict[str, object], ...] = build_default_tools() + CLIENT_ACTION_SCHEMAS
 
     # Transport + nearby READ tools – pre vsetkych prihlasenych.
     nearby_handler = CmepNearbyCompaniesHandler(session=session)
@@ -206,6 +208,7 @@ async def get_agent_orchestrator(
         audit=_audit_agent_tool,
         event_publisher=_build_event_bus(session=session),
         model="openai/gpt-oss-120b",
+        client_tool_names=CLIENT_ACTION_NAMES,
     )
 
 

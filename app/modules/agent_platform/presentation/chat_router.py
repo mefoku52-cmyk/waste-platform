@@ -132,7 +132,9 @@ def _persona_addendum(persona: str | None) -> str:
     return PERSONA_ADDENDA.get(key, "")
 
 
-def _build_system_prompt(current_user, persona: str | None = None) -> str:
+def _build_system_prompt(
+    current_user, persona: str | None = None, page_context: dict | None = None
+) -> str:
     """Return system prompt tailored to the caller's role.
 
     Platform admins receive the architect addendum.
@@ -144,7 +146,39 @@ def _build_system_prompt(current_user, persona: str | None = None) -> str:
     except Exception:
         is_admin = False
     addendum = ARCHITECT_ADDENDUM if is_admin else CUSTOMER_ADDENDUM
-    return BASE_RULES + addendum + _persona_addendum(persona)
+    page_block = _build_page_context_block(page_context)
+    return BASE_RULES + addendum + _persona_addendum(persona) + page_block
+
+
+CLIENT_TOOL_NAMES: frozenset[str] = frozenset(
+    {"fill_form_field", "navigate", "highlight_field", "show_toast"}
+)
+
+
+def _build_page_context_block(page_context: dict | None) -> str:
+    """Kontext aktualnej stranky pre Comet-style agenta."""
+    if not page_context:
+        return ""
+    path = str(page_context.get("path") or "")
+    page_type = str(page_context.get("page_type") or "other")
+    fields = page_context.get("form_fields") or []
+    lines = [
+        "\n\nKONTEXT AKTUALNEJ STRANKY:",
+        f"- Pouzivatel je na: {path} (typ: {page_type})",
+    ]
+    if fields:
+        lines.append("- Formular ma tieto polia: " + ", ".join(str(f) for f in fields))
+        lines.append(
+            "MOZES ICH VYPLNIT za pouzivatela pomocou nastroja "
+            "`fill_form_field(field, value)`. Ked ti pouzivatel povie, co chce "
+            "predat alebo ako vyplnit ponuku, ZAVOLAJ fill_form_field pre KAZDE "
+            "pole zvlast. Potom pouzivatelovi kratko povedz co si vyplnil."
+        )
+    lines.append(
+        "- Dalsie dostupne akcie: `highlight_field(field)`, `navigate(url)`, "
+        "`show_toast(message, level)`."
+    )
+    return "\n".join(lines)
 
 
 def _detect_security_patterns(text: str) -> list[tuple[str, float]]:
@@ -344,6 +378,12 @@ class UserAiChatRequest(BaseModel):
     session_id: str | None = Field(default=None, max_length=64)
     listing_id: str | None = Field(default=None, max_length=64)
     persona: str | None = Field(default=None, max_length=16)
+    page_context: dict | None = None
+
+
+class ClientAction(BaseModel):
+    name: str
+    args: dict = {}
 
 
 class UserAiChatResponse(BaseModel):
@@ -352,6 +392,7 @@ class UserAiChatResponse(BaseModel):
     source: str
     session_id: str
     tool_calls: list[dict] = []
+    client_actions: list[ClientAction] = []
 
 
 async def _check_ai_entitlement(
@@ -438,7 +479,9 @@ async def user_ai_chat(
         conversation_id = None
         history = ()
 
-    system_prompt = _build_system_prompt(current_user, persona=payload.persona)
+    system_prompt = _build_system_prompt(
+        current_user, persona=payload.persona, page_context=payload.page_context
+    )
 
     security_decision = "allow"
     try:
@@ -500,10 +543,20 @@ async def user_ai_chat(
         except Exception:
             pass  # best-effort: never break caller
 
+    client_actions: list[ClientAction] = []
+    server_tool_calls: list[dict] = []
+    for tc in result.tool_calls or ():
+        name = str(tc.get("name") or "")
+        if name in CLIENT_TOOL_NAMES:
+            client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+        else:
+            server_tool_calls.append(dict(tc))
+
     return UserAiChatResponse(
         status="ok",
         reply=result.text,
         source="groq",
         session_id=session_id,
-        tool_calls=list(result.tool_calls),
+        tool_calls=server_tool_calls,
+        client_actions=client_actions,
     )

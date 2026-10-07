@@ -9,8 +9,12 @@ import { personaStore, type Persona } from '../lib/persona-store';
 import { PersonaPicker } from './persona-picker';
 import { AiUpgradePanel } from './ai-upgrade-panel';
 import { useT } from '@/lib/i18n/context';
+import { cmepAI } from '@/lib/ai-agent/dispatcher';
+import { getPageContext } from '@/lib/ai-agent/page-context';
 
 type Msg = { role: 'user' | 'ai'; text: string };
+
+type ClientAction = { name: string; args: Record<string, unknown> };
 
 type ChatResponse = {
   status: string;
@@ -18,6 +22,7 @@ type ChatResponse = {
   source: string;
   session_id?: string;
   tool_calls?: unknown[];
+  client_actions?: ClientAction[];
 };
 
 type Props = {
@@ -79,18 +84,50 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     setMessages((m) => [...m, { role: 'user', text }]);
     setBusy(true);
     try {
+      const pageCtx = getPageContext();
       const res = await http.post<ChatResponse>('/agent-platform/chat', {
         message: text,
         session_id: sessionId || undefined,
         listing_id: listingId || undefined,
         persona: persona || undefined,
+        page_context: pageCtx,
       });
       if (res?.session_id && res.session_id !== sessionId) {
         setSessionId(res.session_id);
       }
-      if (res?.status === 'ok' && res.reply) {
+
+      // Comet-style: vykonaj client actions lokálne
+      if (Array.isArray(res?.client_actions) && res.client_actions.length > 0) {
+        const notes: string[] = [];
+        for (const action of res.client_actions) {
+          const ev = await cmepAI.dispatch(action.name, action.args || {});
+          if (ev.status === 'ok') {
+            if (action.name === 'fill_form_field') {
+              const f = String(action.args?.field || '');
+              const v = action.args?.value;
+              notes.push(`✓ Vyplnil som ${f}: ${String(v)}`);
+            } else if (action.name === 'navigate') {
+              notes.push(`✓ Presmeroval som ťa na ${String(action.args?.url || '')}`);
+            } else if (action.name === 'highlight_field') {
+              notes.push(`✓ Zvýraznil som pole ${String(action.args?.field || '')}`);
+            } else if (action.name === 'show_toast') {
+              notes.push(`✓ ${String(action.args?.message || '')}`);
+            }
+          }
+        }
+
+        if (notes.length > 0) {
+          setMessages((m) => [
+            ...m,
+            { role: 'ai', text: res.reply as string || '' },
+            { role: 'ai', text: notes.join('\n') },
+          ]);
+        } else if (res?.reply) {
+          setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+        }
+      } else if (res?.status === 'ok' && res.reply) {
         setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
-      } else {
+      } else if (!res?.reply) {
         setMessages((m) => [
           ...m,
           {
