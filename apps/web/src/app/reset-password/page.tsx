@@ -25,10 +25,10 @@ function ResetForm() {
     setMsg(null);
     try {
       const res: any = await authApi.resetPassword(token, password);
-      setMsg(res.message || 'Heslo zmenené.');
+      setMsg(res.message || t('resetPwd.successMsg'));
       setTimeout(() => router.push('/login'), 1200);
     } catch (e: any) {
-      setErr(e?.message || 'Obnova zlyhala.');
+      setErr(e?.message || t('resetPwd.errorMsg'));
     } finally {
       setBusy(false);
     }
@@ -41,7 +41,7 @@ function ResetForm() {
       <Input type="password" placeholder={t('auth.newPasswordLabel')} value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} required />
       {msg && <div className="rounded bg-green-50 p-2 text-sm text-green-800">{msg}</div>}
       {err && <div className="rounded bg-red-50 p-2 text-sm text-red-700">{err}</div>}
-      <Button type="submit" className="w-full" disabled={busy}>{busy ? 'Ukladám...' : 'Zmeniť heslo'}</Button>
+      <Button type="submit" className="w-full" disabled={busy}>{busy ? t('resetPwd.saving') : t('resetPwd.changeBtn')}</Button>
       <p className="text-center text-sm"><Link href="/login" className="text-blue-600">{t('auth.backToLogin')}</Link></p>
     </form>
   );

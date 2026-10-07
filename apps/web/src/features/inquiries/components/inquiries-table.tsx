@@ -13,10 +13,10 @@ const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
 // const FAINT = '#6e6658';
 
-const statusStyle = (status: string): { bg: string; color: string; label: string } => {
-  if (status === 'answered') return { bg: 'rgba(110,231,167,0.15)', color: '#6ee7a7', label: 'Odpovedané' };
-  if (status === 'closed') return { bg: 'rgba(154,143,124,0.15)', color: MUTED, label: 'Uzavreté' };
-  return { bg: 'rgba(201,168,76,0.18)', color: GOLD_BRIGHT, label: 'Čaká' };
+const statusStyle = (status: string, t: (key: string) => string): { bg: string; color: string; label: string } => {
+  if (status === 'answered') return { bg: 'rgba(110,231,167,0.15)', color: '#6ee7a7', label: t('inquiries.statusAnswered') };
+  if (status === 'closed') return { bg: 'rgba(154,143,124,0.15)', color: MUTED, label: t('inquiries.statusClosed') };
+  return { bg: 'rgba(201,168,76,0.18)', color: GOLD_BRIGHT, label: t('inquiries.statusPending') };
 };
 
 export const InquiriesTable = ({ mode }: Props) => {
@@ -37,14 +37,14 @@ export const InquiriesTable = ({ mode }: Props) => {
   if (q.isLoading) {
     return (
       <p className="py-8 text-center text-sm" style={{ color: MUTED }}>
-        Načítavam dopyty…
+        {t('inquiries.loading')}
       </p>
     );
   }
   if (q.error) {
     return (
       <p className="py-8 text-center text-sm" style={{ color: '#f0bbb0' }}>
-        Chyba pri načítaní dopytov.
+        {t('inquiries.loadError')}
       </p>
     );
   }
@@ -56,13 +56,13 @@ export const InquiriesTable = ({ mode }: Props) => {
     <div className="overflow-x-auto">
       {mutation.isError && (
         <p className="mb-3 text-sm" style={{ color: '#f0bbb0' }}>
-          Nepodarilo sa zmeniť status.
+          {t('inquiries.updateError')}
         </p>
       )}
 
       {items.length === 0 ? (
         <p className="py-8 text-center text-sm" style={{ color: MUTED }}>
-          {mode === 'received' ? 'Žiadne prijaté dopyty.' : 'Žiadne odoslané dopyty.'}
+          {mode === 'received' ? t('inquiries.emptyReceived') : t('inquiries.emptySent')}
         </p>
       ) : (
         <table className="min-w-full text-sm">
@@ -80,7 +80,7 @@ export const InquiriesTable = ({ mode }: Props) => {
           </thead>
           <tbody>
             {items.map((inq: any) => {
-              const st = statusStyle(inq.status);
+              const st = statusStyle(inq.status, t);
               return (
                 <tr
                   key={inq.id}
@@ -117,7 +117,7 @@ export const InquiriesTable = ({ mode }: Props) => {
                           className="rounded-full px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50"
                           style={{ background: GOLD, color: '#090807' }}
                         >
-                          Odpovedané
+                          {t('inquiries.btnAnswered')}
                         </button>
                       )}
                       {inq.status !== 'closed' && (
@@ -128,7 +128,7 @@ export const InquiriesTable = ({ mode }: Props) => {
                           className="rounded-full border px-3 py-1.5 text-xs font-semibold transition disabled:opacity-50"
                           style={{ borderColor: 'color-mix(in srgb, #9a8f7c 40%, transparent)', color: MUTED }}
                         >
-                          Uzavrieť
+                          {t('inquiries.btnClose')}
                         </button>
                       )}
                     </td>

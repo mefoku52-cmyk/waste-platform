@@ -189,7 +189,14 @@
     "hint": "Enter your email and we'll send you a reset link.",
     "submit": "Send link",
     "back": "Back to sign in",
-    "sent": "If the account exists, we sent instructions to your email."
+    "sent": "If the account exists, we sent instructions to your email.",
+    "description": "Enter email. We'll send a reset link (DEV shows token here).",
+    "devToken": "DEV token:",
+    "continueLink": "Continue to new password",
+    "sending": "Sending...",
+    "send": "Send",
+    "successMsg": "If the account exists, we sent instructions.",
+    "errorMsg": "Failed to send request."
   },
   "reset": {
     "title": "New password",
@@ -366,7 +373,12 @@
     "threadsEmpty": "No conversations",
     "threadsEmptyHint": "When someone replies to your inquiry, the conversation will appear here.",
     "back": "Back to list",
-    "offerPrefix": "Offer"
+    "offerPrefix": "Offer",
+    "threadListLoading": "Loading...",
+    "threadListEmpty": "No conversations yet. Start a chat from a listing detail.",
+    "otherCompany": "Other company",
+    "startFromListing": "Start a chat from a listing detail.",
+    "errorSend": "Send failed"
   },
   "listings": {
     "mySection": "MY LISTINGS",
@@ -503,11 +515,15 @@
     "section": "DOCUMENTS",
     "title": "Documents",
     "addButton": "+ Add document",
-    "empty": "No documents yet",
+    "empty": "No documents.",
     "emptyHint": "Upload documents you want to share with companies.",
     "newSection": "NEW DOCUMENT",
     "newTitle": "Add document",
-    "docTitle": "Document"
+    "docTitle": "Document",
+    "tableLoading": "Loading documents...",
+    "tableError": "Failed to load documents.",
+    "typeCol": "Type",
+    "open": "Open"
   },
   "companies": {
     "newSection": "NEW COMPANY",
@@ -630,7 +646,17 @@
     "section": "INQUIRIES",
     "title": "Inquiries",
     "received": "Received",
-    "sent": "Sent"
+    "sent": "Sent",
+    "loading": "Loading inquiries…",
+    "loadError": "Failed to load inquiries.",
+    "emptyReceived": "No received inquiries.",
+    "emptySent": "No sent inquiries.",
+    "updateError": "Failed to change status.",
+    "statusAnswered": "Answered",
+    "statusClosed": "Closed",
+    "statusPending": "Pending",
+    "btnAnswered": "Answered",
+    "btnClose": "Close"
   },
   "listingMedia": {
     "noPhoto": "No photo",
@@ -868,17 +894,35 @@
   "recommendations": {
     "kicker": "Recommendations",
     "title": "Potential buyers",
-    "chatDraft": "Chat message draft"
+    "chatDraft": "Chat message draft",
+    "disclaimer": "Verified buyers from existing data. No deal is closed.",
+    "loading": "Loading…",
+    "empty": "No verified buyers.",
+    "score": "score",
+    "makeDraft": "Draft message and transport",
+    "copyDraft": "Copy",
+    "openChat": "Open chat with draft",
+    "copyBtn": "Copy"
   },
   "freight": {
     "kicker": "Freight",
-    "title": "Carriers nearby"
+    "title": "Carriers nearby",
+    "firmsWithLogistics": "Companies with logistics near",
+    "destination": "destination",
+    "notOrder": "Not an order.",
+    "pendingCity": "Waiting for buyer's city.",
+    "loading": "Searching carriers…",
+    "empty": "No logistics company in the database for this location."
   },
   "chatDraftBanner": {
-    "kicker": "Draft from recommendations"
+    "kicker": "Draft from recommendations",
+    "copyBtn": "Copy to message"
   },
   "notifications": {
-    "title": "Notifications"
+    "title": "Notifications",
+    "loading": "Loading notifications...",
+    "error": "Failed to load notifications.",
+    "empty": "No notifications."
   },
   "documentForm": {
     "title": "Add document",
@@ -926,5 +970,78 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "The AI assistant is available for company accounts."
+  },
+  "listingInquiry": {
+    "noCompany": "First create and verify a company.",
+    "sentOk": "Inquiry sent.",
+    "error": "Inquiry failed",
+    "sending": "Sending inquiry…",
+    "send": "Send inquiry"
+  },
+  "docForm": {
+    "uploading": "Uploading...",
+    "uploadFailed": "Upload failed",
+    "errorRequired": "Fill title, upload file and select company.",
+    "errorSave": "Save failed",
+    "filePlaceholder": "filled after upload",
+    "selectCompany": "— select company —",
+    "saving": "Saving...",
+    "save": "Save",
+    "cancel": "Cancel"
+  },
+  "resetPwd": {
+    "saving": "Saving...",
+    "changeBtn": "Change password",
+    "successMsg": "Password changed.",
+    "errorMsg": "Reset failed."
+  },
+  "verify": {
+    "missingToken": "Missing verification token in URL.",
+    "failed": "Verification failed.",
+    "success": "Email was successfully verified.",
+    "connection": "Could not connect to server.",
+    "verifying": "Verifying email…",
+    "verified": "Email verified",
+    "titleError": "Verification failed",
+    "subVerifying": "One moment.",
+    "subSuccess": "You can log in.",
+    "subError": "Try again or request a new link.",
+    "backToLogin": "Back to login"
+  },
+  "verifySent": {
+    "sentTo": "To the address",
+    "sentDesc": "we sent a verification link. Click it to complete registration.",
+    "spamHint": "If you don't see the email, check the",
+    "noEmail": "Didn't get the email?",
+    "resentOk": "✓ We sent a new verification link. Check your inbox.",
+    "sending": "Sending…",
+    "resendBtn": "Resend verification email",
+    "sendError": "Failed to send email.",
+    "backToLogin": "Back to login"
+  },
+  "transport": {
+    "missingStops": "Route: origin or destination missing on listing.",
+    "title": "Transport calculation",
+    "loading": "Calculating route…",
+    "fuel": "Diesel",
+    "map": "Map",
+    "diesel": "Diesel"
+  },
+  "compliance": {
+    "loading": "Loading compliance...",
+    "error": "Failed to load compliance.",
+    "empty": "No compliance records."
+  },
+  "feedback": {
+    "widgetTitle": "What would you add?",
+    "desc": "Write what's missing, what could be improved, or what would help your business.",
+    "placeholder": "E.g. I'm missing a map of suppliers nearby…",
+    "sending": "Sending…",
+    "send": "Send",
+    "thanks": "Thanks! Your feedback is with us.",
+    "errorShort": "Write at least 3 characters.",
+    "error": "Send failed",
+    "button": "💬 Idea?",
+    "tooltip": "What would you add to the platform?"
   }
 }

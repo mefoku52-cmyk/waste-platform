@@ -79,7 +79,7 @@ export default function ChatThreadPage() {
       await sendMutation.mutateAsync(body);
       setDraft("");
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : t("common.error"));
+      setErrorMessage(error instanceof Error ? error.message : t("chat.errorSend"));
     }
   }
 
@@ -176,7 +176,7 @@ export default function ChatThreadPage() {
                         }
                         style={{ color: mine ? "rgba(9,8,7,0.75)" : GOLD }}
                       >
-                        {mine ? "Vy" : "Druhá firma"}
+                        {mine ? t('chat.you') : t('chat.otherCompany')}
                       </div>
                     )}
                     <div className="whitespace-pre-wrap break-words">

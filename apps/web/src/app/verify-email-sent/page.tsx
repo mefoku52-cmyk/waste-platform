@@ -28,12 +28,12 @@ function VerifyEmailSentContent() {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || err.detail || 'Nepodarilo sa odoslať e-mail.');
+        throw new Error(err.message || err.detail || t('verifySent.sendError'));
       }
       setStatus('sent');
     } catch (e: unknown) {
       setStatus('error');
-      setError(e instanceof Error ? e.message : 'Nepodarilo sa odoslať e-mail.');
+      setError(e instanceof Error ? e.message : t('verifySent.sendError'));
     }
   };
 
@@ -44,23 +44,23 @@ function VerifyEmailSentContent() {
     >
       <div className="space-y-5 text-[#9a8f7c]">
         <p className="text-sm leading-relaxed">
-          Na adresu{' '}
+          {t('verifySent.sentTo')}{' '}
           <strong className="text-[#e8d48b]">{email || '—'}</strong>{' '}
-          sme poslali odkaz na overenie účtu. Kliknite naň a dokončite registráciu.
+          {t('verifySent.sentDesc')}
         </p>
         <p className="text-xs leading-relaxed">
-          Ak e-mail nevidíte, skontrolujte priečinok <strong>{t('auth.sentSpamBold')}</strong> alebo{' '}
+          {t('verifySent.spamHint')} <strong>{t('auth.sentSpamBold')}</strong> alebo{' '}
           <strong>{t('auth.sentPromotions')}</strong>. Odkaz je platný 24 hodín.
         </p>
 
         <div className="pt-3 border-t border-[color:color-mix(in_srgb,#c9a84c_15%,transparent)]">
           <p className="mb-3 text-xs uppercase tracking-[0.2em] text-[#c9a84c]">
-            Nedostali ste e-mail?
+            {t('verifySent.noEmail')}
           </p>
 
           {status === 'sent' ? (
             <p className="text-sm text-[#e8d48b]">
-              ✓ Poslali sme nový overovací odkaz. Skontrolujte schránku.
+              {t('verifySent.resentOk')}
             </p>
           ) : (
             <form onSubmit={onResend} className="grid gap-3">
@@ -73,7 +73,7 @@ function VerifyEmailSentContent() {
               />
               {error && <p className="text-sm text-[#c45c4a]">{error}</p>}
               <AuthButton type="submit" disabled={status === 'sending'}>
-                {status === 'sending' ? 'Odosielam…' : 'Znova odoslať verifikačný e-mail'}
+                {status === 'sending' ? t('verifySent.sending') : t('verifySent.resendBtn')}
               </AuthButton>
             </form>
           )}
@@ -81,7 +81,7 @@ function VerifyEmailSentContent() {
 
         <div className="text-center text-xs">
           <Link href="/login" className="text-[#9a8f7c] hover:text-[#e8d48b] underline underline-offset-4">
-            Späť na prihlásenie
+            {t('verifySent.backToLogin')}
           </Link>
         </div>
       </div>

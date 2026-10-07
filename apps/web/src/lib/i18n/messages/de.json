@@ -189,7 +189,14 @@
     "hint": "Geben Sie Ihre E-Mail ein und wir senden Ihnen einen Link zum Zurücksetzen.",
     "submit": "Link senden",
     "back": "Zurück zur Anmeldung",
-    "sent": "Wenn das Konto existiert, haben wir Anweisungen per E-Mail gesendet."
+    "sent": "Wenn das Konto existiert, haben wir Anweisungen per E-Mail gesendet.",
+    "description": "E-Mail eingeben. Wir senden einen Reset-Link (DEV zeigt Token hier).",
+    "devToken": "DEV Token:",
+    "continueLink": "Weiter zum neuen Passwort",
+    "sending": "Sende...",
+    "send": "Senden",
+    "successMsg": "Falls das Konto existiert, haben wir Anweisungen gesendet.",
+    "errorMsg": "Anfrage konnte nicht gesendet werden."
   },
   "reset": {
     "title": "Neues Passwort",
@@ -366,7 +373,12 @@
     "threadsEmpty": "Keine Konversationen",
     "threadsEmptyHint": "Wenn jemand auf Ihre Anfrage antwortet, erscheint die Konversation hier.",
     "back": "Zurück zur Liste",
-    "offerPrefix": "Angebot"
+    "offerPrefix": "Angebot",
+    "threadListLoading": "Lädt...",
+    "threadListEmpty": "Noch keine Konversationen. Starten Sie einen Chat aus dem Angebotsdetail.",
+    "otherCompany": "Anderes Unternehmen",
+    "startFromListing": "Starten Sie einen Chat aus dem Angebotsdetail.",
+    "errorSend": "Senden fehlgeschlagen"
   },
   "listings": {
     "mySection": "MEINE ANGEBOTE",
@@ -503,11 +515,15 @@
     "section": "DOKUMENTE",
     "title": "Dokumente",
     "addButton": "+ Dokument hinzufügen",
-    "empty": "Noch keine Dokumente",
+    "empty": "Keine Dokumente.",
     "emptyHint": "Laden Sie Dokumente hoch, die Sie teilen möchten.",
     "newSection": "NEUES DOKUMENT",
     "newTitle": "Dokument hinzufügen",
-    "docTitle": "Dokument"
+    "docTitle": "Dokument",
+    "tableLoading": "Dokumente werden geladen...",
+    "tableError": "Dokumente konnten nicht geladen werden.",
+    "typeCol": "Typ",
+    "open": "Öffnen"
   },
   "companies": {
     "newSection": "NEUES UNTERNEHMEN",
@@ -630,7 +646,17 @@
     "section": "ANFRAGEN",
     "title": "Anfragen",
     "received": "Eingegangen",
-    "sent": "Gesendet"
+    "sent": "Gesendet",
+    "loading": "Anfragen werden geladen…",
+    "loadError": "Anfragen konnten nicht geladen werden.",
+    "emptyReceived": "Keine empfangenen Anfragen.",
+    "emptySent": "Keine gesendeten Anfragen.",
+    "updateError": "Status konnte nicht geändert werden.",
+    "statusAnswered": "Beantwortet",
+    "statusClosed": "Geschlossen",
+    "statusPending": "Ausstehend",
+    "btnAnswered": "Beantwortet",
+    "btnClose": "Schließen"
   },
   "listingMedia": {
     "noPhoto": "Kein Foto",
@@ -868,17 +894,35 @@
   "recommendations": {
     "kicker": "Empfehlungen",
     "title": "Mögliche Käufer",
-    "chatDraft": "Chat-Entwurf"
+    "chatDraft": "Chat-Entwurf",
+    "disclaimer": "Verifizierte Käufer aus vorhandenen Daten. Kein Geschäft wird abgeschlossen.",
+    "loading": "Lädt…",
+    "empty": "Keine verifizierten Käufer.",
+    "score": "Punktzahl",
+    "makeDraft": "Nachricht und Transport entwerfen",
+    "copyDraft": "Kopieren",
+    "openChat": "Chat mit Entwurf öffnen",
+    "copyBtn": "Kopieren"
   },
   "freight": {
     "kicker": "Spedition",
-    "title": "Transporteure in der Nähe"
+    "title": "Transporteure in der Nähe",
+    "firmsWithLogistics": "Unternehmen mit Logistik bei",
+    "destination": "Ziel",
+    "notOrder": "Keine Bestellung.",
+    "pendingCity": "Warten auf Stadt des Käufers.",
+    "loading": "Suche Spediteure…",
+    "empty": "Kein Logistikunternehmen in der Datenbank für diesen Ort."
   },
   "chatDraftBanner": {
-    "kicker": "Entwurf aus Empfehlungen"
+    "kicker": "Entwurf aus Empfehlungen",
+    "copyBtn": "In Nachricht kopieren"
   },
   "notifications": {
-    "title": "Benachrichtigungen"
+    "title": "Benachrichtigungen",
+    "loading": "Benachrichtigungen werden geladen...",
+    "error": "Benachrichtigungen konnten nicht geladen werden.",
+    "empty": "Keine Benachrichtigungen."
   },
   "documentForm": {
     "title": "Dokument hinzufügen",
@@ -926,5 +970,78 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "Der KI-Assistent ist für Firmenkonten verfügbar."
+  },
+  "listingInquiry": {
+    "noCompany": "Erstellen und verifizieren Sie zuerst ein Unternehmen.",
+    "sentOk": "Anfrage gesendet.",
+    "error": "Anfrage fehlgeschlagen",
+    "sending": "Anfrage wird gesendet…",
+    "send": "Anfrage senden"
+  },
+  "docForm": {
+    "uploading": "Wird hochgeladen...",
+    "uploadFailed": "Upload fehlgeschlagen",
+    "errorRequired": "Titel, Datei und Unternehmen ausfüllen.",
+    "errorSave": "Speichern fehlgeschlagen",
+    "filePlaceholder": "wird nach dem Upload ausgefüllt",
+    "selectCompany": "— Unternehmen auswählen —",
+    "saving": "Speichern...",
+    "save": "Speichern",
+    "cancel": "Abbrechen"
+  },
+  "resetPwd": {
+    "saving": "Speichern...",
+    "changeBtn": "Passwort ändern",
+    "successMsg": "Passwort geändert.",
+    "errorMsg": "Zurücksetzen fehlgeschlagen."
+  },
+  "verify": {
+    "missingToken": "Verifizierungs-Token fehlt in der URL.",
+    "failed": "Verifizierung fehlgeschlagen.",
+    "success": "E-Mail erfolgreich verifiziert.",
+    "connection": "Verbindung zum Server fehlgeschlagen.",
+    "verifying": "E-Mail wird verifiziert…",
+    "verified": "E-Mail verifiziert",
+    "titleError": "Verifizierung fehlgeschlagen",
+    "subVerifying": "Einen Moment.",
+    "subSuccess": "Sie können sich anmelden.",
+    "subError": "Versuchen Sie es erneut oder fordern Sie einen neuen Link an.",
+    "backToLogin": "Zurück zur Anmeldung"
+  },
+  "verifySent": {
+    "sentTo": "An die Adresse",
+    "sentDesc": "haben wir einen Verifizierungslink gesendet. Klicken Sie darauf, um die Registrierung abzuschließen.",
+    "spamHint": "Wenn Sie die E-Mail nicht sehen, prüfen Sie den Ordner",
+    "noEmail": "E-Mail nicht erhalten?",
+    "resentOk": "✓ Wir haben einen neuen Verifizierungslink gesendet. Prüfen Sie Ihren Posteingang.",
+    "sending": "Sende…",
+    "resendBtn": "Verifizierungs-E-Mail erneut senden",
+    "sendError": "E-Mail konnte nicht gesendet werden.",
+    "backToLogin": "Zurück zur Anmeldung"
+  },
+  "transport": {
+    "missingStops": "Route: Start- oder Zielort im Angebot fehlt.",
+    "title": "Transportberechnung",
+    "loading": "Route wird berechnet…",
+    "fuel": "Diesel",
+    "map": "Karte",
+    "diesel": "Diesel"
+  },
+  "compliance": {
+    "loading": "Compliance wird geladen...",
+    "error": "Compliance konnte nicht geladen werden.",
+    "empty": "Keine Compliance-Einträge."
+  },
+  "feedback": {
+    "widgetTitle": "Was würden Sie hinzufügen?",
+    "desc": "Schreiben Sie, was fehlt, was verbessert werden könnte oder was Ihrem Unternehmen helfen würde.",
+    "placeholder": "Z.B. Ich vermisse eine Karte der Lieferanten in der Nähe…",
+    "sending": "Sende…",
+    "send": "Senden",
+    "thanks": "Danke! Ihr Feedback ist bei uns.",
+    "errorShort": "Mindestens 3 Zeichen eingeben.",
+    "error": "Senden fehlgeschlagen",
+    "button": "💬 Idee?",
+    "tooltip": "Was würden Sie zur Plattform hinzufügen?"
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { config } from '../../../lib/config';
+import { useT } from '@/lib/i18n/context';
 
 type Props = { origin?: string; destination?: string };
 
@@ -31,6 +32,7 @@ const VEHICLES = [
 ] as const;
 
 export function TransportPanel({ origin, destination }: Props) {
+  const { t } = useT();
   const [route, setRoute] = useState<RouteResult | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -87,7 +89,7 @@ export function TransportPanel({ origin, destination }: Props) {
   if (!origin || !destination) {
     return (
       <section className="mt-6 rounded-2xl border p-4 text-sm" style={{ borderColor: 'rgba(201,168,76,0.25)', color: '#9a8f7c' }}>
-        Trasa: chýba východiskové alebo cieľové miesto na ponuke.
+        {t('transport.missingStops')}
       </section>
     );
   }
@@ -95,7 +97,7 @@ export function TransportPanel({ origin, destination }: Props) {
   return (
     <section className="mt-6 rounded-2xl border p-5" style={{ borderColor: 'rgba(201,168,76,0.25)' }}>
       <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: '#c9a84c' }}>
-        Prepravný výpočet
+        {t('transport.title')}
       </p>
       <h2 className="mt-1 font-serif text-xl" style={{ color: '#e8d48b' }}>
         {origin} → {destination}
@@ -118,7 +120,7 @@ export function TransportPanel({ origin, destination }: Props) {
         ))}
       </div>
       {loading ? (
-        <p className="mt-3 text-sm" style={{ color: '#9a8f7c' }}>Počítam trasu…</p>
+        <p className="mt-3 text-sm" style={{ color: '#9a8f7c' }}>{t('transport.loading')}</p>
       ) : null}
       {error ? (
         <p className="mt-3 text-sm" style={{ color: '#f0bbb0' }}>{error}</p>
@@ -137,13 +139,13 @@ export function TransportPanel({ origin, destination }: Props) {
                 {Math.round(opt.totalEur)} €
               </p>
               <p className="text-xs" style={{ color: '#9a8f7c' }}>
-                Nafta {Math.round(opt.fuel?.fuelLiters || 0)} L / {Math.round(opt.fuel?.fuelEur || 0)} €
+                {t('transport.fuel')} {Math.round(opt.fuel?.fuelLiters || 0)} L / {Math.round(opt.fuel?.fuelEur || 0)} €
               </p>
             </div>
           ))}
           {route.mapUrl ? (
             <a className="text-xs underline" href={route.mapUrl} target="_blank" rel="noreferrer">
-              Mapa
+              {t('transport.map')}
             </a>
           ) : null}
         </div>

@@ -189,7 +189,14 @@
     "hint": "Entrez votre e-mail et nous vous enverrons un lien de réinitialisation.",
     "submit": "Envoyer le lien",
     "back": "Retour à la connexion",
-    "sent": "Si le compte existe, nous avons envoyé les instructions par e-mail."
+    "sent": "Si le compte existe, nous avons envoyé les instructions par e-mail.",
+    "description": "Entrez un email. Nous enverrons un lien de réinitialisation (DEV affiche le token ici).",
+    "devToken": "Token DEV:",
+    "continueLink": "Continuer vers le nouveau mot de passe",
+    "sending": "Envoi...",
+    "send": "Envoyer",
+    "successMsg": "Si le compte existe, nous avons envoyé les instructions.",
+    "errorMsg": "Échec de l'envoi de la demande."
   },
   "reset": {
     "title": "Nouveau mot de passe",
@@ -367,7 +374,12 @@
     "threadsEmpty": "Aucune conversation",
     "threadsEmptyHint": "Lorsque quelqu'un répond à votre demande, la conversation apparaîtra ici.",
     "back": "Retour à la liste",
-    "offerPrefix": "Offre"
+    "offerPrefix": "Offre",
+    "threadListLoading": "Chargement...",
+    "threadListEmpty": "Pas encore de conversations. Démarrez un chat depuis le détail d'une annonce.",
+    "otherCompany": "Autre entreprise",
+    "startFromListing": "Démarrez un chat depuis le détail d'une annonce.",
+    "errorSend": "Échec de l'envoi"
   },
   "listings": {
     "mySection": "MES ANNONCES",
@@ -504,11 +516,15 @@
     "section": "DOCUMENTS",
     "title": "Documents",
     "addButton": "+ Ajouter un document",
-    "empty": "Aucun document",
+    "empty": "Aucun document.",
     "emptyHint": "Téléchargez les documents à partager.",
     "newSection": "NOUVEAU DOCUMENT",
     "newTitle": "Ajouter un document",
-    "docTitle": "Document"
+    "docTitle": "Document",
+    "tableLoading": "Chargement des documents...",
+    "tableError": "Échec du chargement des documents.",
+    "typeCol": "Type",
+    "open": "Ouvrir"
   },
   "companies": {
     "newSection": "NOUVELLE ENTREPRISE",
@@ -631,7 +647,17 @@
     "section": "DEMANDES",
     "title": "Demandes",
     "received": "Reçues",
-    "sent": "Envoyées"
+    "sent": "Envoyées",
+    "loading": "Chargement des demandes…",
+    "loadError": "Échec du chargement des demandes.",
+    "emptyReceived": "Aucune demande reçue.",
+    "emptySent": "Aucune demande envoyée.",
+    "updateError": "Impossible de changer le statut.",
+    "statusAnswered": "Répondu",
+    "statusClosed": "Fermé",
+    "statusPending": "En attente",
+    "btnAnswered": "Répondu",
+    "btnClose": "Fermer"
   },
   "listingMedia": {
     "noPhoto": "Aucune photo",
@@ -869,17 +895,35 @@
   "recommendations": {
     "kicker": "Recommandations",
     "title": "Acheteurs potentiels",
-    "chatDraft": "Brouillon de message"
+    "chatDraft": "Brouillon de message",
+    "disclaimer": "Acheteurs vérifiés à partir des données existantes. Aucune transaction n'est conclue.",
+    "loading": "Chargement…",
+    "empty": "Aucun acheteur vérifié.",
+    "score": "score",
+    "makeDraft": "Rédiger le message et le transport",
+    "copyDraft": "Copier",
+    "openChat": "Ouvrir le chat avec le brouillon",
+    "copyBtn": "Copier"
   },
   "freight": {
     "kicker": "Fret",
-    "title": "Transporteurs à proximité"
+    "title": "Transporteurs à proximité",
+    "firmsWithLogistics": "Entreprises avec logistique près de",
+    "destination": "destination",
+    "notOrder": "Pas une commande.",
+    "pendingCity": "En attente de la ville de l'acheteur.",
+    "loading": "Recherche de transporteurs…",
+    "empty": "Aucune entreprise logistique dans la base pour ce lieu."
   },
   "chatDraftBanner": {
-    "kicker": "Brouillon des recommandations"
+    "kicker": "Brouillon des recommandations",
+    "copyBtn": "Copier dans le message"
   },
   "notifications": {
-    "title": "Notifications"
+    "title": "Notifications",
+    "loading": "Chargement des notifications...",
+    "error": "Échec du chargement des notifications.",
+    "empty": "Aucune notification."
   },
   "documentForm": {
     "title": "Ajouter un document",
@@ -927,5 +971,78 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "L'assistant IA est disponible pour les comptes d'entreprise."
+  },
+  "listingInquiry": {
+    "noCompany": "Créez et vérifiez d'abord une entreprise.",
+    "sentOk": "Demande envoyée.",
+    "error": "Échec de la demande",
+    "sending": "Envoi de la demande…",
+    "send": "Envoyer la demande"
+  },
+  "docForm": {
+    "uploading": "Téléchargement...",
+    "uploadFailed": "Échec du téléchargement",
+    "errorRequired": "Remplissez le titre, téléchargez le fichier et sélectionnez l'entreprise.",
+    "errorSave": "Échec de l'enregistrement",
+    "filePlaceholder": "rempli après téléchargement",
+    "selectCompany": "— sélectionnez une entreprise —",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer",
+    "cancel": "Annuler"
+  },
+  "resetPwd": {
+    "saving": "Enregistrement...",
+    "changeBtn": "Changer le mot de passe",
+    "successMsg": "Mot de passe modifié.",
+    "errorMsg": "Échec de la réinitialisation."
+  },
+  "verify": {
+    "missingToken": "Token de vérification manquant dans l'URL.",
+    "failed": "Échec de la vérification.",
+    "success": "Email vérifié avec succès.",
+    "connection": "Impossible de se connecter au serveur.",
+    "verifying": "Vérification de l'email…",
+    "verified": "Email vérifié",
+    "titleError": "Échec de la vérification",
+    "subVerifying": "Un instant.",
+    "subSuccess": "Vous pouvez vous connecter.",
+    "subError": "Réessayez ou demandez un nouveau lien.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "verifySent": {
+    "sentTo": "À l'adresse",
+    "sentDesc": "nous avons envoyé un lien de vérification. Cliquez dessus pour terminer l'inscription.",
+    "spamHint": "Si vous ne voyez pas l'email, vérifiez le dossier",
+    "noEmail": "Vous n'avez pas reçu l'email?",
+    "resentOk": "✓ Nous avons envoyé un nouveau lien. Vérifiez votre boîte.",
+    "sending": "Envoi…",
+    "resendBtn": "Renvoyer l'email de vérification",
+    "sendError": "Échec de l'envoi de l'email.",
+    "backToLogin": "Retour à la connexion"
+  },
+  "transport": {
+    "missingStops": "Itinéraire: origine ou destination manquante sur l'annonce.",
+    "title": "Calcul du transport",
+    "loading": "Calcul de l'itinéraire…",
+    "fuel": "Diesel",
+    "map": "Carte",
+    "diesel": "Diesel"
+  },
+  "compliance": {
+    "loading": "Chargement de la conformité...",
+    "error": "Échec du chargement de la conformité.",
+    "empty": "Aucun enregistrement de conformité."
+  },
+  "feedback": {
+    "widgetTitle": "Qu'ajouteriez-vous?",
+    "desc": "Écrivez ce qui manque, ce qui pourrait être amélioré ou ce qui aiderait votre entreprise.",
+    "placeholder": "Ex. Il me manque une carte des fournisseurs à proximité…",
+    "sending": "Envoi…",
+    "send": "Envoyer",
+    "thanks": "Merci! Votre retour est chez nous.",
+    "errorShort": "Écrivez au moins 3 caractères.",
+    "error": "Échec de l'envoi",
+    "button": "💬 Idée?",
+    "tooltip": "Qu'ajouteriez-vous à la plateforme?"
   }
 }

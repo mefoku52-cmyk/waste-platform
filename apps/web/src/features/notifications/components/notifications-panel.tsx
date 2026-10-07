@@ -9,12 +9,12 @@ export const NotificationsPanel = () => {
   const items = (data as any)?.items ?? [];
 
   if (isLoading) {
-    return <div className="text-sm text-gray-500">Načítavam notifikácie...</div>;
+    return <div className="text-sm text-gray-500">{t('notifications.loading')}</div>;
   }
   if (error) {
     return (
       <div className="text-sm text-red-600">
-        Notifikácie sa nepodarilo načítať.
+        {t('notifications.error')}
       </div>
     );
   }
@@ -28,7 +28,7 @@ export const NotificationsPanel = () => {
       <ul className="divide-y divide-gray-100 max-h-64 overflow-y-auto">
         {items.length === 0 ? (
           <li className="px-4 py-6 text-center text-sm text-gray-500">
-            Žiadne notifikácie.
+            {t('notifications.empty')}
           </li>
         ) : (
           items.map((n: any) => (

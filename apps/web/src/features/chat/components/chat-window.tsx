@@ -206,7 +206,7 @@ export const ChatWindow = ({ threadId }: { threadId: string }) => {
                       }
                       style={{ color: mine ? 'rgba(9,8,7,0.75)' : GOLD }}
                     >
-                      {mine ? 'Vy' : 'Druhá firma'}
+                      {mine ? t('chat.you') : t('chat.otherCompany')}
                     </div>
                   )}
                   <div className="whitespace-pre-wrap break-words">{m.body}</div>

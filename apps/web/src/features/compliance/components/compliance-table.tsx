@@ -8,8 +8,8 @@ export const ComplianceTable = () => {
   const { data, isLoading, error } = useCompliance();
   const items = (data as any)?.items ?? [];
 
-  if (isLoading) return <div className="p-4 text-center text-sm text-gray-500">Načítavam compliance...</div>;
-  if (error) return <div className="p-4 text-center text-sm text-red-600">Compliance sa nepodarilo načítať.</div>;
+  if (isLoading) return <div className="p-4 text-center text-sm text-gray-500">{t('compliance.loading')}</div>;
+  if (error) return <div className="p-4 text-center text-sm text-red-600">{t('compliance.error')}</div>;
 
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
@@ -26,7 +26,7 @@ export const ComplianceTable = () => {
           {items.length === 0 ? (
             <tr>
               <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                Žiadne compliance záznamy.
+                {t('compliance.empty')}
               </td>
             </tr>
           ) : (

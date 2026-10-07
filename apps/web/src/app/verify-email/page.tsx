@@ -19,7 +19,7 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (!token) {
       setStatus('error');
-      setMessage('Chýba overovací token v adrese.');
+      setMessage(t('verify.missingToken'));
       return;
     }
     (async () => {
@@ -32,14 +32,14 @@ function VerifyEmailContent() {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
           setStatus('error');
-          setMessage(data.message || data.detail || 'Overenie zlyhalo.');
+          setMessage(data.message || data.detail || t('verify.failed'));
           return;
         }
         setStatus('success');
-        setMessage(data.message || 'E-mail bol úspešne overený.');
+        setMessage(data.message || t('verify.success'));
       } catch {
         setStatus('error');
-        setMessage('Nepodarilo sa spojiť so serverom.');
+        setMessage(t('verify.connection'));
       }
     })();
   }, [token]);
@@ -48,17 +48,17 @@ function VerifyEmailContent() {
     <AuthShell
       title={
         status === 'verifying'
-          ? 'Overujem e-mail…'
+          ? t('verify.verifying')
           : status === 'success'
-            ? 'E-mail overený'
-            : 'Overenie zlyhalo'
+            ? t('verify.verified')
+            : t('verify.titleError')
       }
       subtitle={
         status === 'verifying'
-          ? 'Chvíľku strpenia.'
+          ? t('verify.subVerifying')
           : status === 'success'
-            ? 'Môžete sa prihlásiť.'
-            : 'Skúste znova alebo požiadajte o nový odkaz.'
+            ? t('verify.subSuccess')
+            : t('verify.subError')
       }
     >
       <div className="space-y-5 text-center">
@@ -91,7 +91,7 @@ function VerifyEmailContent() {
               href="/login"
               className="block text-xs text-[#9a8f7c] hover:text-[#e8d48b] underline underline-offset-4"
             >
-              Späť na prihlásenie
+              {t('verify.backToLogin')}
             </Link>
           </div>
         )}

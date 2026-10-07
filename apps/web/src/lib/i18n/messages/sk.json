@@ -189,7 +189,14 @@
     "hint": "Zadajte svoj e-mail a pošleme vám odkaz na obnovu hesla.",
     "submit": "Odoslať odkaz",
     "back": "Späť na prihlásenie",
-    "sent": "Ak účet existuje, poslali sme inštrukcie na e-mail."
+    "sent": "Ak účet existuje, poslali sme inštrukcie na e-mail.",
+    "description": "Zadaj e-mail. Pošleme odkaz na obnovu (v DEV sa token zobrazí tu).",
+    "devToken": "DEV token:",
+    "continueLink": "Pokračovať na nové heslo",
+    "sending": "Odosielam...",
+    "send": "Odoslať",
+    "successMsg": "Ak účet existuje, poslali sme inštrukcie.",
+    "errorMsg": "Nepodarilo sa odoslať žiadosť."
   },
   "reset": {
     "title": "Nové heslo",
@@ -366,7 +373,12 @@
     "threadsEmpty": "Žiadne konverzácie",
     "threadsEmptyHint": "Keď ti niekto odpovie na dopyt, konverzácia sa objaví tu.",
     "back": "Späť na zoznam",
-    "offerPrefix": "Ponuka"
+    "offerPrefix": "Ponuka",
+    "threadListLoading": "Načítavam...",
+    "threadListEmpty": "Zatiaľ žiadne konverzácie. Začni chat z detailu ponuky.",
+    "otherCompany": "Druhá firma",
+    "startFromListing": "Začni chat z detailu ponuky.",
+    "errorSend": "Odoslanie zlyhalo"
   },
   "listings": {
     "mySection": "MOJE PONUKY",
@@ -503,11 +515,15 @@
     "section": "DOKUMENTY",
     "title": "Dokumenty",
     "addButton": "+ Pridať dokument",
-    "empty": "Zatiaľ žiadne dokumenty",
+    "empty": "Žiadne dokumenty.",
     "emptyHint": "Nahraj dokumenty, ktoré chceš zdieľať s firmami.",
     "newSection": "NOVÝ DOKUMENT",
     "newTitle": "Pridať dokument",
-    "docTitle": "Dokument"
+    "docTitle": "Dokument",
+    "tableLoading": "Načítavam dokumenty...",
+    "tableError": "Dokumenty sa nepodarilo načítať.",
+    "typeCol": "Typ",
+    "open": "Otvoriť"
   },
   "companies": {
     "newSection": "NOVÁ FIRMA",
@@ -630,7 +646,17 @@
     "section": "DOPYTY",
     "title": "Dopyty",
     "received": "Prijaté",
-    "sent": "Odoslané"
+    "sent": "Odoslané",
+    "loading": "Načítavam dopyty…",
+    "loadError": "Chyba pri načítaní dopytov.",
+    "emptyReceived": "Žiadne prijaté dopyty.",
+    "emptySent": "Žiadne odoslané dopyty.",
+    "updateError": "Nepodarilo sa zmeniť status.",
+    "statusAnswered": "Odpovedané",
+    "statusClosed": "Uzavreté",
+    "statusPending": "Čaká",
+    "btnAnswered": "Odpovedané",
+    "btnClose": "Uzavrieť"
   },
   "listingMedia": {
     "noPhoto": "Bez fotografie",
@@ -868,17 +894,35 @@
   "recommendations": {
     "kicker": "Odporucania",
     "title": "Mozni odberatelia",
-    "chatDraft": "Navrh spravy do chatu"
+    "chatDraft": "Navrh spravy do chatu",
+    "disclaimer": "Overeni odberatelia z existujucich dat. Obchod sa neuzatvara.",
+    "loading": "Nacitavam…",
+    "empty": "Ziadni overeni odberatelia.",
+    "score": "skore",
+    "makeDraft": "Navrhnut spravu a prepravu",
+    "copyDraft": "Kopirovat",
+    "openChat": "Otvorit chat s draftom",
+    "copyBtn": "Kopirovat"
   },
   "freight": {
     "kicker": "Spedicia",
-    "title": "Dopravcovia v okoli"
+    "title": "Dopravcovia v okoli",
+    "firmsWithLogistics": "Firmy s logistikou pri",
+    "destination": "destinacii",
+    "notOrder": "Nie objednavka.",
+    "pendingCity": "Caka na mesto odberatela.",
+    "loading": "Hladam dopravcov…",
+    "empty": "V databaze nie je firma s logistikou pre toto miesto."
   },
   "chatDraftBanner": {
-    "kicker": "Draft z odporucani"
+    "kicker": "Draft z odporucani",
+    "copyBtn": "Kopirovat do spravy"
   },
   "notifications": {
-    "title": "Notifikácie"
+    "title": "Notifikácie",
+    "loading": "Načítavam notifikácie...",
+    "error": "Notifikácie sa nepodarilo načítať.",
+    "empty": "Žiadne notifikácie."
   },
   "documentForm": {
     "title": "Pridať dokument",
@@ -926,5 +970,78 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "AI asistent je dostupný pre firemné účty."
+  },
+  "listingInquiry": {
+    "noCompany": "Najprv si zaloz a over firmu.",
+    "sentOk": "Dopyt odoslany.",
+    "error": "Dopyt zlyhal",
+    "sending": "Posielam dopyt…",
+    "send": "Poslat dopyt"
+  },
+  "docForm": {
+    "uploading": "Nahrávam...",
+    "uploadFailed": "Upload zlyhal",
+    "errorRequired": "Vyplň názov, nahraj súbor a firmu.",
+    "errorSave": "Uloženie zlyhalo",
+    "filePlaceholder": "vyplní sa po uploade",
+    "selectCompany": "— vyber firmu —",
+    "saving": "Ukladám...",
+    "save": "Uložiť",
+    "cancel": "Zrušiť"
+  },
+  "resetPwd": {
+    "saving": "Ukladám...",
+    "changeBtn": "Zmeniť heslo",
+    "successMsg": "Heslo zmenené.",
+    "errorMsg": "Obnova zlyhala."
+  },
+  "verify": {
+    "missingToken": "Chýba overovací token v adrese.",
+    "failed": "Overenie zlyhalo.",
+    "success": "E-mail bol úspešne overený.",
+    "connection": "Nepodarilo sa spojiť so serverom.",
+    "verifying": "Overujem e-mail…",
+    "verified": "E-mail overený",
+    "titleError": "Overenie zlyhalo",
+    "subVerifying": "Chvíľku strpenia.",
+    "subSuccess": "Môžete sa prihlásiť.",
+    "subError": "Skúste znova alebo požiadajte o nový odkaz.",
+    "backToLogin": "Späť na prihlásenie"
+  },
+  "verifySent": {
+    "sentTo": "Na adresu",
+    "sentDesc": "sme poslali odkaz na overenie účtu. Kliknite naň a dokončite registráciu.",
+    "spamHint": "Ak e-mail nevidíte, skontrolujte priečinok",
+    "noEmail": "Nedostali ste e-mail?",
+    "resentOk": "✓ Poslali sme nový overovací odkaz. Skontrolujte schránku.",
+    "sending": "Odosielam…",
+    "resendBtn": "Znova odoslať verifikačný e-mail",
+    "sendError": "Nepodarilo sa odoslať e-mail.",
+    "backToLogin": "Späť na prihlásenie"
+  },
+  "transport": {
+    "missingStops": "Trasa: chýba východiskové alebo cieľové miesto na ponuke.",
+    "title": "Prepravný výpočet",
+    "loading": "Počítam trasu…",
+    "fuel": "Nafta",
+    "map": "Mapa",
+    "diesel": "Nafta"
+  },
+  "compliance": {
+    "loading": "Načítavam compliance...",
+    "error": "Compliance sa nepodarilo načítať.",
+    "empty": "Žiadne compliance záznamy."
+  },
+  "feedback": {
+    "widgetTitle": "Čo by si pridal?",
+    "desc": "Napíš čo ti chýba, čo by si zlepšil, alebo čo by pomohlo tvojej firme.",
+    "placeholder": "Napr. Chýba mi mapa dodávateľov v okolí…",
+    "sending": "Posielam…",
+    "send": "Poslať",
+    "thanks": "Ďakujeme! Tvoja pripomienka je u nás.",
+    "errorShort": "Napíš aspoň 3 znaky.",
+    "error": "Odoslanie zlyhalo",
+    "button": "💬 Nápad?",
+    "tooltip": "Čo by si pridal na platforme?"
   }
 }

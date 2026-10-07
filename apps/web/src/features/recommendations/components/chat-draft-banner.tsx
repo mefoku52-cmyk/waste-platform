@@ -18,7 +18,7 @@ function ChatDraftBannerInner() {
         className="mt-3 rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]"
         onClick={() => navigator.clipboard.writeText(draft)}
       >
-        Kopirovat do spravy
+        {t('chatDraftBanner.copyBtn')}
       </button>
     </div>
   );

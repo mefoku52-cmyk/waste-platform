@@ -62,11 +62,11 @@ export function RecommendationsPanel({
     <section className="mt-6 rounded-2xl border border-[#d4af37]/35 bg-black p-6">
       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">{t('recommendations.kicker')}</p>
       <h2 className="mt-1 font-serif text-2xl text-[#f3e6c4]">{t('recommendations.title')}</h2>
-      <p className="mt-1 text-sm text-[#cbb98a]">Overeni odberatelia z existujucich dat. Obchod sa neuzatvara.</p>
-      {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">Nacitavam…</p>}
+      <p className="mt-1 text-sm text-[#cbb98a]">{t('recommendations.disclaimer')}</p>
+      {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">{t('recommendations.loading')}</p>}
       {error && <p className="mt-4 text-sm text-red-300">{(error as Error).message}</p>}
       {data && data.items.length === 0 && (
-        <p className="mt-4 text-sm text-[#cbb98a]">Ziadni overeni odberatelia.</p>
+        <p className="mt-4 text-sm text-[#cbb98a]">{t('recommendations.empty')}</p>
       )}
       {data && data.items.length > 0 && (
         <ul className="mt-4 space-y-3">
@@ -76,7 +76,7 @@ export function RecommendationsPanel({
 
               <div className="flex items-baseline justify-between gap-3">
                 <p className="font-semibold text-[#f3e6c4]">{item.legalName}</p>
-                <p className="text-sm text-[#d4af37]">skore {item.score}</p>
+                <p className="text-sm text-[#d4af37]">{t('recommendations.score')} {item.score}</p>
               </div>
               <p className="mt-1 text-sm text-[#9a8b63]">{item.city}, {item.countryCode}</p>
               <p className="mt-2 text-xs text-[#9a8b63]">
@@ -87,7 +87,7 @@ export function RecommendationsPanel({
                 onClick={() => makeDraft(item.legalName, item.city)}
                 className="mt-3 rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]"
               >
-                Navrhnut spravu a prepravu
+                {t('recommendations.makeDraft')}
               </button>
             </li>
           ))}
@@ -103,13 +103,13 @@ export function RecommendationsPanel({
           />
           <div className="mt-2 flex gap-2">
             <button type="button" onClick={copyDraft} className="rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]">
-              Kopirovat
+              {t('recommendations.copyDraft')}
             </button>
             <a
               href={'/dashboard/chat?draft=' + encodeURIComponent(draft)}
               className="rounded-full border border-[#d4af37]/50 px-3 py-1 text-xs text-[#d4af37]"
             >
-              Otvorit chat s draftom
+              {t('recommendations.openChat')}
             </a>
           </div>
         </div>

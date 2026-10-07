@@ -43,12 +43,12 @@ export function FreightPanel({ near }: { near?: string }) {
       <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#d4af37]">{t('freight.kicker')}</p>
       <h2 className="mt-1 font-serif text-2xl">{t('freight.title')}</h2>
       <p className="mt-1 text-sm text-[#cbb98a]">
-        Firmy s logistikou pri {near || 'destinacii'}. Nie objednavka.
+        {t('freight.firmsWithLogistics')} {near || t('freight.destination')}. {t('freight.notOrder')}
       </p>
-      {!near && <p className="mt-4 text-sm text-[#cbb98a]">Caka na mesto odberatela.</p>}
-      {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">Hladam dopravcov…</p>}
+      {!near && <p className="mt-4 text-sm text-[#cbb98a]">{t('freight.pendingCity')}</p>}
+      {isLoading && <p className="mt-4 text-sm text-[#cbb98a]">{t('freight.loading')}</p>}
       {error && <p className="mt-4 text-sm text-red-300">{(error as Error).message}</p>}
-      {data && data.length === 0 && <p className="mt-4 text-sm text-[#cbb98a]">V databaze nie je firma s logistikou pre toto miesto.</p>}
+      {data && data.length === 0 && <p className="mt-4 text-sm text-[#cbb98a]">{t('freight.empty')}</p>}
       <ul className="mt-4 space-y-2">
         {(data || []).map((row) => (
           <li key={row.name + row.lat} className="rounded-xl border border-[#d4af37]/25 p-3">

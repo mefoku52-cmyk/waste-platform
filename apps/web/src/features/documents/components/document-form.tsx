@@ -38,7 +38,7 @@ export const DocumentForm = () => {
       }
       setFileUrl(path);
     } catch (err) {
-      setLocalError(((err as any)?.message) || 'Upload zlyhal');
+      setLocalError(((err as any)?.message) || t('docForm.uploadFailed'));
     } finally {
       setUploading(false);
     }
@@ -49,7 +49,7 @@ export const DocumentForm = () => {
     setLocalError(null);
     const cid = companyId || (companies[0] && companies[0].id);
     if (!title.trim() || !fileUrl.trim() || !cid) {
-      setLocalError('Vyplň názov, nahraj súbor a firmu.');
+      setLocalError(t('docForm.errorRequired'));
       return;
     }
     try {
@@ -61,7 +61,7 @@ export const DocumentForm = () => {
       });
       router.push('/dashboard');
     } catch (err) {
-      setLocalError(((err as any)?.message) || 'Uloženie zlyhalo');
+      setLocalError(((err as any)?.message) || t('docForm.errorSave'));
     }
   };
 
@@ -93,7 +93,7 @@ export const DocumentForm = () => {
           disabled={busy}
           className="block w-full text-sm text-gray-700"
         />
-        {uploading && <p className="mt-1 text-xs text-gray-500">Nahrávam...</p>}
+        {uploading && <p className="mt-1 text-xs text-gray-500">{t('docForm.uploading')}</p>}
         {fileUrl && !uploading && (
           <p className="mt-1 truncate text-xs text-green-700">OK: {fileUrl}</p>
         )}
@@ -103,7 +103,7 @@ export const DocumentForm = () => {
         <Input
           value={fileUrl}
           onChange={(e) => setFileUrl(e.target.value)}
-          placeholder="vyplní sa po uploade"
+          placeholder={t('docForm.filePlaceholder')}
           disabled={busy}
         />
       </FormField>
@@ -115,7 +115,7 @@ export const DocumentForm = () => {
           onChange={(e) => setCompanyId(e.target.value)}
           disabled={busy}
         >
-          <option value="">— vyber firmu —</option>
+          <option value="">{t('docForm.selectCompany')}</option>
           {companies.map((c: any) => (
             <option key={c.id} value={c.id}>
               {c.legalName || c.legal_name || c.id}
@@ -126,10 +126,10 @@ export const DocumentForm = () => {
 
       <div className="flex justify-end gap-3 pt-2">
         <Button type="button" variant="outline" onClick={() => router.back()} disabled={busy}>
-          Zrušiť
+          {t('docForm.cancel')}
         </Button>
         <Button type="submit" disabled={busy}>
-          {busy ? 'Ukladám...' : 'Uložiť'}
+          {busy ? t('docForm.saving') : t('docForm.save')}
         </Button>
       </div>
     </form>

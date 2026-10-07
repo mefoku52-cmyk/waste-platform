@@ -9,10 +9,10 @@ export const DocumentsTable = () => {
   const items = (data as any)?.items ?? [];
 
   if (isLoading) {
-    return <div className="p-4 text-center text-sm text-gray-500">Načítavam dokumenty...</div>;
+    return <div className="p-4 text-center text-sm text-gray-500">{t('documents.tableLoading')}</div>;
   }
   if (error) {
-    return <div className="p-4 text-center text-sm text-red-600">Dokumenty sa nepodarilo načítať.</div>;
+    return <div className="p-4 text-center text-sm text-red-600">{t('documents.tableError')}</div>;
   }
 
   return (
@@ -21,7 +21,7 @@ export const DocumentsTable = () => {
         <thead className="bg-gray-50">
           <tr>
             <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.title')}</th>
-            <th className="px-4 py-2 text-left font-medium text-gray-900">Typ</th>
+            <th className="px-4 py-2 text-left font-medium text-gray-900">{t('documents.typeCol')}</th>
             <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.status')}</th>
             <th className="px-4 py-2 text-left font-medium text-gray-900">{t('tables.file')}</th>
           </tr>
@@ -30,7 +30,7 @@ export const DocumentsTable = () => {
           {items.length === 0 ? (
             <tr>
               <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                Žiadne dokumenty.
+                {t('documents.empty')}
               </td>
             </tr>
           ) : (
@@ -47,7 +47,7 @@ export const DocumentsTable = () => {
                       rel="noreferrer"
                       className="text-blue-600 hover:underline"
                     >
-                      Otvoriť
+                      {t('documents.open')}
                     </a>
                   ) : (
                     '—'
