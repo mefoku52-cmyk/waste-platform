@@ -141,7 +141,7 @@ export const CompanyForm = ({
 
       {error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
-          {(error as any).message || (isEdit ? 'Chyba pri ukladaní' : 'Chyba pri registrácii firmy')}
+          {(error as any).message || (isEdit ? t('companies.errorSave') : t('companies.errorRegister'))}
         </div>
       )}
 

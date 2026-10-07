@@ -84,18 +84,21 @@ async function fetchCompany(id: string): Promise<CompanyData> {
   return (body.data ?? body) as CompanyData;
 }
 
-function statusLabel(status?: string | null): { label: string; color: string } {
+function statusLabel(
+  status: string | null | undefined,
+  t: (key: string) => string,
+): { label: string; color: string } {
   switch (status) {
     case 'verified':
-      return { label: 'Overená', color: OK };
+      return { label: t('companies.verified'), color: OK };
     case 'verification_submitted':
-      return { label: 'Čaká na overenie', color: GOLD_BRIGHT };
+      return { label: t('companies.verificationSubmitted'), color: GOLD_BRIGHT };
     case 'rejected':
-      return { label: 'Zamietnutá', color: DANGER };
+      return { label: t('companies.rejected'), color: DANGER };
     case 'suspended':
-      return { label: 'Pozastavená', color: DANGER };
+      return { label: t('companies.suspended'), color: DANGER };
     case 'inactive':
-      return { label: 'Neaktívna', color: MUTED };
+      return { label: t('companies.inactive'), color: MUTED };
     case 'draft':
     default:
       return { label: status || '—', color: MUTED };
@@ -113,7 +116,11 @@ function entityTypeKey(entityType?: string | null): string {
   return 'companyForm.entityType.company';
 }
 
-function capability(label: string, value: boolean | null | undefined) {
+function capability(
+  label: string,
+  value: boolean | null | undefined,
+  t: (key: string) => string,
+) {
   const enabled = Boolean(value);
   return (
     <div className="cmep-panel rounded-xl p-3">
@@ -121,7 +128,7 @@ function capability(label: string, value: boolean | null | undefined) {
         {label}
       </p>
       <p className="mt-1 text-sm" style={{ color: enabled ? OK : MUTED }}>
-        {enabled ? '✓ Áno' : '— Nie'}
+        {enabled ? t('companies.yes') : t('companies.no')}
       </p>
     </div>
   );
@@ -149,7 +156,7 @@ export default function CompanyDetailPage() {
 
   const data = query.data;
   const displayName = data?.tradingName || data?.legalName || companyId;
-  const status = statusLabel(data?.status);
+  const status = statusLabel(data?.status, t);
 
   const transition = useTransitionCompanyStatus(companyId);
 
@@ -173,10 +180,10 @@ export default function CompanyDetailPage() {
         </Link>
 
         {query.isLoading ? (
-          <p className="mt-8 text-sm" style={{ color: MUTED }}>Načítavam…</p>
+          <p className="mt-8 text-sm" style={{ color: MUTED }}>{t('companies.contactsLoading')}</p>
         ) : query.error ? (
           <div className="mt-8 rounded-2xl border border-[#c45c4a]/60 bg-[#c45c4a]/10 p-4 text-sm text-[#f0bbb0]">
-            {query.error instanceof Error ? query.error.message : 'Chyba načítania'}
+            {query.error instanceof Error ? query.error.message : t('companies.loadError')}
           </div>
         ) : data ? (
           <>
@@ -185,7 +192,7 @@ export default function CompanyDetailPage() {
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.24em]" style={{ color: GOLD }}>
-                    PROFIL FIRMY
+                    {t('companies.profileSection')}
                   </p>
                   <h1
                     className="mt-2 font-serif text-3xl leading-tight sm:text-4xl"
@@ -225,27 +232,27 @@ export default function CompanyDetailPage() {
             {/* INFO */}
             <section className="mt-6">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                ZÁKLADNÉ ÚDAJE
+                {t('companies.basicSection')}
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>IČO</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('companies.ico')}</p>
                   <p className="mt-1">{data.registrationNumber || '—'}</p>
                 </div>
                 <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>DIČ</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('companies.dic')}</p>
                   <p className="mt-1">{data.taxIdentifier || '—'}</p>
                 </div>
                 <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>IČ DPH</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('companies.vat')}</p>
                   <p className="mt-1">{data.vatIdentifier || '—'}</p>
                 </div>
                 <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Typ firmy</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('companies.companyType')}</p>
                   <p className="mt-1">{data.companyType || '—'}</p>
                 </div>
                 <div className="cmep-panel rounded-xl p-3 sm:col-span-2">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Typ subjektu</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('companies.entityTypeLabel')}</p>
                   <p className="mt-1">{t(entityTypeKey(data.entityType))}</p>
                 </div>
               </div>
@@ -254,7 +261,7 @@ export default function CompanyDetailPage() {
             {/* ADRESA */}
             <section className="mt-6">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                ADRESA
+                {t('companies.addressSection')}
               </p>
               <div className="cmep-panel rounded-xl p-4 text-sm">
                 <p>{data.addressLine1 || '—'}</p>
@@ -269,16 +276,16 @@ export default function CompanyDetailPage() {
             {/* KONTAKTY */}
             <section className="mt-6">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                KONTAKTY
+                {t('companies.contactsSection')}
               </p>
 
               {contactsQuery.isLoading ? (
                 <div className="cmep-panel rounded-xl p-4 text-sm" style={{ color: MUTED }}>
-                  Načítavam…
+                  {t('companies.contactsLoading')}
                 </div>
               ) : contactsQuery.error ? (
                 <div className="cmep-panel rounded-xl p-4 text-sm" style={{ color: MUTED }}>
-                  Kontakty sa nepodarilo načítať.
+                  {t('companies.contactsLoadFailed')}
                 </div>
               ) : contactsQuery.data?.revealed ? (
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -297,7 +304,7 @@ export default function CompanyDetailPage() {
                     <p className="mt-1 text-sm">{contactsQuery.data.phone || '—'}</p>
                   </div>
                   <div className="cmep-panel rounded-xl p-3 sm:col-span-2">
-                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Web</p>
+                    <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>{t('companies.web')}</p>
                     <p className="mt-1 text-sm">
                       {contactsQuery.data.websiteUrl ? (
                         <a
@@ -315,12 +322,12 @@ export default function CompanyDetailPage() {
               ) : (
                 <div className="cmep-panel rounded-xl p-5 text-sm">
                   <p style={{ color: GOLD_BRIGHT, fontWeight: 600 }}>
-                    🔒 Kontakty sú skryté
+                    {t('companies.contactsHidden')}
                   </p>
                   <p className="mt-2" style={{ color: MUTED }}>
                     {contactsQuery.data?.reason === 'no_relationship'
-                      ? 'Kontakty sa odhalia, keď medzi vami a touto firmou vznikne dopyt a druhá strana naň odpovie.'
-                      : 'Kontakty nie sú dostupné.'}
+                      ? t('companies.contactsHiddenReason')
+                      : t('companies.contactsUnavailable')}
                   </p>
                   <div className="mt-4">
                     <Link
@@ -328,7 +335,7 @@ export default function CompanyDetailPage() {
                       className="inline-flex rounded-full px-4 py-2 text-sm font-semibold"
                       style={{ background: GOLD, color: '#090807' }}
                     >
-                      Nájsť ponuku tejto firmy →
+                      {t('companies.findTheirListing')}
                     </Link>
                   </div>
                 </div>
@@ -338,12 +345,12 @@ export default function CompanyDetailPage() {
             {/* CAPABILITIES */}
             <section className="mt-6">
               <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                ROLA NA TRHU
+                {t('companies.roleSection')}
               </p>
               <div className="grid gap-3 sm:grid-cols-3">
-                {capability('Predávajúci', data.sellerCapability)}
-                {capability('Nakupujúci', data.buyerCapability)}
-                {capability('Logistika', data.logisticsCapability)}
+                {capability(t('companies.roleSeller'), data.sellerCapability, t)}
+                {capability(t('companies.roleBuyer'), data.buyerCapability, t)}
+                {capability(t('companies.roleLogistics'), data.logisticsCapability, t)}
               </div>
             </section>
 
@@ -351,7 +358,7 @@ export default function CompanyDetailPage() {
             {data.acceptedMaterialTypes ? (
               <section className="mt-6">
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                  AKCEPTOVANÉ MATERIÁLY
+                  {t('companies.materialsSection')}
                 </p>
                 <div className="cmep-panel rounded-xl p-4 text-sm">
                   {data.acceptedMaterialTypes}
@@ -363,7 +370,7 @@ export default function CompanyDetailPage() {
             {isMyCompany ? (
               <section className="mt-6">
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                  SPRÁVA FIRMY
+                  {t('companies.manageSection')}
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Link
@@ -371,7 +378,7 @@ export default function CompanyDetailPage() {
                     className="rounded-full px-4 py-2 text-sm font-semibold"
                     style={{ background: GOLD, color: '#090807' }}
                   >
-                    ✎ Upraviť firmu
+                    {t('companies.editCompany')}
                   </Link>
 
                   {data.status === 'draft' ? (
@@ -382,7 +389,7 @@ export default function CompanyDetailPage() {
                       className="rounded-full border px-4 py-2 text-sm font-semibold transition hover:opacity-90 disabled:opacity-50"
                       style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD_BRIGHT }}
                     >
-                      {transition.isPending ? 'Posielam…' : '↗ Požiadať o overenie'}
+                      {transition.isPending ? t('companies.sending') : t('companies.requestVerify')}
                     </button>
                   ) : null}
 
@@ -391,14 +398,14 @@ export default function CompanyDetailPage() {
                     className="rounded-full border px-4 py-2 text-sm font-semibold"
                     style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD_BRIGHT }}
                   >
-                    Moje ponuky
+                    {t('companies.myListings')}
                   </Link>
                   <Link
                     href="/dashboard/companies"
                     className="rounded-full border px-4 py-2 text-sm font-semibold"
                     style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD_BRIGHT }}
                   >
-                    Všetky firmy
+                    {t('companies.allCompanies')}
                   </Link>
                 </div>
               </section>

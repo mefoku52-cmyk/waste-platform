@@ -3,12 +3,14 @@
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { CompanyForm } from '@/features/companies';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const BG = '#090807';
 const FG = '#f3ead8';
 
 export default function NewCompanyPage() {
+  const { t } = useT();
   return (
     <>
       <link
@@ -20,10 +22,10 @@ export default function NewCompanyPage() {
 
         <main className="mx-auto max-w-2xl px-4 py-10">
           <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
-            NOVÁ FIRMA
+            {t('companies.newSection')}
           </p>
           <h1 className="mb-8 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
-            Pridať firmu
+            {t('companies.newTitle')}
           </h1>
           <CompanyForm />
         </main>

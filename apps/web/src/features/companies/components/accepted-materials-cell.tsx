@@ -24,7 +24,7 @@ export function AcceptedMaterialsCell({
         acceptedMaterialTypes: text.trim() || null,
       } as never);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Save failed');
+      setError(err instanceof Error ? err.message : t('companies.saveFailed'));
     } finally {
       setSaving(false);
     }

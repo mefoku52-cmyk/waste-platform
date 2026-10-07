@@ -72,10 +72,10 @@ export default function CompanyEditPage() {
         </Link>
 
         {query.isLoading ? (
-          <p className="mt-8 text-sm" style={{ color: MUTED }}>Načítavam…</p>
+          <p className="mt-8 text-sm" style={{ color: MUTED }}>{t('companies.contactsLoading')}</p>
         ) : query.error ? (
           <div className="mt-8 rounded-2xl border border-[#c45c4a]/60 bg-[#c45c4a]/10 p-4 text-sm text-[#f0bbb0]">
-            {query.error instanceof Error ? query.error.message : 'Chyba načítania'}
+            {query.error instanceof Error ? query.error.message : t('companies.loadError')}
           </div>
         ) : query.data ? (
           <div className="mt-6">
