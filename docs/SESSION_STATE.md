@@ -29,4 +29,4 @@
 batch send fix (30/30 emailov), entity_type firmy, dashboard tiles, header
 simplified, i18n ru/fr.
 
-Detaily: `docs/HISTORY.md`
+Detaily: `docs/HISTORY/`
