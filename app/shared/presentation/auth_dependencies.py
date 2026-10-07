@@ -31,3 +31,17 @@ async def require_admin(
     from app.shared.presentation.authorization import require_platform_admin
 
     return require_platform_admin(current_user)
+
+
+async def get_current_user_optional(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    service: GetCurrentAuthContextService = Depends(get_auth_service),
+) -> CurrentUserResponse | None:
+    """Ako require_current_user, ale vráti None ak nie je Authorization header.
+
+    Používa sa pri endpointoch, ktoré môžu byť prístupné aj bez auth,
+    napr. `<img src>` so signed URL (browser nevie poslať Bearer token).
+    """
+    if credentials is None:
+        return None
+    return await service.execute(credentials.credentials)

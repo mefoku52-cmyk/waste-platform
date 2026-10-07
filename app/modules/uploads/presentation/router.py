@@ -19,7 +19,10 @@ from app.modules.uploads.application.signing import (
     sign_file_url,
     verify_file_url,
 )
-from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.auth_dependencies import (
+    get_current_user_optional,
+    require_current_user,
+)
 from app.shared.presentation.error_schemas import error_responses
 
 from .schemas import UploadResponse
@@ -211,28 +214,46 @@ async def get_uploaded_file(
     file_id: str,
     expires: int | None = Query(default=None),
     sig: str | None = Query(default=None),
-    current_user=Depends(require_current_user),
+    current_user=Depends(get_current_user_optional),
     document_service: DocumentService = Depends(get_documents_service),
 ):
+    """Serve file — signed URL obíde auth, priamy prístup vyžaduje Bearer.
+
+    Browser <img src> nevie poslať Authorization header. Ak je platný
+    `?sig=...&expires=...`, file_id je capability (32-znakový UUID) a podpis
+    s expiráciou stačí. Bez sign sa vyžaduje auth.
+    """
     safe = _validate_file_id(file_id)
 
-    await _authorize_document_file(
-        file_id=safe,
-        current_user=current_user,
-        service=document_service,
-    )
-
-    if settings.UPLOADS_REQUIRE_SIGNED:
-        ok, reason = verify_file_url(
+    # Skús signed URL cestu najprv (bez auth)
+    signed_ok = False
+    if sig and expires is not None:
+        ok, _reason = verify_file_url(
             file_id=safe,
             secret=settings.uploads_signing_secret,
-            expires_at=expires if expires is not None else 0,
-            signature=sig or "",
+            expires_at=expires,
+            signature=sig,
         )
-        if not ok:
+        if ok:
+            signed_ok = True
+
+    # Ak nie je signed OK, vyžaduj auth
+    if not signed_ok:
+        if current_user is None:
+            from app.shared.domain.exceptions import UnauthorizedDomainError
+
+            raise UnauthorizedDomainError("Authentication required")
+
+        await _authorize_document_file(
+            file_id=safe,
+            current_user=current_user,
+            service=document_service,
+        )
+
+        if settings.UPLOADS_REQUIRE_SIGNED:
             raise HTTPException(
                 status_code=403,
-                detail=f"Signed URL required ({reason})",
+                detail="Signed URL required",
             )
 
     path = UPLOAD_ROOT / safe
@@ -259,7 +280,7 @@ async def get_uploaded_file(
 )
 async def get_uploaded_file_legacy(
     file_id: str,
-    current_user=Depends(require_current_user),
+    current_user=Depends(get_current_user_optional),
     document_service: DocumentService = Depends(get_documents_service),
 ):
     return await get_uploaded_file(
