@@ -103,9 +103,9 @@ class GroqModelGateway(ModelGateway):
         )
 
     async def stream(self, request: ModelRequest) -> AsyncIterator[str]:
-        """Yield text deltas from Groq SSE stream (A1.2/A1.3).
+        """Yield text deltas z Groq SSE streamu (A1.2/A1.3).
 
-        Blokiace citanie urllib davame do vlakna cez asyncio.to_thread,
+        Blokujuce citanie urllib ide cez asyncio.to_thread,
         aby sme nezablokovali event loop.
         """
         body = self._build_body(request, stream=True)
