@@ -119,15 +119,33 @@
       "eyebrow": "Waste for one · Demand for another",
       "headline": "Less waste. More business.",
       "subline": "A marketplace of companies and circular materials. Filter, search, agree.",
-    "tiles": {
-      "overview": { "label": "Overview", "desc": "Your overview, activity and statistics" },
-      "listings": { "label": "Listings", "desc": "Material marketplace and my listings" },
-      "companies": { "label": "Companies", "desc": "Companies in the network and my company" },
-      "documents": { "label": "Documents", "desc": "Contracts, invoices and attachments" },
-      "inquiries": { "label": "Inquiries", "desc": "Inquiries and communication with companies" },
-      "chat": { "label": "Chat", "desc": "Internal messages between companies" }
-    }
-  },
+      "tiles": {
+        "overview": {
+          "label": "Overview",
+          "desc": "Your overview, activity and statistics"
+        },
+        "listings": {
+          "label": "Listings",
+          "desc": "Material marketplace and my listings"
+        },
+        "companies": {
+          "label": "Companies",
+          "desc": "Companies in the network and my company"
+        },
+        "documents": {
+          "label": "Documents",
+          "desc": "Contracts, invoices and attachments"
+        },
+        "inquiries": {
+          "label": "Inquiries",
+          "desc": "Inquiries and communication with companies"
+        },
+        "chat": {
+          "label": "Chat",
+          "desc": "Internal messages between companies"
+        }
+      }
+    },
     "materials": {
       "drevo": {
         "label": "Wood",
@@ -539,7 +557,35 @@
     "flowsTitle": "Five streams. One market. Endless possibilities.",
     "footerTagline": "Private exchange. Verified companies. Contacts that belong to you.",
     "stepsTitle": "Three steps. From surplus to trade in minutes.",
-    "contactTitle": "You don't need to register to ask a question."
+    "contactTitle": "You don't need to register to ask a question.",
+    "brandKicker": "CMEP · CIRCULAR MATERIALS EXCHANGE",
+    "steps": {
+      "1": {
+        "title": "Publish",
+        "text": "Material, location, tonnage. Leave the price negotiable. Ninety seconds, not a tender file."
+      },
+      "2": {
+        "title": "We reach out",
+        "text": "Companies looking for exactly what you offer contact you via internal chat. No phone calls, no emails, no spam."
+      },
+      "3": {
+        "title": "Agree",
+        "text": "Price, transport, term — all in chat. No paperwork, no auction circus, no unnecessary steps."
+      }
+    },
+    "lossKicker": "LOSS YOU ALREADY COUNT",
+    "lossTitle": "Every tonne in landfill is money you lost.",
+    "lossDesc": "Material lying at your site may be missing somewhere else. The exchange exists so this doesn't happen out of inertia.",
+    "lossCta": "To the market",
+    "howKicker": "HOW IT WORKS",
+    "privacyKicker": "PRIVACY",
+    "privacyTitle": "Contact comes as a message.",
+    "privacyDesc": "Phone and email stay hidden until companies agree. No spam, no cold calls. Privacy is part of the price.",
+    "contactKicker": "QUIET ENTRY",
+    "contactDesc": "One message is enough. We respond company to company — not as a newsletter.",
+    "thanksTitle": "Thank you. We'll be in touch.",
+    "thanksDesc": "Your message reached us. We reply within 24 hours.",
+    "send": "Send"
   },
   "auth": {
     "backToLogin": "Sign in",

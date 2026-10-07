@@ -558,7 +558,35 @@
     "flowsTitle": "Cinq flux. Un marché. Possibilités infinies.",
     "footerTagline": "Bourse privée. Entreprises vérifiées. Contacts qui vous appartiennent.",
     "stepsTitle": "Trois étapes. Du surplus à l'échange en quelques minutes.",
-    "contactTitle": "Vous n'avez pas besoin de vous inscrire pour poser une question."
+    "contactTitle": "Vous n'avez pas besoin de vous inscrire pour poser une question.",
+    "brandKicker": "CMEP · BOURSE DES MATÉRIAUX CIRCULAIRES",
+    "steps": {
+      "1": {
+        "title": "Publiez",
+        "text": "Matériau, lieu, tonnage. Le prix peut rester négociable. Quatre-vingt-dix secondes, pas un dossier d'appel d'offres."
+      },
+      "2": {
+        "title": "Nous vous contactons",
+        "text": "Les entreprises qui cherchent exactement ce que vous proposez vous contactent via le chat interne. Pas d'appels, pas d'e-mails, pas de spam."
+      },
+      "3": {
+        "title": "Convenez",
+        "text": "Prix, transport, délai — tout dans le chat. Pas de paperasse, pas de cirque d'enchères, pas d'étapes inutiles."
+      }
+    },
+    "lossKicker": "PERTE QUE VOUS COMPTEZ DÉJÀ",
+    "lossTitle": "Chaque tonne en décharge est de l'argent perdu.",
+    "lossDesc": "Le matériau qui dort chez vous peut manquer ailleurs. La bourse existe pour que cela ne se produise pas par inertie.",
+    "lossCta": "Vers le marché",
+    "howKicker": "COMMENT ÇA MARCHE",
+    "privacyKicker": "CONFIDENTIALITÉ",
+    "privacyTitle": "Le contact arrive comme un message.",
+    "privacyDesc": "Téléphone et e-mail restent cachés jusqu'à ce que les entreprises s'accordent. Pas de spam, pas de démarchage. La confidentialité fait partie du prix.",
+    "contactKicker": "ENTRÉE SILENCIEUSE",
+    "contactDesc": "Un message suffit. Nous répondons entreprise à entreprise — pas comme une newsletter.",
+    "thanksTitle": "Merci. Nous vous contactons.",
+    "thanksDesc": "Votre message nous est parvenu. Nous répondons sous 24 heures.",
+    "send": "Envoyer"
   },
   "auth": {
     "backToLogin": "Connexion",

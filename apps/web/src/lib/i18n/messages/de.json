@@ -119,15 +119,33 @@
       "eyebrow": "Abfall für den einen · Nachfrage für den anderen",
       "headline": "Weniger Abfall. Mehr Geschäft.",
       "subline": "Marktplatz für Unternehmen und Kreislaufmaterialien. Filtern, suchen, vereinbaren.",
-    "tiles": {
-      "overview": { "label": "Übersicht", "desc": "Ihre Übersicht, Aktivität und Statistiken" },
-      "listings": { "label": "Angebote", "desc": "Materialmarktplatz und meine Angebote" },
-      "companies": { "label": "Unternehmen", "desc": "Unternehmen im Netzwerk und mein Unternehmen" },
-      "documents": { "label": "Dokumente", "desc": "Verträge, Rechnungen und Anhänge" },
-      "inquiries": { "label": "Anfragen", "desc": "Anfragen und Kommunikation mit Unternehmen" },
-      "chat": { "label": "Chat", "desc": "Interne Nachrichten zwischen Unternehmen" }
-    }
-  },
+      "tiles": {
+        "overview": {
+          "label": "Übersicht",
+          "desc": "Ihre Übersicht, Aktivität und Statistiken"
+        },
+        "listings": {
+          "label": "Angebote",
+          "desc": "Materialmarktplatz und meine Angebote"
+        },
+        "companies": {
+          "label": "Unternehmen",
+          "desc": "Unternehmen im Netzwerk und mein Unternehmen"
+        },
+        "documents": {
+          "label": "Dokumente",
+          "desc": "Verträge, Rechnungen und Anhänge"
+        },
+        "inquiries": {
+          "label": "Anfragen",
+          "desc": "Anfragen und Kommunikation mit Unternehmen"
+        },
+        "chat": {
+          "label": "Chat",
+          "desc": "Interne Nachrichten zwischen Unternehmen"
+        }
+      }
+    },
     "materials": {
       "drevo": {
         "label": "Holz",
@@ -539,7 +557,35 @@
     "flowsTitle": "Fünf Ströme. Ein Markt. Endlose Möglichkeiten.",
     "footerTagline": "Private Börse. Verifizierte Unternehmen. Kontakte, die Ihnen gehören.",
     "stepsTitle": "Drei Schritte. Vom Überschuss zum Handel in wenigen Minuten.",
-    "contactTitle": "Sie müssen sich nicht registrieren, um eine Frage zu stellen."
+    "contactTitle": "Sie müssen sich nicht registrieren, um eine Frage zu stellen.",
+    "brandKicker": "CMEP · KREISLAUFMATERIALIEN-BÖRSE",
+    "steps": {
+      "1": {
+        "title": "Veröffentlichen",
+        "text": "Material, Standort, Tonnage. Preis kann verhandelbar bleiben. Neunzig Sekunden, keine Ausschreibungsakte."
+      },
+      "2": {
+        "title": "Wir melden uns",
+        "text": "Unternehmen, die genau das suchen, was Sie anbieten, kontaktieren Sie über den internen Chat. Keine Anrufe, keine E-Mails, kein Spam."
+      },
+      "3": {
+        "title": "Vereinbaren",
+        "text": "Preis, Transport, Termin — alles im Chat. Kein Papierkram, kein Auktionszirkus, keine unnötigen Schritte."
+      }
+    },
+    "lossKicker": "VERLUST, DEN SIE SCHON ZÄHLEN",
+    "lossTitle": "Jede Tonne auf der Deponie ist verlorenes Geld.",
+    "lossDesc": "Material, das bei Ihnen liegt, kann anderswo fehlen. Die Börse existiert, damit dies nicht aus Trägheit geschieht.",
+    "lossCta": "Zum Markt",
+    "howKicker": "WIE ES FUNKTIONIERT",
+    "privacyKicker": "PRIVATSPHÄRE",
+    "privacyTitle": "Kontakt kommt als Nachricht.",
+    "privacyDesc": "Telefon und E-Mail bleiben verborgen, bis sich die Unternehmen einigen. Kein Spam, keine Kaltakquise. Privatsphäre ist Teil des Preises.",
+    "contactKicker": "STILLER EINTRITT",
+    "contactDesc": "Eine Nachricht genügt. Wir antworten Unternehmen zu Unternehmen — nicht als Newsletter.",
+    "thanksTitle": "Danke. Wir melden uns.",
+    "thanksDesc": "Ihre Nachricht ist bei uns. Wir antworten innerhalb von 24 Stunden.",
+    "send": "Senden"
   },
   "auth": {
     "backToLogin": "Anmeldung",

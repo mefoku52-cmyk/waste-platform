@@ -22,9 +22,9 @@ const MATERIALS = [
 ];
 
 const STEPS = [
-  { n: '01', icon: '◐', title: 'Zverejnite', text: 'Materiál, lokalita, tonáž. Cenu môžete nechať na dohodu. Deväťdesiat sekúnd, nie tendrový spis.' },
-  { n: '02', icon: '◇', title: 'Ozveme sa', text: 'Firmy, ktoré hľadajú presne to, čo ponúkate, vás kontaktujú cez interný chat. Žiadne telefonáty, žiadne e-maily, žiadny spam.' },
-  { n: '03', icon: '◆', title: 'Dohodnite', text: 'Cena, doprava, termín — všetko v chate. Bez papierovačiek, bez aukčného cirkusu, bez zbytočných krokov.' },
+  { n: '01', icon: '◐', titleKey: 'landing.steps.1.title', textKey: 'landing.steps.1.text' },
+  { n: '02', icon: '◇', titleKey: 'landing.steps.2.title', textKey: 'landing.steps.2.text' },
+  { n: '03', icon: '◆', titleKey: 'landing.steps.3.title', textKey: 'landing.steps.3.text' },
 ];
 
 export default function LandingPage() {
@@ -83,7 +83,7 @@ export default function LandingPage() {
                   className="truncate text-[10px] font-medium uppercase tracking-[0.2em]"
                   style={{ color: GOLD }}
                 >
-                  CMEP · BURZA OBEHOVÝCH MATERIÁLOV
+                  {t('landing.brandKicker')}
                 </p>
                 <p className="ff truncate text-lg leading-none" style={{ color: FG }}>
                   {t('landing.materials')}
@@ -92,10 +92,10 @@ export default function LandingPage() {
             </Link>
             <nav className="hidden items-center gap-2 md:flex">
               <Link href="/login" className="rounded-md border px-4 py-2 text-sm" style={{ borderColor: 'rgba(255,255,255,0.14)', color: FG }}>
-                Prihlásiť sa
+                {t('landing.login')}
               </Link>
               <Link href="/register" className="rounded-md px-4 py-2 text-sm font-medium" style={{ background: GOLD, color: BG }}>
-                Zverejniť
+                {t('landing.postListing')}
               </Link>
             </nav>
             <button onClick={() => setMenuOpen((v) => !v)} className="rounded-md border px-3 py-2 text-sm md:hidden" style={{ borderColor: 'rgba(255,255,255,0.14)' }}>
@@ -147,52 +147,12 @@ export default function LandingPage() {
                 </Link>
               </div>
 
-              <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
-                {[
-                  { v: '447,6', l: t('landing.statsTons') },
-                  { v: '8', l: t('landing.statsVerified') },
-                  { v: '10', l: t('landing.statsLive'), dot: true },
-                ].map((s) => (
-                  <div key={s.l}>
-                    <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>
-                      {s.dot ? <span className="mr-2 inline-block h-2 w-2 rounded-full align-middle" style={{ background: '#6ee7a7' }} /> : null}
-                      {s.v}
-                    </p>
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.2em]" style={{ color: FAINT }}>{s.l}</p>
-                  </div>
-                ))}
-              </div>
+              
             </div>
 
             <div className="mt-12 flex justify-center">
               <img src="/trc-logo.jpg" alt="RC" className="max-w-md w-full opacity-90" />
             </div>
-          </div>
-        </section>
-
-        {/* PRÁVE TERAZ */}
-        <section className="border-t border-white/10">
-          <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.nowKicker')}</p>
-            <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.nowTitle')}</h2>
-            <Link href="/dashboard" className="group relative block overflow-hidden rounded-2xl border border-white/10">
-              <span
-                className="absolute right-4 top-4 z-10 rounded-full border px-3 py-1 text-[10px] uppercase tracking-[0.25em]"
-                style={{ borderColor: GOLD, color: GOLD_BRIGHT, background: 'rgba(11,13,15,0.92)' }}
-              >
-                {t('landing.nowBadge')}
-              </span>
-              <div className="relative aspect-[16/9] w-full">
-                <img src="https://images.unsplash.com/photo-1542621334-a254cf47733d?w=1600&q=80" alt={t('landing.sawdust')} className="h-full w-full object-cover opacity-70 transition group-hover:opacity-90" />
-                <div className="grad absolute inset-0" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                  <p className="mb-3 text-[10px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.nowOnTable')}</p>
-                  <p className="ff text-3xl md:text-4xl" style={{ color: GOLD_BRIGHT }}>{t('landing.sawdust')}</p>
-                  <p className="mt-2 text-sm md:text-base" style={{ color: FG }}>{t('landing.nowDesc')}</p>
-                  <p className="mt-3 text-xs" style={{ color: MUTED }}>{t('landing.nowMeta')}</p>
-                </div>
-              </div>
-            </Link>
           </div>
         </section>
 
@@ -267,19 +227,15 @@ export default function LandingPage() {
         {/* STRATA */}
         <section className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>STRATA, KTORÚ UŽ POČÍTATE</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.lossKicker')}</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
-              Každá tona na skládke je peniaz, o ktorý ste prišli.
+              {t('landing.lossTitle')}
             </h2>
-            <p className="ff mt-6 text-3xl italic md:text-4xl" style={{ color: GOLD_BRIGHT }}>
-              300 t pilín. Žilina. Dnes.
-            </p>
             <p className="mt-6 max-w-2xl text-base leading-relaxed" style={{ color: MUTED }}>
-              Piliny v Žiline. 300 t. Dnes. Kým dočítate túto vetu, niekto ich kúpi — alebo skončia v kotli.
-              Burza existuje preto, aby sa to nestalo zo zotrvačnosti.
+              {t('landing.lossDesc')}
             </p>
             <Link href="/dashboard" className="mt-8 inline-block rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-              Do tržnice
+              {t('landing.lossCta')}
             </Link>
           </div>
         </section>
@@ -287,15 +243,15 @@ export default function LandingPage() {
         {/* AKO TO FUNGUJE */}
         <section className="border-t border-white/10">
           <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>AKO TO FUNGUJE</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.howKicker')}</p>
             <h2 className="ff mb-8 text-2xl leading-snug md:text-3xl">{t('landing.stepsTitle')}</h2>
             <div className="grid gap-4 md:grid-cols-3">
               {STEPS.map((s) => (
                 <div key={s.n} className="rounded-2xl border p-6 md:p-8" style={{ borderColor: 'rgba(255,255,255,0.10)' }}>
                   <p className="ff text-5xl" style={{ color: 'rgba(214,168,79,0.42)' }}>{s.n}</p>
                   <p className="mt-4 text-2xl" style={{ color: GOLD }}>{s.icon}</p>
-                  <p className="ff mt-3 text-2xl">{s.title}</p>
-                  <p className="mt-2 text-sm leading-relaxed" style={{ color: MUTED }}>{s.text}</p>
+                  <p className="ff mt-3 text-2xl">{t(s.titleKey)}</p>
+                  <p className="mt-2 text-sm leading-relaxed" style={{ color: MUTED }}>{t(s.textKey)}</p>
                 </div>
               ))}
             </div>
@@ -305,13 +261,12 @@ export default function LandingPage() {
         {/* ZHODA / KONTAKT PRÍDE AKO SPRÁVA */}
         <section className="border-t border-white/10">
           <div className="mx-auto max-w-3xl px-4 py-16 md:py-20 text-center">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>SÚKROMIE</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.privacyKicker')}</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">
-              Kontakt príde ako správa.
+              {t('landing.privacyTitle')}
             </h2>
             <p className="mt-6 text-base leading-relaxed md:text-lg" style={{ color: MUTED }}>
-              Telefón a e-mail ostanú skryté, kým sa firmy nedohodnú.
-              Žiadny spam, žiadne obvolávanie. Súkromie je súčasť ceny.
+              {t('landing.privacyDesc')}
             </p>
           </div>
         </section>
@@ -319,15 +274,15 @@ export default function LandingPage() {
         {/* TICHÝ VSTUP */}
         <section className="border-t border-white/10">
           <div className="mx-auto max-w-3xl px-4 py-16 md:py-20">
-            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>TICHÝ VSTUP</p>
+            <p className="mb-4 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>{t('landing.contactKicker')}</p>
             <h2 className="ff text-4xl leading-tight md:text-5xl">{t('landing.contactTitle')}</h2>
             <p className="mt-6 text-base" style={{ color: MUTED }}>
-              Jedna správa stačí. Ozveme sa ako firma firme — nie ako newsletter.
+              {t('landing.contactDesc')}
             </p>
             {sent ? (
               <div className="mt-8 rounded-2xl border p-6" style={{ borderColor: 'rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.035)' }}>
-                <p className="ff text-xl" style={{ color: GOLD_BRIGHT }}>Ďakujeme. Ozveme sa.</p>
-                <p className="mt-2 text-sm" style={{ color: MUTED }}>Vaša správa je u nás. Odpovieme do 24 hodín.</p>
+                <p className="ff text-xl" style={{ color: GOLD_BRIGHT }}>{t('landing.thanksTitle')}</p>
+                <p className="mt-2 text-sm" style={{ color: MUTED }}>{t('landing.thanksDesc')}</p>
               </div>
             ) : (
               <form onSubmit={onContact} className="mt-8 grid gap-3">
@@ -336,7 +291,7 @@ export default function LandingPage() {
                 <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder={t('landing.phCompany')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
                 <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={t('landing.phMessage')} rows={5} className="rounded-md border bg-transparent px-4 py-3 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
                 <button type="submit" className="justify-self-start rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-                  Odoslať
+                  {t('landing.send')}
                 </button>
               </form>
             )}

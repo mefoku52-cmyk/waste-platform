@@ -119,15 +119,33 @@
       "eyebrow": "Pre niekoho odpad · Pre iného dopyt",
       "headline": "Menej odpadu. Viac obchodu.",
       "subline": "Trhovisko firiem a obehových materiálov. Filtruj, hľadaj, dohodni.",
-    "tiles": {
-      "overview": { "label": "Prehľad", "desc": "Váš prehľad, aktivita a štatistiky" },
-      "listings": { "label": "Ponuky", "desc": "Trhovisko materiálov a moje ponuky" },
-      "companies": { "label": "Firmy", "desc": "Firmy v sieti a moja firma" },
-      "documents": { "label": "Dokumenty", "desc": "Zmluvy, faktúry a prílohy" },
-      "inquiries": { "label": "Dopyt", "desc": "Dopyty a komunikácia s firmami" },
-      "chat": { "label": "Chat", "desc": "Interné správy medzi firmami" }
-    }
-  },
+      "tiles": {
+        "overview": {
+          "label": "Prehľad",
+          "desc": "Váš prehľad, aktivita a štatistiky"
+        },
+        "listings": {
+          "label": "Ponuky",
+          "desc": "Trhovisko materiálov a moje ponuky"
+        },
+        "companies": {
+          "label": "Firmy",
+          "desc": "Firmy v sieti a moja firma"
+        },
+        "documents": {
+          "label": "Dokumenty",
+          "desc": "Zmluvy, faktúry a prílohy"
+        },
+        "inquiries": {
+          "label": "Dopyt",
+          "desc": "Dopyty a komunikácia s firmami"
+        },
+        "chat": {
+          "label": "Chat",
+          "desc": "Interné správy medzi firmami"
+        }
+      }
+    },
     "materials": {
       "drevo": {
         "label": "Drevo",
@@ -539,7 +557,35 @@
     "flowsTitle": "Päť prúdov. Jeden trh. Nekonečné možnosti.",
     "footerTagline": "Súkromná burza. Overené firmy. Kontakty, ktoré patria vám.",
     "stepsTitle": "Tri kroky. Od prebytku k obchodu za pár minút.",
-    "contactTitle": "Nemusíte sa registrovať, aby ste sa opýtali."
+    "contactTitle": "Nemusíte sa registrovať, aby ste sa opýtali.",
+    "brandKicker": "CMEP · BURZA OBEHOVÝCH MATERIÁLOV",
+    "steps": {
+      "1": {
+        "title": "Zverejnite",
+        "text": "Materiál, lokalita, tonáž. Cenu môžete nechať na dohodu. Deväťdesiat sekúnd, nie tendrový spis."
+      },
+      "2": {
+        "title": "Ozveme sa",
+        "text": "Firmy, ktoré hľadajú presne to, čo ponúkate, vás kontaktujú cez interný chat. Žiadne telefonáty, žiadne e-maily, žiadny spam."
+      },
+      "3": {
+        "title": "Dohodnite",
+        "text": "Cena, doprava, termín — všetko v chate. Bez papierovačiek, bez aukčného cirkusu, bez zbytočných krokov."
+      }
+    },
+    "lossKicker": "STRATA, KTORÚ UŽ POČÍTATE",
+    "lossTitle": "Každá tona na skládke je peniaz, o ktorý ste prišli.",
+    "lossDesc": "Materiál, ktorý u vás leží, môže niekomu inému chýbať. Burza existuje preto, aby sa to nestalo zo zotrvačnosti.",
+    "lossCta": "Do tržnice",
+    "howKicker": "AKO TO FUNGUJE",
+    "privacyKicker": "SÚKROMIE",
+    "privacyTitle": "Kontakt príde ako správa.",
+    "privacyDesc": "Telefón a e-mail ostanú skryté, kým sa firmy nedohodnú. Žiadny spam, žiadne obvolávanie. Súkromie je súčasť ceny.",
+    "contactKicker": "TICHÝ VSTUP",
+    "contactDesc": "Jedna správa stačí. Ozveme sa ako firma firme — nie ako newsletter.",
+    "thanksTitle": "Ďakujeme. Ozveme sa.",
+    "thanksDesc": "Vaša správa je u nás. Odpovieme do 24 hodín.",
+    "send": "Odoslať"
   },
   "auth": {
     "backToLogin": "Prihlásenie",
