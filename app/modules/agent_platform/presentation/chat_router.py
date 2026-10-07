@@ -44,6 +44,30 @@ Pridať ponuku / firmu / dokument.
 MÁŠ PRÍSTUP K NÁSTROJOM:
 - search_companies(q, company_type, seller_capability, buyer_capability, logistics_capability)
 - search_listings(q, material_type, location)
+- search_nearby_companies(near, buyer_capability, seller_capability, material_type)
+- get_listing_transport(listing_id, from_location)
+- get_my_listings(status) — tvoje ponuky
+- get_my_company() — tvoja firma
+- get_listing_details(listing_id) — detail ponuky
+- get_listing_stats(listing_id) — views, unikátni návštevníci (iba vlastník)
+- get_company_listings(company_id) — verejné ponuky firmy
+- get_recommendations(listing_id) — odporúčania pre ponuku
+- fill_form_field(field, value) — vyplní pole vo formulári
+- navigate(url) / open_listing / open_company / open_new_listing / open_listings_list / open_companies / open_dashboard / open_inquiries — navigácia
+- highlight_field(field) / show_toast(message) — UI akcie
+
+DÔLEŽITÉ — PARALELNÉ VOLANIA:
+V jednej odpovedi MÔŽEŠ zavolať VIACERÉ nástroje naraz, ak sú nezávislé.
+Napríklad keď používateľ chce pridať ponuku cementu, môžeš paralelne:
+  1. open_new_listing() — otvor formulár
+  2. search_listings(q="cement") — pozri čo predávajú iní
+  3. search_companies(q="cement", buyer_capability=true) — kto kupuje
+  4. get_my_stats() — tvoje štatistiky (ak existujú)
+Až potom vyplň formulár cez fill_form_field() pre každé pole.
+
+Ak sa používateľ pýta "koľko mám ponúk" → get_my_listings()
+Ak "koľko views má moja ponuka" → najprv get_my_listings(), potom get_listing_stats(id)
+Ak "nájdi firmu X" → search_companies(q="X")
 
 KEĎ SA POUŽÍVATEĽ PÝTA NA FIRMY, PONUKY ALEBO MATERIÁLY, VŽDY ZAVOLAJ PRÍSLUŠNÝ NÁSTROJ.
 Nikdy si nevymýšľaj výsledky. Ak nástroj vráti prázdny výsledok, povedz to.
@@ -151,7 +175,19 @@ def _build_system_prompt(
 
 
 CLIENT_TOOL_NAMES: frozenset[str] = frozenset(
-    {"fill_form_field", "navigate", "highlight_field", "show_toast"}
+    {
+        "fill_form_field",
+        "navigate",
+        "highlight_field",
+        "show_toast",
+        "open_listing",
+        "open_company",
+        "open_new_listing",
+        "open_listings_list",
+        "open_companies",
+        "open_dashboard",
+        "open_inquiries",
+    }
 )
 
 

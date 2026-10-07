@@ -312,11 +312,242 @@ SHOW_TOAST_SCHEMA: dict[str, Any] = {
 }
 
 
+# ─── USER READ TOOLS (identity-bound, safe) ─────────────────
+
+GET_MY_LISTINGS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_my_listings",
+        "description": (
+            "READ-ONLY. Vráti PONUKY aktuálneho používateľa (jeho firiem). "
+            "Použi keď sa používateľ pýta 'koľko mám ponúk', 'moje ponuky', "
+            "'čo predávam', 'moje drafty'. Nikdy nevracia cudzie ponuky."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "enum": ["draft", "published", "reserved", "sold", "archived"],
+                    "description": "Voliteľný filter podľa stavu.",
+                },
+                "limit": {"type": "integer", "minimum": 1, "maximum": 50, "default": 20},
+            },
+        },
+    },
+}
+
+
+GET_MY_COMPANY_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_my_company",
+        "description": (
+            "READ-ONLY. Vráti základné údaje o firme aktuálneho používateľa "
+            "(názov, mesto, status, tier). "
+            "Použi keď sa používateľ pýta na svoju firmu alebo jej stav."
+        ),
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+
+GET_LISTING_DETAILS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_listing_details",
+        "description": (
+            "READ-ONLY. Vráti detail jednej ponuky podľa listing_id. "
+            "Používateľ musí mať oprávnenie (jeho firma alebo admin). "
+            "Použi keď sa pýta na konkrétnu ponuku."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "listing_id": {"type": "string", "description": "UUID ponuky."},
+            },
+            "required": ["listing_id"],
+        },
+    },
+}
+
+
+GET_LISTING_STATS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_listing_stats",
+        "description": (
+            "READ-ONLY. Vráti štatistiky ponuky (počet zobrazení, unikátni "
+            "návštevníci). Iba vlastník ponuky smie vidieť. "
+            "Použi keď sa používateľ pýta 'koľko views', 'koľkokrát si to videli'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "listing_id": {"type": "string", "description": "UUID ponuky."},
+            },
+            "required": ["listing_id"],
+        },
+    },
+}
+
+
+GET_COMPANY_LISTINGS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_company_listings",
+        "description": (
+            "READ-ONLY. Vráti verejné (published) ponuky firmy. "
+            "Použi keď sa používateľ pýta na ponuky konkrétnej firmy."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "company_id": {"type": "string", "description": "UUID firmy."},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 50, "default": 20},
+            },
+            "required": ["company_id"],
+        },
+    },
+}
+
+
+GET_RECOMMENDATIONS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "get_recommendations",
+        "description": (
+            "READ-ONLY. Vráti existujúce odporúčania pre ponuku "
+            "(kupujúci, prepravcovia, skóre). "
+            "Použi keď sa používateľ pýta 'kto by to kúpil', 'komu to odporučiť'."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "listing_id": {"type": "string", "description": "UUID ponuky."},
+            },
+            "required": ["listing_id"],
+        },
+    },
+}
+
+
+def build_user_read_tools() -> tuple[dict[str, Any], ...]:
+    """Identity-bound READ tools. Available to every authenticated user."""
+    return (
+        GET_MY_LISTINGS_SCHEMA,
+        GET_MY_COMPANY_SCHEMA,
+        GET_LISTING_DETAILS_SCHEMA,
+        GET_LISTING_STATS_SCHEMA,
+        GET_COMPANY_LISTINGS_SCHEMA,
+        GET_RECOMMENDATIONS_SCHEMA,
+    )
+
+
+# ─── NAVIGATION CLIENT TOOLS ────────────────────────────────
+
+OPEN_LISTING_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_listing",
+        "description": (
+            "Otvorí detail ponuky v UI. Použi keď chceš používateľovi ukázať konkrétnu ponuku."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {"listing_id": {"type": "string"}},
+            "required": ["listing_id"],
+        },
+    },
+}
+
+OPEN_COMPANY_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_company",
+        "description": "Otvorí profil firmy v UI.",
+        "parameters": {
+            "type": "object",
+            "properties": {"company_id": {"type": "string"}},
+            "required": ["company_id"],
+        },
+    },
+}
+
+OPEN_NEW_LISTING_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_new_listing",
+        "description": (
+            "Otvorí formulár novej ponuky. Použi keď chce používateľ "
+            "pridať novú ponuku. Po otvorení môžeš pokračovať fill_form_field."
+        ),
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_LISTINGS_LIST_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_listings_list",
+        "description": "Otvorí zoznam ponúk.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_COMPANIES_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_companies",
+        "description": "Otvorí zoznam firiem.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_DASHBOARD_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_dashboard",
+        "description": "Otvorí hlavný dashboard.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_INQUIRIES_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_inquiries",
+        "description": "Otvorí zoznam dopytov používateľa.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+
+NAVIGATION_SCHEMAS: tuple[dict[str, Any], ...] = (
+    OPEN_LISTING_SCHEMA,
+    OPEN_COMPANY_SCHEMA,
+    OPEN_NEW_LISTING_SCHEMA,
+    OPEN_LISTINGS_LIST_SCHEMA,
+    OPEN_COMPANIES_SCHEMA,
+    OPEN_DASHBOARD_SCHEMA,
+    OPEN_INQUIRIES_SCHEMA,
+)
+
+
+# ─── CLIENT ACTION AGGREGATION (musí byť na konci — reference na všetky) ─
+
 CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
     FILL_FORM_FIELD_SCHEMA,
     NAVIGATE_SCHEMA,
     HIGHLIGHT_FIELD_SCHEMA,
     SHOW_TOAST_SCHEMA,
+    OPEN_LISTING_SCHEMA,
+    OPEN_COMPANY_SCHEMA,
+    OPEN_NEW_LISTING_SCHEMA,
+    OPEN_LISTINGS_LIST_SCHEMA,
+    OPEN_COMPANIES_SCHEMA,
+    OPEN_DASHBOARD_SCHEMA,
+    OPEN_INQUIRIES_SCHEMA,
 )
 
 

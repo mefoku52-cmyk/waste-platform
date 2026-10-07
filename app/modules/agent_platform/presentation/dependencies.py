@@ -38,17 +38,24 @@ from app.modules.agent_platform.infrastructure.tools.cmep_listing_transport_hand
 from app.modules.agent_platform.infrastructure.tools.cmep_nearby_companies_handler import (
     CmepNearbyCompaniesHandler,
 )
+from app.modules.agent_platform.infrastructure.tools.cmep_user_tools import (
+    CmepUserToolsHandler,
+)
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
     CLIENT_ACTION_NAMES,
     CLIENT_ACTION_SCHEMAS,
     build_admin_tools,
     build_default_tools,
     build_transport_tools,
+    build_user_read_tools,
 )
 from app.modules.companies.application.entitlements import (
     CompanyEntitlementService,
 )
-from app.modules.companies.application.services import ListCompaniesService
+from app.modules.companies.application.services import (
+    GetCompanyService,
+    ListCompaniesService,
+)
 from app.modules.companies.infrastructure.repositories import (
     SqlAlchemyCompanyRepository,
 )
@@ -110,6 +117,27 @@ async def get_agent_orchestrator(
     tool_scopes["search_nearby_companies"] = ("recommendations", "read")
     tool_scopes["get_listing_transport"] = ("recommendations", "read")
     tool_schemas = tool_schemas + build_transport_tools()
+
+    # User READ tools (identity-bound) – pre všetkých prihlásených.
+    get_company_service = GetCompanyService(company_repo)
+    user_tools_handler = CmepUserToolsHandler(
+        session=session,
+        listings_service=listings_service,
+        get_company_service=get_company_service,
+        company_ids=company_ids,
+        is_platform_admin=is_admin,
+    )
+    for _tool_name in (
+        "get_my_listings",
+        "get_my_company",
+        "get_listing_details",
+        "get_listing_stats",
+        "get_company_listings",
+        "get_recommendations",
+    ):
+        tool_handlers[_tool_name] = user_tools_handler
+        tool_scopes[_tool_name] = ("listings", "read")
+    tool_schemas = tool_schemas + build_user_read_tools()
 
     # Admin tools are attached ONLY when the caller is a platform admin.
     if is_admin:

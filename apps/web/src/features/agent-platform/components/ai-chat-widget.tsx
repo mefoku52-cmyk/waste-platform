@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import { http } from '@/lib/api/http';
 import { useMyTier } from '@/features/companies/hooks/use-my-tier';
@@ -33,6 +34,7 @@ type Props = {
 export function AiChatWidget({ listingId, listingTitle }: Props) {
   const { t } = useT();
   const { tier, isLoading: tierLoading, companyId } = useMyTier();
+  const router = useRouter();
 
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
@@ -100,7 +102,46 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
       if (Array.isArray(res?.client_actions) && res.client_actions.length > 0) {
         const notes: string[] = [];
         for (const action of res.client_actions) {
-          const ev = await cmepAI.dispatch(action.name, action.args || {});
+          // Špeciálne: open_* akcie spracuje router priamo
+          const nm = action.name;
+          const ar = action.args || {};
+          if (nm === 'open_listing') {
+            router.push(`/dashboard/listings/${String(ar.listing_id || '')}`);
+            notes.push(`✓ Otvoril som ponuku`);
+            continue;
+          }
+          if (nm === 'open_company') {
+            router.push(`/dashboard/companies/${String(ar.company_id || '')}`);
+            notes.push(`✓ Otvoril som firmu`);
+            continue;
+          }
+          if (nm === 'open_new_listing') {
+            router.push('/dashboard/listings/new');
+            notes.push(`✓ Otvoril som formulár novej ponuky`);
+            continue;
+          }
+          if (nm === 'open_listings_list') {
+            router.push('/dashboard/listings');
+            notes.push(`✓ Otvoril som zoznam ponúk`);
+            continue;
+          }
+          if (nm === 'open_companies') {
+            router.push('/dashboard/companies');
+            notes.push(`✓ Otvoril som zoznam firiem`);
+            continue;
+          }
+          if (nm === 'open_dashboard') {
+            router.push('/dashboard');
+            notes.push(`✓ Otvoril som dashboard`);
+            continue;
+          }
+          if (nm === 'open_inquiries') {
+            router.push('/dashboard/inquiries');
+            notes.push(`✓ Otvoril som dopyty`);
+            continue;
+          }
+
+          const ev = await cmepAI.dispatch(nm, ar);
           if (ev.status === 'ok') {
             if (action.name === 'fill_form_field') {
               const f = String(action.args?.field || '');
