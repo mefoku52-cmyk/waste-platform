@@ -112,6 +112,51 @@ class ListingDrafter:
 
         return _parse_draft(text, prompt)
 
+    async def stream(self, *, prompt: str):
+        """Stream draft generation (A1).
+
+        Yields dicts:
+          {"delta": str}                   -- textovy chunk na typovanie
+          {"done": True, "listing": dict,
+           "provider": "groq"|"fallback"}  -- finalny parsed listing
+        """
+        from collections.abc import AsyncIterator  # noqa: F401
+        from dataclasses import asdict
+        from typing import Any  # noqa: F401
+
+        if not self.is_provider_configured():
+            drafted = _fallback_from_prompt(prompt)
+            yield {"delta": drafted.description}
+            yield {"done": True, "listing": asdict(drafted), "provider": "fallback"}
+            return
+
+        chunks: list[str] = []
+        try:
+            async for delta in self._gateway.stream(
+                ModelRequest(
+                    request_id="listing-draft-stream",
+                    model="openai/gpt-oss-120b",
+                    messages=(
+                        ModelMessage(role="system", content=_SYSTEM),
+                        ModelMessage(role="user", content=prompt),
+                    ),
+                    temperature=0.4,
+                )
+            ):
+                chunks.append(delta)
+                yield {"delta": delta}
+            text = "".join(chunks).strip()
+            drafted = _parse_draft(text, prompt)
+            yield {"done": True, "listing": asdict(drafted), "provider": "groq"}
+        except Exception as exc:
+            logger.warning(
+                "AI listing stream zlyhal (%s: %s) — fallback",
+                type(exc).__name__,
+                exc,
+            )
+            drafted = _fallback_from_prompt(prompt)
+            yield {"done": True, "listing": asdict(drafted), "provider": "fallback"}
+
 
 def _parse_draft(text: str, prompt: str) -> DraftedListing:
     import json
