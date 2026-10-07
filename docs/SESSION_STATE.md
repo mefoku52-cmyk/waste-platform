@@ -1,22 +1,32 @@
-# Session State — 2026-10-05
+# Session State
 
-## Aktuálny stav
-- Posledný commit: 92ab304 (PLATFORM_MAP)
-- main == origin/main
-- Render backend + frontend auto-deploy, ak web UI zaostáva, redeploy waste-platform-web
+**Aktualizované:** 2026-10-07
+**Posledný commit:** 2bc27ce (i18n dashboard tile labels)
+**Branch:** main == origin/main
+**Alembic head:** ab3fa1390046
 
-## Zatvorené od starého snapshotu
-- Auto-schváliť / auto-send-batch sú v page.tsx (b05a91c)
-- Thumbnail na mobile nie je schovaný pod sm (6bd21ed)
-- SignedImage je v listings page (51c9520)
-- commands=false, break_glass=false
-
-## Ešte nie v tomto commite
-- GitHub Actions startup_failure — účet, nie kód
-- UPLOADS_REQUIRE_SIGNED ostáva false, kým formuláre nepoužívajú SignedImage
-- Joomla cloak gmail len ak CLOAK_FILTERED v tomto behu
-
-## Deployment
+## Produkcia
+- trc-cmep.sk (Render)
 - Backend: srv-dak1fp942lol73bl6ubg
 - Frontend: srv-dal7p0rm8rtd73f72340
-- Doména: trc-cmep.sk
+- DB: dpg-dakh3fe1egvs73bs262g-a
+
+## Aktívne blokátory
+- GitHub Actions `startup_failure` (account-level, Support ticket)
+- `alembic check` padá na pre-existing drift (agent_*, activity_events) — neblokuje
+
+## Otvorené (nedotiahnuté)
+- **Meta Pixel** — acquisition backend + frontend hotový, pixel ešte nepripojený
+- **GoPay** — dokončiť platby (číslo účtu, ceny)
+- **AI tier (FREE/PRO/AI)** — backend hotový, UI + ceny TODO
+- **Push po zverejnení ponuky** — aktívni odberatelia dostanú notifikáciu (plán)
+- **Preklady** — hardcoded texty v landing krokoch, listings status, companies, admin, auth, features
+- **Detail firmy — logo, "Aktívne ponuky tejto firmy"**
+- **Android app** — rozrobená, nie hotová
+
+## Posledná session (2026-10-05 → 10-07)
+24 commitov: Render build fix, marketplace split, acquisition tracking,
+batch send fix (30/30 emailov), entity_type firmy, dashboard tiles, header
+simplified, i18n ru/fr.
+
+Detaily: `docs/HISTORY.md`
