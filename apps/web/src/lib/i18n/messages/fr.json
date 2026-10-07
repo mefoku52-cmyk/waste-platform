@@ -13,6 +13,7 @@
     "back": "Retour",
     "language": "Langue",
     "submit": "Envoyer",
+    "saveChanges": "Enregistrer les modifications",
     "firstName": "Prénom",
     "lastName": "Nom",
     "close": "Fermer",
@@ -198,6 +199,7 @@
   },
   "companyForm": {
     "title": "Enregistrer une nouvelle entreprise",
+    "titleEdit": "Modifier l'entreprise",
     "titleAdd": "Ajouter une entreprise",
     "legalNameLabel": "Raison sociale",
     "tradingNameLabel": "Nom commercial",

@@ -13,6 +13,7 @@
     "back": "Späť",
     "language": "Jazyk",
     "submit": "Odoslať",
+    "saveChanges": "Uložiť zmeny",
     "firstName": "Meno",
     "lastName": "Priezvisko",
     "close": "Zavrieť",
@@ -199,6 +200,7 @@
   },
   "companyForm": {
     "title": "Registrovať novú firmu",
+    "titleEdit": "Upraviť firmu",
     "titleAdd": "Pridať firmu",
     "legalNameLabel": "Právny názov",
     "legalNameCompany": "Obchodný názov",

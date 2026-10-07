@@ -13,6 +13,7 @@
     "back": "Back",
     "language": "Language",
     "submit": "Submit",
+    "saveChanges": "Save changes",
     "firstName": "First name",
     "lastName": "Last name",
     "close": "Close",
@@ -199,6 +200,7 @@
   },
   "companyForm": {
     "title": "Register a new company",
+    "titleEdit": "Edit company",
     "titleAdd": "Add company",
     "legalNameLabel": "Legal name",
     "legalNameCompany": "Company name",

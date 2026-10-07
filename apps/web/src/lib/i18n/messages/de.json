@@ -13,6 +13,7 @@
     "back": "Zurück",
     "language": "Sprache",
     "submit": "Senden",
+    "saveChanges": "Änderungen speichern",
     "firstName": "Vorname",
     "lastName": "Nachname",
     "close": "Schließen",
@@ -199,6 +200,7 @@
   },
   "companyForm": {
     "title": "Neues Unternehmen registrieren",
+    "titleEdit": "Unternehmen bearbeiten",
     "titleAdd": "Unternehmen hinzufügen",
     "legalNameLabel": "Rechtlicher Name",
     "legalNameCompany": "Firmenname",

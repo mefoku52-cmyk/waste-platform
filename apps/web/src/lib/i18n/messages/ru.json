@@ -13,6 +13,7 @@
     "back": "Назад",
     "language": "Язык",
     "submit": "Отправить",
+    "saveChanges": "Сохранить изменения",
     "firstName": "Имя",
     "lastName": "Фамилия",
     "close": "Закрыть",
@@ -198,6 +199,7 @@
   },
   "companyForm": {
     "title": "Зарегистрировать новую компанию",
+    "titleEdit": "Редактировать компанию",
     "titleAdd": "Добавить компанию",
     "legalNameLabel": "Юридическое название",
     "tradingNameLabel": "Торговое название",
