@@ -589,7 +589,9 @@
     "tableMaterial": "Material",
     "errorSave": "Error saving",
     "errorRegister": "Error registering company",
-    "saveFailed": "Save failed"
+    "saveFailed": "Save failed",
+    "activeListingsSection": "Active listings",
+    "noActiveListings": "This company has no active listings yet."
   },
   "about": {
     "eyebrow": "ABOUT",
@@ -991,7 +993,20 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "The AI assistant is available for company accounts.",
-    "createCompany": "Create company"
+    "createCompany": "Create company",
+    "title": "AI assistant",
+    "descPro": "AI assistant is available in",
+    "or": "or",
+    "planSuffix": "subscription.",
+    "proPrice": "PRO · €29/month",
+    "aiPrice": "AI · €49/month",
+    "proFeatures": "· Unlimited listings\n· AI assistant with search\n· Predictions and recommendations",
+    "aiFeatures": "· Everything in PRO\n· AI listing draft\n· Priority processing",
+    "contactBtn": "Contact · Upgrade to PRO",
+    "onlinePayment": "Online payment (GoPay)",
+    "gopayBtn": "Continue to GoPay",
+    "gopayError": "GoPay is not configured.",
+    "requiresCompany": "Requires a company"
   },
   "listingInquiry": {
     "noCompany": "First create and verify a company.",

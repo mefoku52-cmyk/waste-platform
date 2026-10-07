@@ -590,7 +590,9 @@
     "tableMaterial": "Matériau",
     "errorSave": "Erreur d'enregistrement",
     "errorRegister": "Erreur lors de l'enregistrement de l'entreprise",
-    "saveFailed": "Échec de l'enregistrement"
+    "saveFailed": "Échec de l'enregistrement",
+    "activeListingsSection": "Annonces actives",
+    "noActiveListings": "Cette entreprise n'a pas encore d'annonces actives."
   },
   "about": {
     "eyebrow": "À PROPOS",
@@ -992,7 +994,20 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "L'assistant IA est disponible pour les comptes d'entreprise.",
-    "createCompany": "Créer une entreprise"
+    "createCompany": "Créer une entreprise",
+    "title": "Assistant IA",
+    "descPro": "L'assistant IA est disponible en",
+    "or": "ou",
+    "planSuffix": "abonnement.",
+    "proPrice": "PRO · 29 €/mois",
+    "aiPrice": "AI · 49 €/mois",
+    "proFeatures": "· Annonces illimitées\n· Assistant IA avec recherche\n· Prévisions et recommandations",
+    "aiFeatures": "· Tout de PRO\n· Brouillon d'annonce IA\n· Traitement prioritaire",
+    "contactBtn": "Contact · Passer à PRO",
+    "onlinePayment": "Paiement en ligne (GoPay)",
+    "gopayBtn": "Continuer vers GoPay",
+    "gopayError": "GoPay n'est pas configuré.",
+    "requiresCompany": "Nécessite une entreprise"
   },
   "listingInquiry": {
     "noCompany": "Créez et vérifiez d'abord une entreprise.",

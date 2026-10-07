@@ -12,9 +12,10 @@ const MUTED = '#9a8f7c';
 
 type Props = {
   reason?: 'free' | 'unknown' | string;
+  companyId?: string;
 };
 
-export function AiUpgradePanel({ reason = 'free' }: Props) {
+export function AiUpgradePanel({ reason = 'free', companyId = '' }: Props) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
 
@@ -58,10 +59,10 @@ export function AiUpgradePanel({ reason = 'free' }: Props) {
                 className="text-[10px] font-semibold uppercase tracking-[0.22em]"
                 style={{ color: GOLD }}
               >
-                AI asistent
+                {t('aiUpgrade.title')}
               </p>
               <p className="text-xs" style={{ color: MUTED }}>
-                {noCompany ? 'Vyžaduje firmu' : 'PRO predplatné'}
+                {noCompany ? t('aiUpgrade.requiresCompany') : t('aiUpgrade.proPrice')}
               </p>
             </div>
             <button
@@ -80,7 +81,6 @@ export function AiUpgradePanel({ reason = 'free' }: Props) {
               <>
                 <p className="text-sm leading-relaxed" style={{ color: FG }}>
                   {t('aiUpgrade.onlyForCompanies')}
-                  Najprv si vytvor firmu a over ju.
                 </p>
                 <a
                   href="/dashboard/companies/new"
@@ -93,11 +93,14 @@ export function AiUpgradePanel({ reason = 'free' }: Props) {
             ) : (
               <>
                 <p className="text-sm leading-relaxed" style={{ color: FG }}>
-                  AI asistent je dostupný v <strong>PRO</strong> alebo{' '}
-                  <strong>AI</strong> predplatnom.
+                  {t('aiUpgrade.descPro')} <strong>PRO</strong> {t('aiUpgrade.or')}{' '}
+                  <strong>AI</strong> {t('aiUpgrade.planSuffix')}
                 </p>
-                <p className="text-sm" style={{ color: GOLD_BRIGHT }}>
-                  PRO · 29 €/mesiac
+                <p className="text-sm font-semibold" style={{ color: GOLD_BRIGHT }}>
+                  {t('aiUpgrade.proPrice')}
+                </p>
+                <p className="text-sm font-semibold" style={{ color: GOLD_BRIGHT }}>
+                  {t('aiUpgrade.aiPrice')}
                 </p>
                 <ul className="space-y-1 text-xs" style={{ color: MUTED }}>
                   <li>· Neobmedzený počet ponúk</li>
@@ -110,21 +113,21 @@ export function AiUpgradePanel({ reason = 'free' }: Props) {
                     className="inline-flex rounded-full px-4 py-2 text-sm font-semibold"
                     style={{ background: GOLD, color: BG }}
                   >
-                    Kontaktovať · Upgrade na PRO
+                    {t('aiUpgrade.contactBtn')}
                   </a>
                 </div>
                 <p className="text-[11px]" style={{ color: MUTED }}>
-                  Online platba (GoPay)
+                  {t('aiUpgrade.onlinePayment')}
                     <button
                       type="button"
                       className="mt-2 block rounded-full px-4 py-2 text-sm"
                       onClick={() => {
-                        void http.post<{ gw_url?: string }>("/billing/checkout", { company_id: "", tier: "pro" })
+                        void http.post<{ gw_url?: string }>("/billing/checkout", { company_id: companyId, tier: "pro" })
                           .then((r) => { if (r.gw_url) window.location.href = r.gw_url; })
-                          .catch(() => { window.alert("GoPay nie je nakonfigurovany."); });
+                          .catch(() => { window.alert(t('aiUpgrade.gopayError')); });
                       }}
                     >
-                      Pokračovať na GoPay
+                      {t('aiUpgrade.gopayBtn')}
                     </button>
                 </p>
               </>

@@ -444,3 +444,62 @@ async def get_company_contacts(
         phone=dto.phone,
         websiteUrl=dto.website_url,
     )
+
+
+@router.get(
+    "/{company_id}/listings",
+    responses=error_responses(401, 404, 500),
+)
+async def get_company_listings(
+    company_id: UUID,
+    page: int = 1,
+    pageSize: int = 20,
+    current_user=Depends(require_current_user),
+    service=Depends(get_get_company_service),
+    session=Depends(get_db_session),
+):
+    """Verejné (publikované) ponuky firmy. Dostupné pre každého prihláseného usera.
+
+    Vracia iba listingy so statusom 'published'. Drafty a ostatné stavy
+    nie sú verejné a vyžadujú členstvo vo firme (vid GET /listings).
+    """
+    del current_user, service
+    from sqlalchemy import select
+
+    from app.modules.listings.infrastructure.models import ListingsModel
+
+    page = max(1, int(page))
+    page_size = max(1, min(int(pageSize), 100))
+
+    stmt = (
+        select(ListingsModel)
+        .where(ListingsModel.company_id == company_id)
+        .where(ListingsModel.status == "published")
+        .order_by(ListingsModel.created_at.desc())
+        .limit(page_size)
+        .offset((page - 1) * page_size)
+    )
+    result = await session.execute(stmt)
+    rows = result.scalars().all()
+
+    items = [
+        {
+            "id": r.id,
+            "title": r.title,
+            "materialType": getattr(r, "material_type", None),
+            "quantity": getattr(r, "quantity", None),
+            "unit": getattr(r, "unit", None),
+            "currency": getattr(r, "currency", None),
+            "price": getattr(r, "price", None),
+            "location": getattr(r, "location", None),
+            "condition": getattr(r, "condition", None),
+            "status": r.status,
+            "imageUrl": getattr(r, "image_url", None),
+        }
+        for r in rows
+    ]
+
+    return {
+        "items": items,
+        "meta": {"page": page, "pageSize": page_size, "total": len(items)},
+    }

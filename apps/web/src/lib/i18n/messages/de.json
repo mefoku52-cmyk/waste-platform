@@ -589,7 +589,9 @@
     "tableMaterial": "Material",
     "errorSave": "Fehler beim Speichern",
     "errorRegister": "Fehler bei der Unternehmensregistrierung",
-    "saveFailed": "Speichern fehlgeschlagen"
+    "saveFailed": "Speichern fehlgeschlagen",
+    "activeListingsSection": "Aktive Angebote",
+    "noActiveListings": "Dieses Unternehmen hat noch keine aktiven Angebote."
   },
   "about": {
     "eyebrow": "ÜBER DAS PROJEKT",
@@ -991,7 +993,20 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "Der KI-Assistent ist für Firmenkonten verfügbar.",
-    "createCompany": "Unternehmen erstellen"
+    "createCompany": "Unternehmen erstellen",
+    "title": "KI-Assistent",
+    "descPro": "KI-Assistent ist verfügbar in",
+    "or": "oder",
+    "planSuffix": "Abo.",
+    "proPrice": "PRO · 29 €/Monat",
+    "aiPrice": "AI · 49 €/Monat",
+    "proFeatures": "· Unbegrenzte Angebote\n· KI-Assistent mit Suche\n· Prognosen und Empfehlungen",
+    "aiFeatures": "· Alles aus PRO\n· KI-Angebotsentwurf\n· Prioritätsverarbeitung",
+    "contactBtn": "Kontakt · Upgrade auf PRO",
+    "onlinePayment": "Online-Zahlung (GoPay)",
+    "gopayBtn": "Weiter zu GoPay",
+    "gopayError": "GoPay ist nicht konfiguriert.",
+    "requiresCompany": "Erfordert ein Unternehmen"
   },
   "listingInquiry": {
     "noCompany": "Erstellen und verifizieren Sie zuerst ein Unternehmen.",

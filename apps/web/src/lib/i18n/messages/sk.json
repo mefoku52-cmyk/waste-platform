@@ -589,7 +589,9 @@
     "tableMaterial": "Materiál",
     "errorSave": "Chyba pri ukladaní",
     "errorRegister": "Chyba pri registrácii firmy",
-    "saveFailed": "Uloženie zlyhalo"
+    "saveFailed": "Uloženie zlyhalo",
+    "activeListingsSection": "Aktívne ponuky",
+    "noActiveListings": "Táto firma zatiaľ nemá žiadne aktívne ponuky."
   },
   "about": {
     "eyebrow": "O PROJEKTE",
@@ -991,7 +993,20 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "AI asistent je dostupný pre firemné účty.",
-    "createCompany": "Vytvoriť firmu"
+    "createCompany": "Vytvoriť firmu",
+    "title": "AI asistent",
+    "descPro": "AI asistent je dostupný v",
+    "or": "alebo",
+    "planSuffix": "predplatnom.",
+    "proPrice": "PRO · 29 €/mesiac",
+    "aiPrice": "AI · 49 €/mesiac",
+    "proFeatures": "· Neobmedzený počet ponúk\n· AI asistent s vyhľadávaním\n· Predikcie a odporúčania",
+    "aiFeatures": "· Všetko z PRO\n· AI draft ponúk\n· Prioritné spracovanie",
+    "contactBtn": "Kontaktovať · Upgrade na PRO",
+    "onlinePayment": "Online platba (GoPay)",
+    "gopayBtn": "Pokračovať na GoPay",
+    "gopayError": "GoPay nie je nakonfigurovaný.",
+    "requiresCompany": "Vyžaduje firmu"
   },
   "listingInquiry": {
     "noCompany": "Najprv si zaloz a over firmu.",

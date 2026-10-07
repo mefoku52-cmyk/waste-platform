@@ -9,6 +9,7 @@ import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 import { SignedImage } from '@/features/uploads/components/signed-image';
+import { http } from '@/lib/api/http';
 import { useTransitionCompanyStatus } from '@/features/companies/hooks/use-transition-company-status';
 
 const GOLD = '#c9a84c';
@@ -151,6 +152,14 @@ export default function CompanyDetailPage() {
   const contactsQuery = useQuery({
     queryKey: ['company-contacts', companyId],
     queryFn: () => fetchCompanyContacts(companyId),
+    enabled: Boolean(companyId),
+    retry: 0,
+  });
+
+  const companyListingsQuery = useQuery({
+    queryKey: ['company-listings', companyId],
+    queryFn: () =>
+      http.get<{ items: any[] }>(`/companies/${companyId}/listings?pageSize=6`),
     enabled: Boolean(companyId),
     retry: 0,
   });
@@ -373,6 +382,61 @@ export default function CompanyDetailPage() {
                 </div>
               </section>
             ) : null}
+
+            {/* AKTIVNE PONUKY */}
+            <section className="mt-6">
+              <p
+                className="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em]"
+                style={{ color: GOLD }}
+              >
+                {t('companies.activeListingsSection')}
+              </p>
+              {companyListingsQuery.isLoading ? (
+                <p className="text-sm" style={{ color: MUTED }}>
+                  {t('tables.loading')}
+                </p>
+              ) : (companyListingsQuery.data?.items || []).length === 0 ? (
+                <p className="text-sm" style={{ color: MUTED }}>
+                  {t('companies.noActiveListings')}
+                </p>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {(companyListingsQuery.data?.items || []).map((item: any) => (
+                    <Link
+                      key={item.id}
+                      href={`/dashboard/listings/${item.id}`}
+                      className="rounded-xl border p-4 transition hover:opacity-90"
+                      style={{
+                        borderColor: 'rgba(201,168,76,0.25)',
+                        background: 'rgba(201,168,76,0.03)',
+                      }}
+                    >
+                      <p
+                        className="text-sm font-semibold"
+                        style={{ color: GOLD_BRIGHT }}
+                      >
+                        {item.title}
+                      </p>
+                      {item.materialType ? (
+                        <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                          {item.materialType}
+                        </p>
+                      ) : null}
+                      {item.location ? (
+                        <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                          {item.location}
+                        </p>
+                      ) : null}
+                      {item.quantity ? (
+                        <p className="mt-1 text-xs" style={{ color: MUTED }}>
+                          {item.quantity} {item.unit || ''}
+                        </p>
+                      ) : null}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </section>
 
             {/* AKCIE */}
             {isMyCompany ? (

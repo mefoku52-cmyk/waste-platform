@@ -27,7 +27,7 @@ type Props = {
 
 export function AiChatWidget({ listingId, listingTitle }: Props) {
   const { t } = useT();
-  const { tier, isLoading: tierLoading } = useMyTier();
+  const { tier, isLoading: tierLoading, companyId } = useMyTier();
 
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
@@ -118,7 +118,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     return null;
   }
   if (tier === 'free' || tier === 'unknown') {
-    return <AiUpgradePanel reason={tier} />;
+    return <AiUpgradePanel reason={tier} companyId={companyId} />;
   }
 
   return (

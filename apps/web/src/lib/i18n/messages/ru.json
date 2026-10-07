@@ -590,7 +590,9 @@
     "tableMaterial": "Материал",
     "errorSave": "Ошибка сохранения",
     "errorRegister": "Ошибка при регистрации компании",
-    "saveFailed": "Не удалось сохранить"
+    "saveFailed": "Не удалось сохранить",
+    "activeListingsSection": "Активные предложения",
+    "noActiveListings": "У этой компании пока нет активных предложений."
   },
   "about": {
     "eyebrow": "О ПРОЕКТЕ",
@@ -992,7 +994,20 @@
   },
   "aiUpgrade": {
     "onlyForCompanies": "ИИ-ассистент доступен для корпоративных аккаунтов.",
-    "createCompany": "Создать компанию"
+    "createCompany": "Создать компанию",
+    "title": "AI ассистент",
+    "descPro": "AI ассистент доступен в",
+    "or": "или",
+    "planSuffix": "подписке.",
+    "proPrice": "PRO · 29 €/мес",
+    "aiPrice": "AI · 49 €/мес",
+    "proFeatures": "· Неограниченные предложения\n· AI ассистент с поиском\n· Прогнозы и рекомендации",
+    "aiFeatures": "· Всё из PRO\n· AI черновик предложения\n· Приоритетная обработка",
+    "contactBtn": "Связаться · Обновить до PRO",
+    "onlinePayment": "Онлайн-оплата (GoPay)",
+    "gopayBtn": "Перейти к GoPay",
+    "gopayError": "GoPay не настроен.",
+    "requiresCompany": "Требуется компания"
   },
   "listingInquiry": {
     "noCompany": "Сначала создайте и верифицируйте компанию.",
