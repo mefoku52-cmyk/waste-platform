@@ -70,7 +70,7 @@ def _membership_company_ids(current_user) -> list:
 @router.post(
     "/ai-draft",
     response_model=AiDraftResponse,
-    responses=error_responses(400, 401, 403, 422, 500),
+    responses=error_responses(400, 401, 403, 409, 422, 500),
 )
 async def ai_draft_listing(
     payload: AiDraftRequest,
@@ -79,7 +79,7 @@ async def ai_draft_listing(
 ):
     """AI draft ponuky — vyžaduje AI tier firmy.
 
-    Bez AI tier → 403. Bez GROQ_API_KEY → deterministický fallback.
+    Bez AI tier → 409. Bez GROQ_API_KEY → deterministický fallback.
     """
     from app.modules.companies.domain.enums import SubscriptionTier
     from app.modules.listings.presentation.schemas import (
