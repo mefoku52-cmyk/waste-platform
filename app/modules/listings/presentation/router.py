@@ -101,6 +101,11 @@ async def ai_draft_listing(
         if not my_ids:
             raise ConflictDomainError("Nemáš firmu — najprv ju vytvor.")
         company_id = str(my_ids[0])
+        # Multi-company robustness: uprednostni prvú firmu s AI tierom.
+        for candidate in my_ids:
+            if await entitlement.has_tier(str(candidate), SubscriptionTier.AI):
+                company_id = str(candidate)
+                break
 
     has_ai = await entitlement.has_tier(company_id, SubscriptionTier.AI)
     if not has_ai:
