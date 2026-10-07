@@ -1,7 +1,9 @@
 'use client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useT } from '@/lib/i18n/context';
+import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 
 const GOLD = '#d6a84f';
 const GOLD_BRIGHT = '#f1d58a';
@@ -27,9 +29,19 @@ const STEPS = [
 
 export default function LandingPage() {
   const { t } = useT();
+  const router = useRouter();
+  const { data: me, isLoading: meLoading } = useCurrentUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [sent, setSent] = useState(false);
+
+  // Ak je používateľ prihlásený, landing nemá zmysel — pošli ho na dashboard.
+  // Neprihlásených necháme na landing.
+  useEffect(() => {
+    if (!meLoading && me && (me as any).id) {
+      router.replace('/dashboard');
+    }
+  }, [me, meLoading, router]);
 
   const onContact = (e: React.FormEvent) => {
     e.preventDefault();
