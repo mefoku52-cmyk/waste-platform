@@ -1,7 +1,7 @@
 # Session State
 
 **Aktualizované:** 2026-10-07
-**Posledný commit:** b6f90b5 (feat listings: publish button, AI draft)
+**Posledný commit:** 1820220 (company listings section + AI upgrade panel i18n)
 **Branch:** main == origin/main
 **Alembic head:** ab3fa1390046
 
@@ -25,17 +25,31 @@
 - **Android app** — rozrobená, nie hotová
 
 ## Posledná session (2026-10-07)
-E2E verifikácia AI draft + publish na produkcii:
-- `POST /api/v1/listings/ai-draft` → 200, `provider=groq`
-- `POST /api/v1/listings/{id}/publish` → 200, `status=published`, viditeľný v marketplace
-- cleanup (DELETE) OK
 
-Následné fixy:
-- `768fb19` — docstring + `error_responses` v AI draft route zosúladené s 409
-- `543c7bb` — AI draft vyberá prvú membership firmu s AI tierom (multi-company robustness); FE komentár sync na 409
+Veľký pracovný blok — 10 sessions uzavretých, 11 commitov pushnutých.
 
-Predtým (2026-10-05 → 10-07): 24 commitov — Render build fix, marketplace
-split, acquisition tracking, batch send fix (30/30 emailov), entity_type
-firmy, dashboard tiles, header simplified, i18n ru/fr.
+**Overené v produkcii:**
+- AI draft: `POST /api/v1/listings/ai-draft` → 200, `provider=groq`
+- Publish: `POST /api/v1/listings/{id}/publish` → 200, marketplace OK, cleanup OK
+
+**Kód a fixy:**
+- `aab3d72` — HISTORY/SESSION_STATE: E2E verification záznam
+- `768fb19` — docstring + error_responses v AI draft route → 409 (ConflictDomainError)
+- `543c7bb` — AI draft multi-company: vyberie prvú membership firmu s AI tierom
+- `36c2934` — HISTORY/SESSION_STATE: zaevidovanie 768fb19 + 543c7bb
+- `2146852` — unit test pre ai-draft route (4 testy: auth, tier gate, multi-company)
+- `0e089d7` — Meta Pixel integrácia do `layout.tsx` + track.ts sync
+- `621a43b` — .env.example placeholders (META_PIXEL + GOPAY)
+- `2fbbc49` — unit test pre /billing/status (unconfigured = 200, configured=false)
+- `d3d83ad` — Logo firmy: Alembic migrácia `c7d8e9f0a1b2`, entity/model/schema/mapper, form upload, detail display
+- `1820220` — Company detail active listings section + public listings endpoint; AI upgrade panel i18n + GoPay company_id fix
+
+**Nové endpointy:**
+- `GET /api/v1/companies/{id}/listings` — verejné ponuky firmy (only published)
+
+**DB:**
+- Nová migrácia `c7d8e9f0a1b2_add_company_logo_url` (head)
+- Alembic upgrade sa aplikuje na Renderi pri deployi
+
 
 Detaily: `docs/HISTORY/`
