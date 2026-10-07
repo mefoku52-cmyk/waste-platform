@@ -27,6 +27,7 @@ export const companySchema = z.object({
   vatIdentifier: z.string().optional(),
   email: z.string().email('Neplatný e-mail').optional().or(z.literal('')),
   phone: z.string().optional(),
+  logoUrl: z.string().optional(),
 });
 
 export type CompanyInput = z.infer<typeof companySchema>;

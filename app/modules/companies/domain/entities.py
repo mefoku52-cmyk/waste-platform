@@ -38,6 +38,7 @@ class Company(AuditFields):
     verified_by_user_id: UUID | None
     rejected_at: datetime | None
     rejected_by_user_id: UUID | None
+    logo_url: str | None = None
 
     def validate(self) -> None:
         if not self.legal_name:

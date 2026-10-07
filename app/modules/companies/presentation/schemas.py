@@ -28,6 +28,7 @@ class CompanyCreateRequest(BaseModel):
     email: str | None = None
     phone: str | None = None
     websiteUrl: HttpUrl | None = None
+    logoUrl: str | None = None
     addressLine2: str | None = None
     latitude: float | None = None
     longitude: float | None = None
@@ -63,6 +64,7 @@ class CompanyData(BaseModel):
     email: str | None
     phone: str | None
     websiteUrl: str | None
+    logoUrl: str | None = None
     countryCode: str
     addressLine1: str
     addressLine2: str | None

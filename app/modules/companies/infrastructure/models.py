@@ -23,6 +23,7 @@ class CompanyModel(Base):
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     phone: Mapped[str | None] = mapped_column(String(64), nullable=True)
     website_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    logo_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     country_code: Mapped[str] = mapped_column(String(2), nullable=False)
     address_line_1: Mapped[str] = mapped_column(String(255), nullable=False)
     address_line_2: Mapped[str | None] = mapped_column(String(255), nullable=True)

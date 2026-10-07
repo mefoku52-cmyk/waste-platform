@@ -8,6 +8,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
+import { SignedImage } from '@/features/uploads/components/signed-image';
 import { useTransitionCompanyStatus } from '@/features/companies/hooks/use-transition-company-status';
 
 const GOLD = '#c9a84c';
@@ -190,7 +191,13 @@ export default function CompanyDetailPage() {
             {/* HLAVICKA */}
             <section className="mt-6 overflow-hidden rounded-2xl border border-[rgba(201,168,76,0.28)] bg-[#0f0e0a] p-5 sm:p-7">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
+                <div className="flex items-start gap-4">
+                  <SignedImage
+                    src={(data as any).logoUrl || null}
+                    alt="Logo"
+                    className="h-16 w-16 rounded-xl object-cover"
+                  />
+                  <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.24em]" style={{ color: GOLD }}>
                     {t('companies.profileSection')}
                   </p>
@@ -205,6 +212,7 @@ export default function CompanyDetailPage() {
                       {data.legalName}
                     </p>
                   ) : null}
+                  </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <span

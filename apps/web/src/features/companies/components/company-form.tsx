@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { companySchema, CompanyInput } from '../schemas';
@@ -11,6 +11,8 @@ import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
 import { useT } from '@/lib/i18n/context';
+import { uploadFile } from '../../uploads/api';
+import { SignedImage } from '../../uploads/components/signed-image';
 
 const ENTITY_TYPE_OPTIONS = [
   { value: 'sole_trader', labelKey: 'companyForm.entityType.soleTrader' },
@@ -37,6 +39,7 @@ type CompanyFormData = Partial<CompanyInput> & {
   sellerCapability?: boolean | null;
   buyerCapability?: boolean | null;
   logisticsCapability?: boolean | null;
+  logoUrl?: string | null;
 };
 
 type CompanyFormProps = {
@@ -51,6 +54,9 @@ export const CompanyForm = ({
   initialData,
 }: CompanyFormProps = {}) => {
   const { t } = useT();
+  // logo_upload_marker
+  const [logoUrl, setLogoUrl] = useState<string>(String(initialData?.logoUrl || ''));
+  const [logoUploading, setLogoUploading] = useState(false);
   const router = useRouter();
 
   const createResult = useCreateCompany();
@@ -113,6 +119,7 @@ export const CompanyForm = ({
     // Do DB sa ukladá registration_number; taxIdentifier slúži na RPO lookup.
     const payload = {
       ...data,
+      logoUrl: logoUrl || null,
       taxIdentifier: data.registrationNumber,
       email: data.email || null,
       tradingName: data.tradingName || null,
@@ -272,6 +279,52 @@ export const CompanyForm = ({
           />
         </FormField>
       </div>
+
+      {/* Logo firmy */}
+      <FormField label="Logo firmy" error={(errors as any).logoUrl?.message}>
+        <div className="flex items-center gap-4">
+          {logoUrl ? (
+            <SignedImage src={logoUrl} alt="Logo" className="h-16 w-16 rounded-lg object-cover" />
+          ) : (
+            <div
+              className="flex h-16 w-16 items-center justify-center rounded-lg border border-dashed"
+              style={{ borderColor: '#c9a84c', color: '#c9a84c' }}
+            >
+              LOGO
+            </div>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            disabled={isPending || logoUploading}
+            onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (!file) return;
+              setLogoUploading(true);
+              try {
+                const res = await uploadFile(file);
+                setLogoUrl(res.url);
+              } catch (err: any) {
+                alert(err?.message || 'Upload zlyhal');
+              } finally {
+                setLogoUploading(false);
+              }
+            }}
+            className="text-sm"
+          />
+          {logoUrl ? (
+            <button
+              type="button"
+              onClick={() => setLogoUrl('')}
+              className="text-xs underline"
+              style={{ color: '#c45c4a' }}
+            >
+              Odstrániť
+            </button>
+          ) : null}
+        </div>
+        <input type="hidden" {...register('logoUrl')} value={logoUrl} />
+      </FormField>
 
       <div className="flex justify-end gap-4 mt-6">
         <Button
