@@ -8,6 +8,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
+import { useTransitionCompanyStatus } from '@/features/companies/hooks/use-transition-company-status';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -149,6 +150,8 @@ export default function CompanyDetailPage() {
   const data = query.data;
   const displayName = data?.tradingName || data?.legalName || companyId;
   const status = statusLabel(data?.status);
+
+  const transition = useTransitionCompanyStatus(companyId);
 
   // Je to vlastna firma?
   const myCompanyIds = ((me.data as any)?.memberships || [])
@@ -364,9 +367,29 @@ export default function CompanyDetailPage() {
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Link
-                    href="/dashboard/listings"
+                    href={`/dashboard/companies/${companyId}/edit`}
                     className="rounded-full px-4 py-2 text-sm font-semibold"
                     style={{ background: GOLD, color: '#090807' }}
+                  >
+                    ✎ Upraviť firmu
+                  </Link>
+
+                  {data.status === 'draft' ? (
+                    <button
+                      type="button"
+                      onClick={() => transition.mutate('verification_submitted')}
+                      disabled={transition.isPending}
+                      className="rounded-full border px-4 py-2 text-sm font-semibold transition hover:opacity-90 disabled:opacity-50"
+                      style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD_BRIGHT }}
+                    >
+                      {transition.isPending ? 'Posielam…' : '↗ Požiadať o overenie'}
+                    </button>
+                  ) : null}
+
+                  <Link
+                    href="/dashboard/listings"
+                    className="rounded-full border px-4 py-2 text-sm font-semibold"
+                    style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD_BRIGHT }}
                   >
                     Moje ponuky
                   </Link>
