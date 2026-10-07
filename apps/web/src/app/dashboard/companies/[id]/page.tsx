@@ -25,6 +25,7 @@ type CompanyData = {
   vatIdentifier?: string | null;
   subscriptionTier?: string | null;
   companyType?: string | null;
+  entityType?: string | null;
   email?: string | null;
   phone?: string | null;
   websiteUrl?: string | null;
@@ -103,6 +104,12 @@ function statusLabel(status?: string | null): { label: string; color: string } {
 function tierLabel(tier?: string | null): string {
   if (!tier) return 'FREE';
   return tier.toUpperCase();
+}
+
+function entityTypeKey(entityType?: string | null): string {
+  if (entityType === 'sole_trader') return 'companyForm.entityType.soleTrader';
+  if (entityType === 'ngo') return 'companyForm.entityType.ngo';
+  return 'companyForm.entityType.company';
 }
 
 function capability(label: string, value: boolean | null | undefined) {
@@ -231,8 +238,12 @@ export default function CompanyDetailPage() {
                   <p className="mt-1">{data.vatIdentifier || '—'}</p>
                 </div>
                 <div className="cmep-panel rounded-xl p-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Typ</p>
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Typ firmy</p>
                   <p className="mt-1">{data.companyType || '—'}</p>
+                </div>
+                <div className="cmep-panel rounded-xl p-3 sm:col-span-2">
+                  <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>Typ subjektu</p>
+                  <p className="mt-1">{t(entityTypeKey(data.entityType))}</p>
                 </div>
               </div>
             </section>
