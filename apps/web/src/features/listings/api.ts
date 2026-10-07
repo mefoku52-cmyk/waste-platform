@@ -34,4 +34,20 @@ export const listingsApi = {
 
   getMatches: (materialType: string, params?: Record<string, any>) =>
     http.get<PaginatedResponse<Listing>>(`/listings/matches?materialType=${encodeURIComponent(materialType)}`, { ...params }),
+
+  // AI draft — vyžaduje AI tier firmy (backend vráti 403 pre FREE/PRO)
+  aiDraft: (prompt: string) =>
+    http.post<{ data: AiDraftData; provider: string }>('/listings/ai-draft', { prompt }),
+};
+
+export type AiDraftData = {
+  title?: string;
+  description?: string;
+  materialType?: string | null;
+  quantity?: number | null;
+  unit?: string | null;
+  location?: string | null;
+  condition?: string | null;
+  currency?: string | null;
+  price?: number | null;
 };

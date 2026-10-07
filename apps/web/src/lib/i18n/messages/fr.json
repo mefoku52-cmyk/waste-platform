@@ -17,7 +17,8 @@
     "firstName": "Prénom",
     "lastName": "Nom",
     "close": "Fermer",
-    "loadingShort": "Chargement..."
+    "loadingShort": "Chargement...",
+    "backToOverview": "← Retour à l'aperçu"
   },
   "login": {
     "title": "Accéder à la bourse",
@@ -510,7 +511,25 @@
       "loading": "Chargement…",
       "back": "← Retour"
     },
-    "fallbackTitle": "Annonce"
+    "fallbackTitle": "Annonce",
+    "publish": {
+      "button": "Publier l'annonce",
+      "sending": "Publication…",
+      "success": "✓ Annonce publiée",
+      "error": "Échec de la publication"
+    },
+    "aiDraft": {
+      "kicker": "ASSISTANT IA",
+      "title": "Remplir l'annonce avec l'IA",
+      "desc": "Décrivez ce que vous voulez proposer — l'IA remplit le reste.",
+      "placeholder": "Ex. J'ai 5 tonnes de ferraille à Žilina, usagée.",
+      "button": "Remplir avec l'IA",
+      "generating": "Génération…",
+      "error": "Échec du brouillon IA",
+      "tooShort": "Écrivez au moins 3 caractères.",
+      "tierRequired": "Le brouillon IA est disponible uniquement pour les entreprises avec abonnement IA.",
+      "fallbackUsed": "IA indisponible — brouillon de base utilisé. Vérifiez et complétez."
+    }
   },
   "documents": {
     "section": "DOCUMENTS",

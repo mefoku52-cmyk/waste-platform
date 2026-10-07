@@ -17,7 +17,8 @@
     "firstName": "First name",
     "lastName": "Last name",
     "close": "Close",
-    "loadingShort": "Loading..."
+    "loadingShort": "Loading...",
+    "backToOverview": "← Back to overview"
   },
   "login": {
     "title": "Enter the exchange",
@@ -509,7 +510,25 @@
       "loading": "Loading…",
       "back": "← Back"
     },
-    "fallbackTitle": "Listing"
+    "fallbackTitle": "Listing",
+    "publish": {
+      "button": "Publish listing",
+      "sending": "Publishing…",
+      "success": "✓ Listing is published",
+      "error": "Publish failed"
+    },
+    "aiDraft": {
+      "kicker": "AI ASSISTANT",
+      "title": "Fill listing with AI",
+      "desc": "Describe what you want to offer — AI fills the rest.",
+      "placeholder": "E.g. I have 5 tonnes of iron scrap in Žilina, used.",
+      "button": "Fill with AI",
+      "generating": "Generating…",
+      "error": "AI draft failed",
+      "tooShort": "Write at least 3 characters.",
+      "tierRequired": "AI draft is available only for companies with AI subscription.",
+      "fallbackUsed": "AI unavailable — basic draft used. Review and complete."
+    }
   },
   "documents": {
     "section": "DOCUMENTS",

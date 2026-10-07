@@ -17,7 +17,8 @@
     "firstName": "Vorname",
     "lastName": "Nachname",
     "close": "Schließen",
-    "loadingShort": "Lädt..."
+    "loadingShort": "Lädt...",
+    "backToOverview": "← Zurück zur Übersicht"
   },
   "login": {
     "title": "Zur Börse",
@@ -509,7 +510,25 @@
       "loading": "Lädt…",
       "back": "← Zurück"
     },
-    "fallbackTitle": "Angebot"
+    "fallbackTitle": "Angebot",
+    "publish": {
+      "button": "Angebot veröffentlichen",
+      "sending": "Veröffentliche…",
+      "success": "✓ Angebot ist veröffentlicht",
+      "error": "Veröffentlichung fehlgeschlagen"
+    },
+    "aiDraft": {
+      "kicker": "KI-ASSISTENT",
+      "title": "Angebot mit KI ausfüllen",
+      "desc": "Beschreiben Sie, was Sie anbieten — KI füllt den Rest aus.",
+      "placeholder": "Z.B. Ich habe 5 Tonnen Eisenschrott in Žilina, gebraucht.",
+      "button": "Mit KI ausfüllen",
+      "generating": "Generiere…",
+      "error": "KI-Entwurf fehlgeschlagen",
+      "tooShort": "Mindestens 3 Zeichen eingeben.",
+      "tierRequired": "KI-Entwurf ist nur für Unternehmen mit KI-Abo verfügbar.",
+      "fallbackUsed": "KI nicht verfügbar — Basis-Entwurf verwendet. Bitte prüfen und ergänzen."
+    }
   },
   "documents": {
     "section": "DOKUMENTE",

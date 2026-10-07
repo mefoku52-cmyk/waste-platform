@@ -77,7 +77,7 @@ export function DashboardHeader() {
               color: GOLD_BRIGHT,
             }}
           >
-            ← Späť na prehľad
+            {t('common.backToOverview')}
           </Link>
         </div>
       )}

@@ -15,13 +15,19 @@ import { companiesApi } from '../../companies/api';
 import { uploadFile } from '../../uploads/api';
 import { config } from '../../../lib/config';
 import { useT } from "@/lib/i18n/context";
+import type { AiDraftData } from '../api';
 
 type Props = {
   listingId?: string;
   initialData?: Partial<ListingInput>;
+  aiDraft?: AiDraftData | null;
 };
 
-export const ListingForm = ({ listingId, initialData }: Props = {}) => {
+export const ListingForm = ({
+  listingId,
+  initialData,
+  aiDraft,
+}: Props = {}) => {
   const { t } = useT();
   const isEdit = Boolean(listingId);
 
@@ -61,6 +67,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
     register,
     handleSubmit,
     setValue,
+    getValues,
     reset,
     formState: { errors },
   } = useForm<ListingInput>({
@@ -97,6 +104,25 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listingId]);
+
+  // AI draft — predvyplň polia formulára, zachovaj companyId
+  useEffect(() => {
+    if (!aiDraft) return;
+    const current = getValues();
+    reset({
+      ...current,
+      title: aiDraft.title ?? current.title ?? '',
+      materialType: aiDraft.materialType ?? current.materialType ?? '',
+      quantity: aiDraft.quantity ?? current.quantity ?? 0,
+      unit: aiDraft.unit ?? current.unit ?? 'kg',
+      price: aiDraft.price ?? current.price,
+      currency: aiDraft.currency ?? current.currency ?? 'EUR',
+      condition: aiDraft.condition ?? current.condition ?? 'použité',
+      location: aiDraft.location ?? current.location ?? '',
+      description: aiDraft.description ?? current.description ?? '',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aiDraft]);
 
   const onSubmit = (data: ListingInput) => {
     if (!hasCompanies) {

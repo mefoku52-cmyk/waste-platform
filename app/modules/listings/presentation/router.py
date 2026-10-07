@@ -4,6 +4,9 @@ from fastapi import APIRouter, Depends, Query, status
 from fastapi import status as http_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.companies.presentation.dependencies import (
+    get_entitlement_service,
+)
 from app.shared.application.side_effects import write_audit
 from app.shared.domain.exceptions import ConflictDomainError, NotFoundDomainError
 from app.shared.infrastructure.db.session import get_db_session
@@ -21,6 +24,8 @@ from ..application.services import ListingsService
 from ..domain.entities import ListingsEntity
 from .dependencies import get_listings_service
 from .schemas import (
+    AiDraftRequest,
+    AiDraftResponse,
     ListingCreateRequest,
     ListingData,
     ListingResponse,
@@ -60,6 +65,65 @@ def _to_listing_data(entity: ListingsEntity) -> ListingData:
 def _membership_company_ids(current_user) -> list:
     """Company IDs clenstva (stringova forma) — jedina zdielana definicia."""
     return membership_company_ids(current_user)
+
+
+@router.post(
+    "/ai-draft",
+    response_model=AiDraftResponse,
+    responses=error_responses(400, 401, 403, 422, 500),
+)
+async def ai_draft_listing(
+    payload: AiDraftRequest,
+    current_user=Depends(require_current_user),
+    entitlement=Depends(get_entitlement_service),
+):
+    """AI draft ponuky — vyžaduje AI tier firmy.
+
+    Bez AI tier → 403. Bez GROQ_API_KEY → deterministický fallback.
+    """
+    from app.modules.companies.domain.enums import SubscriptionTier
+    from app.modules.listings.presentation.schemas import (
+        AiDraftData,
+        AiDraftResponse,
+    )
+
+    # Zisti firmu (z payload alebo prvej membership)
+    from app.shared.presentation.authorization import membership_company_ids
+
+    from ..application.listing_drafter import (
+        ListingDrafter,
+    )
+
+    if payload.companyId:
+        company_id = str(payload.companyId)
+    else:
+        my_ids = membership_company_ids(current_user)
+        if not my_ids:
+            raise ConflictDomainError("Nemáš firmu — najprv ju vytvor.")
+        company_id = str(my_ids[0])
+
+    has_ai = await entitlement.has_tier(company_id, SubscriptionTier.AI)
+    if not has_ai:
+        raise ConflictDomainError("AI draft je dostupný iba pre firmy s AI predplatným.")
+
+    drafter = ListingDrafter()
+    provider = "groq" if drafter.is_provider_configured() else "fallback"
+    draft = await drafter.draft(prompt=payload.prompt)
+
+    return AiDraftResponse(
+        data=AiDraftData(
+            title=draft.title,
+            description=draft.description,
+            materialType=draft.materialType,
+            quantity=draft.quantity,
+            unit=draft.unit,
+            location=draft.location,
+            condition=draft.condition,
+            currency=draft.currency,
+            price=draft.price,
+        ),
+        provider=provider,
+    )
 
 
 @router.get(

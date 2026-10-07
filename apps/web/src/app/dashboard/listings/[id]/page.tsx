@@ -16,6 +16,7 @@ import { postListingViewed } from '@/features/recommendations/api';
 import { ListingInquiryButton } from '@/features/inquiries/components/listing-inquiry-button';
 import { DeleteListingButton } from '@/features/listings/components/delete-listing-button';
 import { PromoteListingButton } from '@/features/listings/components/promote-listing-button';
+import { PublishListingButton } from '@/features/listings/components/publish-listing-button';
 import { SignedImage } from '@/features/uploads/components/signed-image';
 
 const GOLD = '#c9a84c';
@@ -266,6 +267,11 @@ export default function ListingDetailPage() {
 
                 <div className="mt-6">
                   <ListingInquiryButton listingId={listingId} listingTitle={title} />
+                  {isOwner && (data as any).status === 'draft' ? (
+                    <div className="mt-3">
+                      <PublishListingButton listingId={listingId} />
+                    </div>
+                  ) : null}
                   {isOwner ? (
                     <div className="mt-3">
                       <PromoteListingButton

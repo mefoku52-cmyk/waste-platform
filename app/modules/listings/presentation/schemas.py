@@ -85,3 +85,25 @@ class PromoteListingResponse(BaseModel):
     ok: bool
     promotedUntil: datetime | None = None
     promotedTier: str | None = None
+
+
+class AiDraftRequest(BaseModel):
+    prompt: str = Field(min_length=3, max_length=2000)
+    companyId: UUID | None = None
+
+
+class AiDraftData(BaseModel):
+    title: str
+    description: str
+    materialType: str | None = None
+    quantity: float | None = None
+    unit: str | None = None
+    location: str | None = None
+    condition: str | None = None
+    currency: str | None = None
+    price: float | None = None
+
+
+class AiDraftResponse(BaseModel):
+    data: AiDraftData
+    provider: str  # "groq" alebo "fallback"

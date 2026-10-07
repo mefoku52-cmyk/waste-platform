@@ -1,6 +1,9 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.companies.application.entitlements import (
+    CompanyEntitlementService,
+)
 from app.modules.companies.application.services import (
     CreateCompanyService,
     GetCompanyService,
@@ -69,3 +72,9 @@ def get_set_subscription_tier_service(
     repo: SqlAlchemyCompanyRepository = Depends(get_company_repo),
 ) -> SetCompanySubscriptionTierService:
     return SetCompanySubscriptionTierService(repo=repo, clock=Clock())
+
+
+def get_entitlement_service(
+    repo: SqlAlchemyCompanyRepository = Depends(get_company_repo),
+) -> CompanyEntitlementService:
+    return CompanyEntitlementService(repository=repo)

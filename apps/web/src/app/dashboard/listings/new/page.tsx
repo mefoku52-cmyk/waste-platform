@@ -2,7 +2,10 @@
 
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
+import { useState } from 'react';
 import { ListingForm } from '@/features/listings';
+import { AiDraftPanel } from '@/features/listings/components/ai-draft-panel';
+import type { AiDraftData } from '@/features/listings/api';
 import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
@@ -11,6 +14,7 @@ const FG = '#f3ead8';
 
 export default function NewListingPage() {
   const { t } = useT();
+  const [aiDraft, setAiDraft] = useState<AiDraftData | null>(null);
   return (
     <>
       <link
@@ -27,7 +31,8 @@ export default function NewListingPage() {
           <h1 className="mb-8 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
             {t('listings.form.addTitle')}
           </h1>
-          <ListingForm />
+          <AiDraftPanel onGenerated={setAiDraft} />
+          <ListingForm aiDraft={aiDraft} />
         </main>
 
       <DashboardFooter />

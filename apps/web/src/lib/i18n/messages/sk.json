@@ -17,7 +17,8 @@
     "firstName": "Meno",
     "lastName": "Priezvisko",
     "close": "Zavrieť",
-    "loadingShort": "Načítavam..."
+    "loadingShort": "Načítavam...",
+    "backToOverview": "← Späť na prehľad"
   },
   "login": {
     "title": "Prihláste sa",
@@ -509,7 +510,25 @@
       "loading": "Načítavam…",
       "back": "← Späť"
     },
-    "fallbackTitle": "Ponuka"
+    "fallbackTitle": "Ponuka",
+    "publish": {
+      "button": "Zverejniť ponuku",
+      "sending": "Zverejňujem…",
+      "success": "✓ Ponuka je zverejnená",
+      "error": "Zverejnenie zlyhalo"
+    },
+    "aiDraft": {
+      "kicker": "AI POMOCNÍK",
+      "title": "Vyplň ponuku s AI",
+      "desc": "Napíš čo chceš ponúknuť — AI vyplní zvyšok.",
+      "placeholder": "Napr. Mám 5 ton železného šrotu v Žiline, použité.",
+      "button": "Vyplniť s AI",
+      "generating": "Generujem…",
+      "error": "AI draft zlyhal",
+      "tooShort": "Napíš aspoň 3 znaky.",
+      "tierRequired": "AI draft je dostupný iba pre firmy s AI predplatným.",
+      "fallbackUsed": "AI nedostupná — použil sa základný návrh. Skontroluj a doplň."
+    }
   },
   "documents": {
     "section": "DOKUMENTY",
