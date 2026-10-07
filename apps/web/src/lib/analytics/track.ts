@@ -5,6 +5,20 @@ import { config } from '@/lib/config';
 const ANON_KEY = 'cmep_anonymous_id';
 const UTM_KEY = 'cmep_utm';
 
+
+// Meta Pixel helper — volá iba ak fbq existuje (init v layout.tsx)
+function metaTrack(event: 'PageView' | 'ViewContent', data?: Record<string, unknown>) {
+  if (typeof window === 'undefined') return;
+  const w = window as unknown as { fbq?: (...args: unknown[]) => void };
+  if (typeof w.fbq !== 'function') return;
+  try {
+    if (data) w.fbq('track', event, data);
+    else w.fbq('track', event);
+  } catch {
+    /* tiché zlyhanie — tracking nikdy nesmie rozbiť UI */
+  }
+}
+
 export function getAnonymousId(): string {
   if (typeof window === 'undefined') return '';
   let id = localStorage.getItem(ANON_KEY);
@@ -91,6 +105,8 @@ export async function track(event_type: string, extras: TrackExtras = {}): Promi
   if (fbc) body.fbc = fbc;
 
   try {
+    metaTrack(event_type === 'landing_view' ? 'ViewContent' : 'PageView');
+
     await fetch(`${config.apiBaseUrl}/analytics/acquisition/events`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
