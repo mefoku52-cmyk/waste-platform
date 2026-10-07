@@ -96,39 +96,6 @@ export function DashboardHeader() {
         </div>
       </div>
 
-      {/* Navigácia: LEN pills (bez akčných tlačidiel, tie sú už dole) */}
-      <nav className="mx-auto max-w-6xl px-4 pb-3">
-        <div className="flex flex-wrap items-center gap-2">
-          {NAV_KEYS.map((k) => {
-            const href = NAV_HREFS[k];
-            if (!href) return null;
-            const label = t(NAV_LABEL_KEYS[k] || k);
-            const active = pathname === href || pathname.startsWith(href + '/');
-            return (
-              <Link
-                key={k}
-                href={href}
-                className="inline-flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm font-medium transition-all hover:opacity-90"
-                style={{
-                  borderColor: active ? GOLD : 'color-mix(in srgb, #c9a84c 30%, transparent)',
-                  background: active ? 'color-mix(in srgb, #c9a84c 15%, transparent)' : 'transparent',
-                  color: active ? GOLD_BRIGHT : FG,
-                }}
-              >
-                {label}
-                {k === 'chat' && unreadChat > 0 && (
-                  <span
-                    className="inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-bold"
-                    style={{ background: '#c45c4a', color: FG }}
-                  >
-                    {unreadChat}
-                  </span>
-                )}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
     </header>
   );
 }
