@@ -8,7 +8,13 @@ import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
 import { useRouter } from 'next/navigation';
-import { useT } from "@/lib/i18n/context";
+import { useT } from '@/lib/i18n/context';
+
+const ENTITY_TYPE_OPTIONS = [
+  { value: 'sole_trader', labelKey: 'companyForm.entityType.soleTrader' },
+  { value: 'company', labelKey: 'companyForm.entityType.company' },
+  { value: 'ngo', labelKey: 'companyForm.entityType.ngo' },
+] as const;
 
 export const CompanyForm = () => {
   const { t } = useT();
@@ -18,10 +24,12 @@ export const CompanyForm = () => {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<CompanyInput>({
     resolver: zodResolver(companySchema),
     defaultValues: {
+      entityType: 'company',
       countryCode: 'SK',
       companyType: 'seller_buyer',
       sellerCapability: true,
@@ -30,12 +38,20 @@ export const CompanyForm = () => {
     },
   });
 
+  const entityType = watch('entityType');
+  const isSoleTrader = entityType === 'sole_trader';
+  const nameLabel = isSoleTrader
+    ? t('companyForm.legalNameSoleTrader')
+    : t('companyForm.legalNameCompany');
+
   const onSubmit = (data: CompanyInput) => {
+    // Backend očakáva obe polia (registrationNumber aj taxIdentifier).
+    // Do DB sa ukladá registration_number; taxIdentifier slúži na RPO lookup.
     const payload = {
       ...data,
+      taxIdentifier: data.registrationNumber,
       email: data.email || null,
       tradingName: data.tradingName || null,
-      taxIdentifier: data.taxIdentifier || null,
       vatIdentifier: data.vatIdentifier || null,
       phone: data.phone || null,
     };
@@ -45,8 +61,13 @@ export const CompanyForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-2xl p-6 bg-slate-100">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('companyForm.title')}</h2>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 w-full max-w-2xl p-6 bg-slate-100"
+    >
+      <h2 className="text-2xl font-bold mb-6 text-gray-900">
+        {t('companyForm.title')}
+      </h2>
 
       {error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
@@ -54,28 +75,79 @@ export const CompanyForm = () => {
         </div>
       )}
 
-      <FormField label="Obchodný názov (legal name)" error={errors.legalName?.message}>
-        <Input {...register('legalName')} disabled={isPending} placeholder="Firma s.r.o." />
+      {/* Typ subjektu — rádio, dynamicky prepína labely nižšie */}
+      <FormField
+        label={t('companyForm.entityTypeLabel')}
+        error={(errors as any).entityType?.message}
+      >
+        <div className="flex flex-wrap gap-3">
+          {ENTITY_TYPE_OPTIONS.map((opt) => (
+            <label
+              key={opt.value}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm cursor-pointer hover:border-[#c9a84c] has-[:checked]:border-[#c9a84c] has-[:checked]:bg-[#c9a84c]/10"
+            >
+              <input
+                type="radio"
+                value={opt.value}
+                {...register('entityType')}
+                disabled={isPending}
+                className="accent-[#c9a84c]"
+              />
+              {t(opt.labelKey)}
+            </label>
+          ))}
+        </div>
       </FormField>
 
-      <FormField label="Obchodné meno (voliteľné)" error={errors.tradingName?.message}>
-        <Input {...register('tradingName')} disabled={isPending} />
+      {/* Meno / Obchodný názov — label sa mení podľa entityType */}
+      <FormField label={nameLabel} error={errors.legalName?.message}>
+        <Input
+          {...register('legalName')}
+          disabled={isPending}
+          placeholder={
+            isSoleTrader ? 'Ján Novák' : 'Firma s.r.o.'
+          }
+        />
+      </FormField>
+
+      <FormField
+        label={t('companyForm.tradingNameOptional')}
+        error={errors.tradingName?.message}
+      >
+        <Input
+          {...register('tradingName')}
+          disabled={isPending}
+          placeholder="Novák – stolárstvo"
+        />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Registracne cislo" error={errors.registrationNumber?.message}>
-          <Input {...register('registrationNumber')} disabled={isPending} />
+        {/* Jedno pole — IČO (8 číslic). Backend ho mapuje aj do taxIdentifier. */}
+        <FormField
+          label={t('companyForm.icoLabel')}
+          error={errors.registrationNumber?.message}
+        >
+          <Input
+            {...register('registrationNumber')}
+            disabled={isPending}
+            placeholder="54642442"
+            maxLength={8}
+          />
         </FormField>
-        <FormField label="IČO" error={errors.taxIdentifier?.message}>
-          <Input {...register('taxIdentifier')} disabled={isPending} placeholder="8 cislic" />
-        </FormField>
-        <FormField label="DIČ" error={errors.vatIdentifier?.message}>
-          <Input {...register('vatIdentifier')} disabled={isPending} />
+        <FormField
+          label={t('companyForm.vatLabel')}
+          error={errors.vatIdentifier?.message}
+        >
+          <Input
+            {...register('vatIdentifier')}
+            disabled={isPending}
+            placeholder="SK2020123456"
+          />
         </FormField>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Typ firmy (rola)" error={errors.companyType?.message}>
+        <FormField label={t('companyForm.companyTypeLabel')} error={errors.companyType?.message}>
           <select
             {...register('companyType')}
             disabled={isPending}
@@ -87,36 +159,57 @@ export const CompanyForm = () => {
             <option value="logistics_partner">{t('companyForm.logistics')}</option>
           </select>
         </FormField>
-        <FormField label="Kód krajiny" error={errors.countryCode?.message}>
-          <Input {...register('countryCode')} disabled={isPending} placeholder="SK" />
+        <FormField label={t('companyForm.countryLabel')} error={errors.countryCode?.message}>
+          <Input
+            {...register('countryCode')}
+            disabled={isPending}
+            placeholder="SK"
+          />
         </FormField>
       </div>
 
-      <FormField label="Adresa" error={errors.addressLine1?.message}>
-        <Input {...register('addressLine1')} disabled={isPending} />
+      <FormField label={t('companyForm.addressLabel')} error={errors.addressLine1?.message}>
+        <Input
+          {...register('addressLine1')}
+          disabled={isPending}
+          placeholder="Hlavná 1"
+        />
       </FormField>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="Mesto" error={errors.city?.message}>
-          <Input {...register('city')} disabled={isPending} />
+        <FormField label={t('companyForm.cityLabel')} error={errors.city?.message}>
+          <Input {...register('city')} disabled={isPending} placeholder="Bratislava" />
         </FormField>
-        <FormField label="PSČ" error={errors.postalCode?.message}>
-          <Input {...register('postalCode')} disabled={isPending} />
+        <FormField label={t('companyForm.pscLabel')} error={errors.postalCode?.message}>
+          <Input {...register('postalCode')} disabled={isPending} placeholder="81101" />
         </FormField>
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <FormField label="E-mail firmy" error={errors.email?.message}>
-          <Input type="email" {...register('email')} disabled={isPending} />
+        <FormField label={t('companyForm.emailLabel')} error={errors.email?.message}>
+          <Input
+            type="email"
+            {...register('email')}
+            disabled={isPending}
+            placeholder="firma@example.sk"
+          />
         </FormField>
-        <FormField label="Telefón" error={errors.phone?.message}>
-          <Input {...register('phone')} disabled={isPending} />
+        <FormField label={t('companyForm.phoneLabel')} error={errors.phone?.message}>
+          <Input
+            {...register('phone')}
+            disabled={isPending}
+            placeholder="+421 900 000 000"
+          />
         </FormField>
       </div>
 
       <div className="flex justify-end gap-4 mt-6">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          Zrušiť
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.back()}
+        >
+          {t('companyForm.cancel')}
         </Button>
         <Button
           type="submit"
@@ -124,7 +217,7 @@ export const CompanyForm = () => {
           style={{ background: '#c9a84c', color: '#090807', borderColor: '#c9a84c' }}
           className="font-semibold hover:opacity-90"
         >
-          {isPending ? 'Ukladám...' : 'Registrovať'}
+          {isPending ? t('companyForm.saving') : t('companyForm.submit')}
         </Button>
       </div>
     </form>
