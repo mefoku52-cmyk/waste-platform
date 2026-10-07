@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { listingsApi, type AiDraftData } from '../api';
 import { useT } from '@/lib/i18n/context';
+import { config } from '@/lib/config';
+import { tokenStore } from '@/lib/auth/token-store';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -22,6 +24,28 @@ export function AiDraftPanel({ onGenerated }: Props) {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [lastProvider, setLastProvider] = useState<string | null>(null);
+  const [typed, setTyped] = useState('');
+  const bufferRef = useRef('');
+  const abortRef = useRef<AbortController | null>(null);
+
+  // A4: typing efekt — postupne prelevame buffer do zobrazeneho textu
+  useEffect(() => {
+    if (!busy) return;
+    const timer = window.setInterval(() => {
+      const buf = bufferRef.current;
+      if (buf.length > 0) {
+        const step = Math.min(3, buf.length);
+        setTyped((prev) => prev + buf.slice(0, step));
+        bufferRef.current = buf.slice(step);
+      }
+    }, 30);
+    return () => window.clearInterval(timer);
+  }, [busy]);
+
+  function stop() {
+    abortRef.current?.abort();
+    setBusy(false);
+  }
 
   async function generate() {
     const text = prompt.trim();
@@ -31,19 +55,82 @@ export function AiDraftPanel({ onGenerated }: Props) {
     }
     setBusy(true);
     setErr(null);
+    setTyped('');
+    bufferRef.current = '';
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
-      const res = await listingsApi.aiDraft(text);
-      onGenerated(res.data);
-      setLastProvider(res.provider);
+      const token = tokenStore.getToken();
+      const res = await fetch(`${config.apiBaseUrl}/listings/ai-draft/stream`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ prompt: text }),
+        signal: controller.signal,
+      });
+
+      // FIX bug #1: BE vracia 409 (ConflictDomainError), nie 403
+      if (res.status === 409) {
+        throw { status: 409, message: 'ai_tier_required' };
+      }
+      if (!res.ok || !res.body) {
+        throw { status: res.status, message: 'stream_failed' };
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let leftover = '';
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        leftover += decoder.decode(value, { stream: true });
+        const lines = leftover.split('\n');
+        leftover = lines.pop() ?? '';
+        for (const line of lines) {
+          if (!line.startsWith('data:')) continue;
+          const raw = line.slice(5).trim();
+          if (!raw) continue;
+          let event: any;
+          try {
+            event = JSON.parse(raw);
+          } catch {
+            continue;
+          }
+          if (event.error) throw { status: 0, message: event.error };
+          if (event.delta) bufferRef.current += event.delta;
+          if (event.done && event.listing) {
+            onGenerated(event.listing as AiDraftData);
+            setLastProvider(event.provider ?? 'groq');
+          }
+        }
+      }
     } catch (e: any) {
-      const status = e?.status;
-      if (status === 403) {
+      if (e?.name === 'AbortError' || e?.message === 'AbortError') {
+        // Stop tlacidlo — ticho
+      } else if (e?.status === 409) {
         setErr(t('listings.aiDraft.tierRequired'));
       } else {
-        setErr(e?.message || t('listings.aiDraft.error'));
+        // A2.4 fallback: klasicky ne-stream endpoint
+        try {
+          const res = await listingsApi.aiDraft(text);
+          onGenerated(res.data);
+          setLastProvider(res.provider);
+        } catch (e2: any) {
+          const s2 = e2?.status;
+          setErr(
+            s2 === 409
+              ? t('listings.aiDraft.tierRequired')
+              : e2?.message || t('listings.aiDraft.error'),
+          );
+        }
       }
     } finally {
       setBusy(false);
+      abortRef.current = null;
     }
   }
 
@@ -72,6 +159,29 @@ export function AiDraftPanel({ onGenerated }: Props) {
         className="mt-3 w-full resize-none rounded-xl border p-3 text-sm outline-none"
         style={{ borderColor: 'rgba(201,168,76,0.25)', background: BG, color: FG }}
       />
+
+      {busy ? (
+        <div className="mt-3 rounded-xl border p-3 text-sm" style={{ borderColor: 'rgba(201,168,76,0.25)', background: BG }}>
+          <p style={{ color: MUTED }}>
+            <span style={{ color: GOLD }}>✦</span> AI píše
+            <span className="animate-pulse">▌</span>
+          </p>
+          <p className="mt-1 whitespace-pre-wrap" style={{ color: FG }}>
+            {typed}
+          </p>
+          <div className="mt-2 h-1 w-full overflow-hidden rounded" style={{ background: 'rgba(201,168,76,0.15)' }}>
+            <div className="h-1 animate-pulse rounded" style={{ width: '40%', background: GOLD }} />
+          </div>
+          <button
+            type="button"
+            onClick={stop}
+            className="mt-2 rounded-full px-3 py-1 text-xs font-semibold"
+            style={{ border: `1px solid ${GOLD}`, color: GOLD }}
+          >
+            Stop
+          </button>
+        </div>
+      ) : null}
 
       <div className="mt-3 flex items-center justify-between gap-3">
         <span className="text-[10px]" style={{ color: MUTED }}>
