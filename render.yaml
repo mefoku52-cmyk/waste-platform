@@ -1,0 +1,19 @@
+# Render Blueprint — secrets doplnit v dashboardi, nie sem
+services:
+  - type: web
+    name: cmep-api
+    runtime: docker
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GOPAY_CLIENT_ID
+        sync: false
+      - key: GOPAY_CLIENT_SECRET
+        sync: false
+      - key: GOPAY_GOID
+        sync: false
+      - key: GOPAY_PRO_AMOUNT_CENTS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
