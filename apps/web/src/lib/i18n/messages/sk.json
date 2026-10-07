@@ -401,7 +401,21 @@
     "verifyLink": "Požiadať o overenie firmy →",
     "loading": "Načítavam…",
     "loadFailed": "Nepodarilo sa načítať ponuky.",
-    "unknownError": "Neznáma chyba"
+    "unknownError": "Neznáma chyba",
+    "statusLabel": {
+      "draft": "Draft",
+      "published": "Zverejnená",
+      "reserved": "Rezervovaná",
+      "completed": "Dokončená",
+      "archived": "Archivovaná"
+    },
+    "companyWarn": {
+      "draft": "Firma je v koncepte. Požiadajte o overenie, aby ste mohli publikovať ponuky.",
+      "verification_submitted": "Firma čaká na overenie administrátorom. Publikovanie bude dostupné po schválení.",
+      "rejected": "Firma bola zamietnutá. Skontrolujte údaje a pošlite novú žiadosť o overenie.",
+      "suspended": "Firma je pozastavená. Kontaktujte administrátora platformy.",
+      "inactive": "Firma je neaktívna. Publikovanie nie je možné."
+    }
   },
   "documents": {
     "section": "DOKUMENTY",

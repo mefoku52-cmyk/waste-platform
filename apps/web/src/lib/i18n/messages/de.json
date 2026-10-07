@@ -401,7 +401,21 @@
     "verifyLink": "Unternehmensverifizierung anfordern →",
     "loading": "Lädt…",
     "loadFailed": "Angebote konnten nicht geladen werden.",
-    "unknownError": "Unbekannter Fehler"
+    "unknownError": "Unbekannter Fehler",
+    "statusLabel": {
+      "draft": "Entwurf",
+      "published": "Veröffentlicht",
+      "reserved": "Reserviert",
+      "completed": "Abgeschlossen",
+      "archived": "Archiviert"
+    },
+    "companyWarn": {
+      "draft": "Unternehmen ist im Entwurf. Beantragen Sie die Verifizierung, um Angebote zu veröffentlichen.",
+      "verification_submitted": "Unternehmen wartet auf die Überprüfung durch den Administrator. Veröffentlichung ist nach Genehmigung verfügbar.",
+      "rejected": "Unternehmen wurde abgelehnt. Überprüfen Sie Ihre Daten und senden Sie eine neue Verifizierungsanfrage.",
+      "suspended": "Unternehmen ist gesperrt. Kontaktieren Sie den Plattformadministrator.",
+      "inactive": "Unternehmen ist inaktiv. Veröffentlichung ist nicht möglich."
+    }
   },
   "documents": {
     "section": "DOKUMENTE",

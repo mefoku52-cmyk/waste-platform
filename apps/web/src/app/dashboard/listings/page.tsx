@@ -18,46 +18,41 @@ const FAINT = '#6e6658';
 
 const LISTING_STATUS_LABEL: Record<
   string,
-  { label: string; color: string; bg: string }
+  { labelKey: string; color: string; bg: string }
 > = {
   draft: {
-    label: 'Draft',
+    labelKey: 'listings.statusLabel.draft',
     color: '#9a8f7c',
     bg: 'rgba(110,102,88,0.15)',
   },
   published: {
-    label: 'Zverejnená',
+    labelKey: 'listings.statusLabel.published',
     color: '#5fd17a',
     bg: 'rgba(46,160,67,0.15)',
   },
   reserved: {
-    label: 'Rezervovaná',
+    labelKey: 'listings.statusLabel.reserved',
     color: '#e8d48b',
     bg: 'rgba(201,168,76,0.15)',
   },
   completed: {
-    label: 'Dokončená',
+    labelKey: 'listings.statusLabel.completed',
     color: '#8fa8d0',
     bg: 'rgba(80,120,180,0.15)',
   },
   archived: {
-    label: 'Archivovaná',
+    labelKey: 'listings.statusLabel.archived',
     color: '#a8a8a8',
     bg: 'rgba(80,80,80,0.20)',
   },
 };
 
 const COMPANY_STATUS_WARN: Record<string, string> = {
-  draft:
-    'Firma je v koncepte. Požiadajte o overenie, aby ste mohli publikovať ponuky.',
-  verification_submitted:
-    'Firma čaká na overenie administrátorom. Publikovanie bude dostupné po schválení.',
-  rejected:
-    'Firma bola zamietnutá. Skontrolujte údaje a pošlite novú žiadosť o overenie.',
-  suspended:
-    'Firma je pozastavená. Kontaktujte administrátora platformy.',
-  inactive:
-    'Firma je neaktívna. Publikovanie nie je možné.',
+  draft: 'listings.companyWarn.draft',
+  verification_submitted: 'listings.companyWarn.verification_submitted',
+  rejected: 'listings.companyWarn.rejected',
+  suspended: 'listings.companyWarn.suspended',
+  inactive: 'listings.companyWarn.inactive',
 };
 
 type Listing = {
@@ -118,12 +113,12 @@ export default function MyListingsPage() {
 
   const companyStatus = String(myCompany?.status || 'draft');
   const isVerified = companyStatus === 'verified';
-  const warningMessage = COMPANY_STATUS_WARN[companyStatus];
+  const warningKey = COMPANY_STATUS_WARN[companyStatus];
 
   return (
     <AppShell>
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
-        {!isVerified && warningMessage && (
+        {!isVerified && warningKey && (
           <div
             className="mb-8 rounded-2xl border p-5"
             style={{
@@ -143,7 +138,7 @@ export default function MyListingsPage() {
               className="text-sm leading-relaxed"
               style={{ color: FG }}
             >
-              {warningMessage}
+              {t(warningKey)}
             </p>
 
             {companyStatus === 'draft' && (
@@ -320,7 +315,7 @@ export default function MyListingsPage() {
                               '#9a8f7c',
                           }}
                         >
-                          {statusMeta?.label || status}
+                          {statusMeta?.labelKey ? t(statusMeta.labelKey) : status}
                         </span>
                       </div>
                     </Link>

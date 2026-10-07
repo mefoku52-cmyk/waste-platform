@@ -402,7 +402,21 @@
     "verifyLink": "Demander la vérification de l'entreprise →",
     "loading": "Chargement…",
     "loadFailed": "Échec du chargement des annonces.",
-    "unknownError": "Erreur inconnue"
+    "unknownError": "Erreur inconnue",
+    "statusLabel": {
+      "draft": "Brouillon",
+      "published": "Publiée",
+      "reserved": "Réservée",
+      "completed": "Terminée",
+      "archived": "Archivée"
+    },
+    "companyWarn": {
+      "draft": "L'entreprise est en brouillon. Demandez la vérification pour publier des annonces.",
+      "verification_submitted": "L'entreprise attend la vérification de l'administrateur. La publication sera disponible après approbation.",
+      "rejected": "L'entreprise a été rejetée. Vérifiez vos données et soumettez une nouvelle demande de vérification.",
+      "suspended": "L'entreprise est suspendue. Contactez l'administrateur de la plateforme.",
+      "inactive": "L'entreprise est inactive. La publication n'est pas possible."
+    }
   },
   "documents": {
     "section": "DOCUMENTS",

@@ -401,7 +401,21 @@
     "verifyLink": "Request company verification →",
     "loading": "Loading…",
     "loadFailed": "Failed to load listings.",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "statusLabel": {
+      "draft": "Draft",
+      "published": "Published",
+      "reserved": "Reserved",
+      "completed": "Completed",
+      "archived": "Archived"
+    },
+    "companyWarn": {
+      "draft": "Company is in draft. Request verification to publish listings.",
+      "verification_submitted": "Company is awaiting admin verification. Publishing will be available after approval.",
+      "rejected": "Company was rejected. Review your data and submit a new verification request.",
+      "suspended": "Company is suspended. Contact the platform administrator.",
+      "inactive": "Company is inactive. Publishing is not possible."
+    }
   },
   "documents": {
     "section": "DOCUMENTS",
