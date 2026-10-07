@@ -78,7 +78,8 @@
       "matches": "Correspondances",
       "companies": "Entreprises",
       "documents": "Documents",
-      "chat": "Chat"
+      "chat": "Chat",
+      "myListings": "Mes annonces"
     },
     "logout": "Se déconnecter",
     "market": "Marché",
@@ -118,15 +119,33 @@
       "eyebrow": "Déchet pour l'un · Demande pour l'autre",
       "headline": "Moins de déchets. Plus de commerce.",
       "subline": "Marché d'entreprises et de matériaux circulaires. Filtrez, cherchez, convenez.",
-    "tiles": {
-      "overview": { "label": "Aperçu", "desc": "Votre aperçu, activité et statistiques" },
-      "listings": { "label": "Annonces", "desc": "Marché des matériaux et mes annonces" },
-      "companies": { "label": "Entreprises", "desc": "Entreprises du réseau et mon entreprise" },
-      "documents": { "label": "Documents", "desc": "Contrats, factures et pièces jointes" },
-      "inquiries": { "label": "Demandes", "desc": "Demandes et communication avec les entreprises" },
-      "chat": { "label": "Chat", "desc": "Messages internes entre entreprises" }
-    }
-  },
+      "tiles": {
+        "overview": {
+          "label": "Aperçu",
+          "desc": "Votre aperçu, activité et statistiques"
+        },
+        "listings": {
+          "label": "Annonces",
+          "desc": "Marché des matériaux et mes annonces"
+        },
+        "companies": {
+          "label": "Entreprises",
+          "desc": "Entreprises du réseau et mon entreprise"
+        },
+        "documents": {
+          "label": "Documents",
+          "desc": "Contrats, factures et pièces jointes"
+        },
+        "inquiries": {
+          "label": "Demandes",
+          "desc": "Demandes et communication avec les entreprises"
+        },
+        "chat": {
+          "label": "Chat",
+          "desc": "Messages internes entre entreprises"
+        }
+      }
+    },
     "materials": {
       "drevo": {
         "label": "Bois",
@@ -223,7 +242,21 @@
     "seller": "Vendeur",
     "buyer": "Acheteur",
     "logistics": "Logistique",
-    "sellerBuyer": "Vendeur + Acheteur"
+    "sellerBuyer": "Vendeur + Acheteur",
+    "addressLabel": "Adresse",
+    "cancel": "Annuler",
+    "companyTypeLabel": "Type d'entreprise (rôle)",
+    "entityType": {
+      "company": "Entreprise (SARL, SA)",
+      "ngo": "Organisation à but non lucratif",
+      "soleTrader": "Entrepreneur individuel"
+    },
+    "entityTypeLabel": "Type d'entité",
+    "legalNameCompany": "Nom de l'entreprise",
+    "legalNameSoleTrader": "Nom et prénom",
+    "saving": "Enregistrement…",
+    "tradingNameOptional": "Nom commercial (facultatif)",
+    "vatLabel": "TVA (facultatif)"
   },
   "tables": {
     "name": "Nom",

@@ -2,66 +2,36 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUnreadCount } from '@/features/chat';
 import { useLogout, useCurrentUser, useIsPlatformAdmin } from '@/features/auth';
 import { useT } from '@/lib/i18n/context';
 import { LanguageSwitcher } from '@/components/language-switcher';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
-const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
-
-const NAV_KEYS = ['overview', 'listings', 'companies', 'documents', 'inquiries', 'chat'] as const;
-
-const NAV_HREFS: Record<string, string | undefined> = {
-  overview: '/dashboard',
-  listings: '/dashboard/listings',
-  companies: '/dashboard/companies',
-  documents: '/dashboard/documents',
-  inquiries: '/dashboard/inquiries',
-  chat: '/dashboard/chat',
-};
-
-const NAV_LABEL_KEYS: Record<string, string> = {
-  overview: 'nav.overview',
-  listings: 'nav.listings',
-  companies: 'nav.companies',
-  documents: 'nav.documents',
-  inquiries: 'nav.inquiries',
-  chat: 'nav.chat',
-};
 
 export function DashboardHeader() {
   const pathname = usePathname();
   const { t } = useT();
   const { data: me } = useCurrentUser();
-  const { data: unreadData } = useUnreadCount();
-  const unreadChat = Number((unreadData as any)?.unread || 0);
   const isAdmin = useIsPlatformAdmin();
   const myEmail = String((me as any)?.email || (me as any)?.user?.email || '');
   const { mutateAsync: logout, isPending: logoutPending } = useLogout();
+
+  const isOnDashboard = pathname === '/dashboard';
 
   return (
     <header
       className="z-40 border-b backdrop-blur-md"
       style={{ borderColor: 'color-mix(in srgb, #c9a84c 20%, transparent)', background: 'rgba(9,8,7,0.85)' }}
     >
-      {/* Horná lišta: logo + PREČO CMEP text (VRÁTENÉ) */}
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <Link href="/dashboard" className="flex max-w-xl items-start gap-3">
+        {/* Logo */}
+        <Link href="/dashboard" className="flex items-center gap-3">
           <img src="/trc-mark.jpg" alt="TRČ" className="h-16 w-16 rounded-2xl object-cover" />
-          <div className="rounded-2xl border px-3 py-2" style={{ borderColor: "color-mix(in srgb, #c9a84c 35%, transparent)" }}>
-            <p className="text-[10px] uppercase tracking-[0.25em]" style={{ color: GOLD }}>{t('nav.whyKicker')}</p>
-            <p className="mt-1 text-sm leading-snug" style={{ fontFamily: "DM Serif Display, serif", color: GOLD_BRIGHT }}>
-              CMEP — Circular Materials Exchange Platform.
-            </p>
-            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: MUTED }}>
-              {t('nav.whyDesc')}
-            </p>
-          </div>
         </Link>
 
+        {/* Pravá strana: Admin (len pre admina) + jazyk + odhlásiť */}
         <div className="flex flex-wrap items-center gap-2">
           {isAdmin && (
             <Link
@@ -96,6 +66,21 @@ export function DashboardHeader() {
         </div>
       </div>
 
+      {/* Späť na prehľad — viditeľné iba mimo /dashboard */}
+      {!isOnDashboard && (
+        <div className="mx-auto max-w-6xl px-4 pb-3">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition hover:opacity-90"
+            style={{
+              borderColor: 'color-mix(in srgb, #c9a84c 30%, transparent)',
+              color: GOLD_BRIGHT,
+            }}
+          >
+            ← Späť na prehľad
+          </Link>
+        </div>
+      )}
     </header>
   );
 }
