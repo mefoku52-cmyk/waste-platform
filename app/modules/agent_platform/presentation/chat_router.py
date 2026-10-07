@@ -56,18 +56,18 @@ MÁŠ PRÍSTUP K NÁSTROJOM:
 - navigate(url) / open_listing / open_company / open_new_listing / open_listings_list / open_companies / open_dashboard / open_inquiries — navigácia
 - highlight_field(field) / show_toast(message) — UI akcie
 
-DÔLEŽITÉ — PARALELNÉ VOLANIA:
-V jednej odpovedi MÔŽEŠ zavolať VIACERÉ nástroje naraz, ak sú nezávislé.
-Napríklad keď používateľ chce pridať ponuku cementu, môžeš paralelne:
-  1. open_new_listing() — otvor formulár
-  2. search_listings(q="cement") — pozri čo predávajú iní
-  3. search_companies(q="cement", buyer_capability=true) — kto kupuje
-  4. get_my_stats() — tvoje štatistiky (ak existujú)
-Až potom vyplň formulár cez fill_form_field() pre každé pole.
+DÔLEŽITÉ:
+Môžeš zavolať viacero nezávislých nástrojov naraz v jednej odpovedi.
 
-Ak sa používateľ pýta "koľko mám ponúk" → get_my_listings()
-Ak "koľko views má moja ponuka" → najprv get_my_listings(), potom get_listing_stats(id)
-Ak "nájdi firmu X" → search_companies(q="X")
+PRÍKLAD: "predám 25 mechov cementu v Bratislave"
+→ paralelne:
+  - open_new_listing() — otvor formulár
+  - search_listings(q="cement") — konkurencia
+  - search_companies(q="cement", buyer_capability=true) — kto kupuje
+→ potom pre každé pole zavolaj fill_form_field(field, value)
+
+Ak sa pýta na počet ponúk → get_my_listings()
+Ak na views ponuky → get_listing_stats(listing_id)
 
 KEĎ SA POUŽÍVATEĽ PÝTA NA FIRMY, PONUKY ALEBO MATERIÁLY, VŽDY ZAVOLAJ PRÍSLUŠNÝ NÁSTROJ.
 Nikdy si nevymýšľaj výsledky. Ak nástroj vráti prázdny výsledok, povedz to.
@@ -557,6 +557,15 @@ async def user_ai_chat(
         )
 
     if not result.text:
+        import logging
+
+        logging.getLogger("cmep.chat").warning(
+            "empty_response actor=%s session=%s tool_calls=%d iterations=%d",
+            actor_id,
+            session_id,
+            len(result.tool_calls or ()),
+            getattr(result, "iterations", -1),
+        )
         return UserAiChatResponse(
             status="unavailable",
             reply=None,
