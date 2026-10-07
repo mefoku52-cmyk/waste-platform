@@ -937,7 +937,9 @@
     "ariaOpen": "Otvoriť AI chat"
   },
   "aiAssistant": {
-    "placeholder": "Napíš otázku..."
+    "placeholder": "Napíš otázku...",
+    "askListing": "Opýtaj sa na ponuku",
+    "refresh": "Obnoviť"
   },
   "pagination": {
     "aria": "Pagination"
@@ -969,7 +971,8 @@
     "predictedInterest": "Predpokladaný záujem"
   },
   "aiUpgrade": {
-    "onlyForCompanies": "AI asistent je dostupný pre firemné účty."
+    "onlyForCompanies": "AI asistent je dostupný pre firemné účty.",
+    "createCompany": "Vytvoriť firmu"
   },
   "listingInquiry": {
     "noCompany": "Najprv si zaloz a over firmu.",
@@ -1043,5 +1046,31 @@
     "error": "Odoslanie zlyhalo",
     "button": "💬 Nápad?",
     "tooltip": "Čo by si pridal na platforme?"
+  },
+  "companyActions": {
+    "verify": "Overiť",
+    "reject": "Zamietnuť",
+    "suspend": "Pozastaviť",
+    "reactivate": "Reaktivovať",
+    "restoreDraft": "Obnoviť do draft",
+    "activate": "Aktivovať"
+  },
+  "listingTabs": {
+    "mine": "Moje ponuky",
+    "marketplace": "Marketplace"
+  },
+  "listingEmpty": {
+    "title": "Zatiaľ žiadne ponuky",
+    "hint": "Pridaj svoju prvú ponuku a oslov zákazníkov."
+  },
+  "logo": {
+    "brand": "Obehové materiály"
+  },
+  "documentsNew": {
+    "title": "Pridať dokument"
+  },
+  "security": {
+    "title": "Bezpečnosť",
+    "cancel": "Zrušiť"
   }
 }

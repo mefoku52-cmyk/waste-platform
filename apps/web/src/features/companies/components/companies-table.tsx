@@ -170,14 +170,14 @@ export const CompaniesTable = () => {
                             disabled={mutation.isPending}
                             onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified', ico: company.taxIdentifier || company.tax_identifier })}
                           >
-                            Overiť
+                            {t('companyActions.verify')}
                           </ActionButton>
                           <ActionButton
                             variant="danger"
                             disabled={mutation.isPending}
                             onClick={() => mutation.mutate({ id: company.id, toStatus: 'rejected' })}
                           >
-                            Zamietnuť
+                            {t('companyActions.reject')}
                           </ActionButton>
                         </>
                       )}
@@ -188,7 +188,7 @@ export const CompaniesTable = () => {
                           disabled={mutation.isPending}
                           onClick={() => mutation.mutate({ id: company.id, toStatus: 'suspended' })}
                         >
-                          Pozastaviť
+                          {t('companyActions.suspend')}
                         </ActionButton>
                       )}
 
@@ -198,7 +198,7 @@ export const CompaniesTable = () => {
                           disabled={mutation.isPending}
                           onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified', ico: company.taxIdentifier || company.tax_identifier })}
                         >
-                          Reaktivovať
+                          {t('companyActions.reactivate')}
                         </ActionButton>
                       )}
 
@@ -208,7 +208,7 @@ export const CompaniesTable = () => {
                           disabled={mutation.isPending}
                           onClick={() => mutation.mutate({ id: company.id, toStatus: 'draft' })}
                         >
-                          Obnoviť do draft
+                          {t('companyActions.restoreDraft')}
                         </ActionButton>
                       )}
 
@@ -218,7 +218,7 @@ export const CompaniesTable = () => {
                           disabled={mutation.isPending}
                           onClick={() => mutation.mutate({ id: company.id, toStatus: 'verified', ico: company.taxIdentifier || company.tax_identifier })}
                         >
-                          Aktivovať
+                          {t('companyActions.activate')}
                         </ActionButton>
                       )}
 

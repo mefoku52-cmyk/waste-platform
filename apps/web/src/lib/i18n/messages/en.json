@@ -937,7 +937,9 @@
     "ariaOpen": "Open AI chat"
   },
   "aiAssistant": {
-    "placeholder": "Type a question..."
+    "placeholder": "Type a question...",
+    "askListing": "Ask about listing",
+    "refresh": "Refresh"
   },
   "pagination": {
     "aria": "Pagination"
@@ -969,7 +971,8 @@
     "predictedInterest": "Predicted interest"
   },
   "aiUpgrade": {
-    "onlyForCompanies": "The AI assistant is available for company accounts."
+    "onlyForCompanies": "The AI assistant is available for company accounts.",
+    "createCompany": "Create company"
   },
   "listingInquiry": {
     "noCompany": "First create and verify a company.",
@@ -1043,5 +1046,31 @@
     "error": "Send failed",
     "button": "💬 Idea?",
     "tooltip": "What would you add to the platform?"
+  },
+  "companyActions": {
+    "verify": "Verify",
+    "reject": "Reject",
+    "suspend": "Suspend",
+    "reactivate": "Reactivate",
+    "restoreDraft": "Restore to draft",
+    "activate": "Activate"
+  },
+  "listingTabs": {
+    "mine": "My listings",
+    "marketplace": "Marketplace"
+  },
+  "listingEmpty": {
+    "title": "No listings yet",
+    "hint": "Add your first listing and reach customers."
+  },
+  "logo": {
+    "brand": "Circular materials"
+  },
+  "documentsNew": {
+    "title": "Add document"
+  },
+  "security": {
+    "title": "Security",
+    "cancel": "Cancel"
   }
 }

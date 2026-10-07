@@ -937,7 +937,9 @@
     "ariaOpen": "KI-Chat öffnen"
   },
   "aiAssistant": {
-    "placeholder": "Frage eingeben..."
+    "placeholder": "Frage eingeben...",
+    "askListing": "Frag zum Angebot",
+    "refresh": "Aktualisieren"
   },
   "pagination": {
     "aria": "Paginierung"
@@ -969,7 +971,8 @@
     "predictedInterest": "Vorhergesagtes Interesse"
   },
   "aiUpgrade": {
-    "onlyForCompanies": "Der KI-Assistent ist für Firmenkonten verfügbar."
+    "onlyForCompanies": "Der KI-Assistent ist für Firmenkonten verfügbar.",
+    "createCompany": "Unternehmen erstellen"
   },
   "listingInquiry": {
     "noCompany": "Erstellen und verifizieren Sie zuerst ein Unternehmen.",
@@ -1043,5 +1046,31 @@
     "error": "Senden fehlgeschlagen",
     "button": "💬 Idee?",
     "tooltip": "Was würden Sie zur Plattform hinzufügen?"
+  },
+  "companyActions": {
+    "verify": "Verifizieren",
+    "reject": "Ablehnen",
+    "suspend": "Sperren",
+    "reactivate": "Reaktivieren",
+    "restoreDraft": "Zum Entwurf zurücksetzen",
+    "activate": "Aktivieren"
+  },
+  "listingTabs": {
+    "mine": "Meine Angebote",
+    "marketplace": "Marktplatz"
+  },
+  "listingEmpty": {
+    "title": "Noch keine Angebote",
+    "hint": "Fügen Sie Ihr erstes Angebot hinzu und erreichen Sie Kunden."
+  },
+  "logo": {
+    "brand": "Kreislaufmaterialien"
+  },
+  "documentsNew": {
+    "title": "Dokument hinzufügen"
+  },
+  "security": {
+    "title": "Sicherheit",
+    "cancel": "Abbrechen"
   }
 }

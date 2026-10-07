@@ -3,12 +3,14 @@
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { DocumentForm } from '@/features/documents';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const BG = '#090807';
 const FG = '#f3ead8';
 
 export default function NewDocumentPage() {
+  const { t } = useT();
   return (
     <>
       <link
@@ -23,7 +25,7 @@ export default function NewDocumentPage() {
             NOVÝ DOKUMENT
           </p>
           <h1 className="mb-8 text-4xl leading-tight tracking-[-0.02em] md:text-5xl" style={{ fontFamily: 'DM Serif Display, serif' }}>
-            Pridať dokument
+            {t('documentsNew.title')}
           </h1>
           <DocumentForm />
         </main>

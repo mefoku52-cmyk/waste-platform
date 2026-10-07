@@ -938,7 +938,9 @@
     "ariaOpen": "Ouvrir le chat IA"
   },
   "aiAssistant": {
-    "placeholder": "Poser une question..."
+    "placeholder": "Poser une question...",
+    "askListing": "Poser une question sur l'annonce",
+    "refresh": "Rafraîchir"
   },
   "pagination": {
     "aria": "Pagination"
@@ -970,7 +972,8 @@
     "predictedInterest": "Intérêt prévu"
   },
   "aiUpgrade": {
-    "onlyForCompanies": "L'assistant IA est disponible pour les comptes d'entreprise."
+    "onlyForCompanies": "L'assistant IA est disponible pour les comptes d'entreprise.",
+    "createCompany": "Créer une entreprise"
   },
   "listingInquiry": {
     "noCompany": "Créez et vérifiez d'abord une entreprise.",
@@ -1044,5 +1047,31 @@
     "error": "Échec de l'envoi",
     "button": "💬 Idée?",
     "tooltip": "Qu'ajouteriez-vous à la plateforme?"
+  },
+  "companyActions": {
+    "verify": "Vérifier",
+    "reject": "Rejeter",
+    "suspend": "Suspendre",
+    "reactivate": "Réactiver",
+    "restoreDraft": "Remettre en brouillon",
+    "activate": "Activer"
+  },
+  "listingTabs": {
+    "mine": "Mes annonces",
+    "marketplace": "Marketplace"
+  },
+  "listingEmpty": {
+    "title": "Pas encore d'annonces",
+    "hint": "Ajoutez votre première annonce et atteignez des clients."
+  },
+  "logo": {
+    "brand": "Matériaux circulaires"
+  },
+  "documentsNew": {
+    "title": "Ajouter un document"
+  },
+  "security": {
+    "title": "Sécurité",
+    "cancel": "Annuler"
   }
 }

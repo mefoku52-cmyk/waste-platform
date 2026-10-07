@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '../../lib/utils/cn';
+import { useT } from '@/lib/i18n/context';
 
 type LogoProps = {
   className?: string;
@@ -15,6 +16,7 @@ const sizes = {
 };
 
 export function Logo({ className, size = 'md', showText = true }: LogoProps) {
+  const { t } = useT();
   const s = sizes[size];
   return (
     <div className={cn('flex items-center gap-2.5', className)}>
@@ -49,7 +51,7 @@ export function Logo({ className, size = 'md', showText = true }: LogoProps) {
             CMEP
           </div>
           <div className="text-[10px] font-medium uppercase tracking-wider text-emerald-700">
-            Obehové materiály
+            {t('logo.brand')}
           </div>
         </div>
       )}

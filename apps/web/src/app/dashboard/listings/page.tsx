@@ -190,7 +190,7 @@ export default function MyListingsPage() {
                   color: mine ? '#090807' : GOLD,
                 }}
               >
-                Moje ponuky
+                {t('listingTabs.mine')}
               </button>
               <button
                 type="button"
@@ -201,7 +201,7 @@ export default function MyListingsPage() {
                   color: !mine ? '#090807' : GOLD,
                 }}
               >
-                Marketplace
+                {t('listingTabs.marketplace')}
               </button>
             </div>
         </div>
@@ -239,14 +239,14 @@ export default function MyListingsPage() {
               className="text-2xl"
               style={{ fontFamily: 'DM Serif Display, serif' }}
             >
-              Zatiaľ žiadne ponuky
+              {t('listingEmpty.title')}
             </h3>
 
             <p
               className="mt-2 text-sm"
               style={{ color: MUTED }}
             >
-              Pridaj svoju prvú ponuku a oslov zákazníkov.
+              {t('listingEmpty.hint')}
             </p>
           </div>
         ) : (

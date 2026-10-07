@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AppShell } from '@/components/layout/app-shell';
 import { http } from '@/lib/api/http';
 import { useAuthRequired } from '@/features/auth';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -26,6 +27,7 @@ const cardStyle = {
 };
 
 export default function SecuritySettingsPage() {
+  const { t } = useT();
   const { user, isLoading } = useAuthRequired();
   const qc = useQueryClient();
 
@@ -104,7 +106,7 @@ export default function SecuritySettingsPage() {
           NASTAVENIA ÚČTU
         </p>
         <h1 className="mt-2 font-serif text-3xl sm:text-4xl" style={{ color: GOLD_BRIGHT }}>
-          Bezpečnosť
+          {t('security.title')}
         </h1>
 
         {/* STATUS */}
@@ -198,7 +200,7 @@ export default function SecuritySettingsPage() {
                   className="rounded-full border px-5 py-2 text-sm"
                   style={{ borderColor: 'rgba(201,168,76,0.3)', color: MUTED }}
                 >
-                  Zrušiť
+                  {t('security.cancel')}
                 </button>
               </div>
             </div>

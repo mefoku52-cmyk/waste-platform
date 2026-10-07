@@ -82,7 +82,7 @@ export function AiAssistantPanel({ listingTitle }: Props) {
             AI asistent
           </p>
           <h2 className="mt-1 font-serif text-2xl" style={{ color: '#e8d48b' }}>
-            Opýtaj sa na ponuku
+            {t('aiAssistant.askListing')}
           </h2>
         </div>
         <div className="flex items-center gap-2">
@@ -96,7 +96,7 @@ export function AiAssistantPanel({ listingTitle }: Props) {
             className="rounded-full border px-2 py-1 text-xs"
             style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#e8d48b' }}
           >
-            Refresh
+            {t('aiAssistant.refresh')}
           </button>
           <button
             type="button"
