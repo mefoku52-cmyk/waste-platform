@@ -415,7 +415,89 @@
       "rejected": "Firma bola zamietnutá. Skontrolujte údaje a pošlite novú žiadosť o overenie.",
       "suspended": "Firma je pozastavená. Kontaktujte administrátora platformy.",
       "inactive": "Firma je neaktívna. Publikovanie nie je možné."
-    }
+    },
+    "detail": {
+      "statsSection": "ŠTATISTIKY PONUKY",
+      "statsTitle": "Záujem o túto ponuku",
+      "views": "ZOBRAZENIA",
+      "viewsDesc": "Koľkokrát bola ponuka otvorená",
+      "uniqueVisitors": "UNIKÁTNI DIVÁCI",
+      "uniqueVisitorsDesc": "Koľko rôznych účtov si ju pozrelo",
+      "back": "← Späť",
+      "contactSeller": "Poslať dopyt",
+      "promote": "⭐ Topovať ponuku",
+      "delete": "Zmazať ponuku"
+    },
+    "form": {
+      "firstStep": "Prvý krok",
+      "addCompanyTitle": "Najprv pridajte firmu",
+      "addCompanyDesc": "Každá ponuka musí patriť konkrétnej firme. Po vytvorení firmy sa sem môžete okamžite vrátiť a pridať ponuku materiálu.",
+      "addCompanyBtn": "Pridať firmu",
+      "backDashboard": "Späť na dashboard",
+      "companyStatus": "Stav firmy",
+      "companyNotVerified": "⚠️ Vaša firma ešte nie je overená. Ponuku môžete vytvoriť, ale publikovať ju bude možné až po schválení administrátorom.",
+      "loadingCompanies": "Načítavam firmy…",
+      "errorCreate": "Chyba pri vytváraní ponuky",
+      "errorSave": "Chyba pri ukladaní",
+      "errorRegister": "Chyba pri registrácii firmy",
+      "companyLabel": "Firma",
+      "selectCompany": "— vyberte firmu —",
+      "titlePlaceholder": "Zvyšky železa",
+      "materialPlaceholder": "železo, plast, drevo...",
+      "descLabel": "Popis",
+      "imageLabel": "URL fotky (voliteľné)",
+      "imagePlaceholder": "https://... alebo nahrajte súbor nižšie",
+      "uploadFailed": "Nahranie súboru zlyhalo",
+      "quantityLabel": "Množstvo",
+      "unitLabel": "Jednotka",
+      "priceLabel": "Cena (voliteľné)",
+      "currencyLabel": "Mena",
+      "conditionPlaceholder": "nové / použité / odpad",
+      "locationLabel": "Lokalita",
+      "locationPlaceholder": "Bratislava",
+      "cancel": "Zrušiť",
+      "saving": "Ukladám...",
+      "saveChanges": "Uložiť zmeny",
+      "create": "Vytvoriť ponuku",
+      "editTitle": "Upraviť ponuku",
+      "addTitle": "Nová ponuka",
+      "addSubtitle": "Vyplňte údaje o materiáli, ktorý chcete ponúknuť.",
+      "selectPlaceholder": "— vyberte —",
+      "editSection": "UPRAVIŤ PONUKU",
+      "newSection": "NOVÁ PONUKA"
+    },
+    "promoteExtended": {
+      "title": "Zvýrazniť ponuku",
+      "desc": "Vyber balíček. Platba sa spustí po potvrdení (pripravujeme).",
+      "zvyraznenie": "Zvýraznenie",
+      "topovanie": "Topovanie",
+      "premium": "Premium",
+      "active": "AKTÍVNE",
+      "until": "Do",
+      "remove": "Zrušiť zvýraznenie",
+      "activate": "Aktivovať",
+      "cancel": "Zrušiť",
+      "loading": "Spracúvam…"
+    },
+    "deleteExtended": {
+      "button": "Zmazať ponuku",
+      "confirm": "Naozaj zmazať túto ponuku?",
+      "deleting": "Mažem…"
+    },
+    "marketplaceTable": {
+      "loading": "Načítavam trhovisko...",
+      "error": "Chyba pri načítaní trhoviska."
+    },
+    "matchesExtended": {
+      "title": "Hľadať zhody",
+      "loading": "Hľadám zhody...",
+      "error": "Zhody sa nepodarilo načítať."
+    },
+    "editPage": {
+      "loading": "Načítavam…",
+      "back": "← Späť"
+    },
+    "fallbackTitle": "Ponuka"
   },
   "documents": {
     "section": "DOKUMENTY",

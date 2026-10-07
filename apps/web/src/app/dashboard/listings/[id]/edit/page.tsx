@@ -91,25 +91,25 @@ export default function EditListingPage() {
             className="mb-3 text-[11px] uppercase tracking-[0.3em]"
             style={{ color: GOLD }}
           >
-            {t('listings.edit') || 'UPRAVIŤ PONUKU'}
+            {t('listings.form.editSection')}
           </p>
 
           <h1
             className="mb-8 text-4xl leading-tight tracking-[-0.02em] md:text-5xl"
             style={{ fontFamily: 'DM Serif Display, serif' }}
           >
-            Upraviť ponuku
+            {t('listings.form.editTitle')}
           </h1>
 
           {isLoading ? (
-            <p style={{ color: MUTED }}>Načítavam…</p>
+            <p style={{ color: MUTED }}>{t('listings.editPage.loading')}</p>
           ) : error ? (
             <div
               className="rounded-2xl border p-5"
               style={{ borderColor: 'rgba(196,92,74,0.35)' }}
             >
               <p className="text-sm" style={{ color: '#c45c4a' }}>
-                Ponuku sa nepodarilo načítať.
+                {t('listings.loadFailed')}
               </p>
               <button
                 type="button"
@@ -117,11 +117,11 @@ export default function EditListingPage() {
                 style={{ color: GOLD }}
                 onClick={() => router.back()}
               >
-                Späť
+                {t('listings.editPage.back')}
               </button>
             </div>
           ) : !initialData ? (
-            <p style={{ color: MUTED }}>Pripravujem formulár…</p>
+            <p style={{ color: MUTED }}>{t('listings.loading')}</p>
           ) : (
             <ListingForm
               listingId={listingId}

@@ -122,16 +122,15 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
     return (
       <div className="w-full max-w-2xl bg-slate-100 p-6 sm:p-8">
         <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: '#c9a84c' }}>
-          Prvý krok
+          {t('listings.form.firstStep')}
         </p>
 
         <h2 className="mt-2 text-xl font-bold text-slate-900">
-          Najprv pridajte firmu
+          {t('listings.form.addCompanyTitle')}
         </h2>
 
         <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-700">
-          Každá ponuka musí patriť konkrétnej firme. Po vytvorení firmy sa sem môžete
-          okamžite vrátiť a pridať ponuku materiálu.
+          {t('listings.form.addCompanyDesc')}
         </p>
 
         <div className="mt-6 flex flex-wrap gap-3">
@@ -141,7 +140,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
             style={{ background: '#c9a84c' }}
             onClick={() => router.push('/dashboard/companies/new')}
           >
-            Pridať firmu
+            {t('listings.form.addCompanyBtn')}
           </Button>
 
           <Button
@@ -150,7 +149,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
             className="border-slate-400 bg-transparent text-slate-700 hover:bg-slate-200"
             onClick={() => router.push('/dashboard')}
           >
-            Späť na dashboard
+            {t('listings.form.backDashboard')}
           </Button>
         </div>
       </div>
@@ -168,11 +167,10 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
         }}
       >
         <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.25em]" style={{ color: '#c9a84c' }}>
-          Stav firmy: {companyStatus}
+          {t('listings.form.companyStatus')}: {companyStatus}
         </p>
         <p className="text-sm leading-relaxed" style={{ color: '#f3ead8' }}>
-          ⚠️ Vaša firma ešte nie je overená. Ponuku môžete vytvoriť, ale
-          publikovať ju bude možné až po schválení administrátorom.
+          {t('listings.form.companyNotVerified')}
         </p>
       </div>
     )}
@@ -183,33 +181,33 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
     >
       <div className="border-b border-slate-300 pb-4">
         <p className="text-[10px] font-semibold uppercase tracking-wider">
-          {isEdit ? 'Upraviť ponuku' : 'Nová ponuka'}
+          {isEdit ? t('listings.form.editSection') : t('listings.form.newSection')}
         </p>
         <h2 className="mt-1 text-xl font-bold text-slate-900">{t('listingForm.titleAdd')}</h2>
         <p className="mt-1 text-sm text-slate-600">
-          Vyplňte údaje o materiáli, ktorý chcete ponúknuť.
+          {t('listings.form.addSubtitle')}
         </p>
       </div>
 
       {isLoadingCompanies && (
         <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm text-slate-700">
-          Načítavam firmy…
+          {t('listings.form.loadingCompanies')}
         </div>
       )}
 
       {error && (
         <div className="rounded-xl border border-red-900/70 bg-red-950/40 p-3 text-sm text-red-200">
-          {(error as any).message || 'Chyba pri vytváraní ponuky'}
+          {(error as any).message || t('listings.form.errorCreate')}
         </div>
       )}
 
-      <FormField label="Firma" error={errors.companyId?.message}>
+      <FormField label={t('listings.form.companyLabel')} error={errors.companyId?.message}>
         <select
           {...register('companyId')}
           disabled={isPending || isLoadingCompanies}
           className="h-10 w-full rounded-xl border border-slate-300 bg-white px-3 text-sm text-slate-900 outline-none transition focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="">— vyberte firmu —</option>
+          <option value="">{t('listings.form.selectCompany')}</option>
           {companies.map((company: any) => (
             <option key={company.id} value={company.id}>
               {company.legalName || company.name}
@@ -222,7 +220,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
         <Input
           {...register('title')}
           disabled={isPending || isLoadingCompanies}
-          placeholder="Zvyšky železa"
+          placeholder={t('listings.form.titlePlaceholder')}
           className="rounded-xl"
         />
       </FormField>
@@ -231,12 +229,12 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
         <Input
           {...register('materialType')}
           disabled={isPending || isLoadingCompanies}
-          placeholder="železo, plast, drevo..."
+          placeholder={t('listings.form.materialPlaceholder')}
           className="rounded-xl"
         />
       </FormField>
 
-      <FormField label="Popis" error={errors.description?.message}>
+      <FormField label={t('listings.form.descLabel')} error={errors.description?.message}>
         <textarea
           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-[#c9a84c] focus:ring-2 focus:ring-[#c9a84c]/30 disabled:cursor-not-allowed disabled:opacity-50"
           rows={3}
@@ -245,9 +243,9 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
         />
       </FormField>
 
-      <FormField label="URL fotky (voliteľné)" error={(errors as any).imageUrl?.message}>
+      <FormField label={t('listings.form.imageLabel')} error={(errors as any).imageUrl?.message}>
         <Input
-          placeholder="https://... alebo nahrajte súbor nižšie"
+          placeholder={t('listings.form.imagePlaceholder')}
           {...register('imageUrl')}
           disabled={isPending || isLoadingCompanies}
           className="rounded-xl"
@@ -268,14 +266,14 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
               // Pridávať config.apiBaseUrl by vytvorilo "/api/v1/api/v1/...".
               setValue('imageUrl', response.url as any, { shouldValidate: true });
             } catch (uploadError: any) {
-              alert(uploadError?.message || 'Nahranie súboru zlyhalo');
+              alert(uploadError?.message || t('listings.form.uploadFailed'));
             }
           }}
         />
       </FormField>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Množstvo" error={errors.quantity?.message}>
+        <FormField label={t('listings.form.quantityLabel')} error={errors.quantity?.message}>
           <Input
             type="number"
             step="0.01"
@@ -285,7 +283,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
           />
         </FormField>
 
-        <FormField label="Jednotka" error={errors.unit?.message}>
+        <FormField label={t('listings.form.unitLabel')} error={errors.unit?.message}>
           <Input
             {...register('unit')}
             disabled={isPending || isLoadingCompanies}
@@ -296,7 +294,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="Cena (voliteľné)" error={errors.price?.message}>
+        <FormField label={t('listings.form.priceLabel')} error={errors.price?.message}>
           <Input
             type="number"
             step="0.01"
@@ -306,7 +304,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
           />
         </FormField>
 
-        <FormField label="Mena" error={errors.currency?.message}>
+        <FormField label={t('listings.form.currencyLabel')} error={errors.currency?.message}>
           <Input
             {...register('currency')}
             disabled={isPending || isLoadingCompanies}
@@ -320,16 +318,16 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
           <Input
             {...register('condition')}
             disabled={isPending || isLoadingCompanies}
-            placeholder="nové / použité / odpad"
+            placeholder={t('listings.form.conditionPlaceholder')}
             className="rounded-xl"
           />
         </FormField>
 
-        <FormField label="Lokalita" error={errors.location?.message}>
+        <FormField label={t('listings.form.locationLabel')} error={errors.location?.message}>
           <Input
             {...register('location')}
             disabled={isPending || isLoadingCompanies}
-            placeholder="Bratislava"
+            placeholder={t('listings.form.locationPlaceholder')}
             className="rounded-xl"
           />
         </FormField>
@@ -342,7 +340,7 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
           className="border-slate-400 bg-transparent text-slate-700 hover:bg-slate-200"
           onClick={() => router.back()}
         >
-          Zrušiť
+          {t('listings.form.cancel')}
         </Button>
 
         <Button
@@ -352,10 +350,10 @@ export const ListingForm = ({ listingId, initialData }: Props = {}) => {
           style={{ background: '#c9a84c' }}
         >
           {isPending
-            ? 'Ukladám...'
+            ? t('listings.form.saving')
             : isEdit
-              ? 'Uložiť zmeny'
-              : 'Vytvoriť ponuku'}
+              ? t('listings.form.saveChanges')
+              : t('listings.form.create')}
         </Button>
       </div>
     </form>

@@ -415,7 +415,89 @@
       "rejected": "Unternehmen wurde abgelehnt. Überprüfen Sie Ihre Daten und senden Sie eine neue Verifizierungsanfrage.",
       "suspended": "Unternehmen ist gesperrt. Kontaktieren Sie den Plattformadministrator.",
       "inactive": "Unternehmen ist inaktiv. Veröffentlichung ist nicht möglich."
-    }
+    },
+    "detail": {
+      "statsSection": "ANGEBOTSSTATISTIK",
+      "statsTitle": "Interesse an diesem Angebot",
+      "views": "AUFRUFE",
+      "viewsDesc": "Wie oft wurde das Angebot geöffnet",
+      "uniqueVisitors": "EINZIGARTIGE BESUCHER",
+      "uniqueVisitorsDesc": "Wie viele verschiedene Konten es gesehen haben",
+      "back": "← Zurück",
+      "contactSeller": "Anfrage senden",
+      "promote": "⭐ Angebot bewerben",
+      "delete": "Angebot löschen"
+    },
+    "form": {
+      "firstStep": "Erster Schritt",
+      "addCompanyTitle": "Zuerst ein Unternehmen hinzufügen",
+      "addCompanyDesc": "Jedes Angebot muss zu einem bestimmten Unternehmen gehören. Nach der Erstellung können Sie hierher zurückkehren und ein Materialangebot hinzufügen.",
+      "addCompanyBtn": "Unternehmen hinzufügen",
+      "backDashboard": "Zurück zum Dashboard",
+      "companyStatus": "Unternehmensstatus",
+      "companyNotVerified": "⚠️ Ihr Unternehmen ist noch nicht verifiziert. Sie können ein Angebot erstellen, aber die Veröffentlichung ist erst nach Genehmigung möglich.",
+      "loadingCompanies": "Unternehmen werden geladen…",
+      "errorCreate": "Fehler beim Erstellen des Angebots",
+      "errorSave": "Fehler beim Speichern",
+      "errorRegister": "Fehler bei der Unternehmensregistrierung",
+      "companyLabel": "Unternehmen",
+      "selectCompany": "— Unternehmen auswählen —",
+      "titlePlaceholder": "Eisenschrott",
+      "materialPlaceholder": "Eisen, Kunststoff, Holz...",
+      "descLabel": "Beschreibung",
+      "imageLabel": "Bild-URL (optional)",
+      "imagePlaceholder": "https://... oder unten hochladen",
+      "uploadFailed": "Datei-Upload fehlgeschlagen",
+      "quantityLabel": "Menge",
+      "unitLabel": "Einheit",
+      "priceLabel": "Preis (optional)",
+      "currencyLabel": "Währung",
+      "conditionPlaceholder": "neu / gebraucht / Abfall",
+      "locationLabel": "Standort",
+      "locationPlaceholder": "Bratislava",
+      "cancel": "Abbrechen",
+      "saving": "Speichern...",
+      "saveChanges": "Änderungen speichern",
+      "create": "Angebot erstellen",
+      "editTitle": "Angebot bearbeiten",
+      "addTitle": "Neues Angebot",
+      "addSubtitle": "Füllen Sie die Details zum Material aus, das Sie anbieten möchten.",
+      "selectPlaceholder": "— auswählen —",
+      "editSection": "ANGEBOT BEARBEITEN",
+      "newSection": "NEUES ANGEBOT"
+    },
+    "promoteExtended": {
+      "title": "Angebot bewerben",
+      "desc": "Wählen Sie ein Paket. Zahlung startet nach Bestätigung (in Kürze).",
+      "zvyraznenie": "Hervorheben",
+      "topovanie": "Top",
+      "premium": "Premium",
+      "active": "AKTIV",
+      "until": "Bis",
+      "remove": "Bewerbung entfernen",
+      "activate": "Aktivieren",
+      "cancel": "Abbrechen",
+      "loading": "Verarbeite…"
+    },
+    "deleteExtended": {
+      "button": "Angebot löschen",
+      "confirm": "Dieses Angebot wirklich löschen?",
+      "deleting": "Lösche…"
+    },
+    "marketplaceTable": {
+      "loading": "Marktplatz wird geladen...",
+      "error": "Fehler beim Laden des Marktplatzes."
+    },
+    "matchesExtended": {
+      "title": "Übereinstimmungen finden",
+      "loading": "Suche Übereinstimmungen...",
+      "error": "Übereinstimmungen konnten nicht geladen werden."
+    },
+    "editPage": {
+      "loading": "Lädt…",
+      "back": "← Zurück"
+    },
+    "fallbackTitle": "Angebot"
   },
   "documents": {
     "section": "DOKUMENTE",

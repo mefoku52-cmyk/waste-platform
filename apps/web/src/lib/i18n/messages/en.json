@@ -415,7 +415,89 @@
       "rejected": "Company was rejected. Review your data and submit a new verification request.",
       "suspended": "Company is suspended. Contact the platform administrator.",
       "inactive": "Company is inactive. Publishing is not possible."
-    }
+    },
+    "detail": {
+      "statsSection": "LISTING STATISTICS",
+      "statsTitle": "Interest in this listing",
+      "views": "VIEWS",
+      "viewsDesc": "How many times the listing was opened",
+      "uniqueVisitors": "UNIQUE VISITORS",
+      "uniqueVisitorsDesc": "How many different accounts viewed it",
+      "back": "← Back",
+      "contactSeller": "Send inquiry",
+      "promote": "⭐ Promote listing",
+      "delete": "Delete listing"
+    },
+    "form": {
+      "firstStep": "First step",
+      "addCompanyTitle": "Add a company first",
+      "addCompanyDesc": "Every listing must belong to a specific company. Once you create a company, you can return here and add a material listing.",
+      "addCompanyBtn": "Add company",
+      "backDashboard": "Back to dashboard",
+      "companyStatus": "Company status",
+      "companyNotVerified": "⚠️ Your company is not verified yet. You can create a listing, but publishing will be possible only after admin approval.",
+      "loadingCompanies": "Loading companies…",
+      "errorCreate": "Error creating listing",
+      "errorSave": "Error saving",
+      "errorRegister": "Error registering company",
+      "companyLabel": "Company",
+      "selectCompany": "— select company —",
+      "titlePlaceholder": "Iron scraps",
+      "materialPlaceholder": "iron, plastic, wood...",
+      "descLabel": "Description",
+      "imageLabel": "Image URL (optional)",
+      "imagePlaceholder": "https://... or upload below",
+      "uploadFailed": "File upload failed",
+      "quantityLabel": "Quantity",
+      "unitLabel": "Unit",
+      "priceLabel": "Price (optional)",
+      "currencyLabel": "Currency",
+      "conditionPlaceholder": "new / used / waste",
+      "locationLabel": "Location",
+      "locationPlaceholder": "Bratislava",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "create": "Create listing",
+      "editTitle": "Edit listing",
+      "addTitle": "New listing",
+      "addSubtitle": "Fill in details about the material you want to offer.",
+      "selectPlaceholder": "— select —",
+      "editSection": "EDIT LISTING",
+      "newSection": "NEW LISTING"
+    },
+    "promoteExtended": {
+      "title": "Promote listing",
+      "desc": "Choose a package. Payment starts after confirmation (coming soon).",
+      "zvyraznenie": "Highlight",
+      "topovanie": "Top",
+      "premium": "Premium",
+      "active": "ACTIVE",
+      "until": "Until",
+      "remove": "Remove promotion",
+      "activate": "Activate",
+      "cancel": "Cancel",
+      "loading": "Processing…"
+    },
+    "deleteExtended": {
+      "button": "Delete listing",
+      "confirm": "Really delete this listing?",
+      "deleting": "Deleting…"
+    },
+    "marketplaceTable": {
+      "loading": "Loading marketplace...",
+      "error": "Error loading marketplace."
+    },
+    "matchesExtended": {
+      "title": "Find matches",
+      "loading": "Searching matches...",
+      "error": "Failed to load matches."
+    },
+    "editPage": {
+      "loading": "Loading…",
+      "back": "← Back"
+    },
+    "fallbackTitle": "Listing"
   },
   "documents": {
     "section": "DOCUMENTS",

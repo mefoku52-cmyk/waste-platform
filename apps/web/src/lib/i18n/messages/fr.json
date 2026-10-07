@@ -416,7 +416,89 @@
       "rejected": "L'entreprise a été rejetée. Vérifiez vos données et soumettez une nouvelle demande de vérification.",
       "suspended": "L'entreprise est suspendue. Contactez l'administrateur de la plateforme.",
       "inactive": "L'entreprise est inactive. La publication n'est pas possible."
-    }
+    },
+    "detail": {
+      "statsSection": "STATISTIQUES DE L'ANNONCE",
+      "statsTitle": "Intérêt pour cette annonce",
+      "views": "VUES",
+      "viewsDesc": "Combien de fois l'annonce a été ouverte",
+      "uniqueVisitors": "VISITEURS UNIQUES",
+      "uniqueVisitorsDesc": "Combien de comptes différents l'ont vue",
+      "back": "← Retour",
+      "contactSeller": "Envoyer une demande",
+      "promote": "⭐ Promouvoir l'annonce",
+      "delete": "Supprimer l'annonce"
+    },
+    "form": {
+      "firstStep": "Première étape",
+      "addCompanyTitle": "Ajoutez d'abord une entreprise",
+      "addCompanyDesc": "Chaque annonce doit appartenir à une entreprise spécifique. Une fois l'entreprise créée, vous pouvez revenir ici et ajouter une annonce de matériau.",
+      "addCompanyBtn": "Ajouter une entreprise",
+      "backDashboard": "Retour au tableau de bord",
+      "companyStatus": "Statut de l'entreprise",
+      "companyNotVerified": "⚠️ Votre entreprise n'est pas encore vérifiée. Vous pouvez créer une annonce, mais la publication ne sera possible qu'après approbation de l'administrateur.",
+      "loadingCompanies": "Chargement des entreprises…",
+      "errorCreate": "Erreur lors de la création de l'annonce",
+      "errorSave": "Erreur lors de l'enregistrement",
+      "errorRegister": "Erreur lors de l'enregistrement de l'entreprise",
+      "companyLabel": "Entreprise",
+      "selectCompany": "— sélectionnez une entreprise —",
+      "titlePlaceholder": "Chutes de fer",
+      "materialPlaceholder": "fer, plastique, bois...",
+      "descLabel": "Description",
+      "imageLabel": "URL de l'image (facultatif)",
+      "imagePlaceholder": "https://... ou téléchargez ci-dessous",
+      "uploadFailed": "Échec du téléchargement",
+      "quantityLabel": "Quantité",
+      "unitLabel": "Unité",
+      "priceLabel": "Prix (facultatif)",
+      "currencyLabel": "Devise",
+      "conditionPlaceholder": "neuf / utilisé / déchet",
+      "locationLabel": "Localisation",
+      "locationPlaceholder": "Bratislava",
+      "cancel": "Annuler",
+      "saving": "Enregistrement...",
+      "saveChanges": "Enregistrer les modifications",
+      "create": "Créer l'annonce",
+      "editTitle": "Modifier l'annonce",
+      "addTitle": "Nouvelle annonce",
+      "addSubtitle": "Remplissez les détails du matériau que vous souhaitez proposer.",
+      "selectPlaceholder": "— sélectionnez —",
+      "editSection": "MODIFIER L'ANNONCE",
+      "newSection": "NOUVELLE ANNONCE"
+    },
+    "promoteExtended": {
+      "title": "Promouvoir l'annonce",
+      "desc": "Choisissez un forfait. Le paiement commence après confirmation (bientôt).",
+      "zvyraznenie": "Surligner",
+      "topovanie": "Top",
+      "premium": "Premium",
+      "active": "ACTIF",
+      "until": "Jusqu'à",
+      "remove": "Retirer la promotion",
+      "activate": "Activer",
+      "cancel": "Annuler",
+      "loading": "Traitement…"
+    },
+    "deleteExtended": {
+      "button": "Supprimer l'annonce",
+      "confirm": "Vraiment supprimer cette annonce?",
+      "deleting": "Suppression…"
+    },
+    "marketplaceTable": {
+      "loading": "Chargement du marché...",
+      "error": "Erreur lors du chargement du marché."
+    },
+    "matchesExtended": {
+      "title": "Trouver des correspondances",
+      "loading": "Recherche de correspondances...",
+      "error": "Échec du chargement des correspondances."
+    },
+    "editPage": {
+      "loading": "Chargement…",
+      "back": "← Retour"
+    },
+    "fallbackTitle": "Annonce"
   },
   "documents": {
     "section": "DOCUMENTS",

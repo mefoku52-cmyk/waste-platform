@@ -23,7 +23,7 @@ export const MatchesPanel = () => {
           <Input
             value={material}
             onChange={(e) => setMaterial(e.target.value)}
-            placeholder="napr. kov, železo"
+            placeholder={t('listings.form.materialPlaceholder')}
           />
         </div>
         <Button
@@ -34,12 +34,12 @@ export const MatchesPanel = () => {
             setTimeout(() => refetch(), 0);
           }}
         >
-          Hľadať zhody
+          {t('listings.matchesExtended.title')}
         </Button>
       </div>
 
-      {isLoading && <div className="text-sm text-gray-500">Hľadám zhody...</div>}
-      {error && <div className="text-sm text-red-600">Zhody sa nepodarilo načítať.</div>}
+      {isLoading && <div className="text-sm text-gray-500">{t('listings.matchesExtended.loading')}</div>}
+      {error && <div className="text-sm text-red-600">{t('listings.matchesExtended.error')}</div>}
 
       {!isLoading && !error && (
         <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
@@ -56,7 +56,7 @@ export const MatchesPanel = () => {
               {items.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                    Žiadne zhody pre „{query}“.
+                    {t('listings.empty')} „{query}“.
                   </td>
                 </tr>
               ) : (

@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { listingsApi } from '../api';
+import { useT } from '@/lib/i18n/context';
 
 const DANGER = '#c45c4a';
 const DANGER_TEXT = '#f0bbb0';
 const MUTED = '#9a8f7c';
 
 export function DeleteListingButton({ listingId }: { listingId: string }) {
+  const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -21,7 +23,7 @@ export function DeleteListingButton({ listingId }: { listingId: string }) {
       await listingsApi.deleteListing(listingId);
       router.push('/dashboard/listings');
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Chyba pri mazaní';
+      const msg = e instanceof Error ? e.message : t('listings.deleteExtended.button');
       setErr(msg);
       setBusy(false);
     }
@@ -35,7 +37,7 @@ export function DeleteListingButton({ listingId }: { listingId: string }) {
         className="rounded-full border px-4 py-2 text-sm font-medium transition hover:opacity-80"
         style={{ borderColor: DANGER, color: DANGER_TEXT }}
       >
-        Zmazať ponuku
+        {t('listings.deleteExtended.button')}
       </button>
     );
   }
@@ -46,10 +48,10 @@ export function DeleteListingButton({ listingId }: { listingId: string }) {
       style={{ borderColor: DANGER, background: 'rgba(196,92,74,0.08)' }}
     >
       <p className="text-sm font-medium" style={{ color: DANGER_TEXT }}>
-        Naozaj zmazať túto ponuku?
+        {t('listings.deleteExtended.confirm')}
       </p>
       <p className="mt-1 text-xs" style={{ color: MUTED }}>
-        Akcia sa nedá vrátiť.
+        {t('listings.deleteExtended.confirm')}
       </p>
 
       {err ? (
@@ -64,7 +66,7 @@ export function DeleteListingButton({ listingId }: { listingId: string }) {
           className="rounded-full px-4 py-1.5 text-sm font-semibold transition disabled:opacity-50"
           style={{ background: DANGER, color: '#fff' }}
         >
-          {busy ? 'Mažem…' : 'Áno, zmazať'}
+          {busy ? t('listings.deleteExtended.deleting') : t('listings.deleteExtended.button')}
         </button>
         <button
           type="button"
@@ -73,7 +75,7 @@ export function DeleteListingButton({ listingId }: { listingId: string }) {
           className="rounded-full border px-4 py-1.5 text-sm transition disabled:opacity-50"
           style={{ borderColor: 'color-mix(in srgb, #9a8f7c 40%, transparent)', color: MUTED }}
         >
-          Zrušiť
+          {t('listings.promoteExtended.cancel')}
         </button>
       </div>
     </div>

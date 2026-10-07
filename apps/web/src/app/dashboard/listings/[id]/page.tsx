@@ -325,10 +325,10 @@ export default function ListingDetailPage() {
             {isOwner ? (
               <section className="cmep-panel mt-6 rounded-2xl p-5">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-                  ŠTATISTIKY PONUKY
+                  {t('listings.detail.statsSection')}
                 </p>
                 <h2 className="mt-2 font-serif text-2xl" style={{ color: GOLD_BRIGHT }}>
-                  Záujem o túto ponuku
+                  {t('listings.detail.statsTitle')}
                 </h2>
                 {statsQuery.isLoading ? (
                   <p className="mt-3 text-sm" style={{ color: MUTED }}>Načítavam…</p>
@@ -340,24 +340,24 @@ export default function ListingDetailPage() {
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     <div className="cmep-panel rounded-xl p-4">
                       <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>
-                        ZOBRAZENIA
+                        {t('listings.detail.views')}
                       </p>
                       <p className="mt-2 font-serif text-3xl" style={{ color: GOLD_BRIGHT }}>
                         {statsQuery.data?.views ?? 0}
                       </p>
                       <p className="mt-1 text-xs" style={{ color: MUTED }}>
-                        Koľkokrát bola ponuka otvorená
+                        {t('listings.detail.viewsDesc')}
                       </p>
                     </div>
                     <div className="cmep-panel rounded-xl p-4">
                       <p className="text-[10px] uppercase tracking-[0.18em]" style={{ color: MUTED }}>
-                        UNIKÁTNI DIVÁCI
+                        {t('listings.detail.uniqueVisitors')}
                       </p>
                       <p className="mt-2 font-serif text-3xl" style={{ color: GOLD_BRIGHT }}>
                         {statsQuery.data?.uniqueViewers ?? 0}
                       </p>
                       <p className="mt-1 text-xs" style={{ color: MUTED }}>
-                        Koľko rôznych účtov si ju pozrelo
+                        {t('listings.detail.uniqueVisitorsDesc')}
                       </p>
                     </div>
                   </div>

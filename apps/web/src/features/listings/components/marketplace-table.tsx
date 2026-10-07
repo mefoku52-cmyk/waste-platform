@@ -10,8 +10,8 @@ export const MarketplaceTable = () => {
   const { data, isLoading, error } = useMarketplace();
   const router = useRouter();
 
-  if (isLoading) return <div className="p-4 text-center">Načítavam trhovisko...</div>;
-  if (error) return <div className="p-4 text-red-500 text-center">Chyba pri načítaní trhoviska.</div>;
+  if (isLoading) return <div className="p-4 text-center">{t('listings.marketplaceTable.loading')}</div>;
+  if (error) return <div className="p-4 text-red-500 text-center">{t('listings.marketplaceTable.error')}</div>;
 
   const listings = (data as any)?.items ?? [];
 
@@ -31,7 +31,7 @@ export const MarketplaceTable = () => {
           {listings.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-4 py-8 text-center text-gray-500">
-                Žiadne cudzie publikované ponuky.
+                {t('listings.empty')}
               </td>
             </tr>
           ) : (

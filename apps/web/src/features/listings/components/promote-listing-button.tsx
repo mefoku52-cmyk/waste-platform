@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { http } from '@/lib/api/http';
+import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -24,6 +25,7 @@ const TIERS: { key: Tier; days: 7 | 30; price: string; label: string; desc: stri
 ];
 
 export function PromoteListingButton({ listingId, promotedUntil, promotedTier }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState(0);
@@ -41,7 +43,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
       setOpen(false);
       router.refresh();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Chyba pri topovaní';
+      const msg = e instanceof Error ? e.message : t('listings.promoteExtended.title');
       setErr(msg);
       setBusy(false);
     }
@@ -55,7 +57,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
       setOpen(false);
       router.refresh();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : 'Chyba';
+      const msg = e instanceof Error ? e.message : t('listings.promoteExtended.title');
       setErr(msg);
       setBusy(false);
     }
@@ -65,10 +67,10 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
     return (
       <div className="rounded-2xl border p-4" style={{ borderColor: GOLD, background: 'rgba(201,168,76,0.08)' }}>
         <p className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: GOLD }}>
-          ⭐ {promotedTier === 'gold' ? 'GOLD' : 'TOP'} AKTÍVNE
+          ⭐ {promotedTier === 'gold' ? 'GOLD' : 'TOP'} {t('listings.promoteExtended.active')}
         </p>
         <p className="mt-1 text-xs" style={{ color: MUTED }}>
-          Do {new Date(promotedUntil as string).toLocaleDateString('sk-SK')}
+          {t('listings.promoteExtended.until')} {new Date(promotedUntil as string).toLocaleDateString()}
         </p>
         <button
           type="button"
@@ -77,7 +79,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
           className="mt-3 rounded-full border px-3 py-1.5 text-xs transition disabled:opacity-50"
           style={{ borderColor: 'color-mix(in srgb, #9a8f7c 40%, transparent)', color: MUTED }}
         >
-          {busy ? 'Ruším…' : 'Zrušiť zvýraznenie'}
+          {busy ? t('listings.promoteExtended.loading') : t('listings.promoteExtended.remove')}
         </button>
         {err ? <p className="mt-2 text-xs" style={{ color: '#f0bbb0' }}>{err}</p> : null}
       </div>
@@ -92,7 +94,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
         className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
         style={{ background: GOLD, color: BG }}
       >
-        ⭐ Topovať ponuku
+        ⭐ {t('listings.promoteExtended.title')}
       </button>
     );
   }
@@ -100,10 +102,10 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
   return (
     <div className="rounded-2xl border p-4" style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)' }}>
       <p className="text-sm font-medium" style={{ color: GOLD_BRIGHT }}>
-        Zvýrazniť ponuku
+        {t('listings.promoteExtended.title')}
       </p>
       <p className="mt-1 text-xs" style={{ color: MUTED }}>
-        Vyber balíček. Platba sa spustí po potvrdení (pripravujeme).
+        {t('listings.promoteExtended.desc')}
       </p>
 
       <div className="mt-3 space-y-2">
@@ -138,7 +140,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
           className="rounded-full px-4 py-1.5 text-sm font-semibold transition disabled:opacity-50"
           style={{ background: GOLD, color: BG }}
         >
-          {busy ? 'Spracúvam…' : 'Aktivovať'}
+          {busy ? t('listings.promoteExtended.loading') : t('listings.promoteExtended.activate')}
         </button>
         <button
           type="button"
@@ -147,7 +149,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
           className="rounded-full border px-4 py-1.5 text-sm transition"
           style={{ borderColor: 'color-mix(in srgb, #9a8f7c 40%, transparent)', color: MUTED }}
         >
-          Zrušiť
+          {t('listings.promoteExtended.cancel')}
         </button>
       </div>
     </div>
