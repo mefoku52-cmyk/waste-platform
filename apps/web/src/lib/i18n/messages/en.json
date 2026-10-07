@@ -118,8 +118,16 @@
     "motto": {
       "eyebrow": "Waste for one · Demand for another",
       "headline": "Less waste. More business.",
-      "subline": "A marketplace of companies and circular materials. Filter, search, agree."
-    },
+      "subline": "A marketplace of companies and circular materials. Filter, search, agree.",
+    "tiles": {
+      "overview": { "label": "Overview", "desc": "Your overview, activity and statistics" },
+      "listings": { "label": "Listings", "desc": "Material marketplace and my listings" },
+      "companies": { "label": "Companies", "desc": "Companies in the network and my company" },
+      "documents": { "label": "Documents", "desc": "Contracts, invoices and attachments" },
+      "inquiries": { "label": "Inquiries", "desc": "Inquiries and communication with companies" },
+      "chat": { "label": "Chat", "desc": "Internal messages between companies" }
+    }
+  },
     "materials": {
       "drevo": {
         "label": "Wood",

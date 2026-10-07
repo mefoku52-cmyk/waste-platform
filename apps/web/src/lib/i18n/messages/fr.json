@@ -117,8 +117,16 @@
     "motto": {
       "eyebrow": "Déchet pour l'un · Demande pour l'autre",
       "headline": "Moins de déchets. Plus de commerce.",
-      "subline": "Marché d'entreprises et de matériaux circulaires. Filtrez, cherchez, convenez."
-    },
+      "subline": "Marché d'entreprises et de matériaux circulaires. Filtrez, cherchez, convenez.",
+    "tiles": {
+      "overview": { "label": "Aperçu", "desc": "Votre aperçu, activité et statistiques" },
+      "listings": { "label": "Annonces", "desc": "Marché des matériaux et mes annonces" },
+      "companies": { "label": "Entreprises", "desc": "Entreprises du réseau et mon entreprise" },
+      "documents": { "label": "Documents", "desc": "Contrats, factures et pièces jointes" },
+      "inquiries": { "label": "Demandes", "desc": "Demandes et communication avec les entreprises" },
+      "chat": { "label": "Chat", "desc": "Messages internes entre entreprises" }
+    }
+  },
     "materials": {
       "drevo": {
         "label": "Bois",

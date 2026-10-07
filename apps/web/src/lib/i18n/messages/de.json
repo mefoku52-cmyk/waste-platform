@@ -118,8 +118,16 @@
     "motto": {
       "eyebrow": "Abfall für den einen · Nachfrage für den anderen",
       "headline": "Weniger Abfall. Mehr Geschäft.",
-      "subline": "Marktplatz für Unternehmen und Kreislaufmaterialien. Filtern, suchen, vereinbaren."
-    },
+      "subline": "Marktplatz für Unternehmen und Kreislaufmaterialien. Filtern, suchen, vereinbaren.",
+    "tiles": {
+      "overview": { "label": "Übersicht", "desc": "Ihre Übersicht, Aktivität und Statistiken" },
+      "listings": { "label": "Angebote", "desc": "Materialmarktplatz und meine Angebote" },
+      "companies": { "label": "Unternehmen", "desc": "Unternehmen im Netzwerk und mein Unternehmen" },
+      "documents": { "label": "Dokumente", "desc": "Verträge, Rechnungen und Anhänge" },
+      "inquiries": { "label": "Anfragen", "desc": "Anfragen und Kommunikation mit Unternehmen" },
+      "chat": { "label": "Chat", "desc": "Interne Nachrichten zwischen Unternehmen" }
+    }
+  },
     "materials": {
       "drevo": {
         "label": "Holz",

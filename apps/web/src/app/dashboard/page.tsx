@@ -8,6 +8,7 @@ import { AppShell } from '@/components/layout/app-shell';
 import { useT } from '@/lib/i18n/context';
 import { useMarketplace } from '@/features/listings';
 import { http } from '@/lib/api/http';
+import { useUnreadCount } from '@/features/chat';
 import { SignedImage } from '@/features/uploads/components/signed-image';
 
 type Listing = {
@@ -44,6 +45,51 @@ const categorySkMap: Record<string, string> = {
   plastics: 'Plasty',
   bio: 'Bioodpad',
 };
+
+const DASHBOARD_TILES = [
+  {
+    key: 'overview',
+    href: '/dashboard',
+    labelKey: 'dashboard.tiles.overview.label',
+    descKey: 'dashboard.tiles.overview.desc',
+    img: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1600&q=80',
+  },
+  {
+    key: 'listings',
+    href: '/dashboard/listings',
+    labelKey: 'dashboard.tiles.listings.label',
+    descKey: 'dashboard.tiles.listings.desc',
+    img: 'https://images.unsplash.com/photo-1553413077-190dd305871c?w=1600&q=80',
+  },
+  {
+    key: 'companies',
+    href: '/dashboard/companies',
+    labelKey: 'dashboard.tiles.companies.label',
+    descKey: 'dashboard.tiles.companies.desc',
+    img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1600&q=80',
+  },
+  {
+    key: 'documents',
+    href: '/dashboard/documents',
+    labelKey: 'dashboard.tiles.documents.label',
+    descKey: 'dashboard.tiles.documents.desc',
+    img: 'https://images.unsplash.com/photo-1568667256549-094345857637?w=1600&q=80',
+  },
+  {
+    key: 'inquiries',
+    href: '/dashboard/inquiries',
+    labelKey: 'dashboard.tiles.inquiries.label',
+    descKey: 'dashboard.tiles.inquiries.desc',
+    img: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1600&q=80',
+  },
+  {
+    key: 'chat',
+    href: '/dashboard/chat',
+    labelKey: 'dashboard.tiles.chat.label',
+    descKey: 'dashboard.tiles.chat.desc',
+    img: 'https://images.unsplash.com/photo-1587560699334-cc4ff634909a?w=1600&q=80',
+  },
+] as const;
 
 const DASHBOARD_MATERIALS = [
   {
@@ -142,6 +188,9 @@ export default function DashboardPage() {
     isLoading,
     error,
   } = useMarketplace();
+
+  const { data: unreadData } = useUnreadCount();
+  const unreadChat = Number((unreadData as any)?.unread || 0);
 
   const { data: companiesResp } = useQuery({
     queryKey: ['companies-for-dashboard'],
@@ -387,83 +436,87 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <section className="mb-10">
-          <div className="flex flex-col gap-4">
-            {DASHBOARD_MATERIALS.map((material) => {
-              const active = category === material.key;
-
-              return (
-                <button
-                  key={material.key}
-                  type="button"
-                  onClick={() =>
-                    changeCategory(active ? 'all' : material.key)
-                  }
-                  className="group relative overflow-hidden rounded-2xl border text-left transition-colors"
+        <section className="mb-10 flex flex-col gap-3">
+          {DASHBOARD_TILES.map((tile) => (
+            <Link
+              key={tile.key}
+              href={tile.href}
+              className="group relative block overflow-hidden rounded-2xl border transition-all hover:scale-[1.005]"
+              style={{
+                borderColor: 'rgba(192,192,192,0.20)',
+                aspectRatio: '21/9',
+              }}
+            >
+              <img
+                src={tile.img}
+                alt={t(tile.labelKey)}
+                className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity group-hover:opacity-60"
+              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background:
+                    'linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.4) 50%, transparent 100%)',
+                }}
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-7">
+                <p
+                  className="text-3xl italic leading-tight md:text-4xl"
                   style={{
-                    borderColor: active
-                      ? GOLD
-                      : 'color-mix(in srgb, #c9a84c 20%, transparent)',
-                    aspectRatio: '21/9',
+                    fontFamily: 'DM Serif Display, serif',
+                    color: '#e5e5e5',
                   }}
                 >
-                  <img
-                    src={material.img}
-                    alt={t(
-                      `dashboard.materials.${material.labelKey}.label`,
-                    )}
-                    className="absolute inset-0 h-full w-full object-cover transition-opacity"
-                    style={{
-                      opacity: active ? 0.85 : 0.5,
-                    }}
-                  />
-
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        'linear-gradient(to top, rgba(9,8,7,0.95) 0%, rgba(9,8,7,0.5) 50%, transparent 100%)',
-                    }}
-                  />
-
-                  <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
-                    <p
-                      className="text-2xl md:text-3xl"
-                      style={{
-                        color: active ? GOLD : GOLD_BRIGHT,
-                        fontFamily: 'DM Serif Display, serif',
-                      }}
+                  {t(tile.labelKey)}
+                  {tile.key === 'chat' && unreadChat > 0 && (
+                    <span
+                      className="ml-3 inline-flex items-center justify-center rounded-full px-2 py-1 text-sm not-italic font-bold align-middle"
+                      style={{ background: '#c45c4a', color: '#f3ead8' }}
                     >
-                      {t(
-                        `dashboard.materials.${material.labelKey}.label`,
-                      )}
-                    </p>
+                      {unreadChat}
+                    </span>
+                  )}
+                </p>
+                <p className="mt-1 text-sm md:text-base" style={{ color: '#a8a8a8' }}>
+                  {t(tile.descKey)}
+                </p>
+              </div>
+            </Link>
+          ))}
+        </section>
 
-                    <p
-                      className="mt-1.5 text-xs leading-snug md:text-sm"
-                      style={{ color: MUTED }}
-                    >
-                      {t(
-                        `dashboard.materials.${material.labelKey}.desc`,
-                      )}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+        <section className="mb-10">
+          <div className="flex flex-wrap gap-3 opacity-50">
+            {DASHBOARD_MATERIALS.map((material) => (
+              <div
+                key={material.key}
+                className="relative overflow-hidden rounded-xl border"
+                style={{
+                  borderColor: 'rgba(192,192,192,0.15)',
+                  width: '80px',
+                  height: '80px',
+                }}
+              >
+                <img
+                  src={material.img}
+                  alt={t(`dashboard.materials.${material.labelKey}.label`)}
+                  className="h-full w-full object-cover"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to top, rgba(9,8,7,0.85) 0%, transparent 70%)',
+                  }}
+                />
+                <p
+                  className="absolute bottom-1 left-1 right-1 text-center text-[9px] uppercase tracking-wider"
+                  style={{ color: '#c0c0c0' }}
+                >
+                  {t(`dashboard.materials.${material.labelKey}.label`)}
+                </p>
+              </div>
+            ))}
           </div>
-
-          {category !== 'all' && (
-            <button
-              type="button"
-              onClick={() => changeCategory('all')}
-              className="mt-3 text-sm underline underline-offset-4"
-              style={{ color: MUTED }}
-            >
-              {t('dashboard.clearFilter')} ·{' '}
-              {categorySkMap[category] || category}
-            </button>
-          )}
         </section>
 
         <section

@@ -118,8 +118,16 @@
     "motto": {
       "eyebrow": "Pre niekoho odpad · Pre iného dopyt",
       "headline": "Menej odpadu. Viac obchodu.",
-      "subline": "Trhovisko firiem a obehových materiálov. Filtruj, hľadaj, dohodni."
-    },
+      "subline": "Trhovisko firiem a obehových materiálov. Filtruj, hľadaj, dohodni.",
+    "tiles": {
+      "overview": { "label": "Prehľad", "desc": "Váš prehľad, aktivita a štatistiky" },
+      "listings": { "label": "Ponuky", "desc": "Trhovisko materiálov a moje ponuky" },
+      "companies": { "label": "Firmy", "desc": "Firmy v sieti a moja firma" },
+      "documents": { "label": "Dokumenty", "desc": "Zmluvy, faktúry a prílohy" },
+      "inquiries": { "label": "Dopyt", "desc": "Dopyty a komunikácia s firmami" },
+      "chat": { "label": "Chat", "desc": "Interné správy medzi firmami" }
+    }
+  },
     "materials": {
       "drevo": {
         "label": "Drevo",
