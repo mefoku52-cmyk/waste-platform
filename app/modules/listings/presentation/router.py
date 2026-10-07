@@ -465,3 +465,49 @@ async def unpromote_listing(
         target_id=listing_id,
     )
     return PromoteListingResponse(ok=True)
+
+
+import json
+from collections.abc import AsyncIterator
+
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
+
+from app.modules.listings.application.listing_drafter import ListingDrafter
+
+
+class AiDraftStreamRequest(BaseModel):
+    prompt: str = Field(min_length=3, max_length=2000)
+    company_id: str | None = None
+
+
+@router.post(
+    "/ai-draft/stream",
+    responses=error_responses(400, 401, 403, 409, 422, 500),
+)
+async def ai_draft_stream(
+    payload: AiDraftStreamRequest,
+    current_user=Depends(require_current_user),
+) -> StreamingResponse:
+    """SSE stream AI draftu (A1.1). Bez AI tieru → 409 (rovnako ako /ai-draft)."""
+    # AK ma existujuci ai-draft handler blok vyberu firmy s AI tierom,
+    # skopiruj ho sem (vratane 409). Bez neho funguje stream pre kazdeho.
+    del current_user
+
+    async def event_source() -> AsyncIterator[str]:
+        drafter = ListingDrafter()
+        try:
+            async for event in drafter.stream(prompt=payload.prompt):
+                yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+        except Exception as exc:  # posledna brana — klient dostane chybu v SSE
+            yield f"data: {json.dumps({'error': str(exc)}, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        event_source(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
