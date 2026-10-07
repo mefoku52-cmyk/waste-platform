@@ -35,7 +35,17 @@ def _cfg() -> dict[str, str]:
 
 
 def _ready(cfg: dict[str, str]) -> bool:
-    return all(cfg[k] for k in ("client_id", "client_secret", "goid", "return_url", "notify_url"))
+    return (
+        all(cfg[k] for k in ("client_id", "client_secret", "goid", "return_url", "notify_url"))
+        and cfg["goid"].isdigit()
+    )
+
+
+def _goid_int(cfg: dict[str, str]) -> int:
+    try:
+        return int(cfg["goid"])
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=503, detail="gopay_misconfigured")
 
 
 async def _token(cfg: dict[str, str]) -> str:
@@ -87,7 +97,7 @@ async def billing_checkout(
         "currency": "EUR",
         "order_number": order,
         "order_description": "CMEP PRO",
-        "target": {"type": "ACCOUNT", "goid": int(cfg["goid"])},
+        "target": {"type": "ACCOUNT", "goid": _goid_int(cfg)},
         "callback": {"return_url": cfg["return_url"], "notification_url": cfg["notify_url"]},
         "additional_params": [
             {"name": "company_id", "value": payload.company_id},
