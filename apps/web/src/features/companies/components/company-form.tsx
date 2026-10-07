@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { companySchema, CompanyInput } from '../schemas';
 import { useCreateCompany } from '../hooks/use-create-company';
+import { useUpdateCompany } from '../hooks/use-update-company';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { FormField } from '../../../components/ui/form-field';
@@ -16,15 +18,54 @@ const ENTITY_TYPE_OPTIONS = [
   { value: 'ngo', labelKey: 'companyForm.entityType.ngo' },
 ] as const;
 
-export const CompanyForm = () => {
+type CompanyFormData = Partial<CompanyInput> & {
+  id?: string;
+  legalName?: string | null;
+  tradingName?: string | null;
+  registrationNumber?: string | null;
+  taxIdentifier?: string | null;
+  vatIdentifier?: string | null;
+  companyType?: string | null;
+  entityType?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  countryCode?: string | null;
+  addressLine1?: string | null;
+  addressLine2?: string | null;
+  city?: string | null;
+  postalCode?: string | null;
+  sellerCapability?: boolean | null;
+  buyerCapability?: boolean | null;
+  logisticsCapability?: boolean | null;
+};
+
+type CompanyFormProps = {
+  mode?: 'create' | 'edit';
+  companyId?: string;
+  initialData?: CompanyFormData;
+};
+
+export const CompanyForm = ({
+  mode = 'create',
+  companyId = '',
+  initialData,
+}: CompanyFormProps = {}) => {
   const { t } = useT();
-  const { mutate: createCompany, isPending, error } = useCreateCompany();
   const router = useRouter();
+
+  const createResult = useCreateCompany();
+  const updateResult = useUpdateCompany(companyId);
+
+  const isEdit = mode === 'edit' && Boolean(companyId);
+  const { mutate: submitCompany, isPending, error } = isEdit
+    ? updateResult
+    : createResult;
 
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm<CompanyInput>({
     resolver: zodResolver(companySchema),
@@ -37,6 +78,29 @@ export const CompanyForm = () => {
       logisticsCapability: false,
     },
   });
+
+  // Pri edit mode predvyplň z initialData
+  useEffect(() => {
+    if (!initialData) return;
+    reset({
+      entityType: (initialData.entityType as any) || 'company',
+      legalName: initialData.legalName || '',
+      tradingName: initialData.tradingName || '',
+      registrationNumber: initialData.registrationNumber || '',
+      companyType: (initialData.companyType as any) || 'seller_buyer',
+      countryCode: initialData.countryCode || 'SK',
+      addressLine1: initialData.addressLine1 || '',
+      city: initialData.city || '',
+      postalCode: initialData.postalCode || '',
+      sellerCapability: Boolean(initialData.sellerCapability),
+      buyerCapability: Boolean(initialData.buyerCapability),
+      logisticsCapability: Boolean(initialData.logisticsCapability),
+      vatIdentifier: initialData.vatIdentifier || '',
+      email: initialData.email || '',
+      phone: initialData.phone || '',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData?.id]);
 
   const entityType = watch('entityType');
   const isSoleTrader = entityType === 'sole_trader';
@@ -55,8 +119,14 @@ export const CompanyForm = () => {
       vatIdentifier: data.vatIdentifier || null,
       phone: data.phone || null,
     };
-    createCompany(payload as any, {
-      onSuccess: () => router.push('/dashboard'),
+    submitCompany(payload as any, {
+      onSuccess: () => {
+        if (isEdit) {
+          router.push(`/dashboard/companies/${companyId}`);
+        } else {
+          router.push('/dashboard');
+        }
+      },
     });
   };
 
@@ -66,12 +136,12 @@ export const CompanyForm = () => {
       className="space-y-4 w-full max-w-2xl p-6 bg-slate-100"
     >
       <h2 className="text-2xl font-bold mb-6 text-gray-900">
-        {t('companyForm.title')}
+        {isEdit ? t('companyForm.titleEdit') : t('companyForm.title')}
       </h2>
 
       {error && (
         <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md border border-red-200">
-          {(error as any).message || 'Chyba pri registrácii firmy'}
+          {(error as any).message || (isEdit ? 'Chyba pri ukladaní' : 'Chyba pri registrácii firmy')}
         </div>
       )}
 
@@ -217,7 +287,11 @@ export const CompanyForm = () => {
           style={{ background: '#c9a84c', color: '#090807', borderColor: '#c9a84c' }}
           className="font-semibold hover:opacity-90"
         >
-          {isPending ? t('companyForm.saving') : t('companyForm.submit')}
+          {isPending
+            ? t('companyForm.saving')
+            : isEdit
+              ? t('companyForm.saveChanges')
+              : t('companyForm.submit')}
         </Button>
       </div>
     </form>
