@@ -11,6 +11,7 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.application.memory.context_builder import build_history
+from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_telnyx
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
     SqlAlchemyAiConversationRepository,
 )
@@ -444,6 +445,8 @@ class UserAiChatRequest(BaseModel):
     listing_id: str | None = Field(default=None, max_length=64)
     persona: str | None = Field(default=None, max_length=16)
     page_context: dict | None = None
+    voice_response: bool = False
+    voice_language: str | None = Field(default=None, max_length=16)
 
 
 class ClientAction(BaseModel):
@@ -458,6 +461,7 @@ class UserAiChatResponse(BaseModel):
     session_id: str
     tool_calls: list[dict] = []
     client_actions: list[ClientAction] = []
+    audio_base64: str | None = None
 
 
 async def _check_ai_entitlement(
@@ -674,6 +678,16 @@ async def user_ai_chat(
         else:
             server_tool_calls.append(dict(tc))
 
+    audio_base64 = None
+    if payload.voice_response and result_text.strip():
+        try:
+            # Only the response generated/assembled by this authenticated chat request is synthesized.
+            audio_base64 = await synthesize_with_telnyx(result_text, payload.voice_language)
+        except Exception as exc:
+            import logging as _log
+
+            _log.getLogger("cmep.chat").warning("VOICE_TTS_FAILED type=%s", type(exc).__name__)
+
     return UserAiChatResponse(
         status="ok",
         reply=result_text,
@@ -681,4 +695,5 @@ async def user_ai_chat(
         session_id=session_id,
         tool_calls=server_tool_calls,
         client_actions=client_actions,
+        audio_base64=audio_base64,
     )
