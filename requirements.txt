@@ -30,3 +30,4 @@ PyJWT>=2.8.0
 # 2FA
 pyotp>=2.9.0
 qrcode>=7.4.2
+edge-tts>=6.1.0

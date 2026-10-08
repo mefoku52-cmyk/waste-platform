@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { config } from '@/lib/config';
+import { tokenStore } from '@/lib/auth/token-store';
 import { useRouter } from 'next/navigation';
 
 import { http } from '@/lib/api/http';
@@ -13,7 +15,7 @@ import { useT } from '@/lib/i18n/context';
 import { cmepAI } from '@/lib/ai-agent/dispatcher';
 import { getPageContext } from '@/lib/ai-agent/page-context';
 
-type Msg = { role: 'user' | 'ai'; text: string };
+type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string };
 
 type ClientAction = { name: string; args: Record<string, unknown> };
 
@@ -24,6 +26,7 @@ type ChatResponse = {
   session_id?: string;
   tool_calls?: unknown[];
   client_actions?: ClientAction[];
+  audio_base64?: string | null;
 };
 
 type Props = {
@@ -40,10 +43,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [minimized, setMinimized] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [sessionId, setSessionId] = useState<string>('');
   const [persona, setPersona] = useState<Persona>('bystry');
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -79,8 +86,8 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     ]);
   }
 
-  async function send() {
-    const text = input.trim();
+  async function send(textOverride?: string, voiceResponse = false, voiceLanguage?: string) {
+    const text = (textOverride ?? input).trim();
     if (!text || busy) return;
     setInput('');
     setMessages((m) => [...m, { role: 'user', text }]);
@@ -93,6 +100,8 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         listing_id: listingId || undefined,
         persona: persona || undefined,
         page_context: pageCtx,
+        voice_response: voiceResponse,
+        voice_language: voiceLanguage,
       });
       if (res?.session_id && res.session_id !== sessionId) {
         setSessionId(res.session_id);
@@ -160,14 +169,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         if (notes.length > 0) {
           setMessages((m) => [
             ...m,
-            { role: 'ai', text: res.reply as string || '' },
+            { role: 'ai', text: res.reply as string || '', audioBase64: res.audio_base64 || undefined },
             { role: 'ai', text: notes.join('\n') },
           ]);
         } else if (res?.reply) {
-          setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+          setMessages((m) => [...m, { role: 'ai', text: res.reply as string, audioBase64: res.audio_base64 || undefined }]);
         }
       } else if (res?.status === 'ok' && res.reply) {
-        setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+        setMessages((m) => [...m, { role: 'ai', text: res.reply as string, audioBase64: res.audio_base64 || undefined }]);
       } else if (!res?.reply) {
         setMessages((m) => [
           ...m,
@@ -182,6 +191,66 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
       setMessages((m) => [...m, { role: 'ai', text: `Chyba: ${msg}` }]);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function toggleVoiceRecording() {
+    if (recorderRef.current?.state === 'recording') {
+      recorderRef.current.stop();
+      return;
+    }
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      setMessages((m) => [...m, { role: 'ai', text: 'Tento prehliadač nepodporuje nahrávanie hlasu.' }]);
+      return;
+    }
+
+    let stream: MediaStream | undefined;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const preferred = 'audio/webm;codecs=opus';
+      const mimeType = MediaRecorder.isTypeSupported(preferred) ? preferred : undefined;
+      const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
+      chunksRef.current = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        stream?.getTracks().forEach((track) => track.stop());
+        setRecording(false);
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' });
+        void (async () => {
+          if (!blob.size) return;
+          setTranscribing(true);
+          try {
+            const token = tokenStore.getToken();
+            if (!token) throw new Error('Prihlásenie vypršalo. Prihlás sa znova.');
+            const form = new FormData();
+            form.append('audio', blob, 'recording.webm');
+            const response = await fetch(`${config.apiBaseUrl}/agent-platform/voice/transcribe`, {
+              method: 'POST',
+              headers: { Authorization: `Bearer ${token}` },
+              body: form,
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.detail || 'Prepis hlasu sa nepodaril.');
+            if (!data.text) throw new Error('V nahrávke sa nenašla reč.');
+            setInput(data.text);
+            await send(data.text, true, data.language || undefined);
+          } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Prepis hlasu sa nepodaril.';
+            setMessages((m) => [...m, { role: 'ai', text: `Chyba: ${message}` }]);
+          } finally {
+            setTranscribing(false);
+          }
+        })();
+      };
+      recorderRef.current = recorder;
+      recorder.start();
+      setRecording(true);
+    } catch (error: unknown) {
+      stream?.getTracks().forEach((track) => track.stop());
+      const message = error instanceof Error ? error.message : 'Mikrofón sa nepodarilo spustiť.';
+      setMessages((m) => [...m, { role: 'ai', text: `Mikrofón: ${message}` }]);
     }
   }
 
@@ -295,14 +364,17 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                 }
               >
                 {m.text}
+                {m.audioBase64 && (
+                  <audio className="mt-2 block w-full" controls preload="none" src={`data:audio/mpeg;base64,${m.audioBase64}`} />
+                )}
               </div>
             ))}
-            {busy && (
+            {(busy || transcribing) && (
               <div
                 className="max-w-[85%] rounded-xl px-3 py-2 text-sm"
                 style={{ background: '#17140d', color: '#9a8f7c' }}
               >
-                píšem…
+                {transcribing ? 'Prepisujem hlas…' : 'píšem…'}
               </div>
             )}
             <div ref={bottomRef} />
@@ -317,7 +389,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                 onKeyDown={onKey}
                 placeholder="Napíš správu… (Enter = odoslať)"
                 rows={1}
-                disabled={busy}
+                disabled={busy || transcribing}
                 className="flex-1 resize-none rounded-lg border p-2 text-sm"
                 style={{
                   borderColor: 'rgba(201,168,76,0.25)',
@@ -326,6 +398,17 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                   maxHeight: '100px',
                 }}
               />
+              <button
+                type="button"
+                onClick={() => void toggleVoiceRecording()}
+                disabled={busy || transcribing}
+                aria-label={recording ? 'Zastaviť nahrávanie' : 'Nahrať hlasovú správu'}
+                aria-pressed={recording}
+                className="rounded-lg border px-3 py-2 text-sm disabled:opacity-40"
+                style={{ borderColor: recording ? '#ef4444' : 'rgba(201,168,76,0.35)', color: recording ? '#ef4444' : '#c9a84c' }}
+              >
+                {recording ? '■' : '🎙'}
+              </button>
               <button
                 type="button"
                 onClick={() => void send()}

@@ -6,6 +6,9 @@ from app.modules.agent_platform.presentation.control_router import (
     router as agent_platform_control_router,
 )
 from app.modules.agent_platform.presentation.router import router as agent_platform_router
+from app.modules.agent_platform.presentation.voice_router import (
+    router as agent_platform_voice_router,
+)
 from app.modules.analytics.presentation.router import router as analytics_router
 from app.modules.auth.presentation.router import router as auth_router
 from app.modules.billing.presentation.router import router as billing_router
@@ -61,6 +64,7 @@ api_router.include_router(agent_platform_router)
 api_router.include_router(lead_finder_router)
 api_router.include_router(agent_platform_control_router)
 api_router.include_router(agent_platform_chat_router)
+api_router.include_router(agent_platform_voice_router)
 
 # Agent Platform governance routers (security / approvals / alerts / audit)
 from app.modules.agent_platform.presentation.alerts_router import (
