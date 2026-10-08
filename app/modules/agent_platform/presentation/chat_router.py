@@ -556,7 +556,14 @@ async def user_ai_chat(
             session_id=session_id,
         )
 
-    if not result.text:
+    # Ak AI zavolala iba client actions a nevrátila text, vráť potvrdenie
+    _has_client_actions_pre = any(
+        str(tc.get("name") or "") in CLIENT_TOOL_NAMES for tc in (result.tool_calls or ())
+    )
+
+    if not result.text and _has_client_actions_pre:
+        result_text = "Hotovo."
+    elif not result.text:
         import logging
 
         logging.getLogger("cmep.chat").warning(
@@ -572,6 +579,8 @@ async def user_ai_chat(
             source="groq",
             session_id=session_id,
         )
+    else:
+        result_text = result.text
 
     if conversation_id:
         try:
@@ -599,7 +608,7 @@ async def user_ai_chat(
 
     return UserAiChatResponse(
         status="ok",
-        reply=result.text,
+        reply=result_text,
         source="groq",
         session_id=session_id,
         tool_calls=server_tool_calls,
