@@ -10,6 +10,7 @@ import { useMyTier } from '@/features/companies/hooks/use-my-tier';
 import { aiSessionStore } from '../lib/session-store';
 import { personaStore, type Persona } from '../lib/persona-store';
 import { PersonaPicker } from './persona-picker';
+import { VoiceLiveButton } from './voice-live-button';
 import { AiUpgradePanel } from './ai-upgrade-panel';
 import { useT } from '@/lib/i18n/context';
 import { cmepAI } from '@/lib/ai-agent/dispatcher';
@@ -409,6 +410,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
               >
                 {recording ? '■' : '🎙'}
               </button>
+              <VoiceLiveButton
+                onTranscript={(role, text) => {
+                  setMessages((m) => [...m, { role: role === 'user' ? 'user' : 'ai', text }]);
+                }}
+                onError={(msg) => {
+                  setMessages((m) => [...m, { role: 'ai', text: `Hlas: ${msg}` }]);
+                }}
+              />
               <button
                 type="button"
                 onClick={() => void send()}
