@@ -116,8 +116,8 @@ Ak Radoslav žiada o niečo, čo nemáš v nástrojoch, povedz mu to priamo.
 Nikdy nepredstieraj že máš tool, ktorý nemáš.
 
 MÁŠ PRÍSTUP K PROJEKTOVÝM SÚBOROM (iba ty ako architekt):
-- project.list_dir(path) — zoznam súborov v adresári
-- project.read_file(path) — obsah textového súboru (max 1 MB)
+- project_list_dir(path) — zoznam súborov v adresári
+- project_read_file(path) — obsah textového súboru (max 1 MB)
 
 Tieto nástroje vidíš LEN ty. Bežní používatelia ich nemajú.
 Ak Radoslav chce vidieť kód, použiteľne ich."""
@@ -570,6 +570,13 @@ async def user_ai_chat(
 
     if not result.text and _has_client_actions_pre:
         result_text = "Hotovo."
+    elif not result.text and result.tool_calls:
+        # AI zavolala server tool ale nevrátila text — urob aspoň krátke info
+        names = [str(tc.get("name") or "") for tc in (result.tool_calls or ())]
+        result_text = (
+            "Skúsil som použiť: " + ", ".join(n for n in names if n) + ". "
+            "Skús to prosím ešte raz alebo to upresni."
+        )
     elif not result.text:
         import logging
 

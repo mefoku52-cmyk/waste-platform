@@ -631,7 +631,7 @@ OPENLIST_READONLY_NAMES: frozenset[str] = frozenset(
 PROJECT_READ_FILE_SCHEMA: dict[str, Any] = {
     "type": "function",
     "function": {
-        "name": "project.read_file",
+        "name": "project_read_file",
         "description": (
             "READ-ONLY. Prečíta textový súbor z repozitára waste-platform. "
             "Obmedzenia: iba ~/waste-platform, max 1 MB, žiadne súbory mimo repa. "
@@ -651,7 +651,7 @@ PROJECT_READ_FILE_SCHEMA: dict[str, Any] = {
 PROJECT_LIST_DIR_SCHEMA: dict[str, Any] = {
     "type": "function",
     "function": {
-        "name": "project.list_dir",
+        "name": "project_list_dir",
         "description": "READ-ONLY. Vypíše obsah adresára v repozitári. Skryje .git, __pycache__, node_modules, .next, venv.",
         "parameters": {
             "type": "object",

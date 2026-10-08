@@ -146,10 +146,10 @@ async def get_agent_orchestrator(
     # Project READ tools — IBA pre platform admina (nie pre bežných userov).
     if is_admin:
         project_handler = ProjectReadHandler()
-        tool_handlers["project.read_file"] = project_handler
-        tool_handlers["project.list_dir"] = project_handler
-        tool_scopes["project.read_file"] = ("admin", "read")
-        tool_scopes["project.list_dir"] = ("admin", "read")
+        tool_handlers["project_read_file"] = project_handler
+        tool_handlers["project_list_dir"] = project_handler
+        tool_scopes["project_read_file"] = ("admin", "read")
+        tool_scopes["project_list_dir"] = ("admin", "read")
         tool_schemas = tool_schemas + build_project_read_tools()
 
     # Admin tools are attached ONLY when the caller is a platform admin.

@@ -131,9 +131,9 @@ class ProjectReadHandler:
         name = request.tool_name
         args = request.arguments or {}
         try:
-            if name == "project.read_file":
+            if name == "project_read_file":
                 return await self._read(request, args)
-            if name == "project.list_dir":
+            if name == "project_list_dir":
                 return await self._list(request, args)
         except ProjectPathDenied as e:
             return ToolResult(
