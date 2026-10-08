@@ -17,12 +17,27 @@ from typing import Any
 from ...domain.tools.tool_request import ToolRequest
 from ...domain.tools.tool_result import ToolResult
 
-_ALLOWED_ROOT = Path(
-    os.getenv(
-        "PROJECT_READ_ROOT",
-        str(Path.home() / "waste-platform"),
-    )
-).resolve()
+
+def _detect_repo_root() -> Path:
+    """Nájdi koreň repa bezpečne naprieč prostrediami (Termux / Render / Docker).
+
+    Priorita:
+    1. PROJECT_READ_ROOT env (explicit override).
+    2. Stúp z tohto súboru nahor, kým nenájdeš marker (pyproject.toml + app/).
+    """
+    env_root = os.getenv("PROJECT_READ_ROOT", "").strip()
+    if env_root:
+        return Path(env_root).resolve()
+
+    here = Path(__file__).resolve()
+    for parent in [here, *here.parents]:
+        if (parent / "pyproject.toml").exists() and (parent / "app").is_dir():
+            return parent
+    # Fallback — 5 úrovní nahor (project_read.py → tools → infrastructure → agent_platform → modules → app → root)
+    return here.parents[5] if len(here.parents) > 5 else here.parent
+
+
+_ALLOWED_ROOT = _detect_repo_root()
 
 _MAX_FILE_BYTES = 1_048_576  # 1 MB
 _MAX_LIST_ENTRIES = 200

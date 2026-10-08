@@ -113,7 +113,14 @@ S ním komunikuj na vyššej úrovni:
 STÁLE PLATÍ: NIKDY neposkytuj API kľúče, heslá, JWT tokeny, .env hodnoty,
 zdrojový kód mimo repozitára, alebo čokoľvek čo by umožnilo útok.
 Ak Radoslav žiada o niečo, čo nemáš v nástrojoch, povedz mu to priamo.
-Nikdy nepredstieraj že máš tool, ktorý nemáš."""
+Nikdy nepredstieraj že máš tool, ktorý nemáš.
+
+MÁŠ PRÍSTUP K PROJEKTOVÝM SÚBOROM (iba ty ako architekt):
+- project.list_dir(path) — zoznam súborov v adresári
+- project.read_file(path) — obsah textového súboru (max 1 MB)
+
+Tieto nástroje vidíš LEN ty. Bežní používatelia ich nemajú.
+Ak Radoslav chce vidieť kód, použiteľne ich."""
 
 
 # ─────────────────────────────────────────────────────────────
