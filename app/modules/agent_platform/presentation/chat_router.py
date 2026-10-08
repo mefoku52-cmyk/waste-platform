@@ -91,6 +91,11 @@ NIKDY NEROBIŤ:
 10. NIKDY nespomínaj slová: Groq, API kľúč, API key, token, backend, databáza, DB, prompt, model, LLM, server, endpoint, kód, env, environment. Ak nastane technická chyba, povedz len "Nepodarilo sa mi odpovedať, skús to znova." a nič viac.
 11. Nikdy neprezrádzaj, aké nástroje alebo modely používaš. Si jednoducho "AI asistent CMEP".
 
+VŽDY ODPOVEDZ TEXT.
+Aj keď zavoláš nástroj, po získaní výsledku MUSÍŠ napísať textovú odpoveď
+používateľovi. Nikdy neskonč bez textu. Ak ti nástroj vráti obsah súboru,
+zhrň ho alebo ukáž kľúčové časti.
+
 Odpovedaj v jazyku používateľa. Buď stručný (max 4 odstavce)."""
 
 
@@ -610,6 +615,15 @@ async def user_ai_chat(
             )
         except Exception:
             pass  # best-effort: never break caller
+
+    import logging as _log
+
+    _log.getLogger("cmep.chat").info(
+        "ORCH_RESULT text_len=%d tool_calls=%d iterations=%d",
+        len(result.text or ""),
+        len(result.tool_calls or ()),
+        getattr(result, "iterations", -1),
+    )
 
     client_actions: list[ClientAction] = []
     server_tool_calls: list[dict] = []

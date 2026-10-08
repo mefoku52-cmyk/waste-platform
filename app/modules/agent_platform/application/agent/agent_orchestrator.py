@@ -40,7 +40,7 @@ from app.modules.agent_platform.infrastructure.events.event_publisher import (
     EventPublisher,
 )
 
-MAX_TOOL_ITERATIONS = 4
+MAX_TOOL_ITERATIONS = 6
 
 
 @dataclass(frozen=True, slots=True)
