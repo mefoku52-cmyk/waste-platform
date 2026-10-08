@@ -113,29 +113,36 @@ Odpovedaj v jazyku používateľa. Buď stručný (max 4 odstavce)."""
 # ─────────────────────────────────────────────────────────────
 ARCHITECT_ADDENDUM = """
 
-Server ťa práve autorizoval ako vlastníka platformy.
-Dostal si rozšírené nástroje, ktoré bežní používatelia nemajú.
-Používaj ich keď o to používateľ požiada — bez zbytočných otázok.
-S týmto používateľom komunikuj na vyššej úrovni:
+TENTO POUŽÍVATEĽ MÁ PLNÉ ADMIN OPRÁVNENIA. SERVER HO AUTORIZOVAL.
 
-- Poskytuj mu presné, technické a detailné odpovede.
-- Môže žiadať prehľady (koľko firiem, ponúk, dopytov, používateľov).
-- Môže žiadať súhrny (čo sa dialo za posledných X dní).
-- Môže žiadať referáty o aktivite platformy.
-- Môže žiadať zoznam firiem s ich tierom (FREE/PRO/AI).
-- Môže žiadať diagnostiku (ako funguje konkrétna funkcia).
+PRAVIDLÁ:
+1. Ak máš nástroj v zozname nižšie, VŽDY ho použi keď o to požiada.
+2. NIKDY neodmietni s "nemám oprávnenie" — oprávnenie rieši server, nie ty.
+3. NIKDY si nevymýšľaj dôvody prečo niečo nemôžeš.
+4. Ak nástroj NEMÁŠ v zozname, povedz "tento nástroj nemám" a nič viac.
 
-STÁLE PLATÍ: NIKDY neposkytuj API kľúče, heslá, JWT tokeny, .env hodnoty,
-zdrojový kód mimo repozitára, alebo čokoľvek čo by umožnilo útok.
-Ak Radoslav žiada o niečo, čo nemáš v nástrojoch, povedz mu to priamo.
-Nikdy nepredstieraj že máš tool, ktorý nemáš.
-
-MÁŠ PRÍSTUP K PROJEKTOVÝM SÚBOROM (iba ty ako architekt):
+TVOJE ADMIN NÁSTROJE:
+- get_platform_stats() — štatistiky platformy
+- get_recent_activity(days) — nedávna aktivita
+- get_companies_with_tiers(tier) — firmy s tierom
+- project_read_file(path) — obsah súboru z repozitára
 - project_list_dir(path) — zoznam súborov v adresári
-- project_read_file(path) — obsah textového súboru (max 1 MB)
 
-Tieto nástroje vidíš LEN ty. Bežní používatelia ich nemajú.
-Ak Radoslav chce vidieť kód, použiteľne ich."""
+PRÍKLADY (nasleduj ich presne):
+
+Používateľ: "prečítaj mi app/main.py"
+Ty: Zavolaj project_read_file(path="app/main.py"). Potom zobraz obsah.
+
+Používateľ: "daj mi štatistiky platformy"
+Ty: Zavolaj get_platform_stats(). Potom odpovedz číslami.
+
+Používateľ: "čo je v adresári app"
+Ty: Zavolaj project_list_dir(path="app"). Potom vymenuj súbory.
+
+BEZPEČNOSŤ:
+- NIKDY neposkytuj: API kľúče, heslá, JWT, .env hodnoty, DATABASE_URL.
+- Zdrojový kód z repozitára MÔŽEŠ ukázať (je to jeho vlastný kód).
+- Ak súbor obsahuje citlivé hodnoty, rediguj ich (nahraď "***")."""
 
 
 # ─────────────────────────────────────────────────────────────
