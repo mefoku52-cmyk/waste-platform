@@ -1,95 +1,93 @@
+"""Voice gateway — free STT (Groq Whisper) + free TTS (edge-tts).
+
+STT: Groq Whisper Large v3 Turbo (reuse existing GROQ_API_KEY).
+TTS: Microsoft Edge TTS (no API key required, uses online Edge engine).
+
+Both are server-side only. Frontend talks exclusively to our FastAPI.
+"""
+
 from __future__ import annotations
 
 import base64
-import json
+import io
 import os
 
 import httpx
 
-AZURE_API_VERSION = "2025-10-15"
-AZURE_MAX_AUDIO_BYTES = 15 * 1024 * 1024
-TELNYX_TTS_URL = "https://api.telnyx.com/v2/text-to-speech/speech"
+# --- STT (Groq Whisper) ---
+GROQ_STT_URL = "https://api.groq.com/openai/v1/audio/transcriptions"
+GROQ_STT_MODEL = os.getenv("GROQ_STT_MODEL", "whisper-large-v3-turbo")
+AZURE_MAX_AUDIO_BYTES = 15 * 1024 * 1024  # 15 MB — same limit as before
+
+# --- TTS (Edge) ---
 ALLOWED_TTS_LANGUAGES = {"sk", "en", "de", "fr", "ru"}
+DEFAULT_TTS_VOICE = os.getenv("EDGE_TTS_VOICE", "sk-SK-LukasNeural")
+# Mapovanie jazyka -> predvolený Edge hlas (ak user nešpecifikoval)
+LANG_DEFAULT_VOICES = {
+    "sk": "sk-SK-LukasNeural",
+    "en": "en-US-GuyNeural",
+    "de": "de-DE-ConradNeural",
+    "fr": "fr-FR-HenriNeural",
+    "ru": "ru-RU-DmitryNeural",
+}
 
 
 async def transcribe_with_mai(
     audio: bytes, filename: str, content_type: str
 ) -> dict[str, str | None]:
-    key = os.getenv("AZURE_SPEECH_KEY", "").strip()
-    endpoint = os.getenv("AZURE_SPEECH_ENDPOINT", "").strip().rstrip("/")
-    if not key or not endpoint:
-        raise RuntimeError("MAI speech configuration is missing")
-    if not endpoint.startswith("https://"):
-        raise RuntimeError("AZURE_SPEECH_ENDPOINT must use HTTPS")
+    """STT cez Groq Whisper (free tier, reuse GROQ_API_KEY)."""
+    key = os.getenv("GROQ_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("GROQ_API_KEY missing")
 
-    url = f"{endpoint}/speechtotext/transcriptions:transcribe?api-version={AZURE_API_VERSION}"
-    definition = {
-        "enhancedMode": {
-            "enabled": True,
-            "model": "MAI-Transcribe-2",
-            "task": "transcribe",
-        },
-        "locales": [],
+    files = {
+        "file": (filename or "recording.webm", audio, content_type or "audio/webm"),
     }
+    data = {
+        "model": GROQ_STT_MODEL,
+        "response_format": "verbose_json",
+        "temperature": "0",
+    }
+    headers = {"Authorization": f"Bearer {key}"}
+
     async with httpx.AsyncClient(timeout=httpx.Timeout(90.0)) as client:
-        response = await client.post(
-            url,
-            headers={"Ocp-Apim-Subscription-Key": key},
-            data={"definition": json.dumps(definition)},
-            files={"audio": (filename or "recording.webm", audio, content_type or "audio/webm")},
-        )
+        response = await client.post(GROQ_STT_URL, headers=headers, files=files, data=data)
         response.raise_for_status()
-    data = response.json()
-    phrases = data.get("combinedPhrases") or []
-    transcript = " ".join(
-        str(item.get("text", "")).strip()
-        for item in phrases
-        if isinstance(item, dict) and item.get("text")
-    ).strip()
-    if not transcript:
-        transcript = " ".join(
-            str(item.get("text", "")).strip()
-            for item in (data.get("phrases") or [])
-            if isinstance(item, dict) and item.get("text")
-        ).strip()
-    language = next(
-        (
-            str(item.get("locale"))
-            for item in (data.get("phrases") or [])
-            if isinstance(item, dict) and item.get("locale")
-        ),
-        None,
-    )
+    payload = response.json()
+
+    transcript = str(payload.get("text") or "").strip()
+    language = payload.get("language")
     if not transcript:
         raise ValueError("No transcript returned")
-    return {"text": transcript, "language": language}
+    return {"text": transcript, "language": str(language) if language else None}
 
 
 async def synthesize_with_telnyx(text: str, language: str | None) -> str:
-    key = os.getenv("TELNYX_API_KEY", "").strip()
-    if not key:
-        raise RuntimeError("Telnyx configuration is missing")
-    safe_text = text.strip()
+    """TTS cez Microsoft Edge TTS (zdarma, bez API kľúča).
+
+    Názov funkcie je ponechaný kvôli spätnej kompatibilite s chat_router.py.
+    """
+    try:
+        import edge_tts  # type: ignore[import-not-found]
+    except ImportError as exc:
+        raise RuntimeError("edge-tts not installed. Run: pip install edge-tts") from exc
+
+    safe_text = (text or "").strip()
     if not safe_text:
         raise ValueError("Empty speech text")
 
-    lang = (language or "").lower().split("-")[0]
-    voice_settings = {"language_boost": lang} if lang in ALLOWED_TTS_LANGUAGES else {}
-    payload: dict[str, object] = {
-        "text": safe_text[:5000],
-        "voice": os.getenv("TELNYX_TTS_VOICE", "Telnyx.Ultra.Asher").strip(),
-        "output_type": "binary_output",
-    }
-    if voice_settings:
-        payload["voice_settings"] = voice_settings
+    lang = (language or "sk").lower().split("-")[0]
+    if lang not in ALLOWED_TTS_LANGUAGES:
+        lang = "sk"
+    voice = LANG_DEFAULT_VOICES.get(lang, DEFAULT_TTS_VOICE)
 
-    async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
-        response = await client.post(
-            TELNYX_TTS_URL,
-            headers={"Authorization": f"Bearer {key}"},
-            json=payload,
-        )
-        response.raise_for_status()
-    if not response.content:
-        raise ValueError("Telnyx returned empty audio")
-    return base64.b64encode(response.content).decode("ascii")
+    communicate = edge_tts.Communicate(safe_text[:5000], voice)
+    buffer = io.BytesIO()
+    async for chunk in communicate.stream():
+        if chunk.get("type") == "audio" and chunk.get("data"):
+            buffer.write(chunk["data"])
+
+    audio_bytes = buffer.getvalue()
+    if not audio_bytes:
+        raise ValueError("Edge TTS returned empty audio")
+    return base64.b64encode(audio_bytes).decode("ascii")
