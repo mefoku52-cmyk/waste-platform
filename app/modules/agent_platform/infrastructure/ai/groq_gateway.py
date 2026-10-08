@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import urllib.error
 import urllib.request
 from collections.abc import AsyncIterator
 from typing import Any
@@ -68,8 +69,29 @@ class GroqModelGateway(ModelGateway):
             method="POST",
             headers=self._headers(),
         )
-        with urllib.request.urlopen(http, timeout=45) as resp:
-            payload = json.loads(resp.read().decode("utf-8"))
+
+        def _do_request():
+            with urllib.request.urlopen(http, timeout=45) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+
+        # Retry pri 429 s backoff
+
+        last_exc = None
+        for attempt in range(3):
+            try:
+                payload = await asyncio.to_thread(_do_request)
+                break
+            except urllib.error.HTTPError as e:
+                last_exc = e
+                if e.code == 429 and attempt < 2:
+                    wait = 2**attempt  # 1, 2 sekundy
+                    await asyncio.sleep(wait)
+                    continue
+                raise
+        else:
+            if last_exc:
+                raise last_exc
+            raise RuntimeError("groq request failed")
 
         choices = payload.get("choices") or []
         if not choices:
