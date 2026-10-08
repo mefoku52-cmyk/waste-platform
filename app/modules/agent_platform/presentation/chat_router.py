@@ -540,7 +540,14 @@ async def user_ai_chat(
             limit=20,
         )
         history = build_history(stored)
-    except Exception:
+    except Exception as exc:
+        import logging as _log
+
+        _log.getLogger("cmep.chat").exception(
+            "CONVERSATION_LOAD_EXCEPTION type=%s msg=%s",
+            type(exc).__name__,
+            str(exc)[:200],
+        )
         conversation_id = None
         history = ()
 
@@ -555,7 +562,14 @@ async def user_ai_chat(
             text=text,
             actor_id=actor_id,
         )
-    except Exception:
+    except Exception as exc:
+        import logging as _log
+
+        _log.getLogger("cmep.chat").exception(
+            "SECURITY_CHECK_EXCEPTION type=%s msg=%s",
+            type(exc).__name__,
+            str(exc)[:200],
+        )
         security_decision = "allow"
 
     # Ak je decision BLOCK, chat sa zastavi. Vratime neutralnu odpoved,
@@ -577,7 +591,16 @@ async def user_ai_chat(
             session_id=session_id,
             conversation_history=history,
         )
-    except Exception:
+    except Exception as exc:
+        import logging as _log
+
+        _log.getLogger("cmep.chat").exception(
+            "ORCHESTRATOR_EXCEPTION actor=%s session=%s type=%s msg=%s",
+            actor_id,
+            session_id,
+            type(exc).__name__,
+            str(exc)[:200],
+        )
         return UserAiChatResponse(
             status="unavailable",
             reply=None,
