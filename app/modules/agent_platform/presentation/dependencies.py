@@ -41,11 +41,15 @@ from app.modules.agent_platform.infrastructure.tools.cmep_nearby_companies_handl
 from app.modules.agent_platform.infrastructure.tools.cmep_user_tools import (
     CmepUserToolsHandler,
 )
+from app.modules.agent_platform.infrastructure.tools.project_read import (
+    ProjectReadHandler,
+)
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
     CLIENT_ACTION_NAMES,
     CLIENT_ACTION_SCHEMAS,
     build_admin_tools,
     build_default_tools,
+    build_project_read_tools,
     build_transport_tools,
     build_user_read_tools,
 )
@@ -138,6 +142,14 @@ async def get_agent_orchestrator(
         tool_handlers[_tool_name] = user_tools_handler
         tool_scopes[_tool_name] = ("listings", "read")
     tool_schemas = tool_schemas + build_user_read_tools()
+
+    # Project READ tools (direct Python file read, bez OpenList)
+    project_handler = ProjectReadHandler()
+    tool_handlers["project.read_file"] = project_handler
+    tool_handlers["project.list_dir"] = project_handler
+    tool_scopes["project.read_file"] = ("project", "read")
+    tool_scopes["project.list_dir"] = ("project", "read")
+    tool_schemas = tool_schemas + build_project_read_tools()
 
     # Admin tools are attached ONLY when the caller is a platform admin.
     if is_admin:

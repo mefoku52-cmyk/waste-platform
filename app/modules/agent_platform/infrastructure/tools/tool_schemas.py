@@ -554,3 +554,116 @@ CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
 CLIENT_ACTION_NAMES: frozenset[str] = frozenset(
     s["function"]["name"] for s in CLIENT_ACTION_SCHEMAS
 )
+
+OPENLIST_LIST_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "external.openlist.list",
+        "description": (
+            "READ-ONLY. Zoznam súborov a adresárov cez OpenList. "
+            "Použi iba na kontrolu dostupných projektových súborov. "
+            "Nikdy nepoužíva write, delete, move ani upload operácie."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": (
+                        "Relatívna cesta v povolenom OpenList root-e. "
+                        "Použi napr. '.' alebo 'app/modules'."
+                    ),
+                },
+                "page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "default": 1,
+                },
+                "per_page": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100,
+                    "default": 50,
+                },
+            },
+            "required": ["path"],
+        },
+    },
+}
+
+OPENLIST_GET_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "external.openlist.get",
+        "description": (
+            "READ-ONLY. Načíta metadata alebo obsah súboru cez OpenList. "
+            "Použi iba na kontrolu projektových súborov. "
+            "Nikdy neupravuje ani nemaže súbory."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": (
+                        "Relatívna cesta v povolenom OpenList root-e. "
+                        "Nesmie obsahovať '..', absolútnu cestu ani backslash."
+                    ),
+                },
+            },
+            "required": ["path"],
+        },
+    },
+}
+
+OPENLIST_READONLY_SCHEMAS: tuple[dict[str, Any], ...] = (
+    OPENLIST_LIST_SCHEMA,
+    OPENLIST_GET_SCHEMA,
+)
+
+OPENLIST_READONLY_NAMES: frozenset[str] = frozenset(
+    s["function"]["name"] for s in OPENLIST_READONLY_SCHEMAS
+)
+
+
+# ─── PROJECT READ TOOLS (direct Python file read, bez OpenList) ─
+
+PROJECT_READ_FILE_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "project.read_file",
+        "description": (
+            "READ-ONLY. Prečíta textový súbor z repozitára waste-platform. "
+            "Obmedzenia: iba ~/waste-platform, max 1 MB, žiadne súbory mimo repa. "
+            "Write/delete/move nie sú podporované."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "Relatívna cesta, napr. 'app/main.py'."},
+            },
+            "required": ["path"],
+        },
+    },
+}
+
+
+PROJECT_LIST_DIR_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "project.list_dir",
+        "description": "READ-ONLY. Vypíše obsah adresára v repozitári. Skryje .git, __pycache__, node_modules, .next, venv.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {"type": "string", "description": "Relatívna cesta. Prázdny = koreň."},
+            },
+            "required": ["path"],
+        },
+    },
+}
+
+
+def build_project_read_tools() -> tuple[dict[str, Any], ...]:
+    """READ-ONLY project file access (direct Python, nie OpenList)."""
+    return (PROJECT_READ_FILE_SCHEMA, PROJECT_LIST_DIR_SCHEMA)
