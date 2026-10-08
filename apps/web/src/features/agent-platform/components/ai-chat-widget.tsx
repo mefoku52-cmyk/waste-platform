@@ -18,6 +18,22 @@ import { getPageContext } from '@/lib/ai-agent/page-context';
 
 type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string };
 
+// Browser SpeechSynthesis — hlas zariadenia (SK/EN/DE/...)
+function speakText(text: string, lang?: string): void {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = lang || 'sk-SK';
+    u.rate = 1.0;
+    u.pitch = 1.0;
+    window.speechSynthesis.speak(u);
+  } catch {
+    /* noop */
+  }
+}
+
+
 type ClientAction = { name: string; args: Record<string, unknown> };
 
 type ChatResponse = {
@@ -174,10 +190,11 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
             { role: 'ai', text: notes.join('\n') },
           ]);
         } else if (res?.reply) {
-          setMessages((m) => [...m, { role: 'ai', text: res.reply as string, audioBase64: res.audio_base64 || undefined }]);
+          setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
         }
       } else if (res?.status === 'ok' && res.reply) {
-        setMessages((m) => [...m, { role: 'ai', text: res.reply as string, audioBase64: res.audio_base64 || undefined }]);
+        if (voiceResponse) speakText(res.reply as string, voiceLanguage);
+        setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
       } else if (!res?.reply) {
         setMessages((m) => [
           ...m,
@@ -365,9 +382,6 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                 }
               >
                 {m.text}
-                {m.audioBase64 && (
-                  <audio className="mt-2 block w-full" controls preload="none" src={`data:audio/mpeg;base64,${m.audioBase64}`} />
-                )}
               </div>
             ))}
             {(busy || transcribing) && (
