@@ -44,7 +44,7 @@ async def voice_token(
     try:
         async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             response = await client.post(
-                "https://api.deepgram.com/v1/auth/token",
+                "https://api.deepgram.com/v1/auth/grant",
                 headers={"Authorization": f"Token {key}"},
                 json={"ttl_seconds": 60},
             )
