@@ -3,6 +3,7 @@
 **Verzia:** 1.2
 **Dátum účinnosti:** 15. 10. 2026
 **Prevádzkovateľ:** Radoslav Čornanič
+**Obchodné meno:** Radoslav Čornanič – FO podnikateľ
 **IČO:** 51745666
 **Miesto podnikania:** 1. mája 2054, 069 01 Snina, Slovenská republika
 **E-mail:** trc-cmep@gmail.com
@@ -28,7 +29,8 @@
 2.1. Prevádzkovateľom osobných údajov je:
 
 - **Meno a priezvisko:** Radoslav Čornanič
-- **IČO:** 51745666
+- **Obchodné meno:** Radoslav Čornanič – FO podnikateľ
+**IČO:** 51745666
 - **Miesto podnikania:** 1. mája 2054, 069 01 Snina, Slovenská republika
 - **E-mail:** trc-cmep@gmail.com
 - **Telefón:** +421 910 617 338
@@ -69,6 +71,8 @@ i) údaje z AI funkcionalít, napríklad text promptu a výstup vygenerovaný AI
 3.3. Prevádzkovateľ nespracúva osobitné kategórie osobných údajov podľa článku 9 GDPR (údaje o zdraví, rase, politických názoroch, náboženskom presvedčení, sexuálnej orientácii a pod.) a nevyžaduje ich od používateľov.
 
 3.4. Prevádzkovateľ nespracúva osobné údaje osôb mladších ako 16 rokov, keďže platforma je určená výlučne podnikateľom (B2B).
+
+3.5. Ak sú používateľom fyzická osoba – podnikateľ alebo jednoosobová spoločnosť, údaje ako IČO, DIČ, adresa miesta podnikania alebo obchodné meno môžu predstavovať osobné údaje a sú chránené rovnako ako osobné údaje iných fyzických osôb.
 
 ## 4. ÚČELY A PRÁVNE ZÁKLADY SPRACÚVANIA
 
@@ -210,6 +214,8 @@ g) **záznamy o reklamáciách a oznámeniach:** 3 roky od vybavenia.
 
 10.5. Ak dotknutá osoba požiada o vymazanie údajov, prevádzkovateľ posúdi žiadosť podľa GDPR a ďalších právnych povinností. Vymazanie nemusí byť možné v rozsahu, v ktorom je ďalšie uchovávanie zákonné a nevyhnutné.
 
+10.6. Účtovné doklady a účtovné záznamy sa uchovávajú 10 rokov podľa § 35 zákona č. 431/2002 Z. z. o účtovníctve. Táto doba uchovávania má prednosť pred všeobecnými dobami uvedenými v tomto dokumente.
+
 ## 11. COOKIES A PODOBNÉ TECHNOLÓGIE
 
 11.1. Webová stránka používa nevyhnutné cookies alebo podobné technológie na zabezpečenie funkčnosti, správu relácie a ochranu služby.
@@ -220,7 +226,17 @@ g) **záznamy o reklamáciách a oznámeniach:** 3 roky od vybavenia.
 
 11.4. Používateľ môže spravovať cookies prostredníctvom nastavení prehliadača alebo dostupného nástroja na správu súhlasov. Vypnutie niektorých cookies môže ovplyvniť fungovanie webovej stránky.
 
-11.5. Konkrétne používané cookies, ich účely a doba platnosti sa určujú podľa aktuálneho nasadenia webovej stránky.
+11.5. Konkrétne používané cookies:
+
+| Názov | Poskytovateľ | Účel | Typ | Expirácia |
+|---|---|---|---|---|
+| cmep_theme | CMEP | Uloženie preferencie svetlej/tmavej témy | Nevyhnutná (preferencia) | 12 mesiacov |
+| cmep_csrf | CMEP | CSRF ochrana formulárov | Nevyhnutná (bezpečnosť) | do zatvorenia prehliadača |
+| cmep_session alebo auth token | CMEP | Autentifikácia a správa relácie | Nevyhnutná (prihlásenie) | 7 dní (alebo podľa nastavenia) |
+
+11.6. **Poznámka:** Ak Prevádzkovateľ v budúcnosti zavedie analytické alebo marketingové cookies (napríklad Google Analytics, Meta Pixel, Hotjar), bude na to potrebný samostatný cookie banner so súhlasom a možnosťou odmietnuť voliteľné cookies. Do tej doby sa používajú výlučne nevyhnutné technické cookies.
+
+11.7. Konkrétne používané cookies, ich účely a doba platnosti sa môžu meniť podľa aktuálneho nasadenia webovej stránky. Aktuálny zoznam je vždy dostupný v tomto dokumente alebo v samostatnej cookie politike.
 
 ## 12. BEZPEČNOSŤ OSOBNÝCH ÚDAJOV
 
@@ -312,6 +328,12 @@ i) **Právo podať sťažnosť dozornému orgánu** — pozri článok 16.
 18.2. Ak sa vyžaduje súhlas, obchodné oznámenia sa zasielajú až po jeho udelení. Ak zákon povoľuje inú právnu cestu, musia byť splnené všetky podmienky tejto výnimky.
 
 18.3. Príjemca môže odmietnuť ďalšie zasielanie obchodných oznámení spôsobom uvedeným v správe alebo kontaktovaním prevádzkovateľa.
+
+18.4. Prevádzkovateľ rozlišuje:
+
+a) **transakčné a servisné oznámenia** (napríklad potvrdenie registrácie, zmena hesla, oznámenie o novom dopyte alebo správe) – tieto sú súčasťou poskytovania služby a zasielajú sa na základe plnenia zmluvy;
+
+b) **marketingové oznámenia** (napríklad newsletter, informácie o nových funkciách alebo akciách) – tieto sa zasielajú výlučne na základe samostatného, preukázateľného súhlasu dotknutej osoby. Súhlas možno kedykoľvek odvolať a marketingové oznámenia musia obsahovať jednoduchý spôsob odhlásenia.
 
 ## 19. ZMENY TÝCHTO ZÁSAD
 
