@@ -83,7 +83,7 @@ g) používať platformu na podvod, neoprávnené získavanie osobných údajov 
 
 h) odstraňovať označenia práv duševného vlastníctva alebo sa vydávať za Prevádzkovateľa.
 
-**Trestnoprávna zodpovednosť:** Neoprávnené použitie Platformy alebo jej častí môže byť postihnuté podľa § 283 zákona č. 300/2005 Z. z. (Trestný zákon) — trestný čin porušovania autorského práva. Páchateľovi hrozí trest odňatia slobody až na 8 rokov v závislosti od rozsahu spôsobenej škody.
+Neoprávnené použitie Platformy alebo jej častí môže napĺňať skutkovú podstatu trestného činu porušovania autorského práva podľa § 283 zákona č. 300/2005 Z. z. (Trestný zákon). Konkrétnu právnu kvalifikáciu a sankciu určí príslušný orgán podľa okolností prípadu a rozsahu spôsobenej škody.
 
 ## 7. Automatizácia a umelá inteligencia
 

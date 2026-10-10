@@ -1285,7 +1285,21 @@
     "termsS9P3": "Der Betreiber übernimmt keine Garantie für eine bestimmte Anzahl von Aufrufen, Anfragen, Geschäftsmöglichkeiten oder abgeschlossenen Geschäften.",
     "termsS9P4": "**Transparenz der Parameter:** Gemäß der Verordnung (EU) 2019/1150 (P2B) veröffentlicht der Betreiber die wichtigsten Parameter, die die Reihenfolge der angezeigten Angebote bestimmen. Wenn eine Zahlung oder eine andere Gegenleistung die Reihenfolge beeinflusst, wird dies dem Nutzer vor der Bestellung einer kostenpflichtigen Funktion in verständlicher Form mitgeteilt.",
     "termsTitle": "ALLGEMEINE GESCHÄFTSBEDINGUNGEN DER CMEP-PLATTFORM",
-    "viewContent": "Anzeige von Inhalten innerhalb der Plattform"
+    "viewContent": "Anzeige von Inhalten innerhalb der Plattform",
+    "privacyS10P6": "Buchhaltungsbelege und Buchhaltungsunterlagen sind gemäß § 35 des Gesetzes Nr. 431/2002 Z. z. über die Rechnungslegung 10 Jahre lang aufzubewahren. Diese Aufbewahrungsfrist hat Vorrang vor den in diesem Dokument genannten allgemeinen Fristen.",
+    "privacyS11P10": "| cmep_session oder Authentifizierungstoken | CMEP | Authentifizierung und Sitzungsverwaltung | Erforderlich (Anmeldung) | 7 Tage (oder je nach Einstellung) |",
+    "privacyS11P11": "**Hinweis:** Sollte der Betreiber in Zukunft Analyse- oder Marketing-Cookies (z. B. Google Analytics, Meta Pixel, Hotjar) einführen, ist hierfür ein separates Cookie-Banner erforderlich, das die Einwilligung einholt und die Möglichkeit bietet, optionale Cookies abzulehnen. Bis dahin werden ausschließlich notwendige technische Cookies verwendet.",
+    "privacyS11P12": "Die konkret verwendeten Cookies, ihre Zwecke und ihre Gültigkeitsdauer können sich je nach aktueller Bereitstellung der Website ändern. Die aktuelle Liste ist stets in diesem Dokument oder in einer separaten Cookie-Richtlinie verfügbar.",
+    "privacyS11P6": "| Name | Anbieter | Zweck | Typ | Ablaufdatum |",
+    "privacyS11P7": "|---|---|---|---|---|",
+    "privacyS11P8": "| cmep_theme | CMEP | Speichern der Einstellung für helles/dunkles Design | Erforderlich (Einstellung) | 12 Monate |",
+    "privacyS11P9": "| cmep_csrf | CMEP | CSRF-Schutz für Formulare | Erforderlich (Sicherheit) | bis zum Schließen des Browsers |",
+    "privacyS18L1": "**Transaktions- und Servicebenachrichtigungen** (z. B. Registrierungsbestätigung, Passwortänderung, Benachrichtigung über eine neue Anfrage oder Nachricht) – diese sind Bestandteil der Erbringung der Dienstleistung und werden im Rahmen der Vertragserfüllung versendet;",
+    "privacyS18L2": "**Marketingmitteilungen** (z. B. Newsletter, Informationen zu neuen Funktionen oder Aktionen) – diese werden ausschließlich auf der Grundlage einer gesonderten, nachweisbaren Einwilligung der betroffenen Person versendet. Die Einwilligung kann jederzeit widerrufen werden, und Marketingmitteilungen müssen eine einfache Möglichkeit zum Abmelden enthalten.",
+    "privacyS18P4": "Der Betreiber unterscheidet zwischen:",
+    "privacyS2P6": "Der Verantwortliche ist nicht verpflichtet, gemäß Artikel 27 DSGVO einen Vertreter in der EU zu benennen, da er seinen Sitz in der Slowakischen Republik (EU) hat.",
+    "privacyS3P5": "Handelt es sich bei dem Nutzer um eine natürliche Person – einen Unternehmer oder ein Ein-Personen-Unternehmen –, können Angaben wie die Unternehmens-ID, die Umsatzsteuer-Identifikationsnummer, die Anschrift des Geschäftssitzes oder der Firmenname personenbezogene Daten darstellen und sind ebenso geschützt wie die personenbezogenen Daten anderer natürlicher Personen.",
+    "termsS16P3": "P2B (EU-Verordnung 2019/1150): Die Beziehungen zwischen dem Betreiber und den gewerblichen Nutzern unterliegen der Verordnung über Fairness und Transparenz bei Online-Vermittlungsdiensten. Der Betreiber kündigt Änderungen der Nutzungsbedingungen im Voraus an – in der Regel 30 Tage im Voraus – und stellt Informationen zu den Parametern für die Sortierung der Angebote bereit."
   },
   "recommendations": {
     "kicker": "Empfehlungen",
