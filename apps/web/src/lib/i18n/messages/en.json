@@ -1285,7 +1285,21 @@
     "termsS9P3": "The operator does not guarantee a specific number of views, enquiries, business opportunities or completed transactions.",
     "termsS9P4": "**Transparency of parameters:** In accordance with Regulation (EU) 2019/1150 (P2B), the operator publishes the main parameters determining the order in which offers are displayed. If a payment or other consideration influences the order, this fact is clearly communicated to the user before they subscribe to the paid feature.",
     "termsTitle": "CMEP PLATFORM TERMS AND CONDITIONS",
-    "viewContent": "Displaying content within the platform"
+    "viewContent": "Displaying content within the platform",
+    "privacyS10P6": "Accounting documents and accounting records must be retained for 10 years in accordance with Section 35 of Act No. 431/2002 Coll. on Accounting. This retention period takes precedence over the general retention periods set out in this document.",
+    "privacyS11P10": "| cmep_session or auth token | CMEP | Authentication and session management | Essential (login) | 7 days (or as configured) |",
+    "privacyS11P11": "**Note:** If the Controller introduces analytical or marketing cookies in the future (such as Google Analytics, Meta Pixel or Hotjar), a separate cookie banner will be required, allowing users to give their consent or opt out of optional cookies. Until then, only essential technical cookies are used.",
+    "privacyS11P12": "The specific cookies used, their purposes and their expiry dates may vary depending on the website’s current configuration. The current list is always available in this document or in a separate cookie policy.",
+    "privacyS11P6": "| Name | Provider | Purpose | Type | Expiry |",
+    "privacyS11P7": "|---|---|---|---|---|",
+    "privacyS11P8": "| cmep_theme | CMEP | Saving light/dark theme preference | Essential (preference) | 12 months |",
+    "privacyS11P9": "| cmep_csrf | CMEP | CSRF form protection | Essential (security) | until the browser is closed |",
+    "privacyS18L1": "**transactional and service notifications** (for example, registration confirmation, password change, notification of a new enquiry or message) – these form part of the provision of the service and are sent in accordance with the terms of the contract;",
+    "privacyS18L2": "**marketing communications** (such as newsletters, information about new features or promotions) – these are sent solely on the basis of the data subject’s separate, verifiable consent. Consent may be withdrawn at any time, and marketing communications must include a simple way to unsubscribe.",
+    "privacyS18P4": "The operator distinguishes between:",
+    "privacyS2P6": "The controller is not obliged to appoint a representative in the EU under Article 27 of the GDPR, as it has its registered office in the Slovak Republic (EU).",
+    "privacyS3P5": "If the user is a natural person – a sole trader or a sole proprietorship – details such as the company registration number, VAT number, business address or trading name may constitute personal data and are protected in the same way as the personal data of other natural persons.",
+    "termsS16P3": "P2B (EU Regulation 2019/1150): Relations between the Operator and business users are governed by the Regulation on fairness and transparency for online intermediation services. The Operator shall give advance notice of any changes to the terms and conditions – typically 30 days’ notice – and shall provide information on the criteria used to rank offers."
   },
   "recommendations": {
     "kicker": "Recommendations",

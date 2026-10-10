@@ -190,6 +190,26 @@ export default function PrivacyPage() {
               <p className="mt-3">{t('legal.privacyS11P3')}</p>
               <p className="mt-3">{t('legal.privacyS11P4')}</p>
               <p className="mt-3">{t('legal.privacyS11P5')}</p>
+
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full border-collapse text-sm">
+                  <thead>
+                    <tr>
+                      <th className="border-b p-2 text-left" style={{ borderColor: '#2a2620', color: FG }}>Názov</th>
+                      <th className="border-b p-2 text-left" style={{ borderColor: '#2a2620', color: FG }}>Poskytovateľ</th>
+                      <th className="border-b p-2 text-left" style={{ borderColor: '#2a2620', color: FG }}>Účel</th>
+                      <th className="border-b p-2 text-left" style={{ borderColor: '#2a2620', color: FG }}>Typ</th>
+                      <th className="border-b p-2 text-left" style={{ borderColor: '#2a2620', color: FG }}>Expirácia</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td className="border-b p-2" style={{ borderColor: '#1a1612' }}>{t('legal.privacyS11P8')}</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p className="mt-4">{t('legal.privacyS11P11')}</p>
+              <p className="mt-3">{t('legal.privacyS11P12')}</p>
             </section>
 
             <section>

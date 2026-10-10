@@ -1286,7 +1286,21 @@
     "termsS9P3": "L'exploitant ne garantit pas un nombre précis de vues, de demandes, d'opportunités commerciales ni de contrats conclus.",
     "termsS9P4": "**Transparence des paramètres :** Conformément au règlement (UE) 2019/1150 (P2B), l'opérateur publie les principaux paramètres déterminant l'ordre d'affichage des offres. Si un paiement ou toute autre contrepartie influence cet ordre, ce fait est clairement indiqué à l'utilisateur avant qu'il ne commande la fonctionnalité payante.",
     "termsTitle": "CONDITIONS GÉNÉRALES DE VENTE DE LA PLATEFORME CMEP",
-    "viewContent": "Affichage du contenu au sein de la plateforme"
+    "viewContent": "Affichage du contenu au sein de la plateforme",
+    "privacyS10P6": "Les pièces comptables et les écritures comptables sont conservées pendant 10 ans, conformément à l'article 35 de la loi n° 431/2002 Z. z. relative à la comptabilité. Ce délai de conservation prévaut sur les délais généraux mentionnés dans le présent document.",
+    "privacyS11P10": "| cmep_session ou jeton d'authentification | CMEP | Authentification et gestion de session | Indispensable (connexion) | 7 jours (ou selon les paramètres) |",
+    "privacyS11P11": "**Remarque :** Si l'exploitant met en place à l'avenir des cookies analytiques ou marketing (par exemple Google Analytics, Meta Pixel, Hotjar), une bannière de cookies distincte sera nécessaire, permettant de donner son consentement et de refuser les cookies facultatifs. D'ici là, seuls les cookies techniques indispensables sont utilisés.",
+    "privacyS11P12": "Les cookies utilisés, leurs finalités et leur durée de validité peuvent varier en fonction de la configuration actuelle du site web. La liste actualisée est toujours disponible dans ce document ou dans une politique distincte relative aux cookies.",
+    "privacyS11P6": "| Nom | Fournisseur | Objectif | Type | Date d'expiration |",
+    "privacyS11P7": "|---|---|---|---|---|",
+    "privacyS11P8": "| cmep_theme | CMEP | Enregistrement de la préférence pour un thème clair ou foncé | Indispensable (préférence) | 12 mois |",
+    "privacyS11P9": "| cmep_csrf | CMEP | Protection CSRF des formulaires | Indispensable (sécurité) | jusqu'à la fermeture du navigateur |",
+    "privacyS18L1": "**les notifications relatives aux transactions et aux services** (par exemple, confirmation d'inscription, modification du mot de passe, notification d'une nouvelle demande ou d'un nouveau message) – celles-ci font partie intégrante de la prestation du service et sont envoyées dans le cadre de l'exécution du contrat ;",
+    "privacyS18L2": "**communications marketing** (par exemple, newsletter, informations sur les nouvelles fonctionnalités ou les promotions) – celles-ci sont envoyées exclusivement sur la base d'un consentement distinct et vérifiable de la personne concernée. Ce consentement peut être retiré à tout moment et les communications marketing doivent comporter un moyen simple de se désabonner.",
+    "privacyS18P4": "L'exploitant distingue :",
+    "privacyS2P6": "Le responsable du traitement n'est pas tenu de désigner un représentant dans l'UE conformément à l'article 27 du RGPD, puisqu'il a son siège social en République slovaque (UE).",
+    "privacyS3P5": "Si l'utilisateur est une personne physique exerçant une activité commerciale ou une société unipersonnelle, des informations telles que le numéro d'identification de l'entreprise (IČO), le numéro d'identification fiscale (DIČ), l'adresse du siège social ou la raison sociale peuvent constituer des données à caractère personnel et sont protégées au même titre que les données à caractère personnel des autres personnes physiques.",
+    "termsS16P3": "P2B (Règlement (UE) 2019/1150) : Les relations entre l'opérateur et les utilisateurs professionnels sont régies par le règlement relatif à l'équité et à la transparence des services d'intermédiation en ligne. L'opérateur notifie les modifications apportées aux conditions générales à l'avance, généralement 30 jours à l'avance, et fournit des informations sur les critères de classement des offres."
   },
   "recommendations": {
     "kicker": "Recommandations",

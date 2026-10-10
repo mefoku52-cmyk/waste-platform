@@ -103,7 +103,7 @@ j) používať platformu spôsobom, ktorý neprimerane zaťažuje jej infraštru
 
 6.5 Používateľ zodpovedá za obsah, ktorý vloží, a za zákonnosť svojho konania na platforme.
 
-6.6 **Trestnoprávna zodpovednosť:** Porušenie autorských práv, ochranných známok alebo iných práv duševného vlastníctva môže byť postihnuté podľa § 283 zákona č. 300/2005 Z. z. (Trestný zákon). V závislosti od rozsahu spôsobenej škody hrozí páchateľovi trest odňatia slobody až na 8 rokov.
+6.6 Porušenie autorských práv, ochranných známok alebo iných práv duševného vlastníctva môže napĺňať skutkovú podstatu trestného činu porušovania autorského práva podľa § 283 zákona č. 300/2005 Z. z. (Trestný zákon). Konkrétnu právnu kvalifikáciu a sankciu určí príslušný orgán podľa okolností prípadu a rozsahu spôsobenej škody.
 
 ## 7. NAHLASOVANIE A MODEROVANIE OBSAHU
 
@@ -185,7 +185,7 @@ j) používať platformu spôsobom, ktorý neprimerane zaťažuje jej infraštru
 
 12.5 Používateľ je povinný nahradiť škodu, ktorú spôsobí porušením právnych predpisov alebo týchto podmienok, v rozsahu stanovenom zákonom.
 
-12.6 **Sankcie:** Prevádzkovateľ môže uložiť sankcie podľa zákona č. 22/2004 Z. z. o elektronickom obchode, podľa ktorého môže Slovenská obchodná inšpekcia uložiť pokutu od 50 do 50 000 eur, ak poskytovateľ nemal obrat alebo jeho obrat nemožno zistiť, alebo ak bol jeho obrat nižší ako dolná hranica sadzby pokuty.
+12.6 Sankcie a dohľad: Pri porušení týchto podmienok môže Prevádzkovateľ uplatniť zmluvné opatrenia podľa článku 15 (napríklad upozornenie, obmedzenie funkcií účtu alebo zrušenie účtu). Dozor nad dodržiavaním zákona č. 22/2004 Z. z. o elektronickom obchode vykonáva Slovenská obchodná inšpekcia (SOI), ktorá môže uložiť pokutu podľa príslušných ustanovení tohto zákona.
 
 ## 13. DUŠEVNÉ VLASTNÍCTVO
 
@@ -217,9 +217,11 @@ j) používať platformu spôsobom, ktorý neprimerane zaťažuje jej infraštru
 
 ## 16. DSA A P2B — DIGITÁLNE SLUŽBY
 
-16.1 **DSA (Nariadenie EÚ 2022/2065):** Platforma ako sprostredkovateľská služba podlieha povinnostiam podľa DSA. Prevádzkovateľ má zavedený mechanizmus oznamovania nezákonného obsahu (notice-and-action), interný systém sťažností a postup odôvodnenia rozhodnutí (statement of reasons). Podrobnosti upravuje samostatný dokument Reklamačný a oznamovací poriadok.
+16.1 DSA (Nariadenie EÚ 2022/2065): Platforma ako sprostredkovateľská služba podlieha povinnostiam podľa DSA. Prevádzkovateľ má zavedený mechanizmus oznamovania nezákonného obsahu (notice-and-action), interný systém sťažností a postup odôvodnenia rozhodnutí (statement of reasons). Podrobnosti upravuje samostatný dokument Reklamačný a oznamovací poriadok.
 
-16.2 **P2B (Nariadenie EÚ 2019/1150):** Vzťahy medzi Prevádzkovateľom a podnikateľskými používateľmi sa riadia nariadením o spravodlivosti a transparentnosti pre online sprostredkovateľské služby. Prevádzkovateľ oznamuje zmeny podmienok vopred (spravidla 30 dní) a poskytuje informácie o parametroch zoradenia ponúk.
+16.2 Kontaktné miesto podľa DSA čl. 11 a 12: trc-cmep@gmail.com. Komunikácia je možná v slovenskom a anglickom jazyku.
+
+16.3 P2B (Nariadenie EÚ 2019/1150): Vzťahy medzi Prevádzkovateľom a podnikateľskými používateľmi sa riadia nariadením o spravodlivosti a transparentnosti pre online sprostredkovateľské služby. Prevádzkovateľ oznamuje zmeny podmienok vopred, štandardne 30 dní, a poskytuje informácie o parametroch zoradenia ponúk.
 
 ## 17. ZÁVEREČNÉ USTANOVENIA
 
