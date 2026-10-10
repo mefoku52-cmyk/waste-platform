@@ -79,9 +79,36 @@ export default function LandingPage() {
     }
   }, [me, meLoading, router]);
 
-  const onContact = (e: React.FormEvent) => {
+  const [sending, setSending] = useState(false);
+  const [sendErr, setSendErr] = useState<string | null>(null);
+
+  const onContact = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setSendErr(null);
+    setSending(true);
+    try {
+      const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1').replace(/\/$/, '');
+      const res = await fetch(`${apiBase}/events/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name.trim(),
+          email: form.email.trim(),
+          company: form.company.trim() || null,
+          message: form.message.trim(),
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(typeof body.detail === 'string' ? body.detail : `HTTP ${res.status}`);
+      }
+      setSent(true);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Odoslanie zlyhalo. Skús znova.';
+      setSendErr(msg);
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -326,8 +353,16 @@ export default function LandingPage() {
                 <input required type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t('landing.phEmail')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
                 <input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} placeholder={t('landing.phCompany')} className="h-12 rounded-md border bg-transparent px-4 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
                 <textarea required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} placeholder={t('landing.phMessage')} rows={5} className="rounded-md border bg-transparent px-4 py-3 outline-none" style={{ borderColor: 'rgba(255,255,255,0.12)', color: FG }} />
-                <button type="submit" className="justify-self-start rounded-md px-6 py-3 text-sm font-semibold" style={{ background: GOLD, color: BG }}>
-                  {t('landing.send')}
+                {sendErr ? (
+                  <p className="text-sm" style={{ color: '#c45c4a' }}>{sendErr}</p>
+                ) : null}
+                <button
+                  type="submit"
+                  disabled={sending}
+                  className="justify-self-start rounded-md px-6 py-3 text-sm font-semibold disabled:opacity-50"
+                  style={{ background: GOLD, color: BG }}
+                >
+                  {sending ? 'Odosielam…' : t('landing.send')}
                 </button>
               </form>
             )}

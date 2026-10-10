@@ -762,7 +762,13 @@
     "contactDesc": "Eine Nachricht genügt. Wir antworten Unternehmen zu Unternehmen — nicht als Newsletter.",
     "thanksTitle": "Danke. Wir melden uns.",
     "thanksDesc": "Ihre Nachricht ist bei uns. Wir antworten innerhalb von 24 Stunden.",
-    "send": "Senden"
+    "send": "Senden",
+    "steps.1.text": "Per E-Mail, in 30 Sekunden. Ohne Kreditkarte, ohne Gebühren. Der Eintritt ist kostenlos.",
+    "steps.1.title": "Registrieren Sie sich",
+    "steps.2.text": "Firmennummer, Name, Ort. Überprüfung innerhalb von 24 Stunden über RPO und Finstat.",
+    "steps.2.title": "Unternehmen hinzufügen",
+    "steps.3.text": "Material, Menge, Fotos. Die Kontaktdaten bleiben verborgen, bis sich die Unternehmen geeinigt haben.",
+    "steps.3.title": "Veröffentlichen Sie Ihr Angebot"
   },
   "auth": {
     "backToLogin": "Anmeldung",

@@ -763,7 +763,13 @@
     "contactDesc": "Un message suffit. Nous répondons entreprise à entreprise — pas comme une newsletter.",
     "thanksTitle": "Merci. Nous vous contactons.",
     "thanksDesc": "Votre message nous est parvenu. Nous répondons sous 24 heures.",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "steps.1.text": "Par e-mail, en 30 secondes. Sans carte bancaire, sans frais. L'entrée est gratuite.",
+    "steps.1.title": "Inscrivez-vous",
+    "steps.2.text": "Numéro d'identification, raison sociale, ville. Vérification sous 24 heures via RPO et Finstat.",
+    "steps.2.title": "Ajouter une entreprise",
+    "steps.3.text": "Matériel, quantité, photos. Les coordonnées resteront confidentielles jusqu'à ce que les entreprises parviennent à un accord.",
+    "steps.3.title": "Publiez une annonce"
   },
   "auth": {
     "backToLogin": "Connexion",

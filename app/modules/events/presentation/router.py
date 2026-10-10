@@ -1,6 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException
+import json
+from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.modules.events.infrastructure.models import ActivityEventModel
+from pydantic import BaseModel, Field
 from app.modules.events.presentation.schemas import EventIn, EventOut
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -91,3 +93,74 @@ async def list_reports(
             for r in rows
         ]
     }
+
+# ============================================================
+# Public contact endpoint (bez auth) — pre landing page formulár
+# ============================================================
+
+
+class ContactIn(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    email: str = Field(min_length=3, max_length=320)
+    company: str | None = Field(default=None, max_length=200)
+    message: str = Field(min_length=1, max_length=4000)
+
+
+@router.post("/contact", response_model=EventOut)
+async def submit_contact(
+    body: ContactIn,
+    request: Request,
+    session=Depends(get_db_session),
+):
+    """Uloží kontaktný formulár z landing page.
+
+    Bez auth. Rate-limit cez IP hash (max 5 requestov / hodinu / IP).
+    """
+    # Jednoduchý rate limit cez X-Forwarded-For
+    import hashlib
+    from datetime import UTC, datetime, timedelta
+    from sqlalchemy import func, select
+
+    ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else "unknown")
+    ip_hash = hashlib.sha256(ip.encode()).hexdigest()[:16]
+
+    one_hour_ago = datetime.now(UTC).replace(tzinfo=None) - timedelta(hours=1)
+    cnt_stmt = select(func.count(ActivityEventModel.id)).where(
+        ActivityEventModel.event_type == "contact_submitted",
+        ActivityEventModel.payload.contains(ip_hash),
+        ActivityEventModel.created_at >= one_hour_ago,
+    )
+    cnt_result = await session.execute(cnt_stmt)
+    count = int(cnt_result.scalar() or 0)
+    if count >= 5:
+        raise HTTPException(status_code=429, detail="Too many submissions. Skús neskôr.")
+
+    payload_data = {
+        "name": body.name.strip(),
+        "email": body.email.strip(),
+        "company": (body.company or "").strip(),
+        "message": body.message.strip(),
+        "ip_hash": ip_hash,
+        "user_agent": (request.headers.get("user-agent") or "")[:300],
+    }
+
+    row = ActivityEventModel(
+        event_type="contact_submitted",
+        actor_user_id=None,
+        company_id=None,
+        listing_id=None,
+        payload=json.dumps(payload_data, ensure_ascii=False)[:2000],
+    )
+    session.add(row)
+    commit = getattr(session, "commit", None)
+    if commit:
+        result = commit()
+        if hasattr(result, "__await__"):
+            await result
+    flush = getattr(session, "flush", None)
+    if flush:
+        result = flush()
+        if hasattr(result, "__await__"):
+            await result
+
+    return EventOut(id=str(row.id), eventType="contact_submitted")
