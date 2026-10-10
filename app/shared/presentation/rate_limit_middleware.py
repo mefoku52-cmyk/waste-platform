@@ -95,7 +95,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         for limit, period, name in rules:
             try:
-                check_rate_limit(f"{name}:{client_ip(request)}", limit=limit, period=period)
+                await check_rate_limit(f"{name}:{client_ip(request)}", limit=limit, period=period)
             except HTTPException as exc:
                 return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         return await call_next(request)

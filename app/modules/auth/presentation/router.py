@@ -45,8 +45,8 @@ async def login(request: Request, payload: LoginRequest, service=Depends(get_log
     from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
 
     ip = client_ip(request)
-    check_rate_limit(f"login:{ip}", limit=10, period=60)
-    check_rate_limit(f"login:email:{payload.email.lower().strip()}", limit=5, period=60)
+    await check_rate_limit(f"login:{ip}", limit=10, period=60)
+    await check_rate_limit(f"login:email:{payload.email.lower().strip()}", limit=5, period=60)
     result = await service.execute(email=payload.email, password=payload.password)
 
     if result.requires_2fa:
@@ -78,7 +78,7 @@ async def two_factor_login(
     from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
 
     ip = client_ip(request)
-    check_rate_limit(f"2fa-login:{ip}", limit=10, period=60)
+    await check_rate_limit(f"2fa-login:{ip}", limit=10, period=60)
 
     try:
         decoded = await jwt_service.decode_2fa_token(payload.twoFactorToken)
@@ -291,8 +291,8 @@ async def forgot_password(
     from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
 
     ip = client_ip(request)
-    check_rate_limit(f"forgot:{ip}", limit=5, period=60)
-    check_rate_limit(f"forgot:email:{payload.email.lower().strip()}", limit=3, period=300)
+    await check_rate_limit(f"forgot:{ip}", limit=5, period=60)
+    await check_rate_limit(f"forgot:email:{payload.email.lower().strip()}", limit=3, period=300)
     return await svc.request_reset(payload.email)
 
 
@@ -331,6 +331,8 @@ async def resend_verification(
     from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
 
     ip = client_ip(request)
-    check_rate_limit(f"resend-verify:{ip}", limit=5, period=60)
-    check_rate_limit(f"resend-verify:email:{payload.email.lower().strip()}", limit=3, period=300)
+    await check_rate_limit(f"resend-verify:{ip}", limit=5, period=60)
+    await check_rate_limit(
+        f"resend-verify:email:{payload.email.lower().strip()}", limit=3, period=300
+    )
     return await svc.request_verification(payload.email)
