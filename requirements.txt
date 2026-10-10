@@ -36,3 +36,4 @@ qrcode>=7.4.2
 
 # Voice
 edge-tts>=6.1.0
+stripe>=11.0.0

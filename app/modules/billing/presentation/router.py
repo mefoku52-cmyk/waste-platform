@@ -12,6 +12,7 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import current_user_id
 
 router = APIRouter(prefix="/billing", tags=["billing"])
 
@@ -181,3 +182,112 @@ def _param(data: dict, name: str) -> str:
         if str(row.get("name")) == name:
             return str(row.get("value") or "")
     return ""
+
+# ============================================================
+# Stripe integration
+# ============================================================
+
+import stripe
+
+
+class _StripeCheckoutIn(BaseModel):
+    kind: str = Field(default="promote", max_length=32)
+    listing_id: str | None = None
+    days: int = Field(default=7, ge=1, le=365)
+    tier: str = Field(default="top", max_length=16)
+    success_url: str = Field(min_length=1, max_length=500)
+    cancel_url: str = Field(min_length=1, max_length=500)
+
+
+def _stripe_prices() -> dict[tuple[str, int], int]:
+    return {
+        ("top", 7): 500,
+        ("top", 30): 1000,
+        ("gold", 30): 3000,
+    }
+
+
+@router.post("/stripe/checkout")
+async def stripe_checkout(
+    body: _StripeCheckoutIn,
+    current_user=Depends(require_current_user),
+):
+    secret = getattr(settings, "STRIPE_SECRET_KEY", None)
+    if not secret:
+        raise HTTPException(status_code=503, detail="Stripe not configured")
+    stripe.api_key = secret
+
+    amount = _stripe_prices().get((body.tier, body.days))
+    if amount is None:
+        raise HTTPException(status_code=422, detail="Unknown tier/days combo")
+    if body.kind == "promote" and not body.listing_id:
+        raise HTTPException(status_code=422, detail="listing_id required for promote")
+
+    try:
+        user_id = str(current_user_id(current_user) or "")
+    except Exception:
+        user_id = ""
+
+    try:
+        cs = stripe.checkout.Session.create(
+            mode="payment",
+            payment_method_types=["card"],
+            line_items=[{
+                "price_data": {
+                    "currency": "eur",
+                    "unit_amount": amount,
+                    "product_data": {
+                        "name": f"CMEP {'TOP' if body.tier == 'top' else 'GOLD'} {body.days} dni",
+                    },
+                },
+                "quantity": 1,
+            }],
+            success_url=body.success_url,
+            cancel_url=body.cancel_url,
+            metadata={
+                "kind": body.kind,
+                "listing_id": body.listing_id or "",
+                "days": str(body.days),
+                "tier": body.tier,
+                "user_id": user_id,
+            },
+        )
+        return {"url": cs.url, "id": cs.id}
+    except stripe.error.StripeError as exc:
+        raise HTTPException(status_code=400, detail=f"Stripe error: {getattr(exc, 'user_message', None) or str(exc)}")
+
+
+@router.post("/stripe/webhook")
+async def stripe_webhook(request: Request, session=Depends(get_db_session)):
+    secret = getattr(settings, "STRIPE_SECRET_KEY", None)
+    webhook_secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", None)
+    if not secret or not webhook_secret:
+        raise HTTPException(status_code=503, detail="Stripe webhook not configured")
+
+    stripe.api_key = secret
+    payload = await request.body()
+    sig_header = request.headers.get("stripe-signature", "")
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid payload")
+    except stripe.error.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    if event["type"] == "checkout.session.completed":
+        sess = event["data"]["object"]
+        md = sess.get("metadata", {}) or {}
+        if md.get("kind") == "promote" and md.get("listing_id"):
+            try:
+                from app.modules.listings.presentation.dependencies import get_listings_service
+                svc = get_listings_service(session=session)
+                await svc.promote(
+                    md["listing_id"],
+                    days=int(md.get("days", "7")),
+                    tier=md.get("tier", "top"),
+                )
+            except Exception:
+                pass
+
+    return {"received": True}

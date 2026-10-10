@@ -92,6 +92,12 @@ def _normalize_database_url(raw: str) -> str:
 
 
 class Settings(BaseSettings):
+
+    # Stripe
+    STRIPE_SECRET_KEY: str | None = None
+    STRIPE_WEBHOOK_SECRET: str | None = None
+    STRIPE_PRO_AMOUNT_CENTS: int = 2990
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
