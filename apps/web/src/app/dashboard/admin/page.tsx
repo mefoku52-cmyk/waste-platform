@@ -18,6 +18,7 @@ function AdminReports({ eventType = 'user_reported' }: { eventType?: string }) {
   if (!items.length) return <p className="mt-2 text-sm text-[#9a8f7c]">Ziadne zaznamy.</p>;
   return (
     <ul className="mt-3 space-y-2 text-sm text-[#f3ead8]">
+      <AdminAnalyticsCard />
       {items.map((it) => (
         <li key={it.id} className="rounded-xl border border-[#d4af37]/20 p-3">
           <p>{it.payload || it.eventType}</p>
@@ -44,6 +45,83 @@ const GOLD_BRIGHT = '#e8d48b';
 const BG = '#090807';
 const FG = '#f3ead8';
 const MUTED = '#9a8f7c';
+
+
+
+function AdminAnalyticsCard() {
+  const [stats, setStats] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = tokenStore.getToken();
+    fetch(`${config.apiBaseUrl}/analytics/admin/stats?days=30`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d) => setStats(d))
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-[#d4af37]/20 p-5 text-sm text-[#9a8f7c]">
+        Nacitavam navstevnost...
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="rounded-2xl border border-[#d4af37]/20 p-5 text-sm text-[#9a8f7c]">
+        Statistiky sa nepodarilo nacitat.
+      </div>
+    );
+  }
+
+  const cards = [
+    { label: 'Dnes', value: stats.today, sub: `${stats.uniqueToday} unikatnych` },
+    { label: 'Vcera', value: stats.yesterday },
+    { label: 'Tyzden', value: stats.week },
+    { label: 'Mesiac (30d)', value: stats.month },
+    { label: 'Spolu', value: stats.total },
+  ];
+
+  return (
+    <div className="rounded-2xl border border-[#d4af37]/20 p-5">
+      <h2 className="mb-4 text-lg font-semibold text-[#f3ead8]">
+        Navstevy landing page
+      </h2>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+        {cards.map((c) => (
+          <div key={c.label} className="rounded-xl border border-[#d4af37]/15 p-3">
+            <p className="text-[10px] uppercase tracking-widest text-[#9a8f7c]">
+              {c.label}
+            </p>
+            <p className="mt-1 text-2xl font-semibold text-[#e8d48b]">{c.value}</p>
+            {c.sub && <p className="mt-1 text-[11px] text-[#9a8f7c]">{c.sub}</p>}
+          </div>
+        ))}
+      </div>
+
+      {stats.topSources && stats.topSources.length > 0 && (
+        <div className="mt-5">
+          <p className="mb-2 text-xs uppercase tracking-widest text-[#9a8f7c]">
+            Top zdroje (30 dni)
+          </p>
+          <ul className="space-y-1 text-sm text-[#f3ead8]">
+            {stats.topSources.map((s: any) => (
+              <li key={s.source} className="flex justify-between gap-3 border-b border-[#d4af37]/10 py-1">
+                <span className="truncate">{s.source}</span>
+                <span className="text-[#e8d48b]">{s.count}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const { user, isLoading } = useAuthRequired();

@@ -35,6 +35,14 @@ from .schemas import (
     PaginationMeta,
 )
 
+import json
+from datetime import datetime, timedelta
+
+from sqlalchemy import func, select
+
+from app.modules.analytics.infrastructure.models import AnalyticsEventModel
+from app.shared.infrastructure.db.session import get_db_session
+
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 
@@ -278,4 +286,120 @@ async def record_acquisition_event(
         "event_type": event.event_type,
         "entity_type": event.entity_type,
         "recorded_at": event.recorded_at.isoformat(),
+    }
+
+# Admin stats endpoint — agregacia page_view eventov.
+
+
+@router.get(
+    "/admin/stats",
+    summary="Get admin analytics stats",
+    operation_id="getAdminAnalyticsStats",
+)
+async def get_admin_stats(
+    days: int = 30,
+    current_user=Depends(require_current_user),
+    session=Depends(get_db_session),
+):
+    """Vrati agregovane statistiky navstev landing page.
+
+    Iba pre platform adminov.
+    """
+    if not is_platform_admin(current_user):
+        raise ForbiddenDomainError("Platform admin only")
+
+    now = datetime.utcnow()
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    yesterday_start = today_start - timedelta(days=1)
+    week_start = today_start - timedelta(days=7)
+    month_start = today_start - timedelta(days=days)
+
+    async def count_since(since: datetime | None, until: datetime | None = None) -> int:
+        stmt = select(func.count(AnalyticsEventModel.id)).where(
+            AnalyticsEventModel.event_type == "page_view"
+        )
+        if since is not None:
+            stmt = stmt.where(AnalyticsEventModel.recorded_at >= since)
+        if until is not None:
+            stmt = stmt.where(AnalyticsEventModel.recorded_at < until)
+        result = await session.execute(stmt)
+        return int(result.scalar() or 0)
+
+    total = await count_since(None)
+    today = await count_since(today_start)
+    yesterday = await count_since(yesterday_start, today_start)
+    week = await count_since(week_start)
+    month = await count_since(month_start)
+
+    # Unique visitors today — parsuj event_metadata JSON
+    rows_today = (
+        await session.execute(
+            select(AnalyticsEventModel.event_metadata).where(
+                AnalyticsEventModel.event_type == "page_view",
+                AnalyticsEventModel.recorded_at >= today_start,
+            )
+        )
+    ).scalars().all()
+
+    anon_ids = set()
+    for meta in rows_today:
+        if not meta:
+            continue
+        try:
+            data = json.loads(meta)
+            aid = data.get("anonymous_id")
+            if aid:
+                anon_ids.add(aid)
+        except Exception:
+            pass
+    unique_today = len(anon_ids)
+
+    # Daily breakdown pre poslednych N dni
+    rows_month = (
+        await session.execute(
+            select(AnalyticsEventModel.recorded_at).where(
+                AnalyticsEventModel.event_type == "page_view",
+                AnalyticsEventModel.recorded_at >= month_start,
+            )
+        )
+    ).scalars().all()
+
+    daily: dict[str, int] = {}
+    for dt in rows_month:
+        key = dt.date().isoformat()
+        daily[key] = daily.get(key, 0) + 1
+
+    # Top sources z poslednych N dni
+    rows_meta = (
+        await session.execute(
+            select(AnalyticsEventModel.event_metadata).where(
+                AnalyticsEventModel.event_type == "page_view",
+                AnalyticsEventModel.recorded_at >= month_start,
+            )
+        )
+    ).scalars().all()
+
+    sources: dict[str, int] = {}
+    for meta in rows_meta:
+        if not meta:
+            continue
+        try:
+            data = json.loads(meta)
+            ref = (data.get("referrer") or "").strip() or "direct"
+            utm = (data.get("utm_source") or "").strip()
+            key = f"{ref}" + (f" · {utm}" if utm else "")
+            sources[key] = sources.get(key, 0) + 1
+        except Exception:
+            pass
+    top_sources = sorted(sources.items(), key=lambda x: -x[1])[:10]
+
+    return {
+        "total": total,
+        "today": today,
+        "yesterday": yesterday,
+        "week": week,
+        "month": month,
+        "uniqueToday": unique_today,
+        "daily": daily,
+        "topSources": [{"source": s, "count": c} for s, c in top_sources],
     }
