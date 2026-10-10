@@ -689,7 +689,7 @@
   "landing": {
     "materials": "Obehové materiály",
     "login": "Prihlásiť sa",
-    "postListing": "Zverejniť ponuku",
+    "postListing": "Registrovať sa",
     "dashboard": "Dashboard",
     "sawdust": "Piloviny",
     "forCompanies": "Pre firmy",
@@ -709,7 +709,7 @@
     "heroSlogan": "Menej odpadu. Viac obchodu.",
     "heroSubtitle": "Trhovisko firiem a obehových materiálov — filtruj, hľadaj, dohodni.",
     "heroDesc": "Súkromná burza pre obehové materiály. Overené firmy, skryté kontakty, žiadny spam. Filtruj, hľadaj, dohodni — všetko na jednom mieste.",
-    "heroCtaAdd": "➕ Pridať ponuku",
+    "heroCtaAdd": "Začať zadarmo",
     "heroCtaMarket": "Pozrieť živý trh",
     "statsTons": "TON NA TRHU",
     "statsVerified": "OVERENÝCH FIRIEM",
@@ -753,7 +753,7 @@
     "lossKicker": "STRATA, KTORÚ UŽ POČÍTATE",
     "lossTitle": "Každá tona na skládke je peniaz, o ktorý ste prišli.",
     "lossDesc": "Materiál, ktorý u vás leží, môže niekomu inému chýbať. Burza existuje preto, aby sa to nestalo zo zotrvačnosti.",
-    "lossCta": "Do tržnice",
+    "lossCta": "Vstúpiť do tržnice",
     "howKicker": "AKO TO FUNGUJE",
     "privacyKicker": "SÚKROMIE",
     "privacyTitle": "Kontakt príde ako správa.",
@@ -762,7 +762,13 @@
     "contactDesc": "Jedna správa stačí. Ozveme sa ako firma firme — nie ako newsletter.",
     "thanksTitle": "Ďakujeme. Ozveme sa.",
     "thanksDesc": "Vaša správa je u nás. Odpovieme do 24 hodín.",
-    "send": "Odoslať"
+    "send": "Odoslať",
+    "steps.1.title": "Zaregistrujte sa",
+    "steps.1.text": "E-mailom, za 30 sekúnd. Bez kreditky, bez poplatku. Vstup je zadarmo.",
+    "steps.2.title": "Pridajte firmu",
+    "steps.2.text": "IČO, názov, mesto. Overenie do 24 hodín cez RPO a Finstat.",
+    "steps.3.title": "Zverejnite ponuku",
+    "steps.3.text": "Materiál, množstvo, fotky. Kontakty zostanú skryté, kým sa firmy nedohodnú."
   },
   "auth": {
     "backToLogin": "Prihlásenie",

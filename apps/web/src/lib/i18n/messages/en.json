@@ -762,7 +762,13 @@
     "contactDesc": "One message is enough. We respond company to company — not as a newsletter.",
     "thanksTitle": "Thank you. We'll be in touch.",
     "thanksDesc": "Your message reached us. We reply within 24 hours.",
-    "send": "Send"
+    "send": "Send",
+    "steps.1.text": "By email, in 30 seconds. No credit card required, no fees. Entry is free.",
+    "steps.1.title": "Sign up",
+    "steps.2.text": "Company registration number, name, town. Verification within 24 hours via RPO and Finstat.",
+    "steps.2.title": "Add a business",
+    "steps.3.text": "Materials, quantities, photos. Contact details will remain hidden until the companies reach an agreement.",
+    "steps.3.title": "Publish your listing"
   },
   "auth": {
     "backToLogin": "Sign in",

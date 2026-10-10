@@ -19,6 +19,7 @@ function AdminReports({ eventType = 'user_reported' }: { eventType?: string }) {
   return (
     <ul className="mt-3 space-y-2 text-sm text-[#f3ead8]">
       <AdminAnalyticsCard />
+      <AdminContactMessages />
       {items.map((it) => (
         <li key={it.id} className="rounded-xl border border-[#d4af37]/20 p-3">
           <p>{it.payload || it.eventType}</p>
@@ -118,6 +119,67 @@ function AdminAnalyticsCard() {
             ))}
           </ul>
         </div>
+      )}
+    </div>
+  );
+}
+
+
+
+function AdminContactMessages() {
+  const [items, setItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const token = tokenStore.getToken();
+    fetch(`${config.apiBaseUrl}/events/reports?event_type=contact_submitted`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+      .then((d) => setItems(d.items || []))
+      .catch(() => setItems([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="rounded-2xl border border-[#d4af37]/20 p-5 text-sm text-[#9a8f7c]">
+        Nacitavam spravy...
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-2xl border border-[#d4af37]/20 p-5">
+      <h2 className="mb-4 text-lg font-semibold text-[#f3ead8]">
+        Kontaktne spravy z landing page ({items.length})
+      </h2>
+      {items.length === 0 ? (
+        <p className="text-sm text-[#9a8f7c]">Ziadne spravy.</p>
+      ) : (
+        <ul className="space-y-3">
+          {items.map((it) => {
+            let payload: any = {};
+            try { payload = JSON.parse(it.payload || '{}'); } catch {}
+            return (
+              <li key={it.id} className="rounded-xl border border-[#d4af37]/15 p-4">
+                <div className="flex flex-wrap items-baseline gap-2">
+                  <span className="font-semibold text-[#e8d48b]">{payload.name || '—'}</span>
+                  <a href={`mailto:${payload.email}`} className="text-sm text-[#d4af37] hover:underline">
+                    {payload.email || '—'}
+                  </a>
+                  {payload.company && (
+                    <span className="text-sm text-[#9a8f7c]">· {payload.company}</span>
+                  )}
+                </div>
+                <p className="mt-2 whitespace-pre-wrap text-sm text-[#f3ead8]">{payload.message || ''}</p>
+                <p className="mt-2 text-[11px] text-[#6e6658]">
+                  {it.createdAt ? new Date(it.createdAt).toLocaleString('sk-SK') : ''}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );
