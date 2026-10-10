@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { inquiriesApi } from '../api';
 import { useCurrentUser } from '@/features/auth/hooks/use-current-user';
 import { useT } from '@/lib/i18n/context';
+import { track } from '@/lib/analytics/track';
 
 export function ListingInquiryButton({
   listingId,
@@ -33,6 +34,7 @@ export function ListingInquiryButton({
         contactEmail: email,
         message: 'Dopyt k ponuke ' + (listingTitle || listingId) + '.',
       });
+      void track('inquiry_created', { entity_type: 'inquiry', entity_id: listingId, company_id: companyId });
       setMsg(t('listingInquiry.sentOk'));
     } catch (e: unknown) {
       const text =

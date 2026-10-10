@@ -24,6 +24,7 @@ type Props = {
   aiDraft?: AiDraftData | null;
 };
 
+import { track } from '@/lib/analytics/track';
 export const ListingForm = ({
   listingId,
   initialData,
@@ -168,6 +169,7 @@ export const ListingForm = ({
     }
 
     const onSuccess = () => {
+      void track('listing_created');
       if (isEdit && listingId) {
         router.push(`/dashboard/listings/${listingId}`);
       } else {

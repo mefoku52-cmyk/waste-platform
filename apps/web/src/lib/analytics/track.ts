@@ -7,7 +7,19 @@ const UTM_KEY = 'cmep_utm';
 
 
 // Meta Pixel helper — volá iba ak fbq existuje (init v layout.tsx)
-function metaTrack(event: 'PageView' | 'ViewContent', data?: Record<string, unknown>) {
+type MetaEvent =
+  | 'PageView'
+  | 'ViewContent'
+  | 'Lead'
+  | 'CompleteRegistration'
+  | 'StartTrial'
+  | 'AddToCart'
+  | 'InitiateCheckout'
+  | 'SubmitApplication'
+  | 'Contact'
+  | 'Purchase';
+
+function metaTrack(event: MetaEvent, data?: Record<string, unknown>) {
   if (typeof window === 'undefined') return;
   const w = window as unknown as { fbq?: (...args: unknown[]) => void };
   if (typeof w.fbq !== 'function') return;
@@ -84,6 +96,29 @@ export type TrackExtras = {
   company_id?: string;
 };
 
+function mapToMetaEvent(event_type: string): MetaEvent {
+  switch (event_type) {
+    case 'landing_view':
+      return 'ViewContent';
+    case 'registration_started':
+      return 'Lead';
+    case 'registration_completed':
+      return 'CompleteRegistration';
+    case 'company_created':
+      return 'StartTrial';
+    case 'listing_created':
+      return 'AddToCart';
+    case 'inquiry_created':
+    case 'chat_started':
+      return 'InitiateCheckout';
+    case 'deal_created':
+      return 'Purchase';
+    case 'page_view':
+    default:
+      return 'PageView';
+  }
+}
+
 export async function track(event_type: string, extras: TrackExtras = {}): Promise<void> {
   if (typeof window === 'undefined') return;
   const ft = captureFirstTouch();
@@ -105,7 +140,7 @@ export async function track(event_type: string, extras: TrackExtras = {}): Promi
   if (fbc) body.fbc = fbc;
 
   try {
-    metaTrack(event_type === 'landing_view' ? 'ViewContent' : 'PageView');
+    metaTrack(mapToMetaEvent(event_type));
 
     await fetch(`${config.apiBaseUrl}/analytics/acquisition/events`, {
       method: 'POST',
