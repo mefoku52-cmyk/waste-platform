@@ -1,5 +1,6 @@
 # =============================================================================
 # CMEP / Waste Platform — Global .gitignore
+# Konsolidované 2026-10-10 (dedup *.bak, odstránené stale one-off pravidlá).
 # =============================================================================
 
 # --- Python ---
@@ -12,42 +13,36 @@ env/
 venv/
 .venv/
 ENV/
-env.bak/
-venv.bak/
-*.egg-info/
 dist/
 build/
+.eggs/
 *.egg
+*.egg-info/
 *.manifest
 *.spec
-pip-log.txt
-pip-delete-this-directory.txt
 *.whl
 
-# --- Testing / Coverage ---
+# --- Testing / coverage / linting / type-check ---
 .tox/
 .nox/
 .coverage
 .coverage.*
 .cache
-nosetests.xml
 coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
 .pytest_cache/
-cover/
 htmlcov/
-
-# --- Type checking / Linting ---
+.cover/
 .mypy_cache/
 .dmypy.json
 dmypy.json
 *.pyre/
-*.pytypes/
 .ruff_cache/
+.ty/
 
-# --- IDEs ---
+# --- IDEs / OS ---
 .vscode/
 .idea/
 *.swp
@@ -59,6 +54,9 @@ dmypy.json
 *.njsproj
 *.sln
 *.sw?
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # --- Node.js / Next.js ---
 node_modules/
@@ -70,20 +68,29 @@ yarn-error.log*
 out/
 .vercel
 *.tsbuildinfo
+apps/web/tsconfig.tsbuildinfo
 
-# --- Environment & Secrets ---
-# Secrets — nikdy necommitovať
+# --- Environment & secrets (nikdy necommitovať) ---
 .env
 .env.*
 !.env.example
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
 secrets/
 .secrets/
 *.secret
+*_secret*.json
+secret*.env
+secrets*.env
+.token
+*_token
+token*.txt
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.keystore
+.ssh/
+.gnupg/
 
 # --- Docker ---
 docker-compose.override.yml
@@ -91,18 +98,23 @@ docker-compose.local.yml
 *.pid
 *.pid.lock
 
-# --- PostgreSQL ---
+# --- Databases (PostgreSQL / SQLite) ---
 *.pgdata
 *.dump
 *.sql.gz
 *.backup.sql
+*.sqlite
+*.sqlite3
+*.db
+dev.db
+waste.db
 
 # --- Redis ---
 *.rdb
 *.aof
 dump.rdb
 
-# --- Logs & Data ---
+# --- Logs & runtime data ---
 logs/
 *.log
 *.log.*
@@ -112,207 +124,54 @@ var/
 data/
 !data/.gitkeep
 
-# --- Alembic ---
-*.sqlite
-*.sqlite3
-*.db
-
-# --- Termux / Mobile ---
-backend_test_env/
-termux/
-
-# --- OS ---
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Diagnosticke/simulacne artefakty (grok-audit workflow)
-scripts/grok-audit/test-venv/
-scripts/grok-audit/test-venv-backend/
-scripts/grok-audit/docker-sim/
-scripts/grok-audit/docker-sim2/
-scripts/grok-audit/docker-sim-final/
-scripts/grok-audit/removed_stub_packages_backup/
-scripts/grok-audit/uloha.txt
-scripts/grok-audit/vysledok-*.txt
-scripts/grok-audit/log_diag*.txt
-scripts/grok-audit/bg_install_*.txt
+# --- Backups / local edits (jedno miesto pre všetky *.bak varianty) ---
+*.bak
+*.bak.*
 *.bak-*
-var/uploads/*
-!var/uploads/.gitkeep
-
-# --- Additional env backups ---
-*.env.bak
-
-# local / termux noise
-*.bak
-*.bak.*
-app/main.py.bak*
-app/core/config.py.bak
-.fix-backup-*/
-.schema-authority-backup-*/
-app.backup.*/
-apps/web.backup.*/
-FINAL-*.txt
-FINAL-*.sh
-CONSOLIDATE-*.sh
-STEP-09-*.txt
-*.sql
-logs/
-var/
-__pycache__/
-.pytest_cache/
-
-# --- local forensic and generated artifact ignores ---
-*.bak
-*.bak.*
-*.err
-*.zip
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.coverage
-htmlcov/
-reports/repo-hygiene/
-# --- end local forensic and generated artifact ignores ---
-
-# Local operational archives and Termux-only helpers
-__triage_archive/
-
-# Local operational archives and Termux-only helpers
-_local_archive/
-
-# Local operational archives and Termux-only helpers
-final_untracked_triage*.sh
-
-# Local operational archives and Termux-only helpers
-audit_remaining_untracked_tools.sh
-
-# === waste-platform hygiene contract ===
-.venv/
-**/.venv/
-**/__pycache__/
-*.pyc
-.pytest_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-.mypy_cache/
-
-node_modules/
-apps/web/node_modules/
-apps/web/.next/
-apps/web/out/
-apps/web/tsconfig.tsbuildinfo
-
-audit-output/
-_quarantine/
-*.bak
-*.bak.*
+*.backup
+*.backup-*
 *.before
 *.before-*
-*.after
+*.before_*
 *.old
+*.legacy
 *.unused_duplicate
 *.pre-remediation
-*.legacy
-
+*.env.bak
 .backup/
 .fix-backup-*/
 .schema-authority-backup-*/
-manual-restore-backups/
+.manual-restore-backups/
+.repair-backup-*/
+app/main.py.bak*
 
-waste.db
-*.log
-logs/
-frontend.log
-
-phase7*.sh
-phase74*.sh
-phase7_*.sh
-
-FINAL-AUTHORITY-AUDIT*.txt
-FINAL-SCHEMA-AUTHORITY-DIFF*.txt
-STEP-09-SCHEMA-PROVENANCE-AUDIT*.txt
-fix_report.txt
+# --- Generated / audit artefacts ---
+*.err
+*.zip
+output/
+reports/
+reports/repo-hygiene/
 audit_report.json
-# Tajomstvá
-*.key
-*.pem
-*.p12
-*.pfx
-*.keystore
-*_secret*.json
-secret*.env
-secrets*.env
-.token
-*_token
-token*.txt
-
-# SSH
-.ssh/
-.gnupg/
-
-# Backupy s tajomstvami
-# Ruff cache
-.ruff_cache/
-# Pytest cache
-.pytest_cache/
-# Type checker cache
-.ty/
-# Alembic lokálne DB
-*.db
-dev.db
-
-# Production proof reports (generated)
+audit_report.txt
+fix_report.txt
 PRODUCTION_PROOF*.txt
 production_answers.txt
-audit_report.txt
-.repair-backup-*/
-fix-waste-platform-tests.sh
 
-# --- Local dev junk ---
-key
-typescript
-script
+# --- Local operational archives (Termux helpers) ---
+__triage_archive/
+_local_archive/
+_quarantine/
+audit-output/
+quarantine/
 
-output/
-# Local audit/runtime artifacts
-/reports/
-/ngrok
-/ngrok-v3-stable-linux-arm64.tgz
-/redis.conf
-/setup-redis.sh
-/cmep-implement.sh
-/suv.check
-*.before_schema_sync_*
-
-# local leftovers
-*.backup
-*.backup-*
-*.bak
-app/main.py.backup-*
-backups/
-cmep-ui-audit.sh
-cmep-ui-audit.txt
-cmep-ui-flow.sh
-cmep-ui-i18n-fix.py
-cmep-typecheck-fix.sh
-apply_company_search_phase5.py
-patch_company_search_phase5.py
-
-# Local backups — never commit new ones
-*.bak
-*.backup-*
-*.before-*
-*.before_*
-backups/
-.repair-backup-*/
-
-# Termux / Atuin AI artefakty
+# --- Termux / mobile ---
+backend_test_env/
+termux/
 .atuin/
-=*
-dump.sh
-page.tsx.bak.*
-*.bak.*
-PRISNYR.txt
+
+# --- Poznámka: *.sql je zámerne vypnuté nižšie? NIE. ---
+# Schema .sql skripty v koreni (render_missing_tables.sql atď.) sa riešia
+# v samostatnom bloku (schema drift). Kým sa nerozhodne, `*.sql` ostáva
+# ignorované, aby sa náhodne necommitol ad-hoc schema skript.
+*.sql
+!migrations/**/*.sql
