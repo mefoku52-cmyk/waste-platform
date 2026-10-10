@@ -6,6 +6,7 @@ import { useRegister } from '../hooks/use-register';
 import { AuthButton, AuthInput, AuthLink } from '@/components/auth/auth-shell';
 import { PasswordInput } from '@/components/auth/password-input';
 import { TurnstileWidget } from '@/components/auth/turnstile-widget';
+import { track } from '@/lib/analytics/track';
 
 export function RegisterForm() {
   const { t } = useT();
@@ -20,8 +21,10 @@ export function RegisterForm() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
+    void track('registration_started');
     try {
       await register.mutateAsync({ email, password, name, turnstileToken });
+      void track('registration_completed');
       router.push('/verify-email-sent?email=' + encodeURIComponent(email));
     } catch (e: unknown) {
       const msg =
