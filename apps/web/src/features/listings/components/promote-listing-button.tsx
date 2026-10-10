@@ -39,9 +39,20 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
     setErr(null);
     try {
       const t = TIERS[selected];
-      await http.post(`/listings/${listingId}/promote`, { days: t.days, tier: t.key });
-      setOpen(false);
-      router.refresh();
+      const res = await http.post<{ url: string; id: string }>('/billing/stripe/checkout', {
+        kind: 'promote',
+        listing_id: listingId,
+        days: t.days,
+        tier: t.key,
+        success_url: `${window.location.origin}/dashboard/listings/${listingId}?paid=1`,
+        cancel_url: `${window.location.origin}/dashboard/listings/${listingId}?cancelled=1`,
+      });
+      if (res && res.url) {
+        window.location.href = res.url;
+        return;
+      }
+      setErr('Stripe nevrátil URL');
+      setBusy(false);
     } catch (e) {
       const msg = e instanceof Error ? e.message : t('listings.promoteExtended.title');
       setErr(msg);
