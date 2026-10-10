@@ -1,0 +1,332 @@
+# ZÁSADY OCHRANY OSOBNÝCH ÚDAJOV CMEP – TRČ
+
+**Verzia:** 1.2
+**Dátum účinnosti:** 15. 10. 2026
+**Prevádzkovateľ:** Radoslav Čornanič
+**IČO:** 51745666
+**Miesto podnikania:** 1. mája 2054, 069 01 Snina, Slovenská republika
+**E-mail:** trc-cmep@gmail.com
+**Telefón:** +421 910 617 338
+**Web:** https://trc-cmep.sk
+**Register:** Živnostenský register Okresného úradu Prešov (zápis v konaní)
+**Predmet podnikania:** Poskytovanie služieb informačnej spoločnosti (v konaní)
+
+## 1. ÚVOD
+
+1.1. Tieto zásady vysvetľujú, ako sa pri používaní platformy CMEP – TRČ spracúvajú osobné údaje, na aké účely sa používajú, aké sú právne základy spracúvania a aké práva majú dotknuté osoby.
+
+1.2. Spracúvanie osobných údajov sa riadi najmä nariadením Európskeho parlamentu a Rady (EÚ) 2016/679 (GDPR) a zákonom č. 18/2018 Z. z. o ochrane osobných údajov.
+
+1.3. Tieto zásady sa vzťahujú na návštevníkov webovej stránky, registrovaných používateľov, zástupcov spoločností, záujemcov o služby a osoby, ktoré kontaktujú prevádzkovateľa.
+
+1.4. Rozsah konkrétne spracúvaných údajov závisí od toho, aké funkcie osoba používa a aké údaje pri tom poskytne.
+
+1.5. Tento dokument predstavuje informáciu pre dotknuté osoby podľa článku 13 a podľa potreby aj článku 14 GDPR.
+
+## 2. PREVÁDZKOVATEĽ OSOBNÝCH ÚDAJOV
+
+2.1. Prevádzkovateľom osobných údajov je:
+
+- **Meno a priezvisko:** Radoslav Čornanič
+- **IČO:** 51745666
+- **Miesto podnikania:** 1. mája 2054, 069 01 Snina, Slovenská republika
+- **E-mail:** trc-cmep@gmail.com
+- **Telefón:** +421 910 617 338
+- **Web:** https://trc-cmep.sk
+
+2.2. Otázky týkajúce sa ochrany osobných údajov a uplatnenia práv možno posielať na uvedenú e-mailovú adresu.
+
+2.3. Prevádzkovateľ nevymenoval zodpovednú osobu (DPO), keďže na to nemá zákonnú povinnosť podľa článku 37 GDPR. Ak by sa táto povinnosť v budúcnosti zmenila, údaje o DPO budú zverejnené v aktualizovanej verzii tohto dokumentu.
+
+2.4. Ak sa na spracúvaní podieľa ďalší subjekt, jeho postavenie a zodpovednosť sa určujú podľa skutočného spôsobu spracúvania a príslušných právnych predpisov.
+
+2.5. Prevádzkovateľ nie je povinný vymenovať zástupcu v EÚ podľa článku 27 GDPR, keďže má sídlo v Slovenskej republike (EÚ).
+
+## 3. KATEGÓRIE SPRACÚVANÝCH ÚDAJOV
+
+3.1. Podľa používaných funkcií môžu byť spracúvané najmä tieto kategórie údajov:
+
+a) identifikačné údaje, napríklad meno a priezvisko alebo údaje zástupcu spoločnosti;
+
+b) kontaktné údaje, napríklad e-mailová adresa, telefónne číslo a pracovná adresa;
+
+c) údaje o spoločnosti, napríklad obchodné meno, IČO, DIČ, sídlo a ďalšie podnikateľské údaje;
+
+d) používateľské údaje, napríklad prihlasovacie meno, nastavenia účtu a stav účtu;
+
+e) obsah vložený používateľom, napríklad inzeráty, ponuky, dopyty, správy, dokumenty a prílohy;
+
+f) údaje o používaní služby, napríklad časové záznamy, technické udalosti a záznamy potrebné na bezpečnosť a riešenie problémov;
+
+g) technické údaje, napríklad IP adresa, údaje o prehliadači, zariadení a súboroch cookies, ak sa príslušné údaje skutočne získavajú;
+
+h) údaje potrebné na vybavenie žiadostí, reklamácií, oznámení, bezpečnostných incidentov a právnych nárokov;
+
+i) údaje z AI funkcionalít, napríklad text promptu a výstup vygenerovaný AI asistentom.
+
+3.2. Prevádzkovateľ nemá zámer získavať viac osobných údajov, než je potrebné na konkrétny účel. Používateľ by nemal do verejných polí, správ ani príloh vkladať osobitné kategórie osobných údajov alebo údaje iných osôb, ak to nie je nevyhnutné a právne odôvodnené.
+
+3.3. Prevádzkovateľ nespracúva osobitné kategórie osobných údajov podľa článku 9 GDPR (údaje o zdraví, rase, politických názoroch, náboženskom presvedčení, sexuálnej orientácii a pod.) a nevyžaduje ich od používateľov.
+
+3.4. Prevádzkovateľ nespracúva osobné údaje osôb mladších ako 16 rokov, keďže platforma je určená výlučne podnikateľom (B2B).
+
+## 4. ÚČELY A PRÁVNE ZÁKLADY SPRACÚVANIA
+
+4.1. Osobné údaje sa môžu spracúvať na tieto účely:
+
+a) vytvorenie a správa používateľského účtu;
+
+b) poskytovanie funkcií platformy, vrátane správy ponúk, dopytov a komunikácie medzi používateľmi;
+
+c) overenie účtu alebo podnikateľských údajov, ak je také overenie potrebné;
+
+d) zákaznícka podpora, vybavovanie otázok, reklamácií a oznámení;
+
+e) ochrana platformy, prevencia podvodov, zneužitia a neoprávneného prístupu;
+
+f) plnenie zákonných povinností;
+
+g) uplatňovanie, preukazovanie alebo obhajovanie právnych nárokov;
+
+h) zlepšovanie funkčnosti a bezpečnosti služby v rozsahu dovolenom právnymi predpismi;
+
+i) zasielanie obchodných oznámení, ak na to existuje príslušný právny základ;
+
+j) prevádzka AI funkcionalít, ak ich používateľ využije.
+
+4.2. Podľa konkrétneho účelu sa spracúvanie opiera najmä o jeden z týchto právnych základov podľa článku 6 ods. 1 GDPR:
+
+a) **čl. 6 ods. 1 písm. a) — súhlas** dotknutej osoby, ak sa vyžaduje (napr. marketingové obchodné oznámenia);
+
+b) **čl. 6 ods. 1 písm. b) — plnenie zmluvy** alebo vykonanie opatrení pred uzatvorením zmluvy (registrácia, účet, platforma);
+
+c) **čl. 6 ods. 1 písm. c) — zákonná povinnosť** prevádzkovateľa (účtovníctvo, dane, právne povinnosti);
+
+d) **čl. 6 ods. 1 písm. f) — oprávnený záujem** prevádzkovateľa alebo tretej osoby (bezpečnosť, prevencia podvodov, ochrana práv);
+
+e) **čl. 6 ods. 1 písm. d) alebo e)** — ochrana životne dôležitých záujmov alebo verejného záujmu, ak by sa uplatnili.
+
+4.3. Konkrétny právny základ závisí od účelu a okolností spracúvania. Ak je právnym základom súhlas, možno ho kedykoľvek odvolať. Odvolanie súhlasu nemá vplyv na zákonnosť spracúvania vykonaného pred jeho odvolaním.
+
+4.4. Ak sa spracúvanie zakladá na oprávnenom záujme, dotknutá osoba má právo namietať proti nemu za podmienok stanovených GDPR.
+
+4.5. Oprávnené záujmy, o ktoré sa Prevádzkovateľ opiera, sú najmä: ochrana bezpečnosti platformy a jej infraštruktúry, prevencia podvodov a zneužitia, vedenie bezpečnostných záznamov, ochrana právnych nárokov, primerané interné zlepšovanie služby.
+
+## 5. REGISTRÁCIA A SPRÁVA ÚČTU
+
+5.1. Pri registrácii a používaní účtu sa spracúvajú údaje potrebné na vytvorenie účtu, jeho správu, zabezpečenie a poskytovanie dostupných funkcií.
+
+5.2. Používateľ je povinný poskytovať pravdivé a aktuálne údaje v rozsahu požadovanom pre príslušnú funkciu služby.
+
+5.3. Prihlasovacie údaje je používateľ povinný chrániť pred sprístupnením neoprávneným osobám.
+
+5.4. Ak je to potrebné na bezpečnosť, riešenie incidentu alebo ochranu práv, môžu sa uchovávať primerané záznamy o prihláseniach a významných udalostiach v účte.
+
+5.5. Poskytnutie údajov pri registrácii je zmluvnou požiadavkou. Ak používateľ neposkytne potrebné údaje, účet nemôže byť vytvorený.
+
+## 6. SPRÁVY A OBSAH POUŽÍVATEĽOV
+
+6.1. Ak používateľ prostredníctvom platformy zverejní ponuku, odošle dopyt, komunikuje s iným používateľom alebo vloží dokument, údaje v tomto obsahu sa spracúvajú na účely poskytnutia príslušnej funkcie.
+
+6.2. Obsah určený na zverejnenie môže byť sprístupnený iným používateľom podľa nastavení a pravidiel platformy. Používateľ má pred zverejnením zvážiť, či obsahuje osobné alebo dôverné údaje.
+
+6.3. Prevádzkovateľ môže obsah spracúvať aj v rozsahu potrebnom na moderovanie, vybavenie oznámenia, riešenie sporu, ochranu bezpečnosti alebo splnenie zákonnej povinnosti.
+
+6.4. Prístup k súkromnej komunikácii alebo dokumentom sa nesmie rozširovať nad rámec oprávneného účelu a platných právnych predpisov.
+
+6.5. Kontaktné údaje používateľov sú v rámci platformy štandardne skryté. Zverejnenie prebieha na princípe vzájomného súhlasu (výmena kontaktov).
+
+## 7. UMELÁ INTELIGENCIA A AUTOMATIZOVANÉ SPRACÚVANIE
+
+7.1. Platforma môže podľa dostupných funkcií používať nástroje umelej inteligencie na analýzu, triedenie, vyhľadávanie, sumarizáciu alebo odporúčanie obsahu.
+
+7.2. Ak sa osobné údaje poskytnú externému poskytovateľovi nástroja umelej inteligencie, musí sa také spracúvanie posudzovať podľa konkrétneho poskytovateľa, účelu, právneho základu a príslušných zmluvných a bezpečnostných opatrení.
+
+7.3. Používatelia by do nástrojov umelej inteligencie nemali vkladať osobné údaje, obchodné tajomstvá ani dôverné dokumenty, ak na to nemajú oprávnenie a ak nie sú splnené príslušné podmienky spracúvania.
+
+7.4. Výstupy umelej inteligencie môžu byť neúplné alebo nesprávne. Pri rozhodnutiach s právnymi alebo obdobne významnými účinkami sa musia dodržiavať príslušné zákonné požiadavky.
+
+7.5. Samotná existencia nástrojov umelej inteligencie neznamená, že sa vykonáva automatizované individuálne rozhodovanie podľa článku 22 GDPR. Ak by sa také rozhodovanie zaviedlo, musí sa osobitne posúdiť jeho zákonnosť a splnenie informačných povinností.
+
+7.6. **Transparentnosť AI:** V súlade s článkom 50 Nariadenia (EÚ) 2024/1689 (AI Act) Prevádzkovateľ informuje, že AI asistent komunikuje ako umelá inteligencia a jeho výstupy sú generované AI. Používateľ má právo byť informovaný o tom, že komunikuje s AI systémom.
+
+## 8. PRÍJEMCOVIA A SPRACOVATELIA
+
+8.1. Osobné údaje môžu byť v nevyhnutnom rozsahu sprístupnené:
+
+a) používateľom, ktorým sú údaje určené v rámci funkcií platformy;
+
+b) poskytovateľom hostingu, serverovej infraštruktúry a technickej podpory;
+
+c) poskytovateľom e-mailových, bezpečnostných, analytických alebo iných technických služieb, ak sa používajú;
+
+d) poskytovateľom nástrojov umelej inteligencie, ak sa ich služby používajú na spracúvanie príslušných údajov;
+
+e) právnym, účtovným alebo iným odborným poradcom, ak je to potrebné;
+
+f) orgánom verejnej moci, ak to vyžaduje zákon alebo záväzné rozhodnutie;
+
+g) orgánom činným v trestnom konaní, ak to vyžaduje zákon.
+
+8.2. Prístup sa obmedzuje na rozsah potrebný na príslušný účel. Ak má príjemca postavenie sprostredkovateľa, spracúvanie sa upraví zmluvou podľa článku 28 GDPR alebo iným právne požadovaným spôsobom.
+
+8.3. Konkrétni poskytovatelia sa môžu meniť podľa technického riešenia platformy. Aktuálny zoznam a rozsah spracúvania sa musia posudzovať podľa skutočne používaných služieb a uzatvorených zmlúv.
+
+8.4. Údaje sa nepredávajú tretím stranám.
+
+## 9. PRENOS DO TRETÍCH KRAJÍN
+
+9.1. Ak sa osobné údaje prenášajú mimo Európskeho hospodárskeho priestoru, taký prenos sa uskutoční len pri splnení podmienok GDPR.
+
+9.2. Podľa okolností môže byť právnym mechanizmom rozhodnutie o primeranosti, štandardné zmluvné doložky podľa článku 46 GDPR alebo iný zákonom povolený mechanizmus.
+
+9.3. Samotné použitie externého technického poskytovateľa ešte neznamená, že dochádza k prenosu osobných údajov do tretej krajiny. Rozhodujúce sú jeho skutočné umiestnenie, prístup k údajom a podmienky služby.
+
+9.4. Pri prenose údajov mimo EHP Prevádzkovateľ zabezpečuje primerané záruky a informuje o nich v aktualizovanej verzii tohto dokumentu, ak sa zmení zoznam poskytovateľov.
+
+## 10. DOBA UCHOVÁVANIA
+
+10.1. Osobné údaje sa uchovávajú len po dobu potrebnú na účel, na ktorý sa získali, alebo po dobu vyžadovanú príslušnými právnymi predpismi.
+
+10.2. Doby uchovávania podľa kategórií:
+
+a) **registračné údaje a údaje o účte:** po dobu existencie účtu; po zrušení účtu sa údaje vymažú alebo anonymizujú do 30 dní, ak zákon nevyžaduje inak;
+
+b) **obsah (ponuky, dopyty, dokumenty):** po dobu existencie účtu; 3 roky po poslednej aktivite, ak ide o uchovávanie na účely právnych nárokov;
+
+c) **chatové správy:** 12 mesiacov od odoslania; pri prebiehajúcom spore až do jeho skončenia, max. 3 roky;
+
+d) **bezpečnostné logy a IP adresy:** 12 mesiacov od vzniku;
+
+e) **AI prompty a výstupy:** podľa nastavenia poskytovateľa AI; štandardne do 30 dní, ak sa používateľ nerozhodne inak;
+
+f) **účtovné a daňové doklady:** 10 rokov podľa zákona č. 431/2002 Z. z. o účtovníctve;
+
+g) **záznamy o reklamáciách a oznámeniach:** 3 roky od vybavenia.
+
+10.3. Po zániku účelu sa údaje vymažú alebo anonymizujú, ak ich ďalšie uchovávanie nevyžaduje právny predpis alebo iný platný právny základ.
+
+10.4. Záložné kópie a bezpečnostné záznamy môžu byť odstránené podľa príslušných technických a bezpečnostných postupov. Ich uchovávanie nesmie byť bezdôvodne neobmedzené, štandardne do 30 dní.
+
+10.5. Ak dotknutá osoba požiada o vymazanie údajov, prevádzkovateľ posúdi žiadosť podľa GDPR a ďalších právnych povinností. Vymazanie nemusí byť možné v rozsahu, v ktorom je ďalšie uchovávanie zákonné a nevyhnutné.
+
+## 11. COOKIES A PODOBNÉ TECHNOLÓGIE
+
+11.1. Webová stránka používa nevyhnutné cookies alebo podobné technológie na zabezpečenie funkčnosti, správu relácie a ochranu služby.
+
+11.2. Používanie cookies sa riadi § 109 zákona č. 452/2021 Z. z. o elektronických komunikáciách a príslušnými predpismi EÚ.
+
+11.3. Technológie, ktoré nie sú nevyhnutné na poskytnutie služby, sa používajú len vtedy, ak sú splnené požiadavky príslušných právnych predpisov vrátane získania súhlasu, ak sa vyžaduje.
+
+11.4. Používateľ môže spravovať cookies prostredníctvom nastavení prehliadača alebo dostupného nástroja na správu súhlasov. Vypnutie niektorých cookies môže ovplyvniť fungovanie webovej stránky.
+
+11.5. Konkrétne používané cookies, ich účely a doba platnosti sa určujú podľa aktuálneho nasadenia webovej stránky.
+
+## 12. BEZPEČNOSŤ OSOBNÝCH ÚDAJOV
+
+12.1. Prevádzkovateľ prijíma primerané technické a organizačné opatrenia na ochranu osobných údajov pred neoprávneným prístupom, stratou, zničením, zmenou alebo neoprávneným sprístupnením.
+
+12.2. Rozsah opatrení sa posudzuje podľa povahy údajov, rizík spracúvania a technických možností.
+
+12.3. Používatelia sú povinní chrániť svoje prihlasovacie údaje, používať primerane zabezpečené zariadenia a bez zbytočného odkladu oznámiť podozrenie na zneužitie účtu.
+
+12.4. Ak dôjde k porušeniu ochrany osobných údajov, prevádzkovateľ postupuje podľa povinností stanovených GDPR.
+
+12.5. **Oznamovanie porušenia dozornému orgánu:** Ak porušenie ochrany osobných údajov pravdepodobne povedie k riziku pre práva a slobody fyzických osôb, Prevádzkovateľ oznámi porušenie Úradu na ochranu osobných údajov SR bez zbytočného odkladu, najneskôr do 72 hodín od okamihu, keď sa o porušení dozvedel (článok 33 GDPR).
+
+12.6. **Oznamovanie dotknutým osobám:** Ak porušenie predstavuje vysoké riziko pre práva a slobody dotknutých osôb, Prevádzkovateľ informuje dotknuté osoby bez zbytočného odkladu (článok 34 GDPR).
+
+12.7. Prevádzkovateľ vedie záznamy o všetkých porušeniach ochrany osobných údajov vrátane opisu, následkov a prijatých opatrení.
+
+## 13. ZÁZNAMY O SPRACOVATEĽSKÝCH ČINNOSTIACH
+
+13.1. Prevádzkovateľ vedie záznamy o spracovateľských činnostiach v rozsahu podľa článku 30 GDPR.
+
+13.2. Záznamy obsahujú najmä: účel spracúvania, kategórie dotknutých osôb a údajov, kategórie príjemcov, dobu uchovávania, opis technických a organizačných opatrení.
+
+13.3. Záznamy sa na požiadanie poskytnú dozornému orgánu.
+
+## 14. POSÚDENIE VPLYVU NA OCHRANU OSOBNÝCH ÚDAJOV (DPIA)
+
+14.1. Prevádzkovateľ vykonáva posúdenie vplyvu na ochranu osobných údajov podľa článku 35 GDPR, ak je pravdepodobné, že určitý druh spracúvania bude mať za následok vysoké riziko pre práva a slobody fyzických osôb.
+
+14.2. V prípade zavedenia nových technológií, rozsiahleho profilovania alebo spracúvania osobitných kategórií údajov Prevádzkovateľ posúdi potrebu DPIA ešte pred začatím spracúvania.
+
+14.3. Ak sa zistí vysoké riziko, ktoré nemožno zmierniť, Prevádzkovateľ konzultuje spracúvanie s Úradom na ochranu osobných údajov SR podľa článku 36 GDPR.
+
+## 15. PRÁVA DOTKNUTÝCH OSÔB
+
+15.1. Za podmienok stanovených GDPR má dotknutá osoba právo:
+
+a) **Právo na prístup (čl. 15)** — získať potvrdenie, či sa jej osobné údaje spracúvajú, a získať kópiu týchto údajov;
+
+b) **Právo na opravu (čl. 16)** — požiadať o opravu nesprávnych alebo doplnenie neúplných údajov;
+
+c) **Právo na výmaz (čl. 17)** — požiadať o vymazanie údajov, ak sú splnené zákonné podmienky (právo byť zabudnutý);
+
+d) **Právo na obmedzenie spracúvania (čl. 18)** — požiadať o obmedzenie spracúvania v prípadoch stanovených GDPR;
+
+e) **Právo na prenosnosť (čl. 20)** — získať svoje údaje v štruktúrovanom, bežne používanom a strojovo čitateľnom formáte;
+
+f) **Právo namietať (čl. 21)** — namietať proti spracúvaniu založenému na oprávnenom záujme alebo na priamom marketingu;
+
+g) **Právo nebyť predmetom automatizovaného rozhodovania (čl. 22)** — ak by sa zaviedlo;
+
+h) **Právo odvolať súhlas** — ak je spracúvanie založené na súhlase, kedykoľvek ho možno odvolať;
+
+i) **Právo podať sťažnosť dozornému orgánu** — pozri článok 16.
+
+15.2. Uvedené práva nie sú absolútne. Ich uplatnenie sa posudzuje podľa okolností a výnimiek ustanovených právnymi predpismi.
+
+15.3. Žiadosť možno zaslať na adresu trc-cmep@gmail.com. Prevádzkovateľ môže požiadať o dodatočné informácie potrebné na overenie totožnosti, ak existujú dôvodné pochybnosti o totožnosti žiadateľa.
+
+15.4. Na žiadosti sa odpovedá bez zbytočného odkladu, spravidla najneskôr do jedného mesiaca od ich doručenia. V odôvodnených prípadoch možno lehotu predĺžiť o ďalšie dva mesiace v súlade s článkom 12 ods. 3 GDPR; dotknutá osoba bude o predĺžení a jeho dôvodoch informovaná.
+
+15.5. Uplatnenie práv je bezplatné. Ak je žiadosť zjavne neopodstatnená alebo neprimeraná, najmä pre opakujúci sa charakter, Prevádzkovateľ môže účtovať primeraný poplatok alebo žiadosť odmietnuť.
+
+## 16. PRÁVO PODAŤ SŤAŽNOSŤ
+
+16.1. Ak sa dotknutá osoba domnieva, že spracúvanie jej osobných údajov porušuje GDPR, môže podať sťažnosť dozornému orgánu.
+
+16.2. Dozorným orgánom na Slovensku je:
+
+- **Úrad na ochranu osobných údajov Slovenskej republiky**
+- Hraničná 12, 820 07 Bratislava 27
+- Web: https://dataprotection.gov.sk/
+- E-mail: statny.dozor@dataprotection.gov.sk
+
+16.3. Dotknutá osoba môže využiť aj ďalšie prostriedky ochrany, ktoré jej poskytujú právne predpisy, vrátane práva na účinný súdny prostriedok nápravy proti rozhodnutiu dozorného orgánu.
+
+## 17. ÚDAJE INÝCH OSÔB
+
+17.1. Používateľ, ktorý do platformy vloží osobné údaje inej osoby, je povinný mať na ich poskytnutie príslušné oprávnenie a zabezpečiť splnenie informačných povinností, ak sa naňho vzťahujú.
+
+17.2. Používateľ nesmie zverejňovať cudzie osobné údaje bez právneho dôvodu ani ich používať na obťažovanie, podvod, neoprávnený marketing alebo iné nezákonné účely.
+
+17.3. Ak používateľ zistí, že zverejnil osobné údaje omylom, má bez zbytočného odkladu podniknúť kroky na obmedzenie ich ďalšieho sprístupňovania a podľa potreby kontaktovať prevádzkovateľa.
+
+## 18. OBCHODNÉ OZNÁMENIA
+
+18.1. Obchodné oznámenia sa zasielajú len v rozsahu dovolenom príslušnými právnymi predpismi, najmä zákonom č. 452/2021 Z. z. o elektronických komunikáciách.
+
+18.2. Ak sa vyžaduje súhlas, obchodné oznámenia sa zasielajú až po jeho udelení. Ak zákon povoľuje inú právnu cestu, musia byť splnené všetky podmienky tejto výnimky.
+
+18.3. Príjemca môže odmietnuť ďalšie zasielanie obchodných oznámení spôsobom uvedeným v správe alebo kontaktovaním prevádzkovateľa.
+
+## 19. ZMENY TÝCHTO ZÁSAD
+
+19.1. Prevádzkovateľ môže tieto zásady aktualizovať, ak sa zmení fungovanie platformy, rozsah spracúvania, používané technológie alebo právne požiadavky.
+
+19.2. Aktuálna verzia sa zverejňuje na webovej stránke platformy. Ak zmena vyžaduje osobitné oznámenie alebo súhlas, postupuje sa podľa príslušných právnych predpisov.
+
+19.3. Dátum účinnosti a číslo verzie sú uvedené v záhlaví dokumentu.
+
+## 20. ZÁVEREČNÉ USTANOVENIA
+
+20.1. Tieto zásady poskytujú všeobecné informácie o ochrane osobných údajov pri používaní platformy CMEP – TRČ.
+
+20.2. Konkrétne spracúvanie sa vždy posudzuje podľa skutočne dostupných funkcií platformy, použitých poskytovateľov, okolností spracúvania a platných právnych predpisov.
+
+20.3. Ak sa niektoré ustanovenie týchto zásad stane neplatným alebo nevykonateľným, nemá to automaticky vplyv na ostatné ustanovenia.
+
+20.4. Tieto zásady nadobúdajú účinnosť 15. 10. 2026.

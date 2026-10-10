@@ -1,0 +1,239 @@
+# REKLAMAČNÝ A OZNAMOVACÍ PORIADOK CMEP – TRČ
+
+**Verzia:** 1.2
+**Dátum účinnosti:** 15. 10. 2026
+**Prevádzkovateľ:** Radoslav Čornanič
+**IČO:** 51745666
+**Miesto podnikania:** 1. mája 2054, 069 01 Snina, Slovenská republika
+**E-mail:** trc-cmep@gmail.com
+**Telefón:** +421 910 617 338
+**Web:** https://trc-cmep.sk
+**Register:** Živnostenský register Okresného úradu Prešov (zápis v konaní)
+**Orgán dohľadu:** Slovenská obchodná inšpekcia (SOI), Inšpektorát SOI pre Prešovský kraj, Obrancov mieru 6, 080 01 Prešov
+**Predmet podnikania:** Poskytovanie služieb informačnej spoločnosti (v konaní)
+
+## 1. ÚČEL A ROZSAH
+
+1.1. Tento poriadok upravuje spôsob podávania a vybavovania reklamácií týkajúcich sa fungovania platformy CMEP – TRČ a spôsob zasielania oznámení o nezákonnom obsahu, porušovaní pravidiel alebo bezpečnostných problémoch.
+
+1.2. Poriadok sa vzťahuje na používateľov platformy v rozsahu príslušnom pre konkrétnu požiadavku.
+
+1.3. Tento poriadok nenahrádza zákonné práva používateľov ani osobitné postupy, ktoré musia byť dodržané podľa právnych predpisov.
+
+1.4. Ak sa reklamácia týka zmluvy medzi používateľmi platformy, a nie samotnej služby prevádzkovateľa, prevádzkovateľ môže pomôcť s prijatím oznámenia, ale automaticky nepreberá zodpovednosť za plnenie zmluvy medzi týmito používateľmi.
+
+1.5. Tento poriadok je súčasťou Obchodných podmienok platformy CMEP a vykladá sa spolu s nimi.
+
+## 2. ČO MOŽNO REKLAMOVAŤ
+
+2.1. Používateľ môže podať reklamáciu alebo sťažnosť týkajúcu sa najmä:
+
+a) nedostupnosti alebo nesprávneho fungovania funkcií platformy;
+
+b) problémov s registráciou, prihlásením alebo správou účtu;
+
+c) technických chýb pri vytváraní, úprave alebo zobrazovaní ponúk a dopytov;
+
+d) nesprávneho spracovania požiadavky odoslanej prostredníctvom platformy;
+
+e) účtovanej platenej funkcie, ak ju platforma ponúka a ak sa na ňu vzťahuje reklamácia;
+
+f) podozrenia na neoprávnený prístup, zneužitie účtu alebo iný bezpečnostný problém;
+
+g) iného problému, ktorý priamo súvisí so službou poskytovanou prevádzkovateľom.
+
+2.2. Reklamácia by sa mala týkať konkrétneho problému a obsahovať dostatok informácií na jeho posúdenie.
+
+2.3. Reklamácia sa netýka obsahu vytvoreného inými používateľmi, výsledku obchodu medzi používateľmi ani vopred oznámenej údržby.
+
+## 3. AKO PODAŤ REKLAMÁCIU
+
+3.1. Reklamáciu možno podať e-mailom na adresu:
+
+trc-cmep@gmail.com
+
+3.2. Predmet správy odporúčame označiť ako „Reklamácia CMEP – TRČ".
+
+3.3. Reklamácia by mala obsahovať, ak sú tieto údaje relevantné:
+
+a) meno alebo názov používateľa;
+
+b) kontaktnú e-mailovú adresu;
+
+c) stručný a zrozumiteľný opis problému;
+
+d) približný dátum a čas, keď problém nastal;
+
+e) označenie dotknutej funkcie, ponuky alebo požiadavky;
+
+f) snímku obrazovky alebo inú technickú informáciu, ak pomáha problém objasniť;
+
+g) požadovaný spôsob nápravy, ak ho možno určiť.
+
+3.4. Používateľ by nemal posielať heslá, celé platobné údaje ani iné citlivé informácie, ktoré nie sú potrebné na vybavenie reklamácie.
+
+3.5. Ak reklamácia neobsahuje dostatok informácií, prevádzkovateľ môže požiadať o jej doplnenie.
+
+## 4. PRIJATIE A VYBAVENIE REKLAMÁCIE
+
+4.1. Prevádzkovateľ reklamáciu posúdi podľa jej obsahu, dostupných podkladov, podmienok poskytovanej služby a príslušných právnych predpisov.
+
+4.2. Prevádzkovateľ potvrdí prijatie reklamácie bez zbytočného odkladu, spravidla do 3 pracovných dní, a poskytne informáciu o ďalšom postupe.
+
+4.3. Reklamácie sa vybavujú bez zbytočného odkladu. Konkrétna lehota závisí od povahy požiadavky a príslušných zákonných povinností.
+
+4.4. Ak sa na konkrétnu reklamáciu vzťahuje zákonná lehota, prevádzkovateľ ju dodrží. Tento poriadok nevytvára kratšiu ani dlhšiu zákonnú lehotu, než stanovujú príslušné právne predpisy.
+
+4.5. Pri technicky zložitom probléme môže byť potrebné vykonať diagnostiku, vyžiadať doplňujúce informácie alebo spolupracovať s poskytovateľom technickej služby.
+
+4.6. Výsledkom môže byť najmä oprava chyby, obnovenie funkčnosti, vysvetlenie spôsobu fungovania, oprava nesprávneho údaja, iné primerané riešenie alebo odôvodnené zamietnutie reklamácie.
+
+4.7. Ak reklamácii nemožno vyhovieť, prevádzkovateľ uvedie dôvod v rozsahu primeranom okolnostiam a právnym povinnostiam.
+
+4.8. Reklamácia sa považuje za vybavenú aj doručením odpovede na kontaktnú e-mailovú adresu uvedenú v reklamácii.
+
+## 5. OZNAMOVANIE NEZÁKONNÉHO OBSAHU (DSA čl. 16)
+
+5.1. Každá osoba môže oznámiť obsah, o ktorom sa v dobrej viere domnieva, že je nezákonný alebo porušuje pravidlá platformy.
+
+5.2. Oznámenie možno poslať na adresu:
+
+trc-cmep@gmail.com
+
+5.3. Predmet správy odporúčame označiť ako „Oznámenie nezákonného obsahu".
+
+5.4. Oznámenie by malo obsahovať:
+
+a) dostatočne presné označenie obsahu, napríklad odkaz na stránku, ponuku alebo správu;
+
+b) opis dôvodu, pre ktorý sa obsah považuje za nezákonný alebo neprípustný;
+
+c) meno a e-mailovú adresu oznamovateľa, ak sa vyžadujú alebo sú potrebné na komunikáciu;
+
+d) vyhlásenie, že oznamovateľ sa v dobrej viere domnieva, že poskytnuté informácie a tvrdenia sú správne a úplné.
+
+5.5. Ak je oznámenie neúplné alebo obsah nemožno jednoznačne identifikovať, prevádzkovateľ môže požiadať o doplnenie informácií, ak je to vhodné a právne prípustné.
+
+5.6. Prevádzkovateľ oznámenie posúdi podľa jeho obsahu a okolností. Podľa výsledku môže prijať opatrenie, požiadať o doplnenie informácií alebo dospieť k záveru, že dôvod na zásah nebol preukázaný.
+
+5.7. Oznámenie samo osebe nezaručuje odstránenie obsahu. Rozhodnutie musí zohľadniť dostupné informácie, právne požiadavky a práva dotknutých osôb.
+
+5.8. Prevádzkovateľ potvrdí prijatie oznámenia bez zbytočného odkladu a v primeranej lehote informuje oznamovateľa o svojom rozhodnutí a o možnostiach nápravy.
+
+## 6. POSUDZOVANIE OBSAHU A OPATRENIA
+
+6.1. Pri posudzovaní oznámenia môže prevádzkovateľ zohľadniť najmä:
+
+a) povahu a závažnosť údajného porušenia;
+
+b) dostupné dôkazy a presnosť oznámenia;
+
+c) riziko pre používateľov alebo tretie osoby;
+
+d) príslušné právne predpisy a pravidlá platformy;
+
+e) potrebu zachovať relevantné záznamy na účely vyšetrovania alebo právnej povinnosti.
+
+6.2. Podľa okolností môže prevádzkovateľ prijať primerané opatrenia, napríklad obmedziť viditeľnosť obsahu, odstrániť obsah, požiadať používateľa o vysvetlenie, obmedziť funkcie účtu alebo účet pozastaviť či zrušiť, ak na to existuje právny alebo zmluvný dôvod.
+
+6.3. Opatrenia sa prijímajú s ohľadom na závažnosť a okolnosti prípadu. Tento poriadok nezavádza automatické odstránenie každého oznámeného obsahu.
+
+6.4. Ak sa na platformu vzťahujú osobitné povinnosti podľa nariadenia (EÚ) 2022/2065 o digitálnych službách (DSA), prevádzkovateľ postupuje aj podľa príslušných ustanovení tohto nariadenia.
+
+6.5. **Odôvodnenie rozhodnutia (DSA čl. 17):** Ak Prevádzkovateľ odstráni alebo obmedzí obsah, alebo pozastaví či zruší účet, informuje dotknutého používateľa o rozhodnutí spolu s odôvodnením, ktoré obsahuje: opis prijatého opatrenia, dôvody rozhodnutia, právny základ, informáciu o možnosti nápravy. Toto neplatí, ak je to zakázané zákonom alebo ak by to ohrozilo vyšetrovanie.
+
+## 7. ODVOLANIE ALEBO NÁMIETKA PROTI OPATRENIU (DSA čl. 20)
+
+7.1. Ak používateľ nesúhlasí s opatrením týkajúcim sa jeho obsahu alebo účtu, môže zaslať žiadosť o opätovné posúdenie na adresu trc-cmep@gmail.com.
+
+7.2. V žiadosti odporúčame uviesť:
+
+a) označenie napadnutého opatrenia;
+
+b) dôvod nesúhlasu;
+
+c) informácie alebo dôkazy, ktoré podľa používateľa neboli zohľadnené;
+
+d) požadovaný výsledok opätovného posúdenia.
+
+7.3. Prevádzkovateľ žiadosť posúdi podľa okolností a platných pravidiel. Ak sa na konkrétny prípad vzťahuje zákonný mechanizmus sťažnosti alebo odvolania, postupuje sa podľa príslušných právnych predpisov.
+
+7.4. Podanie žiadosti o opätovné posúdenie samo osebe nezaručuje zmenu pôvodného rozhodnutia.
+
+7.5. **Interný systém sťažností (DSA čl. 20):** Používateľ, ktorého obsah bol odstránený alebo ktorého účet bol obmedzený, má právo podať sťažnosť do 6 mesiacov od rozhodnutia. Sťažnosť posudzuje osoba, ktorá nie je zodpovedná za pôvodné rozhodnutie. Rozhodnutie bude vydané bez zbytočného odkladu.
+
+7.6. **Mimosúdne riešenie sporov (DSA čl. 21):** Používateľ má právo obrátiť sa na certifikovaný orgán mimosúdneho riešenia sporov. Aktuálny zoznam certifikovaných orgánov je zverejnený Európskou komisiou na adrese https://digital-strategy.ec.europa.eu/en/policies/dsa-out-of-court-disputes. V čase účinnosti tohto dokumentu nie je pre Slovenskú republiku certifikovaný orgán špecificky pre tento typ platformy.
+
+7.7. **Trusted flaggers (DSA čl. 22):** Prevádzkovateľ v čase účinnosti tohto dokumentu nespolupracuje so žiadnym trusted flaggerom. Ak by sa taká spolupráca zaviedla, oznámenia od trusted flaggerov by boli vybavované prednostne.
+
+## 8. BEZPEČNOSTNÉ INCIDENTY A OCHRANA ÚDAJOV
+
+8.1. Podozrenie na neoprávnený prístup, zneužitie účtu, únik údajov alebo inú bezpečnostnú udalosť treba bez zbytočného odkladu oznámiť na adrese trc-cmep@gmail.com.
+
+8.2. Oznámenie by malo obsahovať opis udalosti, približný čas jej zistenia a informácie potrebné na preverenie. Neposielajte heslá ani zbytočné citlivé údaje.
+
+8.3. Prevádzkovateľ posúdi oznámenie a podľa potreby prijme primerané opatrenia na obmedzenie rizika a preverenie udalosti.
+
+8.4. Ak udalosť predstavuje porušenie ochrany osobných údajov, postupuje sa podľa GDPR vrátane oznamovacích povinností.
+
+8.5. **Oznámenie dozornému orgánu:** Ak porušenie ochrany osobných údajov pravdepodobne povedie k riziku pre práva a slobody fyzických osôb, Prevádzkovateľ oznámi porušenie Úradu na ochranu osobných údajov SR bez zbytočného odkladu, najneskôr do 72 hodín od okamihu, keď sa o porušení dozvedel (článok 33 GDPR).
+
+8.6. **Oznámenie dotknutým osobám:** Ak porušenie predstavuje vysoké riziko pre práva a slobody dotknutých osôb, Prevádzkovateľ informuje dotknuté osoby bez zbytočného odkladu (článok 34 GDPR).
+
+## 9. LEHOTY A KOMUNIKÁCIA
+
+9.1. Používateľ by mal pri podávaní reklamácie alebo oznámenia uviesť funkčný kontaktný e-mail.
+
+9.2. Prevádzkovateľ môže komunikovať elektronicky prostredníctvom kontaktu uvedeného v podaní alebo v používateľskom účte, ak je to vhodné.
+
+9.3. Lehoty na vybavenie sa určujú podľa povahy podania a právnych predpisov, ktoré sa naň vzťahujú. Ak zákon ustanovuje konkrétnu lehotu, má prednosť pred všeobecným opisom v tomto poriadku.
+
+9.4. Ak je na vybavenie potrebná súčinnosť používateľa, používateľ by mal požadované informácie poskytnúť bez zbytočného odkladu.
+
+## 10. ZÁZNAMY A UCHOVÁVANIE PODANÍ
+
+10.1. Prevádzkovateľ vedie záznamy o reklamáciách, oznámeniach, rozhodnutiach a prijatých opatreniach v rozsahu potrebnom na vybavenie podania, preukázanie splnenia povinností, bezpečnosť služby a ochranu právnych nárokov.
+
+10.2. Záznamy sa uchovávajú 3 roky od vybavenia podania, ak právne predpisy nevyžadujú inú dobu.
+
+10.3. Pri uchovávaní osobných údajov sa uplatňujú Zásady ochrany osobných údajov platformy CMEP – TRČ.
+
+10.4. Prístup k záznamom sa obmedzuje na osoby a poskytovateľov, ktorí ich potrebujú na oprávnený účel.
+
+## 11. ZNEUŽITIE POSTUPU (DSA čl. 23)
+
+11.1. Reklamačný a oznamovací postup sa nesmie používať na vedomé uvádzanie nepravdivých informácií, obťažovanie iných používateľov, šikanovanie konkurencie ani na iný nezákonný účel.
+
+11.2. Ak existujú dôvodné známky zneužitia postupu, prevádzkovateľ môže podanie primerane preveriť a prijať opatrenia v súlade s právnymi predpismi, vrátane pozastavenia možnosti podávať oznámenia.
+
+11.3. Samotné zamietnutie oznámenia alebo reklamácie neznamená, že podávateľ konal v zlej viere.
+
+11.4. **Recidíva (DSA čl. 23):** Opakované porušovanie pravidiel platformy zo strany používateľa vedie k stupňovitým opatreniam podľa Obchodných podmienok (upozornenie, skrytie, suspenzia, zrušenie účtu).
+
+## 12. VZŤAH K ĎALŠÍM DOKUMENTOM
+
+12.1. Tento poriadok sa vykladá spolu s ďalšími relevantnými dokumentmi platformy, najmä:
+
+a) Licenčnými podmienkami;
+
+b) Obchodnými podmienkami;
+
+c) Zásadami ochrany osobných údajov.
+
+12.2. Ak je ustanovenie tohto poriadku v rozpore s kogentným ustanovením právneho predpisu, uplatní sa príslušný právny predpis.
+
+## 13. ZMENY PORIADKU
+
+13.1. Prevádzkovateľ môže tento poriadok aktualizovať v prípade zmeny fungovania platformy, používaných postupov alebo právnych predpisov.
+
+13.2. Aktuálna verzia sa zverejňuje na webovej stránke platformy.
+
+13.3. Ak si zmena vyžaduje osobitné oznámenie podľa zákona alebo zmluvných podmienok, prevádzkovateľ postupuje podľa príslušných požiadaviek, spravidla s oznámením 30 dní vopred.
+
+## 14. ZÁVEREČNÉ USTANOVENIA
+
+14.1. Tento poriadok nadobúda účinnosť 15. 10. 2026.
+
+14.2. Podania podľa tohto poriadku sa zasielajú na e-mailovú adresu trc-cmep@gmail.com, pokiaľ platforma neposkytuje iný funkčný a riadne oznámený spôsob podania.
+
+14.3. Tento dokument opisuje všeobecný postup. Konkrétne práva a povinnosti sa posudzujú podľa skutočného fungovania platformy a platných právnych predpisov.
