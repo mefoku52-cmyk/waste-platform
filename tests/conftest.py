@@ -4,11 +4,15 @@ Nastavuje SQLite namiesto Postgres pre lokálne testy (Termux, CI).
 """
 
 import os
+import tempfile
 
-os.environ.setdefault("DATABASE_URL", "sqlite+aiosqlite:///./var/test.db")
-os.environ.setdefault("JWT_SECRET_KEY", "test-secret-key-min-32-chars-long-ok")
-os.environ.setdefault("ENV", "test")
-os.environ.setdefault("APP_ENV", "test")
+_TEST_DB_DIR = os.path.join(tempfile.gettempdir(), "zyvo_ci")
+# Priame priradenie (NIE setdefault): shell môže exportovať DATABASE_URL na
+# Postgres — testy musia byť hermetic vždy, nie len keď env nie je nastavený.
+os.environ["DATABASE_URL"] = f"sqlite+aiosqlite:////{_TEST_DB_DIR}/test.db"
+os.environ["JWT_SECRET_KEY"] = "test-secret-key-min-32-chars-long-ok"
+os.environ["ENV"] = "test"
+os.environ["APP_ENV"] = "test"
 
 # Testy musia byt hermetic — ziadny realny Redis server.
 # jwt_revocation_store.TokenRevocationStore pouzije _MemoryBackend,
@@ -31,7 +35,8 @@ import pytest
 
 @pytest.fixture(scope="session", autouse=True)
 def _ensure_var_dir():
-    Path("var").mkdir(exist_ok=True)
+    # Hermetic: test DB žije v $TMPDIR (mimo repo, mimo var/).
+    Path(_TEST_DB_DIR).mkdir(parents=True, exist_ok=True)
 
 
 @pytest.fixture(scope="session", autouse=True)

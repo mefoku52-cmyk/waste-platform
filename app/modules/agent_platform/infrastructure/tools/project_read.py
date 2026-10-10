@@ -3,8 +3,10 @@
 Nezávislé od OpenList. Priamy prístup k ~/waste-platform cez Python.
 Bezpečnostný model:
 - ALLOWED_ROOT pevne definovaný (nie konfigurovateľný z promptu).
-- Path traversal zakázaný (resolve() + startswith check).
-- Iba TEXT súbory, max 1 MB.
+- Path traversal zakázaný (resolve() + relative_to containment check).
+- Symlinky mimo koreňa odmietnuté (resolve() nasleduje symlink pred checkom).
+- Zakázané adresáre (.git, node_modules, ...) odmietnuté aj pri čítaní.
+- Iba TEXT súbory, max 1 MB / 100k znakov.
 - Iba read/list. Žiadny write/delete/move.
 """
 
@@ -37,9 +39,10 @@ def _detect_repo_root() -> Path:
     return here.parents[5] if len(here.parents) > 5 else here.parent
 
 
-_ALLOWED_ROOT = _detect_repo_root()
+_ALLOWED_ROOT = _detect_repo_root().resolve()
 
 _MAX_FILE_BYTES = 1_048_576  # 1 MB
+_MAX_CONTENT_CHARS = 100_000
 _MAX_LIST_ENTRIES = 200
 
 # Rozšírenia ktoré považujeme za textové (bezpečné na čítanie)
@@ -110,9 +113,17 @@ def _resolve_under_root(path: str) -> Path:
     if path.startswith("/"):
         path = path.lstrip("/")
 
+    parts = [p for p in Path(path).parts if p not in ("", ".")]
+    if any(part in _DENIED_DIRS for part in parts):
+        raise ProjectPathDenied("denied_directory")
+
     candidate = (_ALLOWED_ROOT / path).resolve()
-    if not str(candidate).startswith(str(_ALLOWED_ROOT)):
-        raise ProjectPathDenied("outside_root")
+    try:
+        candidate.relative_to(_ALLOWED_ROOT)
+    except ValueError:
+        # Zahŕňa symlinky, ktoré ukazujú mimo koreňa, aj sibling-prefix
+        # adresáre (napr. /repo-evil vedľa /repo).
+        raise ProjectPathDenied("outside_root") from None
     return candidate
 
 
@@ -193,13 +204,15 @@ class ProjectReadHandler:
             data={
                 "path": str(target.relative_to(_ALLOWED_ROOT)),
                 "size": size,
-                "content": content[:100_000],
-                "truncated": size > 100_000,
+                "content": content[:_MAX_CONTENT_CHARS],
+                "truncated": size > _MAX_CONTENT_CHARS,
             },
         )
 
     async def _list(self, request: ToolRequest, args: dict) -> ToolResult:
-        path = str(args.get("path") or "")
+        path = str(args.get("path") or "").strip()
+        if path in ("", "."):
+            path = "."  # prázdny / "." = koreň projektu (viď tool schema)
         target = _resolve_under_root(path)
         if not target.exists():
             raise FileNotFoundError(path)

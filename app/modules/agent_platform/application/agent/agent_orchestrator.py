@@ -6,7 +6,7 @@ import contextlib
 import json
 import time
 import uuid
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Any
@@ -39,6 +39,10 @@ from app.modules.agent_platform.infrastructure.ai.model_response import ModelRes
 from app.modules.agent_platform.infrastructure.events.event_publisher import (
     EventPublisher,
 )
+from app.modules.agent_platform.infrastructure.tools.client_action_validation import (
+    ClientActionValidation,
+    validate_client_action,
+)
 
 MAX_TOOL_ITERATIONS = 6
 
@@ -70,6 +74,9 @@ class AgentOrchestrator:
         audit: Callable[[str, str, str, float], Awaitable[None]] | None = None,
         event_publisher: EventPublisher | None = None,
         client_tool_names: frozenset[str] | None = None,
+        client_action_validator: (
+            Callable[[str, Mapping[str, Any]], ClientActionValidation] | None
+        ) = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
@@ -81,6 +88,10 @@ class AgentOrchestrator:
         self._audit = audit
         self._event_publisher = event_publisher
         self._client_tool_names: frozenset[str] = frozenset(client_tool_names or ())
+        # Secure by default: validation is always applied to client actions.
+        self._client_action_validator: Callable[
+            [str, Mapping[str, Any]], ClientActionValidation
+        ] = client_action_validator or validate_client_action
 
     async def _safe_audit(
         self,
@@ -191,9 +202,14 @@ class AgentOrchestrator:
                     except (TypeError, ValueError):
                         args = {}
 
-                    collected_calls.append(
-                        {"name": tool_name, "arguments": args, "id": call.get("id", "")}
-                    )
+                    # Client actions are appended only after policy + permission
+                    # pass and their arguments are validated, so a denied or
+                    # malformed action is never handed to the frontend.
+                    is_client_action = tool_name in self._client_tool_names
+                    if not is_client_action:
+                        collected_calls.append(
+                            {"name": tool_name, "arguments": args, "id": call.get("id", "")}
+                        )
 
                     if self._policy is not None:
                         decision = await self._policy.decide(
@@ -312,9 +328,35 @@ class AgentOrchestrator:
                             )
                             continue
 
-                    # Client-side action: nevykonávame handler, iba
-                    # potvrdíme modelu že frontend to vykoná.
-                    if tool_name in self._client_tool_names:
+                    # Client-side action: nevykonávame handler, iba validujeme
+                    # argumenty a potvrdíme modelu že frontend to vykoná.
+                    if is_client_action:
+                        validation = self._client_action_validator(tool_name, args)
+                        if not validation.valid:
+                            outcome = "client_action_invalid_arguments"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "error": "client_action_invalid_arguments",
+                                            "tool_name": tool_name,
+                                            "error_code": validation.error_code,
+                                            "reason": validation.error_message,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
+                        collected_calls.append(
+                            {
+                                "name": tool_name,
+                                "arguments": dict(validation.arguments),
+                                "id": call.get("id", ""),
+                            }
+                        )
                         outcome = "dispatched_to_client"
                         messages.append(
                             ModelMessage(
@@ -407,7 +449,7 @@ class AgentOrchestrator:
 
 
 def _outcome_to_event_type(outcome: str) -> PlatformEventType:
-    if outcome == "executed":
+    if outcome in {"executed", "dispatched_to_client"}:
         return PlatformEventType.TOOL_EXECUTED
     if outcome in {"failed", "exception"}:
         return PlatformEventType.TOOL_FAILED
@@ -416,6 +458,7 @@ def _outcome_to_event_type(outcome: str) -> PlatformEventType:
         "denied_by_permission",
         "tool_scope_unmapped",
         "tool_not_available",
+        "client_action_invalid_arguments",
     }:
         return PlatformEventType.TOOL_DENIED
     if outcome in {"requires_approval_policy", "requires_approval_permission"}:

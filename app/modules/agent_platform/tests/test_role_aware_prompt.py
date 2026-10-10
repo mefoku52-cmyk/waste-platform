@@ -22,8 +22,8 @@ class _Broken:
 def test_admin_gets_architect_addendum(monkeypatch) -> None:
     monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: True)
     prompt = chat_router._build_system_prompt(_Admin())
-    assert "ARCHITEKT" in prompt or "architekt" in prompt
-    assert "Radoslav" in prompt
+    assert "ADMIN OPRÁVNENIA" in prompt
+    assert "TVOJE ADMIN NÁSTROJE" in prompt
 
 
 def test_customer_gets_customer_addendum(monkeypatch) -> None:
@@ -54,6 +54,7 @@ def test_broken_user_falls_back_to_customer(monkeypatch) -> None:
 
 def test_base_rules_forbid_admin_words() -> None:
     """Base rules contain the anti-leak clause."""
-    assert "admin" in chat_router.BASE_RULES
-    assert "architekt" in chat_router.BASE_RULES.lower()
-    assert "debug" in chat_router.BASE_RULES.lower()
+    base = chat_router.BASE_RULES.lower()
+    assert "admin" in base
+    assert "debug" in base
+    assert "nespomínaj slová" in base

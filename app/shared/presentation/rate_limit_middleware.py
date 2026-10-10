@@ -20,11 +20,21 @@ from starlette.responses import JSONResponse
 
 from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
 
+# Pravidla (metoda, path-prefix, limit, okno_v_sekundach, meno).
+# Ak na jeden path sedi viac pravidiel, aplikuju sa VSETKY (nezavisle
+# pocitadla) — dvojica burst + hourly da kratsky spam-strop aj dlhodoby
+# cooldown.
 _RULES = [
     ("POST", "/auth/2fa/login", 10, 60, "2fa-login-ip"),
     ("POST", "/agent-platform/control/mode", 20, 60, "control-mode"),
     ("POST", "/agent-platform/control/emergency/activate", 5, 60, "control-emergency-activate"),
     ("POST", "/agent-platform/control/emergency/release", 5, 60, "control-emergency-release"),
+    # AI chat — LLM requesty su drahe: burst 20/min + 120/hod.
+    ("POST", "/agent-platform/chat", 20, 60, "agent-chat-ip"),
+    ("POST", "/agent-platform/chat", 120, 3600, "agent-chat-hourly"),
+    # Voice (Telnyx transcribe / live token) — platene API: burst 10/min + 60/hod.
+    ("POST", "/agent-platform/voice", 10, 60, "agent-voice-ip"),
+    ("POST", "/agent-platform/voice", 60, 3600, "agent-voice-hourly"),
     ("GET", "/admin/", 120, 60, "admin-read"),
     ("POST", "/admin/", 30, 60, "admin-write"),
     ("PATCH", "/admin/", 30, 60, "admin-write"),
@@ -52,28 +62,40 @@ def _normalize_path(path):
     return path
 
 
-def _match_rule(method, path):
+def _match_rules(method, path) -> list[tuple[int, int, str]]:
+    """Vrati VSETKY pravidla sediace na metodu+path (burst aj hourly)."""
     normalized = _normalize_path(path)
+    matched = []
     for rule_method, rule_path, limit, period, name in _RULES:
         if method != rule_method:
             continue
         if rule_path.endswith("/"):
             if normalized.startswith(rule_path):
-                return (limit, period, name)
+                matched.append((limit, period, name))
         else:
             if normalized == rule_path or normalized.startswith(rule_path + "/"):
-                return (limit, period, name)
-    return None
+                matched.append((limit, period, name))
+    return matched
+
+
+def _match_rule(method, path):
+    """Backward-compat: prve matchnute pravidlo (alebo None).
+
+    Middleware pouziva _match_rules (vsetky pravidla); tento single-match
+    wrapper ostava kvoli existujucim testom a volacom.
+    """
+    rules = _match_rules(method, path)
+    return rules[0] if rules else None
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        rule = _match_rule(request.method, request.url.path)
-        if rule is None:
+        rules = _match_rules(request.method, request.url.path)
+        if not rules:
             return await call_next(request)
-        limit, period, name = rule
-        try:
-            check_rate_limit(f"{name}:{client_ip(request)}", limit=limit, period=period)
-        except HTTPException as exc:
-            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+        for limit, period, name in rules:
+            try:
+                check_rate_limit(f"{name}:{client_ip(request)}", limit=limit, period=period)
+            except HTTPException as exc:
+                return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
         return await call_next(request)

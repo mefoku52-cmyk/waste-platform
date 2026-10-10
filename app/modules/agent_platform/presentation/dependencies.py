@@ -78,6 +78,15 @@ from app.shared.presentation.authorization import (
 )
 
 
+def client_action_scopes() -> dict[str, tuple[str, str]]:
+    """Permission scopes for frontend-only client actions.
+
+    Client actions have no backend handler, but they must still pass the policy
+    and permission engines before being handed to the UI dispatcher.
+    """
+    return dict.fromkeys(CLIENT_ACTION_NAMES, ("client", "action"))
+
+
 async def get_agent_orchestrator(
     session: AsyncSession = Depends(get_db_session),
     current_user=Depends(require_current_user),
@@ -167,8 +176,12 @@ async def get_agent_orchestrator(
             tool_scopes[tool_name] = ("admin", "read")
         tool_schemas = tool_schemas + build_admin_tools()
 
+    # Frontend-only client actions: allowlisted and scoped, but never executed
+    # server-side. They are dispatched to the UI only after validation.
+    tool_scopes.update(client_action_scopes())
+
     policy = AllowlistPolicyEngine(
-        allowed_tool_names=frozenset(tool_handlers.keys()),
+        allowed_tool_names=frozenset(tool_handlers.keys()) | CLIENT_ACTION_NAMES,
     )
     permission = ActorToolPermissionEngine(
         allowed_actor_types=frozenset({"user", "admin"}),
@@ -214,12 +227,14 @@ async def get_agent_orchestrator(
 
             action_map = {
                 "executed": AuditAction.EXECUTE,
+                "dispatched_to_client": AuditAction.EXECUTE,
                 "failed": AuditAction.EXECUTE,
                 "exception": AuditAction.EXECUTE,
                 "denied_by_policy": AuditAction.DENY,
                 "denied_by_permission": AuditAction.DENY,
                 "tool_scope_unmapped": AuditAction.DENY,
                 "tool_not_available": AuditAction.DENY,
+                "client_action_invalid_arguments": AuditAction.DENY,
                 "requires_approval_policy": AuditAction.REQUEST,
                 "requires_approval_permission": AuditAction.REQUEST,
             }
@@ -232,7 +247,7 @@ async def get_agent_orchestrator(
                 action=audit_action,
                 subject=AuditSubject(subject_type="agent_tool", subject_id=tool_name),
                 occurred_at=datetime.now(UTC),
-                success=(outcome == "executed"),
+                success=(outcome in {"executed", "dispatched_to_client"}),
                 reason=outcome,
                 metadata={"duration_ms": int(duration_s * 1000)},
             )
