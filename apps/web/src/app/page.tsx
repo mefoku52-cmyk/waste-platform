@@ -35,6 +35,42 @@ export default function LandingPage() {
   const [form, setForm] = useState({ name: '', email: '', company: '', message: '' });
   const [sent, setSent] = useState(false);
 
+  // Track page_view pri otvoreni landing page (pred loginom).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // Anonymny identifikator (perzistentny v localStorage)
+    const STORAGE_KEY = 'cmep_anon_id';
+    let anonId = window.localStorage.getItem(STORAGE_KEY);
+    if (!anonId) {
+      anonId = (crypto.randomUUID?.() || Math.random().toString(36).slice(2)).replace(/-/g, '');
+      window.localStorage.setItem(STORAGE_KEY, anonId);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const payload = {
+      event_type: 'page_view',
+      entity_type: 'landing',
+      landing_page: window.location.pathname,
+      referrer: document.referrer || '',
+      anonymous_id: anonId,
+      utm_source: params.get('utm_source') || undefined,
+      utm_medium: params.get('utm_medium') || undefined,
+      utm_campaign: params.get('utm_campaign') || undefined,
+      utm_content: params.get('utm_content') || undefined,
+      utm_term: params.get('utm_term') || undefined,
+    };
+
+    const apiBase = (process.env.NEXT_PUBLIC_API_BASE_URL || '/api/v1').replace(/\/$/, '');
+    fetch(`${apiBase}/analytics/acquisition/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {
+      /* ticho zlyhá, nerušíme UX */
+    });
+  }, []);
+
   // Ak je používateľ prihlásený, landing nemá zmysel — pošli ho na dashboard.
   // Neprihlásených necháme na landing.
   useEffect(() => {
