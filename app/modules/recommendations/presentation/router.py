@@ -2,6 +2,7 @@ from app.modules.recommendations.application.routing import calculate_route
 
 """recommendations API router."""
 
+import asyncio
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -76,7 +77,8 @@ async def get_route(
 ) -> dict:
     del current_user
     try:
-        return calculate_route(
+        return await asyncio.to_thread(
+            calculate_route,
             origin_text=origin,
             destination_text=destination,
             consumption=consumption,

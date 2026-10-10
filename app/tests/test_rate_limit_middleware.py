@@ -69,24 +69,27 @@ def test_trailing_slash_prefix_rule_matches_subpaths():
     assert set(_names("POST", "/api/v1/chat/threads/123")) == {"chat-message", "chat-create"}
 
 
-def test_check_rate_limit_memory_raises_429(monkeypatch):
+async def test_check_rate_limit_memory_raises_429(monkeypatch):
     # Vynutime memory backend (ziadny realny redis) — hermeticke.
-    monkeypatch.setattr(rate_limit_mod, "_client", lambda: None)
+    async def _none():
+        return None
+
+    monkeypatch.setattr(rate_limit_mod, "_client", _none)
     monkeypatch.setattr(settings.rate_limit, "enabled", True)
     key = "test-burst:203.0.113.7"
     rate_limit_mod._mem.clear()
     try:
-        rate_limit_mod.check_rate_limit(key, limit=2, period=60)
-        rate_limit_mod.check_rate_limit(key, limit=2, period=60)
+        await rate_limit_mod.check_rate_limit(key, limit=2, period=60)
+        await rate_limit_mod.check_rate_limit(key, limit=2, period=60)
         with pytest.raises(HTTPException) as excinfo:
-            rate_limit_mod.check_rate_limit(key, limit=2, period=60)
+            await rate_limit_mod.check_rate_limit(key, limit=2, period=60)
         assert excinfo.value.status_code == 429
     finally:
         rate_limit_mod._mem.clear()
 
 
-def test_check_rate_limit_disabled_never_raises(monkeypatch):
+async def test_check_rate_limit_disabled_never_raises(monkeypatch):
     monkeypatch.setattr(settings.rate_limit, "enabled", False)
     # 100 hitov nad limit, ale disabled → ziadna vynimka.
     for _ in range(5):
-        rate_limit_mod.check_rate_limit("test-disabled:203.0.113.8", limit=1, period=60)
+        await rate_limit_mod.check_rate_limit("test-disabled:203.0.113.8", limit=1, period=60)

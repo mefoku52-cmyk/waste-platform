@@ -146,10 +146,11 @@ def create_app() -> FastAPI:
 
         # --- Redis ---
         try:
-            import redis as _redis
+            import redis.asyncio as _redis
 
             client = _redis.from_url(settings.REDIS_URL, socket_timeout=2)
-            client.ping()
+            await client.ping()
+            await client.aclose()
             checks["redis"] = "ok"
         except Exception as exc:
             checks["redis"] = f"fail: {type(exc).__name__}"

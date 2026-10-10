@@ -38,29 +38,29 @@ class PasswordResetService:
         self.jwt_service = jwt_service
         self.redis = redis_client
 
-    def _get_redis(self):
+    async def _get_redis(self):
         if self.redis is not None:
             return self.redis
         try:
-            import redis
+            import redis.asyncio as redis
 
             host = getattr(settings.redis, "host", "localhost")
             port = getattr(settings.redis, "port", 6379)
             url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
             self.redis = redis.from_url(url, decode_responses=True)
-            self.redis.ping()
+            await self.redis.ping()
             return self.redis
         except Exception:
             self.redis = None
             return None
 
-    def _store_token(self, token: str, user_id: str) -> None:
+    async def _store_token(self, token: str, user_id: str) -> None:
         from app.shared.domain.exceptions import ValidationDomainError
 
         key = RESET_PREFIX + _token_digest(token)
-        r = self._get_redis()
+        r = await self._get_redis()
         if r is not None:
-            r.set(key, user_id, ex=RESET_TTL_SECONDS)
+            await r.set(key, user_id, ex=RESET_TTL_SECONDS)
             return
 
         if settings.is_development:
@@ -71,13 +71,13 @@ class PasswordResetService:
         logger.error("Password reset unavailable: Redis is not reachable")
         raise ValidationDomainError("Obnova hesla je dočasne nedostupná. Skúste to neskôr.")
 
-    def _pop_token(self, token: str) -> str | None:
+    async def _pop_token(self, token: str) -> str | None:
         key = RESET_PREFIX + _token_digest(token)
-        r = self._get_redis()
+        r = await self._get_redis()
         if r is not None:
-            uid = r.get(key)
+            uid = await r.get(key)
             if uid:
-                r.delete(key)
+                await r.delete(key)
             return uid
 
         if settings.is_development:
@@ -96,7 +96,7 @@ class PasswordResetService:
             return result
 
         token = secrets.token_urlsafe(32)
-        self._store_token(token, str(user.id))
+        await self._store_token(token, str(user.id))
 
         import os
 
@@ -133,7 +133,7 @@ class PasswordResetService:
 
         if not token or len(new_password) < 8:
             raise ValidationDomainError("Neplatný token alebo heslo (min. 8 znakov).")
-        user_id = self._pop_token(token)
+        user_id = await self._pop_token(token)
         if not user_id:
             raise ValidationDomainError("Token je neplatný alebo expirovaný.")
         user = await self.user_repo.get_by_id(UUID(str(user_id)))
