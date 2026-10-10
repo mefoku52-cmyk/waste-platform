@@ -1,0 +1,155 @@
+# LICENČNÉ PODMIENKY PLATFORMY CMEP
+
+**Verzia:** 1.2
+**Účinnosť:** dňom zverejnenia na platforme CMEP
+
+## 1. Prevádzkovateľ
+
+Prevádzkovateľom platformy CMEP je:
+
+- **Meno a priezvisko:** Radoslav Čornanič
+- **IČO:** 51745666
+- **Miesto podnikania:** 1. mája 2054, 069 01 Snina, Slovenská republika
+- **E-mail:** trc-cmep@gmail.com
+- **Telefón:** +421 910 617 338
+- **Web:** https://trc-cmep.sk
+- **Register:** Živnostenský register Okresného úradu Prešov (zápis v konaní)
+- **Orgán dohľadu:** Slovenská obchodná inšpekcia (SOI), Inšpektorát SOI pre Prešovský kraj, Obrancov mieru 6, 080 01 Prešov
+- **Predmet podnikania:** Poskytovanie služieb informačnej spoločnosti (v konaní)
+
+Ďalej len „Prevádzkovateľ".
+
+## 2. Predmet licencie
+
+2.1 Tieto licenčné podmienky upravujú pravidlá používania platformy CMEP, jej softvéru, používateľského rozhrania, databáz, dokumentácie, grafických prvkov a ďalších častí, ku ktorým má Prevádzkovateľ práva.
+
+2.2 CMEP je platforma určená predovšetkým na zverejňovanie ponúk a dopytov súvisiacich s materiálmi, ich opätovným využitím a obehovým hospodárstvom medzi podnikateľskými subjektmi.
+
+2.3 Konkrétne funkcie platformy závisia od aktuálne dostupnej verzie. Tieto podmienky samy osebe nezaručujú dostupnosť konkrétneho nástroja, integrácie, API, automatizácie ani funkcie umelej inteligencie.
+
+## 3. Udelenie oprávnenia na používanie
+
+3.1 Prevádzkovateľ udeľuje používateľovi obmedzené, nevýhradné, neprenosné a odvolateľné oprávnenie používať platformu na jej zamýšľaný účel v súlade s týmito podmienkami.
+
+3.2 Oprávnenie sa vzťahuje iba na používanie funkcií, ku ktorým má používateľ riadny prístup. Neudeľuje používateľovi vlastnícke práva k platforme ani právo získať jej zdrojový kód.
+
+3.3 Používateľ nesmie oprávnenie previesť na inú osobu, predávať prístup k účtu ani poskytovať platformu tretím osobám ako vlastnú službu bez predchádzajúceho písomného súhlasu Prevádzkovateľa.
+
+3.4 Oprávnenie trvá počas platnosti zmluvného vzťahu s Prevádzkovateľom a môže byť obmedzené alebo ukončené podľa obchodných podmienok a platných právnych predpisov.
+
+## 4. Práva duševného vlastníctva
+
+4.1 Ak nie je uvedené inak, práva k softvéru, zdrojovému kódu, grafickému rozhraniu, logu, dizajnu, dokumentácii a originálnym prvkom platformy patria Prevádzkovateľovi alebo príslušným oprávneným osobám.
+
+4.2 Používateľ získava iba oprávnenie potrebné na bežné používanie platformy. Žiadne ustanovenie týchto podmienok neznamená prevod autorských práv alebo iných práv duševného vlastníctva.
+
+4.3 Používateľ nesmie kopírovať, upravovať, distribuovať, predávať ani verejne sprístupňovať chránené časti platformy, ak na to nemá zákonné oprávnenie alebo súhlas oprávnenej osoby.
+
+4.4 Databáza Platformy požíva ochranu ako databáza podľa § 149 a nasl. zákona č. 185/2015 Z. z. (Autorský zákon) — osobitné právo zhotoviteľa databázy (sui generis). Používateľ nesmie vykonávať extrakciu alebo reutilizáciu celého obsahu databázy ani jej podstatnej časti.
+
+4.5 Tieto podmienky neobmedzujú práva, ktoré používateľom priznáva kogentná právna úprava, vrátane zákonných výnimiek z autorského práva.
+
+## 5. Obsah používateľa
+
+5.1 Používateľ si ponecháva práva k obsahu, ktorý oprávnene vloží do platformy, najmä k textom, fotografiám, opisom materiálov, ponukám, dopytom a dokumentom.
+
+5.2 Používateľ udeľuje Prevádzkovateľovi nevýhradné oprávnenie používať tento obsah v rozsahu potrebnom na jeho uloženie, technické spracovanie, zobrazenie, vyhľadávanie, zálohovanie, zabezpečenie a poskytovanie funkcií platformy.
+
+5.3 Oprávnenie podľa bodu 5.2 trvá počas obdobia, keď je obsah spracúvaný v súvislosti s používaním platformy, a v nevyhnutnom rozsahu aj počas technického odstraňovania záloh alebo plnenia zákonných povinností.
+
+5.4 Používateľ vyhlasuje, že má potrebné práva a oprávnenia na vloženie obsahu a na udelenie uvedeného oprávnenia.
+
+5.5 Používateľ nesmie vkladať obsah, ktorý porušuje práva tretích osôb, právne predpisy alebo pravidlá platformy.
+
+5.6 Obsah používateľa sa nesmie používať na nesúvisiace reklamné účely ani sprístupňovať tretím osobám nad rámec oprávneného fungovania platformy alebo zákonných povinností.
+
+## 6. Zakázané používanie
+
+Používateľ nesmie:
+
+a) neoprávnene kopírovať alebo distribuovať platformu či jej chránené časti;
+
+b) spätne analyzovať, dekompilovať alebo obchádzať technické ochrany platformy, s výnimkou prípadov, ktoré výslovne povoľuje zákon;
+
+c) neoprávnene pristupovať k účtom, systémom, databázam alebo údajom iných používateľov;
+
+d) vykonávať scraping, crawling alebo hromadné získavanie údajov spôsobom, ktorý nie je povolený Prevádzkovateľom alebo právnymi predpismi;
+
+e) obchádzať bezpečnostné mechanizmy, limity prístupu alebo technické obmedzenia;
+
+f) zavádzať škodlivý kód, automatizované útoky alebo činnosti, ktoré neprimerane zaťažujú alebo ohrozujú platformu;
+
+g) používať platformu na podvod, neoprávnené získavanie osobných údajov alebo inú nezákonnú činnosť;
+
+h) odstraňovať označenia práv duševného vlastníctva alebo sa vydávať za Prevádzkovateľa.
+
+**Trestnoprávna zodpovednosť:** Neoprávnené použitie Platformy alebo jej častí môže byť postihnuté podľa § 283 zákona č. 300/2005 Z. z. (Trestný zákon) — trestný čin porušovania autorského práva. Páchateľovi hrozí trest odňatia slobody až na 8 rokov v závislosti od rozsahu spôsobenej škody.
+
+## 7. Automatizácia a umelá inteligencia
+
+7.1 Ak platforma poskytuje funkcie automatizácie alebo umelej inteligencie, používateľ ich smie používať iba v rámci dostupných funkcií a príslušných pravidiel.
+
+7.2 Výstupy automatizovaných systémov môžu obsahovať chyby, neúplné informácie alebo nepresnosti. Používateľ je povinný overiť si dôležité informácie pred obchodným, právnym alebo technickým rozhodnutím.
+
+7.3 Výstup umelej inteligencie nie je sám osebe zárukou správnosti, zákonnosti, kvality ani vhodnosti navrhovanej transakcie.
+
+7.4 Používateľ nesmie vkladať do automatizovaných funkcií údaje, ktoré na daný účel nemá právo sprístupniť.
+
+7.5 Spracúvanie osobných údajov v súvislosti s týmito funkciami sa riadi dokumentom Ochrana osobných údajov a platnými právnymi predpismi.
+
+7.6 **Transparentnosť AI:** V súlade s článkom 50 Nariadenia (EÚ) 2024/1689 (AI Act) Prevádzkovateľ informuje, že AI asistent komunikuje ako umelá inteligencia a jeho výstupy sú generované AI. Používateľ má právo byť informovaný o tom, že komunikuje s AI systémom.
+
+7.7 **Automatizované rozhodovanie:** Prevádzkovateľ nevykonáva automatizované individuálne rozhodovanie s právnymi účinkami podľa článku 22 GDPR. Ak by sa takéto rozhodovanie zaviedlo, bude o tom informovať vopred a zabezpečí právo na ľudský zásah.
+
+## 8. Dostupnosť a zmeny platformy
+
+8.1 Prevádzkovateľ môže platformu aktualizovať, meniť, opravovať alebo dočasne obmedziť z dôvodu údržby, bezpečnosti, technických problémov alebo právnych povinností.
+
+8.2 Prevádzkovateľ vynakladá primerané úsilie na zachovanie dostupnosti platformy, nezaručuje však jej nepretržitú ani bezchybnú prevádzku.
+
+8.3 Ak zmena podstatne ovplyvní platenú službu, postupuje Prevádzkovateľ podľa príslušných obchodných podmienok a platných právnych predpisov.
+
+## 9. Pozastavenie alebo ukončenie prístupu
+
+9.1 Prevádzkovateľ môže prístup obmedziť alebo ukončiť v prípadoch stanovených obchodnými podmienkami, najmä pri závažnom porušení podmienok, ohrození bezpečnosti alebo zákonnej povinnosti.
+
+9.2 Pri rozhodnutí o obmedzení prístupu Prevádzkovateľ postupuje primerane okolnostiam a dodržiava povinnosti, ktoré mu ukladajú platné právne predpisy.
+
+9.3 Ukončením prístupu nezanikajú práva a povinnosti, ktoré majú podľa svojej povahy trvať aj po ukončení zmluvného vzťahu.
+
+## 10. Zodpovednosť
+
+10.1 Používateľ zodpovedá za spôsob, akým platformu používa, a za obsah, ktorý do nej vloží.
+
+10.2 Prevádzkovateľ neposkytuje prostredníctvom týchto licenčných podmienok záruku, že obsah používateľov je správny, úplný alebo právne bezchybný.
+
+10.3 Žiadne ustanovenie týchto podmienok nevylučuje ani neobmedzuje zodpovednosť v rozsahu, v akom ju podľa platných právnych predpisov nemožno vylúčiť alebo obmedziť.
+
+## 11. Ochrana osobných údajov
+
+Spracúvanie osobných údajov upravuje samostatný dokument Ochrana osobných údajov. Používateľ je povinný oboznámiť sa s ním a pri používaní platformy dodržiavať príslušné právne predpisy.
+
+## 12. DSA a P2B — digitálne služby
+
+12.1 **DSA (Nariadenie EÚ 2022/2065):** Platforma ako sprostredkovateľská služba podlieha povinnostiam podľa DSA. Prevádzkovateľ má zavedený mechanizmus oznamovania nezákonného obsahu (notice-and-action), interný systém sťažností a postup odôvodnenia rozhodnutí (statement of reasons). Podrobnosti upravuje samostatný dokument Reklamačný a oznamovací poriadok.
+
+12.2 **P2B (Nariadenie EÚ 2019/1150):** Vzťahy medzi Prevádzkovateľom a podnikateľskými používateľmi sa riadia nariadením o spravodlivosti a transparentnosti pre online sprostredkovateľské služby. Prevádzkovateľ oznamuje zmeny podmienok vopred (spravidla 30 dní) a poskytuje informácie o parametroch zoradenia ponúk.
+
+## 13. Záverečné ustanovenia
+
+13.1 Tieto licenčné podmienky sa vykladajú spolu s Obchodnými podmienkami platformy CMEP a ďalšími relevantnými dokumentmi.
+
+13.2 V prípade rozporu medzi dokumentmi sa uplatní príslušné ustanovenie podľa predmetu úpravy a platných právnych predpisov.
+
+13.3 Prevádzkovateľ môže podmienky meniť. Nové znenie zverejní na platforme a pri podstatných zmenách postupuje podľa platných právnych predpisov a Obchodných podmienok.
+
+13.4 Ak sa niektoré ustanovenie stane neplatným alebo nevymáhateľným, nemá to automaticky vplyv na platnosť ostatných ustanovení.
+
+13.5 Tieto podmienky sa riadia právnym poriadkom Slovenskej republiky, pokiaľ kogentné právne predpisy neustanovujú inak.
+
+---
+
+**Prevádzkovateľ platformy CMEP**
+Radoslav Čornanič
+E-mail: trc-cmep@gmail.com
+Telefón: +421 910 617 338
