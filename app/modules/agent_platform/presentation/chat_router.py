@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import re
 import uuid
@@ -561,6 +562,75 @@ def _first_company_id(current_user) -> str | None:
     return str(ids[0]) if ids else None
 
 
+# Rolling summarization runs DETACHED from the request: one task per
+# conversation, never awaited by the chat reply. State is process-local, which
+# is sufficient for the single-worker deploy; a lost race only means the next
+# turn re-summarizes the same window.
+_SUMMARY_TASKS: set[asyncio.Task] = set()
+_SUMMARY_LOCKS: dict[str, asyncio.Lock] = {}
+
+
+def _build_summary_gateway():
+    from app.modules.agent_platform.infrastructure.ai.cerebras_gateway import (
+        CerebrasModelGateway,
+    )
+    from app.modules.agent_platform.infrastructure.ai.chain_gateway import (
+        ChainModelGateway,
+    )
+    from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
+    from app.modules.agent_platform.infrastructure.ai.mistral_gateway import (
+        MistralModelGateway,
+    )
+
+    return ChainModelGateway([GroqModelGateway(), CerebrasModelGateway(), MistralModelGateway()])
+
+
+async def _summarize_in_background(conversation_id: str) -> None:
+    import logging
+
+    logger = logging.getLogger("cmep.chat")
+    lock = _SUMMARY_LOCKS.setdefault(conversation_id, asyncio.Lock())
+    if lock.locked():
+        return
+    async with lock:
+        try:
+            from app.modules.agent_platform.application.memory.summarizer import (
+                THRESHOLD,
+                summarize_conversation,
+            )
+            from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
+                SqlAlchemyAiConversationRepository,
+            )
+            from app.shared.infrastructure.db.session import async_session_factory
+
+            async with async_session_factory() as own_session:
+                repo = SqlAlchemyAiConversationRepository(own_session)
+                if await repo.count_messages(conversation_id=conversation_id) <= THRESHOLD:
+                    return
+                await summarize_conversation(
+                    repository=repo,
+                    conversation_id=conversation_id,
+                    gateway=_build_summary_gateway(),
+                )
+        except Exception:
+            logger.warning("SUMMARY_BACKGROUND_FAILED conv=%s", conversation_id, exc_info=True)
+        finally:
+            _SUMMARY_LOCKS.pop(conversation_id, None)
+
+
+def _schedule_summary(conversation_id: str | None) -> None:
+    """Fire-and-forget summarization. Never blocks or breaks the chat reply."""
+    if not conversation_id:
+        return
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        return
+    task = loop.create_task(_summarize_in_background(conversation_id))
+    _SUMMARY_TASKS.add(task)
+    task.add_done_callback(_SUMMARY_TASKS.discard)
+
+
 @router.post("/chat", response_model=UserAiChatResponse)
 async def user_ai_chat(
     payload: UserAiChatRequest,
@@ -609,7 +679,13 @@ async def user_ai_chat(
             conversation_id=conversation_id,
             limit=20,
         )
-        history = build_history(stored)
+        summary_text: str | None = None
+        get_summary = getattr(conversations, "get_summary", None)
+        if callable(get_summary):
+            with contextlib.suppress(Exception):
+                summary = await get_summary(conversation_id=conversation_id)
+                summary_text = summary.content if summary else None
+        history = build_history(stored, summary=summary_text)
     except Exception as exc:
         import logging as _log
 
@@ -729,6 +805,9 @@ async def user_ai_chat(
             )
         except Exception:
             pass  # best-effort: never break caller
+        # Detached: summarize older turns once the conversation grows. The reply
+        # has already been assembled, so this can neither block nor break it.
+        _schedule_summary(conversation_id)
 
     import logging as _log
 

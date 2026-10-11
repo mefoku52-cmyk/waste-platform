@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 
-_ALLOWED_ROLES = frozenset({"user", "assistant", "tool", "system"})
+_ALLOWED_ROLES = frozenset({"user", "assistant", "tool", "system", "summary"})
 
 
 @dataclass(frozen=True, slots=True)
