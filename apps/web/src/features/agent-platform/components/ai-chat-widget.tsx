@@ -65,6 +65,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [sessionId, setSessionId] = useState<string>('');
   const [persona, setPersona] = useState<Persona>('bystry');
+  const [toast, setToast] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -74,6 +75,32 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     setSessionId(aiSessionStore.getSessionId());
     setPersona(personaStore.get());
   }, []);
+
+  // Client-side action handlers registrácia (navigate, show_toast).
+  useEffect(() => {
+    const unregNavigate = cmepAI.register('navigate', (args) => {
+      const url = typeof args.url === 'string' ? args.url : '';
+      // Interné relatívne odkazy len — žiadne externé URL ani protocol-relative.
+      if (!url.startsWith('/') || url.startsWith('//')) return;
+      router.push(url);
+    });
+    const unregToast = cmepAI.register('show_toast', (args) => {
+      const message = typeof args.message === 'string' ? args.message.trim() : '';
+      if (!message) return;
+      setToast(message);
+    });
+    return () => {
+      unregNavigate();
+      unregToast();
+    };
+  }, [router]);
+
+  // Toast auto-dismiss.
+  useEffect(() => {
+    if (!toast) return;
+    const id = window.setTimeout(() => setToast(null), 4000);
+    return () => window.clearTimeout(id);
+  }, [toast]);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -111,15 +138,19 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     setBusy(true);
     try {
       const pageCtx = getPageContext();
-      const res = await http.post<ChatResponse>('/agent-platform/chat', {
-        message: text,
-        session_id: sessionId || undefined,
-        listing_id: listingId || undefined,
-        persona: persona || undefined,
-        page_context: pageCtx,
-        voice_response: voiceResponse,
-        voice_language: voiceLanguage,
-      });
+      const res = await http.post<ChatResponse>(
+        '/agent-platform/chat',
+        {
+          message: text,
+          session_id: sessionId || undefined,
+          listing_id: listingId || undefined,
+          persona: persona || undefined,
+          page_context: pageCtx,
+          voice_response: voiceResponse,
+          voice_language: voiceLanguage,
+        },
+        { timeoutMs: 60000 },
+      );
       if (res?.session_id && res.session_id !== sessionId) {
         setSessionId(res.session_id);
       }
@@ -177,9 +208,9 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
               notes.push(`✓ Presmeroval som ťa na ${String(action.args?.url || '')}`);
             } else if (action.name === 'highlight_field') {
               notes.push(`✓ Zvýraznil som pole ${String(action.args?.field || '')}`);
-            } else if (action.name === 'show_toast') {
-              notes.push(`✓ ${String(action.args?.message || '')}`);
             }
+            // show_toast sa zobrazuje ako plávajúci toast (viď nižšie),
+            // preto sa nepridáva aj ako textová poznámka v chate.
           }
         }
 
@@ -444,6 +475,16 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
             </div>
           </div>
           )}
+        </div>
+      )}
+
+      {toast && (
+        <div
+          role="status"
+          className="fixed bottom-24 right-6 z-[60] max-w-xs rounded-lg px-4 py-2 text-sm shadow-2xl"
+          style={{ background: '#17140d', color: '#f3e6c4', border: '1px solid rgba(201,168,76,0.35)' }}
+        >
+          {toast}
         </div>
       )}
     </>

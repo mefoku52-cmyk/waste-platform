@@ -52,6 +52,7 @@ class OrchestrationResult:
     text: str
     tool_calls: tuple[dict[str, Any], ...]
     iterations: int
+    provider: str | None = None
 
 
 class AgentOrchestrator:
@@ -166,6 +167,7 @@ class AgentOrchestrator:
                     text=response.text.strip(),
                     tool_calls=tuple(collected_calls),
                     iterations=iteration + 1,
+                    provider=response.provider_metadata.get("provider"),
                 )
 
             messages.append(
