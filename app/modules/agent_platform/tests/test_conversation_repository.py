@@ -10,6 +10,7 @@ from __future__ import annotations
 import uuid
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.modules.agent_platform.infrastructure.models import (
@@ -87,3 +88,64 @@ async def test_invalid_conversation_id_is_safe(session) -> None:
     assert await repo.count_messages(conversation_id="not-a-uuid") == 0
     assert await repo.get_summary(conversation_id="not-a-uuid") is None
     assert await repo.replace_summary(conversation_id="not-a-uuid", content="x") is None
+
+
+# N2 contract: get_or_create must normalise user_id/company_id to UUIDs so the
+# repository works on both Postgres (asyncpg) and SQLite (aiosqlite), regardless
+# of whether callers pass uuid objects, uuid strings or None.
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_accepts_uuid_object(session) -> None:
+    repo = SqlAlchemyAiConversationRepository(session)
+    uid = uuid.uuid4()
+    cid = uuid.uuid4()
+
+    conv = await repo.get_or_create(session_id="s-obj", user_id=uid, company_id=cid)
+
+    assert conv.id
+    assert conv.user_id == str(uid)
+    assert conv.company_id == str(cid)
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_accepts_uuid_string(session) -> None:
+    # Regression for N2: previously a string user_id crashed on SQLite
+    # ("'str' object has no attribute 'hex'") while working on Postgres.
+    repo = SqlAlchemyAiConversationRepository(session)
+    uid = str(uuid.uuid4())
+    cid = str(uuid.uuid4())
+
+    conv = await repo.get_or_create(session_id="s-str", user_id=uid, company_id=cid)
+
+    assert conv.user_id == uid
+    assert conv.company_id == cid
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_company_id_none(session) -> None:
+    repo = SqlAlchemyAiConversationRepository(session)
+
+    conv = await repo.get_or_create(session_id="s-none", user_id=str(uuid.uuid4()), company_id=None)
+
+    assert conv.company_id is None
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_same_session_is_idempotent(session) -> None:
+    repo = SqlAlchemyAiConversationRepository(session)
+    uid = str(uuid.uuid4())
+
+    first = await repo.get_or_create(session_id="s-dup", user_id=uid, company_id=None)
+    second = await repo.get_or_create(session_id="s-dup", user_id=uid, company_id=None)
+
+    assert second.id == first.id
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_rejects_missing_user_id(session) -> None:
+    # user_id is NOT NULL and must be a valid UUID — the repository must not
+    # silently persist an empty/invalid owner (N2 contract).
+    repo = SqlAlchemyAiConversationRepository(session)
+    with pytest.raises(IntegrityError):
+        await repo.get_or_create(session_id="s-bad", user_id=None, company_id=None)

@@ -245,10 +245,6 @@ class AgentOrchestrator:
                     # pass and their arguments are validated, so a denied or
                     # malformed action is never handed to the frontend.
                     is_client_action = tool_name in self._client_tool_names
-                    if not is_client_action:
-                        collected_calls.append(
-                            {"name": tool_name, "arguments": args, "id": call.get("id", "")}
-                        )
 
                     if self._policy is not None:
                         decision = await self._policy.decide(
@@ -431,6 +427,14 @@ class AgentOrchestrator:
                             )
                         )
                         continue
+
+                    # Server tool call is recorded only now — after policy and
+                    # permission passed and a handler exists — so a denied,
+                    # unmapped or unknown tool never surfaces in the response as
+                    # an executed call (see N1).
+                    collected_calls.append(
+                        {"name": tool_name, "arguments": args, "id": call.get("id", "")}
+                    )
 
                     try:
                         result = await handler.handle(

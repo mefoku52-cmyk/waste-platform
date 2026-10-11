@@ -24,7 +24,7 @@ from app.modules.agent_platform.infrastructure.models import (
 SUMMARY_ROLE = "summary"
 
 
-def _uuid_or_none(value: str) -> uuid.UUID | None:
+def _uuid_or_none(value: str | uuid.UUID | None) -> uuid.UUID | None:
     try:
         return uuid.UUID(str(value))
     except (ValueError, TypeError):
@@ -129,8 +129,8 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
         model = AiConversationModel(
             id=uuid.uuid4(),
             session_id=session_id,
-            user_id=user_id,
-            company_id=company_id,
+            user_id=_uuid_or_none(user_id),
+            company_id=_uuid_or_none(company_id),
             created_at=now,
             updated_at=now,
         )
