@@ -10,7 +10,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
-from app.modules.agent_platform.infrastructure.ai.fallback_gateway import FallbackModelGateway
+from app.modules.agent_platform.infrastructure.ai.cerebras_gateway import CerebrasModelGateway
+from app.modules.agent_platform.infrastructure.ai.chain_gateway import ChainModelGateway
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
 from app.modules.agent_platform.infrastructure.ai.mistral_gateway import MistralModelGateway
 from app.modules.agent_platform.infrastructure.events.sqlalchemy_event_publisher import (
@@ -257,9 +258,13 @@ async def get_agent_orchestrator(
             pass  # best-effort: never break caller
 
     return AgentOrchestrator(
-        gateway=FallbackModelGateway(
-            primary=GroqModelGateway(),
-            fallback=MistralModelGateway(),
+        # Groq (primárny) → Cerebras (1. fallback) → Mistral (2. fallback).
+        gateway=ChainModelGateway(
+            [
+                GroqModelGateway(),
+                CerebrasModelGateway(),
+                MistralModelGateway(),
+            ]
         ),
         tool_schemas=tool_schemas,
         tool_handlers=tool_handlers,
