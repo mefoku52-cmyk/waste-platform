@@ -15,8 +15,9 @@ import { AiUpgradePanel } from './ai-upgrade-panel';
 import { useT } from '@/lib/i18n/context';
 import { cmepAI } from '@/lib/ai-agent/dispatcher';
 import { getPageContext } from '@/lib/ai-agent/page-context';
+import { AiCardList, type AiCard } from './ai-card-list';
 
-type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string };
+type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string; cards?: AiCard[] };
 
 // Browser SpeechSynthesis — hlas zariadenia (SK/EN/DE/...)
 function speakText(text: string, lang?: string): void {
@@ -43,6 +44,7 @@ type ChatResponse = {
   session_id?: string;
   tool_calls?: unknown[];
   client_actions?: ClientAction[];
+  cards?: AiCard[];
   audio_base64?: string | null;
 };
 
@@ -155,6 +157,8 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         setSessionId(res.session_id);
       }
 
+      const cards: AiCard[] = Array.isArray(res?.cards) ? res.cards : [];
+
       // Comet-style: vykonaj client actions lokálne
       if (Array.isArray(res?.client_actions) && res.client_actions.length > 0) {
         const notes: string[] = [];
@@ -217,15 +221,20 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         if (notes.length > 0) {
           setMessages((m) => [
             ...m,
-            { role: 'ai', text: res.reply as string || '', audioBase64: res.audio_base64 || undefined },
+            {
+              role: 'ai',
+              text: res.reply as string || '',
+              audioBase64: res.audio_base64 || undefined,
+              cards,
+            },
             { role: 'ai', text: notes.join('\n') },
           ]);
         } else if (res?.reply) {
-          setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+          setMessages((m) => [...m, { role: 'ai', text: res.reply as string, cards }]);
         }
       } else if (res?.status === 'ok' && res.reply) {
         if (voiceResponse) speakText(res.reply as string, voiceLanguage);
-        setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+        setMessages((m) => [...m, { role: 'ai', text: res.reply as string, cards }]);
       } else if (!res?.reply) {
         setMessages((m) => [
           ...m,
@@ -401,18 +410,24 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
           <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
             {!minimized && messages.map((m, i) => (
-              <div
-                key={i}
-                className={`max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm ${
-                  m.role === 'user' ? 'ml-auto' : ''
-                }`}
-                style={
-                  m.role === 'user'
-                    ? { background: '#c9a84c', color: '#0b0b0b' }
-                    : { background: '#17140d', color: '#f3e6c4' }
-                }
-              >
-                {m.text}
+              <div key={i} className="space-y-2">
+                {m.text ? (
+                  <div
+                    className={`max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm ${
+                      m.role === 'user' ? 'ml-auto' : ''
+                    }`}
+                    style={
+                      m.role === 'user'
+                        ? { background: '#c9a84c', color: '#0b0b0b' }
+                        : { background: '#17140d', color: '#f3e6c4' }
+                    }
+                  >
+                    {m.text}
+                  </div>
+                ) : null}
+                {m.role === 'ai' && m.cards && m.cards.length > 0 ? (
+                  <AiCardList cards={m.cards} />
+                ) : null}
               </div>
             ))}
             {(busy || transcribing) && (

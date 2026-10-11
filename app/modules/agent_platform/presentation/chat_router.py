@@ -466,6 +466,7 @@ class UserAiChatResponse(BaseModel):
     session_id: str
     tool_calls: list[dict] = []
     client_actions: list[ClientAction] = []
+    cards: list[dict] = []
     audio_base64: str | None = None
 
 
@@ -700,5 +701,6 @@ async def user_ai_chat(
         session_id=session_id,
         tool_calls=server_tool_calls,
         client_actions=client_actions,
+        cards=list(getattr(result, "cards", ()) or ()),
         audio_base64=audio_base64,
     )

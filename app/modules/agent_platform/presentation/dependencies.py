@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
+from app.modules.agent_platform.application.agent.card_builder import build_cards
 from app.modules.agent_platform.infrastructure.ai.cerebras_gateway import CerebrasModelGateway
 from app.modules.agent_platform.infrastructure.ai.chain_gateway import ChainModelGateway
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
@@ -275,6 +276,7 @@ async def get_agent_orchestrator(
         event_publisher=_build_event_bus(session=session),
         model="openai/gpt-oss-120b",
         client_tool_names=CLIENT_ACTION_NAMES,
+        card_builder=build_cards,
     )
 
 
