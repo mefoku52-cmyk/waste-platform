@@ -2,7 +2,7 @@
 
 Ordering: [groq, cerebras, mistral]. Keď primárny zlyhá (429, timeout,
 5xx, chýbajúci kľúč), skúsi sa ďalší. Ak zlyhajú všetky, vyhodí sa
-posledná chyba (aby bola v logoch), ako to robil FallbackModelGateway.
+posledná chyba (aby bola v logoch).
 """
 
 from __future__ import annotations
@@ -41,14 +41,14 @@ class ChainModelGateway(ModelGateway):
                     type(exc).__name__,
                 )
                 continue
-        # Vsetky zlyhali — vyhod poslednu chybu (nie prvu), ako FallbackModelGateway.
+        # Vsetky zlyhali — vyhod poslednu chybu (nie prvu).
         raise last_exc or RuntimeError("all chain gateways failed")
 
     async def stream(self, request: ModelRequest) -> AsyncIterator[str]:
         """Stream — skúša gatewaye v poradí.
 
         Poznámka: ak chyba príde až po prvom yielde, už sa nedá prepnúť —
-        použije sa to, čo prišlo (rovnaké obmedzenie ako FallbackModelGateway).
+        použije sa to, čo prišlo.
         """
         for gw in self._gateways:
             try:

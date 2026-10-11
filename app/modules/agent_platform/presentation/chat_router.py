@@ -11,7 +11,7 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.application.memory.context_builder import build_history
-from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_telnyx
+from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_edge_tts
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
     SqlAlchemyAiConversationRepository,
 )
@@ -687,7 +687,7 @@ async def user_ai_chat(
     if payload.voice_response and result_text.strip():
         try:
             # Only the response generated/assembled by this authenticated chat request is synthesized.
-            audio_base64 = await synthesize_with_telnyx(result_text, payload.voice_language)
+            audio_base64 = await synthesize_with_edge_tts(result_text, payload.voice_language)
         except Exception as exc:
             import logging as _log
 

@@ -62,11 +62,8 @@ async def transcribe_with_mai(
     return {"text": transcript, "language": str(language) if language else None}
 
 
-async def synthesize_with_telnyx(text: str, language: str | None) -> str:
-    """TTS cez Microsoft Edge TTS (zdarma, bez API kľúča).
-
-    Názov funkcie je ponechaný kvôli spätnej kompatibilite s chat_router.py.
-    """
+async def synthesize_with_edge_tts(text: str, language: str | None) -> str:
+    """Hlasový výstup cez Microsoft Edge TTS (zdarma, bez API kľúča)."""
     try:
         import edge_tts  # type: ignore[import-not-found]
     except ImportError as exc:

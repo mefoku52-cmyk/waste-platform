@@ -523,19 +523,7 @@ OPEN_INQUIRIES_SCHEMA: dict[str, Any] = {
 }
 
 
-NAVIGATION_SCHEMAS: tuple[dict[str, Any], ...] = (
-    OPEN_LISTING_SCHEMA,
-    OPEN_COMPANY_SCHEMA,
-    OPEN_NEW_LISTING_SCHEMA,
-    OPEN_LISTINGS_LIST_SCHEMA,
-    OPEN_COMPANIES_SCHEMA,
-    OPEN_DASHBOARD_SCHEMA,
-    OPEN_INQUIRIES_SCHEMA,
-)
-
-
 # ─── CLIENT ACTION AGGREGATION (musí byť na konci — reference na všetky) ─
-
 CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
     FILL_FORM_FIELD_SCHEMA,
     NAVIGATE_SCHEMA,
