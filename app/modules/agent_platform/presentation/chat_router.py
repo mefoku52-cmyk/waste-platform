@@ -142,6 +142,7 @@ TVOJE ADMIN NÁSTROJE:
 - get_companies_with_tiers(tier) — firmy s tierom
 - project_read_file(path) — obsah súboru z repozitára
 - project_list_dir(path) — zoznam súborov v adresári
+- open_admin() — otvorí administráciu platformy v UI
 
 PRÍKLADY (nasleduj ich presne):
 
