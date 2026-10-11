@@ -639,7 +639,7 @@ async def user_ai_chat(
         return UserAiChatResponse(
             status="unavailable",
             reply=None,
-            source="groq",
+            source="user-ai",
             session_id=session_id,
         )
     else:
@@ -691,7 +691,7 @@ async def user_ai_chat(
     return UserAiChatResponse(
         status="ok",
         reply=result_text,
-        source="groq",
+        source=result.provider or "user-ai",
         session_id=session_id,
         tool_calls=server_tool_calls,
         client_actions=client_actions,
