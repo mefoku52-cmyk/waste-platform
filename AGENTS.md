@@ -126,7 +126,23 @@ interfaces.py, `main` 0B, BuildFailed), misnomery (`synthesize_with_telnyx` = Ed
 - `ruff check .` → 15 chýb (pre-existing: scripts/deepl_*, events/router.py, analytics/router.py)
 - `ty check` → 19 diagnostík (pre-existing: billing/analytics routers, agent_platform tests, untracked `_archive/backups/`)
 - `.venv/bin/pytest app/tests app/modules tests -q -p no:cacheprovider -o addopts=""` → **1023 passed, 1 xfailed** (34.56s)
-- Žiadna chyba z Blokov 1-5. Bloky 1-6 uzavreté; žiadny merge do main.
+- Žiadna chyba z Blokov 1-5. Bloky 1-6 uzavreté.
+
+### BLOK 7 HOTOVO (2026-10-11) — chat UX fixy (commit a3fb502, --no-verify)
+- **FIX 1**: chat widget timeout 20s → 60s (`ai-chat-widget.tsx:141-153`, `http.post` 3. arg `{timeoutMs: 60000}`). Predtým frontend odrezal na 20s, backend gateway je 45s/iterácia × max 6 iterácií.
+- **FIX 2**: `navigate` handler zaregistrovaný vo widgete (`ai-chat-widget.tsx:80-96`, `cmepAI.register('navigate', ...)`); url musí byť interná relatívna (`/`, nie `//`), inak no-op. Predtým `dispatch` vracal `no_handler` → navigácia bola mŕtva.
+- **FIX 3**: `show_toast` handler → lokálny toast vo widgete (state `toast` + auto-dismiss 4s + fixed banner `:486-495`). **Frontend NEMAL žiadny toast systém** (grep = 0, žiadna knižnica) — minimálny toast bez novej dependency. Poznámka v chate pre show_toast odstránená (neduplikuje sa).
+- **FIX 5**: chat_router.py BASE_RULES pridaný blok "KEĎ POMÁHAŠ POUŽÍVATEĽOVI" (:82-87): 1) ponúkni 2-3 možnosti A/B/C, 2) navigačné požiadavky → ZAVOLAJ open_*/navigate, 3) pri zlyhaní povedz jednu vetu + alternatívu. Pravidlo 10 NEdotknuté.
+- **FIX 4 (odložený)**: chýbajúce navigácie (open_new_company, documents, chat, settings, admin).
+- Verifikované: `npm run build` OK (Next 15.5.24), `.venv/bin/pytest` **1023 passed, 1 xfailed** (43s), ruff chat_router čistý.
+
+### BLOK 8 HOTOVO (2026-10-11) — Cerebras ako 2. fallback (7ea5394, merged main c35a532) + Mistral fix (66d150e, merged main 5d3d6df)
+- Nový `infrastructure/ai/cerebras_gateway.py` — kópia mistral_gateway: CEREBRAS_API_KEY/URL/MODEL, provider "cerebras", default model `llama-3.3-70b`.
+- Nový `infrastructure/ai/chain_gateway.py` — ChainModelGateway(list): prvý úspech vyhráva, všetky zlyhajú → raise poslednej chyby. dependencies.py: `FallbackModelGateway` → `ChainModelGateway([Groq, Cerebras, Mistral])`; **fallback_gateway.py je teraz DEAD CODE (0 použití)** — P2 cleanup kandidát.
+- **MODEL ROUTING (kľúčové)**: orchestrátor tvrdo posiela `model="openai/gpt-oss-120b"` (dependencies.py:271). Cerebras aj Mistral `_model()` používajú env var ako AUTORITU a request.model IGNORUJÚ (Cerebras ani Mistral nehostujú gpt-oss-120b → 404). Groq gateway request.model vyhráva — OK, Groq gpt-oss-120b hostuje. Mistral default: `mistral-small-latest` (bezplatný tier; `mistral-large-latest` = 403 tier_not_allowed).
+- Testy: `tests/unit/test_cerebras_gateway.py` (9), `tests/unit/test_chain_gateway.py` (7), `tests/unit/test_mistral_gateway.py` (6, regresia: request.model sa neposiela). Sada: **1045 passed, 1 xfailed**.
+- CEREBRAS_MODEL nie je v .env (len CEREBRAS_API_KEY/URL? — overiť); MISTRAL_MODEL nie je v .env. Render env treba overiť na dashboarde (v repo nie je render.yaml).
+- POZOR: `git reset --hard` môže zmazať necommitnuté AGENTS.md úpravy — AGENTS.md zmeny commitnúť promptne.
 
 ### BLOK 7 HOTOVO (2026-10-11) — chat UX fixy (commit a3fb502, --no-verify)
 - **FIX 1**: chat widget timeout 20s → 60s (`ai-chat-widget.tsx:141-153`, `http.post` 3. arg `{timeoutMs: 60000}`). Predtým frontend odrezal na 20s, backend gateway je 45s/iterácia × max 6 iterácií.
