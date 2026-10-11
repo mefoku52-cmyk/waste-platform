@@ -235,17 +235,23 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         }
 
         if (notes.length > 0) {
-          setMessages((m) => [
-            ...m,
-            {
-              role: 'ai',
-              text: res.reply as string || '',
-              audioBase64: res.audio_base64 || undefined,
-              cards,
-            },
-            { role: 'ai', text: notes.join('\n') },
-          ]);
+          const reply = (res.reply as string) || '';
+          if (voiceResponse && reply) speakText(reply, voiceLanguage);
+          setMessages((m) => {
+            const next = [...m];
+            if (reply) {
+              // Keep the assistant reply as its own bubble (with cards), and the
+              // action notes as a separate truthful line below it.
+              next.push({ role: 'ai', text: reply, audioBase64: res.audio_base64 || undefined, cards });
+              next.push({ role: 'ai', text: notes.join('\n') });
+            } else {
+              // No prose — never emit an empty bubble; attach cards to the notes.
+              next.push({ role: 'ai', text: notes.join('\n'), cards });
+            }
+            return next;
+          });
         } else if (res?.reply) {
+          if (voiceResponse) speakText(res.reply as string, voiceLanguage);
           setMessages((m) => [...m, { role: 'ai', text: res.reply as string, cards }]);
         }
       } else if (res?.status === 'ok' && res.reply) {
