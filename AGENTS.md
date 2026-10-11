@@ -174,3 +174,32 @@ interfaces.py, `main` 0B, BuildFailed), misnomery (`synthesize_with_telnyx` = Ed
 - **Live kľúče v .env** (mimo gitu): DEEPL_API_KEY, STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
 - **Render backend env:** STRIPE_SECRET_KEY=sk_test_..., STRIPE_WEBHOOK_SECRET=whsec_..., FRONTEND_URL=https://trc-cmep.sk, CORS_ORIGINS=https://trc-cmep.sk, APP_DEBUG=true (⚠️ vypnúť pred prod!)
 - **Render frontend env:** NEXT_PUBLIC_API_BASE_URL=https://trc-cmep.sk/api/v1, NEXT_PUBLIC_META_PIXEL_ID=4399123203673213, NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+## KORMIDELNÍK — redesign chat agenta (vetva `feat/kormidelnik-agent`, NEmergeovať do main)
+Cieľ: karty v chate, form-filling, page-context, intent classifier, pamäť, navigácia, prompt.
+Base: `52ec19c` (df6d307 karty, d991f46 routes, 52ec19c form-filling). Baseline 1067 passed.
+- **Fáza 4** `90e68e2` — page context: `apps/web/src/lib/ai-agent/page-context.ts` + `form-fields.ts`
+  (single source of truth pre polia), company/listing forms ich používajú; `chat_router` sanitizuje
+  `page_context`; testy `test_page_context.py`.
+- **Fáza 5** `0d923dd` — `application/agent/intent_classifier.py` (`classify_intent`, `IntentResult`,
+  `intent_hint`), stem-matching, diakritika/typo tolerant, ambiguity flag; advisory `intent_hint`
+  v `_build_system_prompt`; `UserAiChatResponse.intent` (aditívne); testy `test_intent_classifier.py`.
+- **Fáza 6** `11b2de0` — rolling pamäť: `application/memory/summarizer.py` (best-effort, NEblokuje
+  chat, novšie zhrnutie nikdy neprepíše starším — covers monotónne), `domain/memory/ai_summary.py`;
+  zhrnutie uložené ako `ai_messages` row role=`summary` (**žiadna migrácia**); `context_builder.build_history(messages, summary=)`
+  vkladá summary ako system DATA (nie inštrukcie); `chat_router` načíta summary + odpáli detached
+  background task (`_schedule_summary`, per-conversation lock, vlastná DB session). Testy
+  `test_summarizer.py`, `test_context_builder.py`, `test_conversation_repository.py` (sqlite round-trip).
+- **Fáza 7 / FIX 4** `a0e63c8` — chýbajúce navigácie: `open_new_company`, `open_documents`,
+  `open_new_document`, `open_chat`, `open_settings`; `open_admin` = ADMIN-only (`ADMIN_CLIENT_ACTION_SCHEMAS`,
+  pripnuté len adminovi v dependencies.py). `chat_router.CLIENT_TOOL_NAMES = CLIENT_ACTION_NAMES` (jediný zdroj).
+  Widget: `NO_ARG_NAV_ACTIONS` tabuľka namiesto if-ťaze; `dashboardRoutes` rozšírené (documents/new,
+  chat, settings/security, admin) — overené proti `apps/web/src/app/dashboard/**`.
+- **Fáza 8** `f784edf` — widget truthful rendering: žiadny prázdny bubble keď reply='' ale bežali client
+  actions (karty na notes bubble), speak pri voice_response aj s client actions. Integračný check:
+  app.main import OK, žiadne stale `synthesize_with_telnyx`/`NAVIGATION_SCHEMAS`/`FallbackModelGateway`
+  v tracked súboroch. `scripts/voice_setup.sh` = untracked scratch, nedotknutý.
+- Gate Fázy 6-8: `.venv/bin/pytest app/tests app/modules tests -q` → **1115 passed, 1 xfailed**;
+  ruff check agent_platform OK; `tsc --noEmit` EXIT=0.
+- Stav: vetva `feat/kormidelnik-agent` ahead of main, NEMERGnutá, žiadny prod deploy/migrácia.
+  Otvorené: plné repo-wide gates (ruff format --check má pre-existing drift), `next build`, finálny PR.
