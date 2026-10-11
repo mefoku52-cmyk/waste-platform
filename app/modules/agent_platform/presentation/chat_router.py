@@ -11,6 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
+from app.modules.agent_platform.application.agent.intent_classifier import (
+    IntentResult,
+    classify_intent,
+    intent_hint,
+)
 from app.modules.agent_platform.application.memory.context_builder import build_history
 from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_edge_tts
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
@@ -193,13 +198,17 @@ def _persona_addendum(persona: str | None) -> str:
 
 
 def _build_system_prompt(
-    current_user, persona: str | None = None, page_context: dict | None = None
+    current_user,
+    persona: str | None = None,
+    page_context: dict | None = None,
+    intent: IntentResult | None = None,
 ) -> str:
     """Return system prompt tailored to the caller's role.
 
     Platform admins receive the architect addendum.
     Everyone else receives the customer addendum.
-    Base rules always apply.
+    Base rules always apply. The optional intent hint is advisory only — it
+    never grants capabilities and never overrides the server authorization.
     """
     try:
         is_admin = is_platform_admin(current_user)
@@ -207,7 +216,8 @@ def _build_system_prompt(
         is_admin = False
     addendum = ARCHITECT_ADDENDUM if is_admin else CUSTOMER_ADDENDUM
     page_block = _build_page_context_block(page_context)
-    return BASE_RULES + addendum + _persona_addendum(persona) + page_block
+    intent_block = intent_hint(intent) if intent is not None else ""
+    return BASE_RULES + addendum + _persona_addendum(persona) + page_block + intent_block
 
 
 CLIENT_TOOL_NAMES: frozenset[str] = frozenset(
@@ -517,6 +527,7 @@ class UserAiChatResponse(BaseModel):
     client_actions: list[ClientAction] = []
     cards: list[dict] = []
     audio_base64: str | None = None
+    intent: str | None = None
 
 
 async def _check_ai_entitlement(
@@ -610,8 +621,12 @@ async def user_ai_chat(
         conversation_id = None
         history = ()
 
+    intent_result = classify_intent(text)
     system_prompt = _build_system_prompt(
-        current_user, persona=payload.persona, page_context=payload.page_context
+        current_user,
+        persona=payload.persona,
+        page_context=payload.page_context,
+        intent=intent_result,
     )
 
     security_decision = "allow"
@@ -752,4 +767,5 @@ async def user_ai_chat(
         client_actions=client_actions,
         cards=list(getattr(result, "cards", ()) or ()),
         audio_base64=audio_base64,
+        intent=intent_result.intent.value,
     )
