@@ -201,5 +201,7 @@ Base: `52ec19c` (df6d307 karty, d991f46 routes, 52ec19c form-filling). Baseline 
   v tracked súboroch. `scripts/voice_setup.sh` = untracked scratch, nedotknutý.
 - Gate Fázy 6-8: `.venv/bin/pytest app/tests app/modules tests -q` → **1115 passed, 1 xfailed**;
   ruff check agent_platform OK; `tsc --noEmit` EXIT=0.
-- Stav: vetva `feat/kormidelnik-agent` ahead of main, NEMERGnutá, žiadny prod deploy/migrácia.
-  Otvorené: plné repo-wide gates (ruff format --check má pre-existing drift), `next build`, finálny PR.
+- Verifikácia 2026-10-11: HEAD = origin = `e79e974`; `next build` OK; `open_admin` doplnený do
+  ARCHITECT_ADDENDUM (`e79e974`); useAiFormFilling na listing+company formulári; /dashboard/admin guard OK.
+- Stav: vetva `feat/kormidelnik-agent`, pushnutá na origin, NEMERGnutá, žiadny prod deploy/migrácia.
+  Otvorené: finálny PR (rozhodnutie usera). Repo-wide ruff drift = pre-existing.
