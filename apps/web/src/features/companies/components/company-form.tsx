@@ -14,23 +14,7 @@ import { useT } from '@/lib/i18n/context';
 import { uploadFile } from '../../uploads/api';
 import { SignedImage } from '../../uploads/components/signed-image';
 import { useAiFormFilling } from '@/lib/ai-agent/use-ai-form-filling';
-
-// Fields the AI may fill in this form (mirrors the registered inputs).
-// logoUrl / capability flags are excluded — they have no simple text input.
-const COMPANY_AI_FIELDS = [
-  'entityType',
-  'legalName',
-  'tradingName',
-  'registrationNumber',
-  'vatIdentifier',
-  'companyType',
-  'countryCode',
-  'addressLine1',
-  'city',
-  'postalCode',
-  'email',
-  'phone',
-] as const;
+import { COMPANY_FORM_FIELDS } from '@/lib/ai-agent/form-fields';
 
 const ENTITY_TYPE_OPTIONS = [
   { value: 'sole_trader', labelKey: 'companyForm.entityType.soleTrader' },
@@ -134,7 +118,7 @@ export const CompanyForm = ({
     : t('companyForm.legalNameCompany');
 
   // AI Agent — let the assistant fill this form (fill_form_field/highlight_field).
-  useAiFormFilling({ setValue, fields: COMPANY_AI_FIELDS });
+  useAiFormFilling({ setValue, fields: COMPANY_FORM_FIELDS });
 
   const onSubmit = (data: CompanyInput) => {
     // Backend očakáva obe polia (registrationNumber aj taxIdentifier).

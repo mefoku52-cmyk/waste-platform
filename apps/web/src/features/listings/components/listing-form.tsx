@@ -17,20 +17,7 @@ import { config } from '../../../lib/config';
 import { useT } from "@/lib/i18n/context";
 import type { AiDraftData } from '../api';
 import { useAiFormFilling } from '@/lib/ai-agent/use-ai-form-filling';
-
-const LISTING_AI_FIELDS = [
-  'title',
-  'materialType',
-  'quantity',
-  'unit',
-  'price',
-  'currency',
-  'condition',
-  'location',
-  'description',
-  'companyId',
-  'imageUrl',
-] as const;
+import { LISTING_FORM_FIELDS } from '@/lib/ai-agent/form-fields';
 
 type Props = {
   listingId?: string;
@@ -104,7 +91,7 @@ export const ListingForm = ({
   });
 
   // AI Agent — client-side action handlers (fill_form_field, highlight_field).
-  useAiFormFilling({ setValue, fields: LISTING_AI_FIELDS });
+  useAiFormFilling({ setValue, fields: LISTING_FORM_FIELDS });
 
   useEffect(() => {
     if (!initialData) return;
