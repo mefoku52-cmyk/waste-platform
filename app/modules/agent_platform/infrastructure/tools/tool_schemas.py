@@ -229,8 +229,11 @@ FILL_FORM_FIELD_SCHEMA: dict[str, Any] = {
         "name": "fill_form_field",
         "description": (
             "Vyplní jedno pole vo formulári, ktorý používateľ práve vidí. "
-            "Použi keď vieš hodnotu, ktorá patrí do formulára (title, description, "
-            "materialType, quantity, unit, location, price, currency, condition). "
+            "Použi keď vieš hodnotu, ktorá patrí do formulára ponuky "
+            "(title, materialType, quantity, unit, price, currency, condition, "
+            "location, description) alebo formulára firmy "
+            "(legalName, tradingName, registrationNumber, city, postalCode, "
+            "countryCode, email, phone, addressLine1, entityType, companyType). "
             "Volaj toľkokrát, koľko polí chceš vyplniť. Po každom volaní povedz "
             "používateľovi krátko ČO si vyplnil."
         ),

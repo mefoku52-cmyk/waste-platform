@@ -147,6 +147,39 @@ def test_validator_fill_form_field_allowlist_and_types() -> None:
     assert validate_client_action("fill_form_field", {"field": "quantity", "value": 5}).valid
 
 
+def test_validator_fill_form_field_company_fields() -> None:
+    """Company-form fields are fillable; logoUrl is not (no simple input)."""
+    for field, value in (
+        ("legalName", "Acme s.r.o."),
+        ("tradingName", "Acme"),
+        ("registrationNumber", "54642442"),
+        ("vatIdentifier", "SK2020123456"),
+        ("companyType", "seller"),
+        ("countryCode", "SK"),
+        ("addressLine1", "Hlavna 1"),
+        ("city", "Bratislava"),
+        ("postalCode", "81101"),
+        ("email", "a@b.sk"),
+        ("phone", "+421900000000"),
+        ("entityType", "company"),
+    ):
+        assert validate_client_action("fill_form_field", {"field": field, "value": value}).valid, (
+            field
+        )
+
+    # Numeric-only rule must not apply to string identifiers like postal codes.
+    assert validate_client_action(
+        "fill_form_field", {"field": "postalCode", "value": "81101"}
+    ).valid
+    # logoUrl is deliberately NOT fillable.
+    assert (
+        validate_client_action("fill_form_field", {"field": "logoUrl", "value": "x"}).valid is False
+    )
+    # highlight honours the same allowlist.
+    assert validate_client_action("highlight_field", {"field": "legalName"}).valid
+    assert validate_client_action("highlight_field", {"field": "logoUrl"}).valid is False
+
+
 def test_validator_show_toast_level() -> None:
     assert validate_client_action("show_toast", {"message": "hi"}).valid
     assert validate_client_action("show_toast", {"message": "hi", "level": "warning"}).valid

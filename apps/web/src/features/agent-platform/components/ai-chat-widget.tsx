@@ -84,12 +84,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     const unregNavigate = cmepAI.register('navigate', (args) => {
       const url = typeof args.url === 'string' ? args.url : '';
       // Interné relatívne odkazy len — žiadne externé URL ani protocol-relative.
-      if (!url.startsWith('/') || url.startsWith('//')) return;
+      if (!url.startsWith('/') || url.startsWith('//')) {
+        throw new Error(`invalid_url:${url || '?'}`);
+      }
       router.push(url);
     });
     const unregToast = cmepAI.register('show_toast', (args) => {
       const message = typeof args.message === 'string' ? args.message.trim() : '';
-      if (!message) return;
+      if (!message) throw new Error('empty_message');
       setToast(message);
     });
     return () => {
@@ -222,6 +224,16 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
             }
             // show_toast sa zobrazuje ako plávajúci toast (viď nižšie),
             // preto sa nepridáva aj ako textová poznámka v chate.
+          } else {
+            // Truthful failure — the handler could not do what was asked.
+            const field = String(action.args?.field || '?');
+            let reason = '';
+            if (nm === 'fill_form_field') reason = `✗ Nepodarilo sa vyplniť pole „${field}“`;
+            else if (nm === 'highlight_field') reason = `✗ Pole „${field}“ sa nedá zvýrazniť`;
+            else if (nm === 'navigate') reason = `✗ Túto stránku sa nepodarilo otvoriť`;
+            else if (nm === 'show_toast') reason = '';
+            else reason = `✗ Akciu „${nm}“ sa nepodarilo vykonať`;
+            if (reason) notes.push(reason);
           }
         }
 
