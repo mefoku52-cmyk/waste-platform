@@ -144,13 +144,15 @@ interfaces.py, `main` 0B, BuildFailed), misnomery (`synthesize_with_telnyx` = Ed
 - CEREBRAS_MODEL nie je v .env (len CEREBRAS_API_KEY/URL? — overiť); MISTRAL_MODEL nie je v .env. Render env treba overiť na dashboarde (v repo nie je render.yaml).
 - POZOR: `git reset --hard` môže zmazať necommitnuté AGENTS.md úpravy — AGENTS.md zmeny commitnúť promptne.
 
-### BLOK 7 HOTOVO (2026-10-11) — chat UX fixy (commit a3fb502, --no-verify)
-- **FIX 1**: chat widget timeout 20s → 60s (`ai-chat-widget.tsx:141-153`, `http.post` 3. arg `{timeoutMs: 60000}`). Predtým frontend odrezal na 20s, backend gateway je 45s/iterácia × max 6 iterácií.
-- **FIX 2**: `navigate` handler zaregistrovaný vo widgete (`ai-chat-widget.tsx:80-96`, `cmepAI.register('navigate', ...)`); url musí byť interná relatívna (`/`, nie `//`), inak no-op. Predtým `dispatch` vracal `no_handler` → navigácia bola mŕtva.
-- **FIX 3**: `show_toast` handler → lokálny toast vo widgete (state `toast` + auto-dismiss 4s + fixed banner `:486-495`). **Frontend NEMAL žiadny toast systém** (grep = 0, žiadna knižnica) — minimálny toast bez novej dependency. Poznámka v chate pre show_toast odstránená (neduplikuje sa).
-- **FIX 5**: chat_router.py BASE_RULES pridaný blok "KEĎ POMÁHAŠ POUŽÍVATEĽOVI" (:82-87): 1) ponúkni 2-3 možnosti A/B/C, 2) navigačné požiadavky → ZAVOLAJ open_*/navigate, 3) pri zlyhaní povedz jednu vetu + alternatívu. Pravidlo 10 NEdotknuté.
-- **FIX 4 (odložený)**: chýbajúce navigácie (open_new_company, documents, chat, settings, admin).
-- Verifikované: `npm run build` OK (Next 15.5.24), `.venv/bin/pytest` **1023 passed, 1 xfailed** (43s), ruff chat_router čistý. Pushnuté na `feat/voice-mai-transcribe-telnyx`.
+### BLOK 9 HOTOVO (2026-10-11) — Render release pipeline fix (0cd7354, merged main 30f9e63)
+- **PRÍČINA stale deploya:** `.github/workflows/release.yml` bol `workflow_dispatch`-only → push na main NIKDY nevyrobil image; GHCR držal len starý `release-<02a3cca...>` (8h). Navyše `app/Dockerfile` (ktorý release.yml buildil) inštaloval z `app/requirements.txt`, ktorý NEMAL `stripe` → `import stripe` module-level (billing/presentation/router.py:190, registrácia api_router.py:17,62) → crash na štarte → "deploy Failed (30s)".
+- **FIX 1:** `app/requirements.txt` = presná kópia root `requirements.txt` (39 riadkov; stripe, edge-tts, apscheduler, pyotp, qrcode, jinja2...). `diff -q` = IDENTICKÉ.
+- **FIX 2:** release.yml API build `-f app/Dockerfile .` → `-f Dockerfile .` (root: python:3.14-slim, root req, USER cmep, HEALTHCHECK, dynamický PORT). `apps/web/Dockerfile` prerobený na multi-stage (npm ci + next build VNÚTRI image; runtime `next start` s `${PORT:-3001}`) — NEVYŽADUJE `output:'standalone'`.
+- **FIX 3:** release.yml trigger `push: tags: ['v*']` (+ workflow_dispatch). Release = `git tag v1.x.x && git push --tags`.
+- **Robustnosť:** release.yml reštruktúrovaný na build+push PER IMAGE (API → worker → web) — zlyhanie web buildu neblokuje push API.
+- **Súvisiace:** `.dockerignore` + `.venv` (root Dockerfile `COPY . .`); `render.yaml` v repo NEEXISTUJE → Render konfig je len na dashboarde (Image URL, auto-deploy, credentials, billing). GHCR packages API anonymne 401 → viditeľnosť NEOVERENÁ.
+- **POZOR (Render strana):** po pushi treba Image URL na nový tag `release-<sha>` alebo zapnúť auto-deploy; bez spustenia Release Images (teraz aj cez tag v*) sa nový image nepostaví.
+- Verifikované: YAML validný (safe_load), req identické, `.venv/bin/pytest` **1045 passed, 1 xfailed**.
 
 ### Blokery
 - **Stripe verification** — čaká na manuálne schválenie (Payments paused)
