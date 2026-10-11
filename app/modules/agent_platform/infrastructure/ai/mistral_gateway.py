@@ -30,8 +30,12 @@ class MistralModelGateway(ModelGateway):
         return os.getenv("MISTRAL_API_URL", _DEFAULT_URL).strip()
 
     def _model(self, request: ModelRequest) -> str:
-        # Ak ModelRequest nemá model, použi MISTRAL_MODEL z env
-        return request.model or os.getenv("MISTRAL_MODEL", "mistral-large-latest")
+        # MISTRAL_MODEL je autorita — orchestrátor posiela request.model
+        # ("openai/gpt-oss-120b" pre Groq), ktorý Mistral nehostuje
+        # (404 model not found). Mistral fallback inak nikdy neuspeje.
+        # "mistral-small-latest" je bezplatný tier; "mistral-large-latest" je
+        # platený (403 tier_not_allowed).
+        return os.getenv("MISTRAL_MODEL", "mistral-small-latest").strip() or "mistral-small-latest"
 
     def _build_body(self, request: ModelRequest, *, stream: bool = False) -> dict[str, Any]:
         key = os.getenv("MISTRAL_API_KEY", "").strip()
