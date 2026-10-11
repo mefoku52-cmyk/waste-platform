@@ -22,6 +22,7 @@ from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesiz
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
     SqlAlchemyAiConversationRepository,
 )
+from app.modules.agent_platform.infrastructure.tools.tool_schemas import CLIENT_ACTION_NAMES
 from app.modules.agent_platform.presentation.dependencies import (
     get_agent_orchestrator,
     get_ai_conversation_repository,
@@ -62,6 +63,7 @@ MÁŠ PRÍSTUP K NÁSTROJOM:
 - get_recommendations(listing_id) — odporúčania pre ponuku
 - fill_form_field(field, value) — vyplní pole vo formulári
 - navigate(url) / open_listing / open_company / open_new_listing / open_listings_list / open_companies / open_dashboard / open_inquiries — navigácia
+- open_new_company / open_documents / open_new_document / open_chat / open_settings — navigácia na firmu, dokumenty, chat, nastavenia
 - highlight_field(field) / show_toast(message) — UI akcie
 
 DÔLEŽITÉ:
@@ -221,21 +223,7 @@ def _build_system_prompt(
     return BASE_RULES + addendum + _persona_addendum(persona) + page_block + intent_block
 
 
-CLIENT_TOOL_NAMES: frozenset[str] = frozenset(
-    {
-        "fill_form_field",
-        "navigate",
-        "highlight_field",
-        "show_toast",
-        "open_listing",
-        "open_company",
-        "open_new_listing",
-        "open_listings_list",
-        "open_companies",
-        "open_dashboard",
-        "open_inquiries",
-    }
-)
+CLIENT_TOOL_NAMES: frozenset[str] = CLIENT_ACTION_NAMES
 
 
 _KNOWN_PAGE_TYPES: frozenset[str] = frozenset(

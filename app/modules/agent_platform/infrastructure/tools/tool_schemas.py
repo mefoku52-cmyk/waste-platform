@@ -525,6 +525,67 @@ OPEN_INQUIRIES_SCHEMA: dict[str, Any] = {
     },
 }
 
+OPEN_NEW_COMPANY_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_new_company",
+        "description": (
+            "Otvorí formulár pre pridanie novej firmy. Použi keď chce "
+            "používateľ zaregistrovať novú firmu. Po otvorení môžeš pokračovať "
+            "fill_form_field."
+        ),
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_DOCUMENTS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_documents",
+        "description": "Otvorí zoznam dokumentov používateľa.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_NEW_DOCUMENT_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_new_document",
+        "description": (
+            "Otvorí formulár pre nahratie nového dokumentu. Použi keď chce "
+            "používateľ pridať dokument."
+        ),
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_CHAT_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_chat",
+        "description": "Otvorí interný chat (správy) platformy.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_SETTINGS_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_settings",
+        "description": "Otvorí nastavenia účtu (zabezpečenie, heslo).",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_ADMIN_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_admin",
+        "description": ("Otvorí administráciu platformy. Dostupné iba pre administrátora."),
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
 
 # ─── CLIENT ACTION AGGREGATION (musí byť na konci — reference na všetky) ─
 CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
@@ -539,11 +600,19 @@ CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
     OPEN_COMPANIES_SCHEMA,
     OPEN_DASHBOARD_SCHEMA,
     OPEN_INQUIRIES_SCHEMA,
+    OPEN_NEW_COMPANY_SCHEMA,
+    OPEN_DOCUMENTS_SCHEMA,
+    OPEN_NEW_DOCUMENT_SCHEMA,
+    OPEN_CHAT_SCHEMA,
+    OPEN_SETTINGS_SCHEMA,
 )
+
+# Attached to the model ONLY when the caller is a platform admin.
+ADMIN_CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (OPEN_ADMIN_SCHEMA,)
 
 
 CLIENT_ACTION_NAMES: frozenset[str] = frozenset(
-    s["function"]["name"] for s in CLIENT_ACTION_SCHEMAS
+    s["function"]["name"] for s in CLIENT_ACTION_SCHEMAS + ADMIN_CLIENT_ACTION_SCHEMAS
 )
 
 OPENLIST_LIST_SCHEMA: dict[str, Any] = {

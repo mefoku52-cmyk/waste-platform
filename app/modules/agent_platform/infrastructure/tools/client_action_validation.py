@@ -67,6 +67,12 @@ _NO_ARG_ACTIONS = frozenset(
         "open_companies",
         "open_dashboard",
         "open_inquiries",
+        "open_new_company",
+        "open_documents",
+        "open_new_document",
+        "open_chat",
+        "open_settings",
+        "open_admin",
     }
 )
 

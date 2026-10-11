@@ -49,6 +49,7 @@ from app.modules.agent_platform.infrastructure.tools.project_read import (
     ProjectReadHandler,
 )
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+    ADMIN_CLIENT_ACTION_SCHEMAS,
     CLIENT_ACTION_NAMES,
     CLIENT_ACTION_SCHEMAS,
     build_admin_tools,
@@ -177,6 +178,8 @@ async def get_agent_orchestrator(
             tool_handlers[tool_name] = admin_handler
             tool_scopes[tool_name] = ("admin", "read")
         tool_schemas = tool_schemas + build_admin_tools()
+        # Admin-only client navigation (e.g. open_admin) is offered only here.
+        tool_schemas = tool_schemas + ADMIN_CLIENT_ACTION_SCHEMAS
 
     # Frontend-only client actions: allowlisted and scoped, but never executed
     # server-side. They are dispatched to the UI only after validation.

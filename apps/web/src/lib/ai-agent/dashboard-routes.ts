@@ -23,4 +23,9 @@ export const dashboardRoutes = {
   companyNew: '/dashboard/companies/new',
   company: (id: string) => `/dashboard/companies/${id}`,
   inquiries: '/dashboard/inquiries',
+  documents: '/dashboard/documents',
+  documentNew: '/dashboard/documents/new',
+  chat: '/dashboard/chat',
+  settings: '/dashboard/settings/security',
+  admin: '/dashboard/admin',
 } as const;

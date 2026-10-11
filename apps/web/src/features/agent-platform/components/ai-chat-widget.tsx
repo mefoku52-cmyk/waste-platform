@@ -38,6 +38,22 @@ function speakText(text: string, lang?: string): void {
 
 type ClientAction = { name: string; args: Record<string, unknown> };
 
+// No-argument navigation actions → destination + human label. One table so a
+// backend open_* tool only needs a single row here to become navigable.
+const NO_ARG_NAV_ACTIONS: Record<string, { path: string; label: string }> = {
+  open_new_listing: { path: dashboardRoutes.listingNew, label: 'formulár novej ponuky' },
+  open_listings_list: { path: dashboardRoutes.listings, label: 'zoznam ponúk' },
+  open_companies: { path: dashboardRoutes.companies, label: 'zoznam firiem' },
+  open_dashboard: { path: dashboardRoutes.root, label: 'dashboard' },
+  open_inquiries: { path: dashboardRoutes.inquiries, label: 'dopyty' },
+  open_new_company: { path: dashboardRoutes.companyNew, label: 'formulár novej firmy' },
+  open_documents: { path: dashboardRoutes.documents, label: 'zoznam dokumentov' },
+  open_new_document: { path: dashboardRoutes.documentNew, label: 'formulár nového dokumentu' },
+  open_chat: { path: dashboardRoutes.chat, label: 'chat' },
+  open_settings: { path: dashboardRoutes.settings, label: 'nastavenia' },
+  open_admin: { path: dashboardRoutes.admin, label: 'administráciu' },
+};
+
 type ChatResponse = {
   status: string;
   reply: string | null;
@@ -185,29 +201,10 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
             }
             continue;
           }
-          if (nm === 'open_new_listing') {
-            router.push(dashboardRoutes.listingNew);
-            notes.push(`✓ Otvoril som formulár novej ponuky`);
-            continue;
-          }
-          if (nm === 'open_listings_list') {
-            router.push(dashboardRoutes.listings);
-            notes.push(`✓ Otvoril som zoznam ponúk`);
-            continue;
-          }
-          if (nm === 'open_companies') {
-            router.push(dashboardRoutes.companies);
-            notes.push(`✓ Otvoril som zoznam firiem`);
-            continue;
-          }
-          if (nm === 'open_dashboard') {
-            router.push(dashboardRoutes.root);
-            notes.push(`✓ Otvoril som dashboard`);
-            continue;
-          }
-          if (nm === 'open_inquiries') {
-            router.push(dashboardRoutes.inquiries);
-            notes.push(`✓ Otvoril som dopyty`);
+          const nav = NO_ARG_NAV_ACTIONS[nm];
+          if (nav) {
+            router.push(nav.path);
+            notes.push(`✓ Otvoril som ${nav.label}`);
             continue;
           }
 

@@ -193,6 +193,37 @@ def test_validator_show_toast_strips_unknown_arguments() -> None:
     assert set(result.arguments) == {"message", "level"}
 
 
+def test_validator_new_no_arg_navigations() -> None:
+    """FIX 4: the added navigation actions are valid and argument-free."""
+    for name in (
+        "open_new_company",
+        "open_documents",
+        "open_new_document",
+        "open_chat",
+        "open_settings",
+        "open_admin",
+    ):
+        result = validate_client_action(name, {"junk": "x"})
+        assert result.valid is True, name
+        assert result.arguments == {}, name
+
+
+def test_open_admin_is_admin_only_schema() -> None:
+    """open_admin is offered only to admins but still allowlisted."""
+    from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+        ADMIN_CLIENT_ACTION_SCHEMAS,
+        CLIENT_ACTION_SCHEMAS,
+    )
+
+    regular = {s["function"]["name"] for s in CLIENT_ACTION_SCHEMAS}
+    admin_only = {s["function"]["name"] for s in ADMIN_CLIENT_ACTION_SCHEMAS}
+    assert "open_admin" in admin_only
+    assert "open_admin" not in regular
+    assert "open_admin" in CLIENT_ACTION_NAMES
+    for name in ("open_new_company", "open_documents", "open_chat", "open_settings"):
+        assert name in regular
+
+
 # ─── Orchestrator hand-off ──────────────────────────────────────────────────
 
 
