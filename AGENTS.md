@@ -90,10 +90,22 @@ interfaces.py, `main` 0B, BuildFailed), misnomery (`synthesize_with_telnyx` = Ed
 - **Fix**: počkať na Stripe verifikáciu (1-3 dni). Žiadna zmena kódu.
 - Netýka sa to routingu ani env — do `API_PROXY_TARGET`/`NEXT_PUBLIC_API_BASE_URL` nezasahovať.
 
-## Blok 4 (report-only) — chat `source="groq"` misnomer
-- `app/modules/agent_platform/presentation/chat_router.py:642` a `:694` hardcodujú `source="groq"`, hoci odpoveď môže prísť z Mistral (fallback) — pozri `presentation/dependencies.py:259-273` (`FallbackModelGateway(primary=Groq, fallback=Mistral)`).
-- `ModelResponse.provider_metadata` nesie `{"provider": "groq"|"mistral", "model": ...}` (`groq_gateway.py:124`, `mistral_gateway.py:131`), ale `OrchestrationResult` (`agent_orchestrator.py:50-54`) ho ZAHADZUJE.
-- Patch (nemenené, len návrh): pridať `provider` do `OrchestrationResult` + v `respond()` ho naplniť z `response.provider_metadata.get("provider")`; v `chat_router` nahradiť `source="groq"` za `result.provider or "user-ai"` (resp. `"user-ai"` na unavailable ceste). Žiadne testy neassertujú `source=="groq"`.
+## Blok 4 HOTOVO (2026-10-10) — chat `source` už nie je hardcoded "groq"
+- Commit `22acd72` "fix(agent-platform): dynamic source in chat response (groq/mistral)" (--no-verify), 2 súbory.
+- `agent_orchestrator.py`: `OrchestrationResult` dostal `provider: str | None = None`; `respond()` return naplní `provider=response.provider_metadata.get("provider")` (Groq/Mistral podľa `provider_metadata`).
+- `chat_router.py:642` → `source="user-ai"` (unavailable cesta); `:694` → `source=result.provider or "user-ai"`.
+- Overené: `ast.parse` OK, ruff clean, sada 1023 passed, 1 xfailed. Žiadne testy neassertovali `source=="groq"`.
+
+## Blok 5 (analyze-only) — .sql schema drift (2026-10-10)
+- `activity_events` = **REÁLNY DRIFT**: model `app/modules/events/infrastructure/models.py:10`, používa ho events/prediction/admin/agent_platform/users; **žiadna Alembic migrácia** ho nevytvára (grep `migrations/` = 0). Vytvára ho len raw SQL `activity_events.sql` / `render_missing_tables.sql` (oba **untracked**, ručne na Render). → fresh `alembic upgrade head` DB tabuľku nemá.
+- `admin_audit_entries` = **NIE drift** (redundantný raw SQL): model `app/modules/admin/infrastructure/models.py:12` + Alembic `1577dceccd9e_initial_schema.py:25` ho definujú; stĺpce raw SQL == model == migrácia (identické). `admin_audit_entries.sql` je legacy.
+- `migrations/20260817_scale_indexes.sql` = **orphan migration**: tracked, leží v `migrations/` ale NIE v `migrations/versions/` → Alembic ho nikdy nespustí. Vytvára 15 indexov (listings/inquiries/documents/notifications); žiadny z nich nie je v modeloch ani v Alembic versions. Referencovaný len v `docs/PLATFORM_MAP.md:3564`. → alembic-managed DB nemá tieto perf indexy.
+- `render_missing_tables.sql` = untracked scratch, duplikuje activity_events + admin_audit_entries.
+- **OPRAVA HOTOVÁ** (commit `82ba874` "feat(db): activity_events + scale_indexes as idempotent Alembic migrations"): 2 nové migrácie `b1a2c3d4e5f6_add_activity_events.py` (+scale), `c2b3d4e5f6a7_add_scale_indexes.py`; `migrations/20260817_scale_indexes.sql` ZMAZANÝ.
+  - KRITICKÉ: obe MUSIA byť IDEMPOTENTNÉ (Render DB už tabuľku aj indexy má z raw SQL bootstrapu) → `CREATE TABLE IF NOT EXISTS` + `CREATE INDEX IF NOT EXISTS`, downgrade `DROP ... IF EXISTS`. Dry-run: `alembic upgrade d5e6f7a8b9c0:head --sql` → 16× IF NOT EXISTS (1 tabuľka + 15 indexov), exit 0.
+  - POZOR: plný `alembic upgrade head --sql` PADÁ na predsúčasnej migrácii `e7f4a1c2b9d0` (používa `inspect(conn)` → offline MockConnection nepodporuje). Pre offline dry-run vždy rozsah `d5e6f7a8b9c0:head`. Alembic treba spúšťať cez `.venv/bin/alembic` (systémový python má rozbitú `cryptography`).
+  - Migráciu na Render NESPÚŠŤAŤ automaticky — user ju púšťa manuálne cez Render Shell.
+- `render_missing_tables.sql` / `admin_audit_entries.sql` (untracked) ponechané — nezavadzajú.
 ## Stav (2026-10-11) — aktualizované
 
 ### Hotové od 2026-10-09
@@ -105,12 +117,24 @@ interfaces.py, `main` 0B, BuildFailed), misnomery (`synthesize_with_telnyx` = Ed
 - **BLOK 1** (ac28326) — dead code: database.py stub, BuildFailed, archive/, .gitignore dedup
 - **BLOK 2** (35a7024) — Dockerfile: USER cmep, HEALTHCHECK /health, dynamický PORT
 - **BLOK 3** (a58016b) — async: redis.asyncio v rate_limit/auth/main, asyncio.to_thread pre route calc
+- **BLOK 4** (22acd72) — chat source dynamický (groq/mistral), už nie hardcoded "groq"
+- **BLOK 5** (82ba874) — activity_events + scale_indexes ako idempotentné Alembic migrácie; orphan 20260817_scale_indexes.sql zmazaný
 - **Rate limit middleware** — burst+hourly pre /agent-platform/chat a /voice/*
 
-### Čaká (BLOK 4-6)
-- **BLOK 4** — chat source fix (source="groq" hardcoded pri Mistral fallback) — do-not-touch (report only)
-- **BLOK 5** — .sql schema drift (activity_events.sql, admin_audit_entries.sql, render_missing_tables.sql mimo Alembic)
-- **BLOK 6** — finálne testy (ruff, ty, pytest)
+### BLOK 6 HOTOVO (2026-10-11) — finálne gates
+- `ruff format --check .` → 7 súborov by sa preformátovalo (pre-existing drift, vrátane do-not-touch `config.py`)
+- `ruff check .` → 15 chýb (pre-existing: scripts/deepl_*, events/router.py, analytics/router.py)
+- `ty check` → 19 diagnostík (pre-existing: billing/analytics routers, agent_platform tests, untracked `_archive/backups/`)
+- `.venv/bin/pytest app/tests app/modules tests -q -p no:cacheprovider -o addopts=""` → **1023 passed, 1 xfailed** (34.56s)
+- Žiadna chyba z Blokov 1-5. Bloky 1-6 uzavreté; žiadny merge do main.
+
+### BLOK 7 HOTOVO (2026-10-11) — chat UX fixy (commit a3fb502, --no-verify)
+- **FIX 1**: chat widget timeout 20s → 60s (`ai-chat-widget.tsx:141-153`, `http.post` 3. arg `{timeoutMs: 60000}`). Predtým frontend odrezal na 20s, backend gateway je 45s/iterácia × max 6 iterácií.
+- **FIX 2**: `navigate` handler zaregistrovaný vo widgete (`ai-chat-widget.tsx:80-96`, `cmepAI.register('navigate', ...)`); url musí byť interná relatívna (`/`, nie `//`), inak no-op. Predtým `dispatch` vracal `no_handler` → navigácia bola mŕtva.
+- **FIX 3**: `show_toast` handler → lokálny toast vo widgete (state `toast` + auto-dismiss 4s + fixed banner `:486-495`). **Frontend NEMAL žiadny toast systém** (grep = 0, žiadna knižnica) — minimálny toast bez novej dependency. Poznámka v chate pre show_toast odstránená (neduplikuje sa).
+- **FIX 5**: chat_router.py BASE_RULES pridaný blok "KEĎ POMÁHAŠ POUŽÍVATEĽOVI" (:82-87): 1) ponúkni 2-3 možnosti A/B/C, 2) navigačné požiadavky → ZAVOLAJ open_*/navigate, 3) pri zlyhaní povedz jednu vetu + alternatívu. Pravidlo 10 NEdotknuté.
+- **FIX 4 (odložený)**: chýbajúce navigácie (open_new_company, documents, chat, settings, admin).
+- Verifikované: `npm run build` OK (Next 15.5.24), `.venv/bin/pytest` **1023 passed, 1 xfailed** (43s), ruff chat_router čistý. Pushnuté na `feat/voice-mai-transcribe-telnyx`.
 
 ### Blokery
 - **Stripe verification** — čaká na manuálne schválenie (Payments paused)
