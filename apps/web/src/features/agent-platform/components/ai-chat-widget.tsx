@@ -15,6 +15,7 @@ import { AiUpgradePanel } from './ai-upgrade-panel';
 import { useT } from '@/lib/i18n/context';
 import { cmepAI } from '@/lib/ai-agent/dispatcher';
 import { getPageContext } from '@/lib/ai-agent/page-context';
+import { dashboardRoutes, safeEntityId } from '@/lib/ai-agent/dashboard-routes';
 import { AiCardList, type AiCard } from './ai-card-list';
 
 type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string; cards?: AiCard[] };
@@ -167,37 +168,43 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
           const nm = action.name;
           const ar = action.args || {};
           if (nm === 'open_listing') {
-            router.push(`/dashboard/listings/${String(ar.listing_id || '')}`);
-            notes.push(`✓ Otvoril som ponuku`);
+            const id = safeEntityId(ar.listing_id);
+            if (id) {
+              router.push(dashboardRoutes.listing(id));
+              notes.push(`✓ Otvoril som ponuku`);
+            }
             continue;
           }
           if (nm === 'open_company') {
-            router.push(`/dashboard/companies/${String(ar.company_id || '')}`);
-            notes.push(`✓ Otvoril som firmu`);
+            const id = safeEntityId(ar.company_id);
+            if (id) {
+              router.push(dashboardRoutes.company(id));
+              notes.push(`✓ Otvoril som firmu`);
+            }
             continue;
           }
           if (nm === 'open_new_listing') {
-            router.push('/dashboard/listings/new');
+            router.push(dashboardRoutes.listingNew);
             notes.push(`✓ Otvoril som formulár novej ponuky`);
             continue;
           }
           if (nm === 'open_listings_list') {
-            router.push('/dashboard/listings');
+            router.push(dashboardRoutes.listings);
             notes.push(`✓ Otvoril som zoznam ponúk`);
             continue;
           }
           if (nm === 'open_companies') {
-            router.push('/dashboard/companies');
+            router.push(dashboardRoutes.companies);
             notes.push(`✓ Otvoril som zoznam firiem`);
             continue;
           }
           if (nm === 'open_dashboard') {
-            router.push('/dashboard');
+            router.push(dashboardRoutes.root);
             notes.push(`✓ Otvoril som dashboard`);
             continue;
           }
           if (nm === 'open_inquiries') {
-            router.push('/dashboard/inquiries');
+            router.push(dashboardRoutes.inquiries);
             notes.push(`✓ Otvoril som dopyty`);
             continue;
           }
