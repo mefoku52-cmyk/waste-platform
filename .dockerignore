@@ -13,6 +13,10 @@
 .env.production
 .env.compose
 
+# Lokalny Python venv sa nesmie kopirovat do image (COPY . . v root Dockerfile).
+.venv
+.venv/**
+
 output/
 *.tar
 *.tar.gz

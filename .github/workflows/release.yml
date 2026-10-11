@@ -2,6 +2,8 @@ name: Release Images
 
 on:
   workflow_dispatch:
+  push:
+    tags: ['v*']
 
 permissions:
   contents: read
@@ -30,53 +32,34 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set release identity
-        shell: bash
+      # API: build z ROOT Dockerfile (python:3.14-slim, root requirements.txt so
+      # stripe/edge-tts/apscheduler, USER cmep, HEALTHCHECK, dynamicky PORT).
+      # POZOR: app/Dockerfile je stary (python:3.12) a instaloval z app/requirements.txt
+      # — nepouzivat pre produkciu.
+      - name: Build and push API
         run: |
           set -euo pipefail
-          echo "RELEASE_ID=sha-${GITHUB_SHA}"
-          echo "IMAGE_TAG=release-${GITHUB_SHA}"
+          IMAGE="${REGISTRY}/cmep-api:release-${GITHUB_SHA}"
+          docker build -t "${IMAGE}" -f Dockerfile .
+          docker push "${IMAGE}"
 
-      - name: Build API
+      # Worker: kontext = app/ (worker/Dockerfile COPY requirements.txt = app/requirements.txt,
+      # ktory je teraz synchronizovany s root requirements.txt).
+      - name: Build and push worker
         run: |
           set -euo pipefail
-          docker build \
-            -t "${REGISTRY}/cmep-api:release-${GITHUB_SHA}" \
-            -f app/Dockerfile \
-            .
+          IMAGE="${REGISTRY}/cmep-worker:release-${GITHUB_SHA}"
+          docker build -t "${IMAGE}" -f app/worker/Dockerfile app
+          docker push "${IMAGE}"
 
-      - name: Build worker
+      # Web: self-contained multi-stage build (npm ci + next build VNUTRI image),
+      # runtime cez `next start`. Nevyzaduje output:'standalone'.
+      - name: Build and push web
         run: |
           set -euo pipefail
-          docker build \
-            -t "${REGISTRY}/cmep-worker:release-${GITHUB_SHA}" \
-            -f app/worker/Dockerfile \
-            app
-
-      - name: Build web
-        working-directory: apps/web
-        run: |
-          set -euo pipefail
-          npm ci
-          npm run build
-          docker build \
-            -t "${REGISTRY}/cmep-web:release-${GITHUB_SHA}" \
-            .
-
-      - name: Push API
-        run: |
-          set -euo pipefail
-          docker push "${REGISTRY}/cmep-api:release-${GITHUB_SHA}"
-
-      - name: Push worker
-        run: |
-          set -euo pipefail
-          docker push "${REGISTRY}/cmep-worker:release-${GITHUB_SHA}"
-
-      - name: Push web
-        run: |
-          set -euo pipefail
-          docker push "${REGISTRY}/cmep-web:release-${GITHUB_SHA}"
+          IMAGE="${REGISTRY}/cmep-web:release-${GITHUB_SHA}"
+          docker build -t "${IMAGE}" apps/web
+          docker push "${IMAGE}"
 
       - name: Verify published manifests
         run: |
