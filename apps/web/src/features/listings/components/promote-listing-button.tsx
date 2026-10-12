@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { http } from '@/lib/api/http';
+import { errorMessage } from '@/lib/api/api-error';
 import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
@@ -54,8 +55,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
       setErr('Stripe nevrátil URL');
       setBusy(false);
     } catch (e) {
-      const msg = e instanceof Error ? e.message : t('listings.promoteExtended.title');
-      setErr(msg);
+      setErr(errorMessage(e, t('listings.promoteExtended.title')));
       setBusy(false);
     }
   }
@@ -68,8 +68,7 @@ export function PromoteListingButton({ listingId, promotedUntil, promotedTier }:
       setOpen(false);
       router.refresh();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : t('listings.promoteExtended.title');
-      setErr(msg);
+      setErr(errorMessage(e, t('listings.promoteExtended.title')));
       setBusy(false);
     }
   }

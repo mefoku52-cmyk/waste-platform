@@ -1,5 +1,6 @@
 import { config } from '../config';
 import { tokenStore } from '../auth/token-store';
+import { ApiError, toApiError } from './api-error';
 
 type HttpOptions = RequestInit & { timeoutMs?: number };
 
@@ -31,10 +32,10 @@ async function request<T>(path: string, options: HttpOptions = {}): Promise<T> {
   } catch (err) {
     window.clearTimeout(timer);
     const aborted = err instanceof DOMException && err.name === 'AbortError';
-    throw {
-      message: aborted ? `Server neodpovedal do ${Math.round(timeoutMs / 1000)} s` : 'Failed to fetch',
-      status: 0,
-    };
+    throw new ApiError(
+      aborted ? `Server neodpovedal do ${Math.round(timeoutMs / 1000)} s` : 'Failed to fetch',
+      0,
+    );
   }
   window.clearTimeout(timer);
 
@@ -47,11 +48,7 @@ async function request<T>(path: string, options: HttpOptions = {}): Promise<T> {
     }
 
     const errorData = await response.json().catch(() => ({}));
-    throw {
-      message: errorData.detail ?? errorData.message ?? 'An unexpected error occurred',
-      status: response.status,
-      errors: errorData.errors,
-    };
+    throw toApiError(response.status, errorData);
   }
 
   if (response.status === 204) {
