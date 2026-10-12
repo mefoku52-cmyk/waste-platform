@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:unit": "node --test",
     "lint:fix": "eslint . --fix",
     "prepare": "husky || true"
   },
