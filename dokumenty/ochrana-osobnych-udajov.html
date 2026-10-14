@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="sk"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--fg:#111;--muted:#666;--bd:#ddd;--bg:#fff;--box:#f6f6f6}
+*{box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;max-width:900px;margin:0 auto;padding:40px 20px;line-height:1.7;color:var(--fg);background:var(--bg)}
+h1{border-bottom:3px solid var(--fg);padding-bottom:12px;margin-bottom:8px}
+.meta{color:var(--muted);font-size:14px;margin-bottom:24px}
+h2{margin-top:36px;border-bottom:1px solid var(--bd);padding-bottom:6px}
+h3{margin-top:24px}
+.box{background:var(--box);border-left:4px solid var(--fg);padding:12px 16px;margin:20px 0}
+table{border-collapse:collapse;width:100%;margin:16px 0}
+th,td{border:1px solid var(--bd);padding:8px 12px;text-align:left;vertical-align:top}
+th{background:var(--box)}
+nav.docs{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0;padding:12px;background:var(--box);border-radius:6px;font-size:14px}
+nav.docs a{color:#0645ad;text-decoration:none}
+nav.docs a:hover{text-decoration:underline}
+footer{margin-top:60px;border-top:1px solid var(--bd);color:var(--muted);font-size:13px;padding-top:16px}
+@media print{body{padding:0;max-width:none;font-size:11pt}nav.docs{display:none}h1{font-size:18pt}h2{font-size:13pt;page-break-after:avoid}a{color:#000;text-decoration:none}footer{font-size:9pt}}
+</style></head><body>
+<h1>Ochrana osobných údajov</h1>
+<p class="meta">Verzia 1.3 · Účinné od 15.10.2026 · Správca: Radoslav Čornanič – FO podnikateľ, IČO 51745666 · trc-cmep@gmail.com</p>
+<nav class="docs">
+<strong>Právne dokumenty:</strong>
+<a href="./obchodne-podmienky.html">Obchodné podmienky</a> ·
+<a href="./ochrana-osobnych-udajov.html">Ochrana osobných údajov</a> ·
+<a href="./licencne-podmienky.html">Licenčné podmienky</a> ·
+<a href="./dsa-notice-and-action.html">DSA – oznamovanie obsahu</a>
+</nav>
+<div class="box">Informácia podľa čl. 13 a 14 Nariadenia (EÚ) 2016/679 (GDPR) a zákona č. 18/2018 Z. z. o ochrane osobných údajov.</div>
+
+<h2>1. Správca</h2>
+<p>Radoslav Čornanič – FO podnikateľ, IČO: 51745666, DIČ: 1078001169, miesto podnikania podľa ZR OÚ Prešov, e-mail: trc-cmep@gmail.com, tel.: +421 910 617 338.</p>
+<p><strong>Zodpovedná osoba (DPO) nebola vymenovaná</strong>, keďže podľa čl. 37 GDPR na to nie je zákonná povinnosť (mikropodnik, neprebieha rozsiahle pravidelné a systematické monitorovanie).</p>
+
+<h2>2. Kategórie dotknutých osôb a údajov</h2>
+<p>2.1 Dotknuté osoby: Používatelia platformy, kontaktné osoby firiem, návštevníci webu, osoby kontaktujúce správcu.</p>
+<p>2.2 Údaje: e-mail, meno, rola, hash hesla, IČO, názov firmy, DIČ, adresa, obsah Ponúk/Dopytov (text, foto), obsah chatových správ, IP adresa, logy, text zadaný AI asistentovi.</p>
+<p>2.3 <strong>Nespracúvame osobitné kategórie údajov</strong> podľa čl. 9 GDPR. <strong>Neprebieha automatizované rozhodovanie</strong> vrátane profilovania podľa čl. 22 GDPR.</p>
+
+<h2>3. Účely a právne základy spracúvania</h2>
+<table>
+<tr><th>Účel</th><th>Právny základ</th><th>Doba uchovávania</th></tr>
+<tr><td>Registrácia a vedenie účtu</td><td>čl. 6(1)(b) – plnenie zmluvy</td><td>trvanie účtu</td></tr>
+<tr><td>Overenie firmy (RPO/Finstat)</td><td>čl. 6(1)(b) + (f) – prevencia podvodov</td><td>trvanie účtu</td></tr>
+<tr><td>Ponuky a dopyty</td><td>čl. 6(1)(b) – plnenie zmluvy</td><td>do vymazania alebo 3 roky</td></tr>
+<tr><td>Chat medzi Používateľmi</td><td>čl. 6(1)(b)</td><td>12 mesiacov; pri spore 3 roky</td></tr>
+<tr><td>Bezpečnosť (IP, logy)</td><td>čl. 6(1)(f) – oprávnený záujem</td><td>12 mesiacov</td></tr>
+<tr><td>AI asistent (Groq)</td><td>čl. 6(1)(b)</td><td>cache u Groq max. 30 dní, bez tréningu</td></tr>
+<tr><td>Účtovníctvo</td><td>čl. 6(1)(c) – zákonná povinnosť</td><td>10 rokov</td></tr>
+</table>
+
+<h2>4. Príjemcovia a sprostredkovatelia (čl. 28)</h2>
+<ul>
+<li><strong>Hetzner Online GmbH</strong>, Nemecko (EÚ) – hosting a infraštruktúra</li>
+<li><strong>Vlastný SMTP server</strong> – doručovanie e-mailov</li>
+<li><strong>Groq, Inc.</strong>, USA – AI asistent (spracovateľská zmluva DPA podpísaná)</li>
+</ul>
+<p>Údaje nepredávame tretím stranám. Zálohy sú šifrované.</p>
+
+<h2>5. Prenos do tretích krajín</h2>
+<p>Prenos mimo EHP prebieha len pri AI asistentovi (Groq, Inc., USA), zabezpečený štandardnými zmluvnými doložkami podľa čl. 46(2)(c) GDPR.</p>
+
+<h2>6. Vaše práva</h2>
+<p>Máte právo na prístup (čl. 15), opravu (čl. 16), vymazanie (čl. 17), obmedzenie (čl. 18), prenosnosť (čl. 20), namietnuť (čl. 21), odvolať súhlas (čl. 7(3)). Žiadosť zasielajte na trc-cmep@gmail.com. <strong>Odpovieme do 30 dní.</strong></p>
+<p>Máte právo podať sťažnosť dozornému orgánu: <strong>Úrad na ochranu osobných údajov SR</strong>, Hraničná 12, 820 07 Bratislava, <a href="https://dataprotection.gov.sk">dataprotection.gov.sk</a>.</p>
+
+<h2>7. Cookies a lokálne úložisko</h2>
+<!-- TODO: pred publikovaním overiť reálne názvy cookies/lokálneho úložiska v DevTools > Application -->
+<p>Platforma používa výlučne technické cookies a lokálne úložisko nevyhnutné pre prevádzku. Nepoužívame reklamné ani analytické cookies.</p>
+<table>
+<tr><th>Názov</th><th>Účel</th><th>Doba</th></tr>
+<tr><td>cmep_theme</td><td>UI preferencia (svetlá/tmavá téma)</td><td>12 mesiacov</td></tr>
+<tr><td>cmep_csrf</td><td>CSRF ochrana formulárov</td><td>do zatvorenia prehliadača</td></tr>
+</table>
+<p><em>Poznámka správcu:</em> autentifikácia prebieha cez JWT token. <em>(Pred publikovaním nahradiť skutočným stavom – pozri TODO v zdrojovom kóde.)</em></p>
+
+<h2>8. AI asistent</h2>
+<p>Text zadaný AI asistentovi sa odosiela poskytovateľovi Groq, Inc. (USA) na vygenerovanie odpovede. Text sa nepoužíva na tréning modelov. <strong>Nezadávajte citlivé údaje.</strong> Odpovede AI sú informatívne a nie sú právnym, daňovým ani odborným poradenstvom.</p>
+
+<h2>9. DPIA a DPO</h2>
+<p>Spracúvanie <strong>nepredstavuje vysoké riziko</strong> podľa čl. 35(1) GDPR – neprebieha rozsiahle systematické monitorovanie, nespracúvajú sa osobitné kategórie údajov, neprebieha automatizované rozhodovanie. <strong>DPIA sa preto nevyžaduje.</strong> Pri zmene charakteru spracúvania vykonáme nové posúdenie.</p>
+
+<footer>CMEP · trc-cmep@gmail.com · Verzia 1.3 · Účinné od 15.10.2026 · Radoslav Čornanič – FO podnikateľ, IČO 51745666</footer></body></html>

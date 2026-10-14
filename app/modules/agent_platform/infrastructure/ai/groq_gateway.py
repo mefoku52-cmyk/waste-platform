@@ -2,15 +2,19 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import urllib.error
 import urllib.request
 from collections.abc import AsyncIterator
 from typing import Any
 
+from app.modules.agent_platform.infrastructure.ai._net import log_http_error
 from app.modules.agent_platform.infrastructure.ai.model_gateway import ModelGateway
 from app.modules.agent_platform.infrastructure.ai.model_request import ModelRequest
 from app.modules.agent_platform.infrastructure.ai.model_response import ModelResponse
+
+_log = logging.getLogger(__name__)
 
 _UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -87,6 +91,7 @@ class GroqModelGateway(ModelGateway):
                     wait = 2**attempt  # 1, 2 sekundy
                     await asyncio.sleep(wait)
                     continue
+                log_http_error(_log, "groq", e)
                 raise
         else:
             if last_exc:

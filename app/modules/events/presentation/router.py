@@ -1,8 +1,9 @@
 import json
+
 from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel, Field
 
 from app.modules.events.infrastructure.models import ActivityEventModel
-from pydantic import BaseModel, Field
 from app.modules.events.presentation.schemas import EventIn, EventOut
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -94,6 +95,7 @@ async def list_reports(
         ]
     }
 
+
 # ============================================================
 # Public contact endpoint (bez auth) — pre landing page formulár
 # ============================================================
@@ -119,9 +121,12 @@ async def submit_contact(
     # Jednoduchý rate limit cez X-Forwarded-For
     import hashlib
     from datetime import UTC, datetime, timedelta
+
     from sqlalchemy import func, select
 
-    ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else "unknown")
+    ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
+        request.client.host if request.client else "unknown"
+    )
     ip_hash = hashlib.sha256(ip.encode()).hexdigest()[:16]
 
     one_hour_ago = datetime.now(UTC).replace(tzinfo=None) - timedelta(hours=1)

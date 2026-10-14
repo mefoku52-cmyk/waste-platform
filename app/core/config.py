@@ -92,7 +92,6 @@ def _normalize_database_url(raw: str) -> str:
 
 
 class Settings(BaseSettings):
-
     # Stripe
     STRIPE_SECRET_KEY: str | None = None
     STRIPE_WEBHOOK_SECRET: str | None = None

@@ -1,16 +1,21 @@
 """analytics API router."""
 
+import json
+from datetime import datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi import status as http_status
 from pydantic import BaseModel, Field
+from sqlalchemy import func, select
 
+from app.modules.analytics.infrastructure.models import AnalyticsEventModel
 from app.shared.domain.exceptions import (
     ForbiddenDomainError,
     NotFoundDomainError,
     ValidationDomainError,
 )
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import (
     is_platform_admin,
@@ -34,14 +39,6 @@ from .schemas import (
     PaginatedAnalyticsEventsResponse,
     PaginationMeta,
 )
-
-import json
-from datetime import datetime, timedelta
-
-from sqlalchemy import func, select
-
-from app.modules.analytics.infrastructure.models import AnalyticsEventModel
-from app.shared.infrastructure.db.session import get_db_session
 
 router = APIRouter(prefix="/analytics", tags=["analytics"])
 
@@ -288,6 +285,7 @@ async def record_acquisition_event(
         "recorded_at": event.recorded_at.isoformat(),
     }
 
+
 # Admin stats endpoint — agregacia page_view eventov.
 
 
@@ -333,13 +331,17 @@ async def get_admin_stats(
 
     # Unique visitors today — parsuj event_metadata JSON
     rows_today = (
-        await session.execute(
-            select(AnalyticsEventModel.event_metadata).where(
-                AnalyticsEventModel.event_type == "page_view",
-                AnalyticsEventModel.recorded_at >= today_start,
+        (
+            await session.execute(
+                select(AnalyticsEventModel.event_metadata).where(
+                    AnalyticsEventModel.event_type == "page_view",
+                    AnalyticsEventModel.recorded_at >= today_start,
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     anon_ids = set()
     for meta in rows_today:
@@ -356,13 +358,17 @@ async def get_admin_stats(
 
     # Daily breakdown pre poslednych N dni
     rows_month = (
-        await session.execute(
-            select(AnalyticsEventModel.recorded_at).where(
-                AnalyticsEventModel.event_type == "page_view",
-                AnalyticsEventModel.recorded_at >= month_start,
+        (
+            await session.execute(
+                select(AnalyticsEventModel.recorded_at).where(
+                    AnalyticsEventModel.event_type == "page_view",
+                    AnalyticsEventModel.recorded_at >= month_start,
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     daily: dict[str, int] = {}
     for dt in rows_month:
@@ -371,13 +377,17 @@ async def get_admin_stats(
 
     # Top sources z poslednych N dni
     rows_meta = (
-        await session.execute(
-            select(AnalyticsEventModel.event_metadata).where(
-                AnalyticsEventModel.event_type == "page_view",
-                AnalyticsEventModel.recorded_at >= month_start,
+        (
+            await session.execute(
+                select(AnalyticsEventModel.event_metadata).where(
+                    AnalyticsEventModel.event_type == "page_view",
+                    AnalyticsEventModel.recorded_at >= month_start,
+                )
             )
         )
-    ).scalars().all()
+        .scalars()
+        .all()
+    )
 
     sources: dict[str, int] = {}
     for meta in rows_meta:

@@ -7,6 +7,7 @@ Použitie:
   set -a && source .env && set +a
   python3 scripts/deepl_incremental.py
 """
+
 import json
 import os
 import sys
@@ -32,7 +33,11 @@ MAX_RETRIES = 3
 
 
 def translate_batch(texts, target_lang, api_key):
-    url = "https://api-free.deepl.com/v2/translate" if api_key.endswith(":fx") else "https://api.deepl.com/v2/translate"
+    url = (
+        "https://api-free.deepl.com/v2/translate"
+        if api_key.endswith(":fx")
+        else "https://api.deepl.com/v2/translate"
+    )
     headers = {"Authorization": f"DeepL-Auth-Key {api_key}"}
     for attempt in range(MAX_RETRIES):
         try:
@@ -50,7 +55,7 @@ def translate_batch(texts, target_lang, api_key):
                 if attempt == MAX_RETRIES - 1:
                     sys.exit(1)
                 time.sleep(2)
-        except Exception as e:
+        except Exception:
             if attempt == MAX_RETRIES - 1:
                 raise
             time.sleep(2)
@@ -85,7 +90,7 @@ def main():
         translations = []
         total = (len(texts) + BATCH_SIZE - 1) // BATCH_SIZE
         for i in range(0, len(texts), BATCH_SIZE):
-            batch = texts[i:i+BATCH_SIZE]
+            batch = texts[i : i + BATCH_SIZE]
             n = i // BATCH_SIZE + 1
             print(f"   [{n}/{total}] {len(batch)} textov...")
             translations.extend(translate_batch(batch, conf["target"], api_key))

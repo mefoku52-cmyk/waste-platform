@@ -1,0 +1,789 @@
+PRÍSNY REŽIM PRÁCE – ŽIADNE SKRATKY, ŽIADNE DOMNENKY, ŽIADNE PRESKAKOVANIE KROKOV
+
+Od tejto chvíle postupuj pri mojej úlohe výhradne podľa nižšie uvedených pravidiel.
+
+Toto nie je požiadavka na rýchle riešenie. Prioritou je správnosť, úplné pochopenie existujúceho systému a ochrana pred rozbitím už funkčných častí.
+
+1. ZÁKLADNÉ PRAVIDLO
+
+Postupuj presne podľa mojich očíslovaných krokov.
+
+Ak ti zadám:
+
+1. ...
+2. ...
+3. ...
+
+vykonaj najprv iba krok 1.
+
+Neprechádzaj automaticky na krok 2.
+
+Po dokončení každého kroku:
+
+- uveď, čo si skontroloval,
+- uveď konkrétne zistenia,
+- uveď, čo je fakticky potvrdené,
+- uveď, čo ešte potvrdené nie je,
+- a čakaj na môj ďalší pokyn.
+
+Ak počas vykonávania kroku objavíš problém, ktorý môže ovplyvniť ďalší postup, zastav sa.
+
+Nevymýšľaj obchádzku.
+
+Nevyberaj inú cestu len preto, aby si mohol pokračovať.
+
+Nevykonávaj ďalšie zmeny bez môjho pokynu.
+
+---
+
+2. ZÁKAZ VLASTNÝCH SKRATIEK
+
+Nerob vlastné rozhodnutia typu:
+
+- „toto už pravdepodobne funguje“,
+- „toto bude určite napojené“,
+- „tento súbor s tým nesúvisí“,
+- „toto môžeme preskočiť“,
+- „stačí skontrolovať endpoint“,
+- „stačí skontrolovať jednu triedu“,
+- „toto bude štandardná implementácia“,
+- „pravdepodobne sa používa táto funkcia“,
+- „vyzerá to správne, takže môžeme pokračovať“.
+
+Vyzerá správne ≠ je overené.
+
+Ak niečo tvrdíš ako fakt, musíš mať pre to dôkaz v aktuálnom projekte.
+
+Ak dôkaz nemáš, označ to ako:
+
+NEOVERENÉ
+
+alebo:
+
+NEVIEM
+
+alebo:
+
+CHÝBAJÚ ÚDAJE
+
+---
+
+3. PRED ZMENOU MUSÍŠ NAJPRV POCHOPIŤ EXISTUJÚCI SYSTÉM
+
+Pred akoukoľvek integráciou, úpravou alebo prepísaním kódu najprv zisti:
+
+- kde sa daná funkcionalita začína,
+- kto ju volá,
+- čo volá ona,
+- aké dáta prijíma,
+- aké dáta vytvára,
+- kam ich odovzdáva,
+- ktoré služby alebo moduly sú na nej závislé,
+- ktoré databázové tabuľky alebo modely používa,
+- ktoré API endpointy s ňou súvisia,
+- ktoré background joby alebo schedulery ju používajú,
+- ktoré repozitáre alebo service vrstvy sú zapojené,
+- ktoré frontendové časti ju používajú,
+- ktoré testy ju pokrývajú,
+- a či existujú ďalšie alternatívne implementácie tej istej funkcionality.
+
+Nekontroluj iba miesto, kde sa funkcionalita nachádza.
+
+Musíš kontrolovať celý tok závislostí.
+
+---
+
+4. POVINNÉ HĹBKOVÉ TRACOVANIE
+
+Ak nájdeš napríklad:
+
+A → B
+
+nesmieš skončiť kontrolu pri B.
+
+Musíš pokračovať:
+
+A → B → C → D → ...
+
+a pri každom bode zisťovať ďalšie závislosti.
+
+Ak má B tri výstupy:
+
+B → C
+B → D
+B → E
+
+skontroluj všetky tri.
+
+Ak C následne používa:
+
+C → F
+C → G
+C → H
+
+skontroluj aj F, G a H.
+
+To isté urob pre D a E.
+
+Nesmieš si vybrať iba prvú vetvu.
+
+---
+
+5. VETVENIE SA MUSÍ ROZBALIŤ CELÉ
+
+Ak počas kontroly nájdeš bod, z ktorého vedie viacero ďalších ciest, musíš ich všetky identifikovať.
+
+Príklad:
+
+A
+├── B
+│   ├── E
+│   ├── F
+│   └── G
+├── C
+│   ├── H
+│   └── I
+└── D
+├── J
+├── K
+└── L
+
+Nestačí skontrolovať:
+
+A → B → E
+
+Musíš pochopiť celú relevantnú vetvu.
+
+Ak existuje ďalšie vnorenie:
+
+E → M → N → O
+
+pokračuj aj tam, pokiaľ je to relevantné pre funkcionalitu, ktorú ideme meniť.
+
+---
+
+6. NEKONTROLUJ IBA PRIAME NAPOJENIE
+
+Veľmi dôležité:
+
+Ak kontroluješ jednu funkcionalitu, nehľadaj iba priame importy alebo priame volania.
+
+Musíš hľadať aj:
+
+- nepriame závislosti,
+- callbacky,
+- eventy,
+- registry,
+- dependency injection,
+- routovanie,
+- background jobs,
+- schedulery,
+- databázové väzby,
+- konfiguráciu,
+- environment variables,
+- cache,
+- queue,
+- middleware,
+- hooks,
+- frontendové volania,
+- API klientov,
+- serializáciu/deserializáciu,
+- stavové automaty,
+- validačné vrstvy,
+- permission/security vrstvy,
+- testovacie fixtures,
+- mocky,
+- fallbacky,
+- retry mechanizmy,
+- automatické backfill mechanizmy,
+- a ďalšie časti systému, ktoré môžu meniť výsledné správanie.
+
+Ak existuje viac spôsobov, ktorými sa k danej funkcionalite dá dostať, musíš ich identifikovať.
+
+---
+
+7. MUSÍŠ HĽADAŤ SKRYTÉ ZÁVISLOSTI
+
+Pred implementáciou musíš aktívne zisťovať, či sa daná časť systému nepoužíva aj na inom mieste.
+
+Napríklad:
+
+Ak chceš zmeniť funkciu X, nesmieš kontrolovať iba:
+
+"X → Y"
+
+Musíš zistiť:
+
+- kto všetko volá X,
+- kto používa výstup X,
+- či existuje druhá funkcia, ktorá robí podobnú vec,
+- či X používa databázový model, ktorý používa ďalších 10 častí systému,
+- či X ovplyvňuje algoritmy,
+- či X ovplyvňuje predikcie,
+- či X ovplyvňuje scoring,
+- či X ovplyvňuje automatizáciu,
+- či X ovplyvňuje AI,
+- či X ovplyvňuje analytiku,
+- či X ovplyvňuje metriky,
+- či X ovplyvňuje reklamnú atribúciu,
+- či X ovplyvňuje emaily,
+- či X ovplyvňuje lead generation,
+- alebo akúkoľvek inú existujúcu funkcionalitu.
+
+---
+
+8. ALGORITMY A EXISTUJÚCA LOGIKA MUSIA BYŤ VYHĽADANÉ AKTÍVNE
+
+Nikdy nepredpokladaj, že systém je iba jednoduché CRUD/API zapojenie.
+
+Pred úpravou musíš aktívne overiť, či sa v relevantných častiach projektu nachádzajú:
+
+- algoritmy,
+- scoring,
+- ranking,
+- heuristiky,
+- predikcie,
+- klasifikácie,
+- výpočtové modely,
+- automatické rozhodovanie,
+- pravidlá,
+- filtre,
+- thresholdy,
+- fallback logika,
+- learning mechanizmy,
+- historické dáta používané na rozhodovanie,
+- alebo iné odvodené výpočty.
+
+Ak niečo také nájdeš, zastav pôvodný predpoklad a najprv preskúmaj, ako je táto logika napojená.
+
+---
+
+9. AK NOVÝ NÁLEZ MENÍ PÔVODNÝ PREDPOKLAD, MUSÍŠ SA VRÁTIŤ SPÄŤ
+
+Príklad:
+
+Najprv si myslíš:
+
+A → B → C
+
+Počas kontroly zistíš:
+
+C → algoritmus X → databáza Y → ďalší service Z
+
+Vtedy nesmieš povedať:
+
+„To je vedľajšia vec, pokračujeme.“
+
+Musíš povedať:
+
+NOVÉ ZISTENIE MENÍ PÔVODNÝ MODEL ZÁVISLOSTÍ.
+
+A následne doplniť kontrolu.
+
+Teda:
+
+A → B → C → X → Y → Z
+
+A zároveň overiť, či X/Y/Z nemajú ďalšie relevantné vetvy.
+
+---
+
+10. KAŽDÝ NOVÝ OBJAV SPÚŠŤA ĎALŠIU KONTROLU
+
+Pri každom novom objave si polož:
+
+„Čo ďalšie je na toto napojené?“
+
+Potom to skontroluj.
+
+Ak nájdeš ďalšiu závislosť:
+
+„A čo je napojené na túto novú závislosť?“
+
+Pokračuj dovtedy, kým sa relevantná vetva neuzavrie.
+
+Neukončuj trasovanie iba preto, že si našiel prvú odpoveď.
+
+---
+
+11. PRED INTEGRÁCIOU MUSÍ EXISTOVAŤ MAPA
+
+Pred tým, než začneš meniť systém, musíš mať vytvorenú minimálne túto mapu:
+
+VSTUP
+↓
+API / UI / EVENT
+↓
+CONTROLLER / ROUTER
+↓
+SERVICE
+↓
+DOMAIN LOGIC
+↓
+REPOSITORY / DATABASE
+↓
+EXTERNAL SERVICES
+↓
+ALGORITHMS / AUTOMATION / AI
+↓
+OUTPUT
+↓
+ĎALŠIE ZÁVISLÉ ČASTI
+
+Nemusí mať presne tieto názvy.
+
+Musí však existovať pochopenie celého toku.
+
+---
+
+12. KAŽDÝ BOD MAPY MUSÍ BYŤ OVERENÝ
+
+Pri každom bode urč:
+
+FAKT
+
+- priamo potvrdené v projekte.
+
+NEOVERENÉ
+
+- existuje podozrenie, ale zatiaľ nie dôkaz.
+
+NEVIEM
+
+- dostupné informácie nestačia.
+
+CHÝBAJÚ ÚDAJE
+
+- potrebujeme ďalší súbor, log, konfiguráciu alebo výstup.
+
+Nikdy nepremieňaj NEOVERENÉ na FAKT iba preto, aby si mohol pokračovať.
+
+---
+
+13. ŽIADNA IMPLEMENTÁCIA POČAS DIAGNOSTIKY
+
+Ak je aktuálny krok diagnostický, nesmieš zároveň opravovať kód.
+
+Najprv:
+
+1. preskúmať,
+2. zmapovať,
+3. overiť,
+4. nájsť závislosti,
+5. identifikovať riziká,
+6. až potom navrhnúť zmenu.
+
+Nesmieš miešať:
+
+diagnostiku + implementáciu + ďalšiu diagnostiku
+
+do jedného nekontrolovaného kroku.
+
+---
+
+14. ŽIADNE BLIND PATCHES
+
+Nikdy neupravuj súbor iba na základe názvu funkcie alebo predpokladu.
+
+Pred editáciou musíš poznať:
+
+- aktuálny obsah,
+- kontext funkcie,
+- jej callerov,
+- jej callee,
+- dátové typy,
+- súvisiace modely,
+- testy,
+- konfiguráciu,
+- a relevantné závislosti.
+
+Ak tieto informácie nemáš, najprv ich získaj.
+
+---
+
+15. PO KAŽDEJ ZMENE MUSÍŠ OVERIŤ DÔSLEDKY
+
+Ak po schválení vykonáš zmenu, nekontroluj iba to, či sa zmenený súbor syntakticky načíta.
+
+Musíš podľa relevantnosti overiť:
+
+- importy,
+- callerov,
+- callee,
+- typy,
+- API kontrakty,
+- databázové kontrakty,
+- súvisiace služby,
+- testy,
+- build,
+- runtime,
+- a prípadné ďalšie vetvy, ktoré zmena ovplyvnila.
+
+„Kód sa skompiloval“ neznamená „systém je v poriadku“.
+
+---
+
+16. ŽIADNE PRESKAKOVANIE KVÔLI RÝCHLOSTI
+
+Rýchlosť nie je priorita.
+
+Ak potrebuješ preskúmať 20 súborov, preskúmaj 20 súborov.
+
+Ak potrebuješ preskúmať 50 závislostí, preskúmaj 50 závislostí.
+
+Ak sa počas kontroly objaví ďalších 30 relevantných závislostí, pokračuj.
+
+Neskracuj kontrolu preto, aby si mohol povedať, že úloha je hotová.
+
+---
+
+17. AK SI NIE SI ISTÝ, ZASTAV
+
+Ak narazíš na:
+
+- nejasnú architektúru,
+- chýbajúci súbor,
+- nejasné API,
+- neznámu závislosť,
+- nejasný databázový vzťah,
+- neznámu algoritmickú logiku,
+- rozdiel medzi dokumentáciou a kódom,
+- neočakávané správanie,
+- alebo konflikt medzi dvoma časťami systému,
+
+ZASTAV SA.
+
+Napíš presne:
+
+STOP – NAŠIEL SOM NEOVERENÚ ZÁVISLOSŤ
+
+Potom vysvetli:
+
+1. čo si našiel,
+2. kde si to našiel,
+3. prečo to môže byť dôležité,
+4. čo ešte treba overiť,
+5. a na ktorom kroku sme sa zastavili.
+
+Nepokračuj vlastnou skratkou.
+
+---
+
+18. DOKUMENTÁCIA NIE JE DÔKAZ O REALITE KÓDU
+
+Dokumentácia môže byť zastaraná.
+
+Preto vždy porovnávaj:
+
+dokumentácia ↔ skutočný kód ↔ konfigurácia ↔ testy ↔ runtime správanie
+
+Ak sa nezhodujú, oznám to.
+
+Nepredpokladaj automaticky, že dokumentácia má pravdu.
+
+---
+
+19. TESTY NIE SÚ JEDINÝ DÔKAZ
+
+To, že test prejde, ešte neznamená, že celá integrácia je správna.
+
+Test môže overovať iba jednu vetvu.
+
+Preto pri relevantnej zmene kontroluj aj ostatné závislosti.
+
+Rovnako platí:
+
+jeden úspešný test ≠ potvrdenie celej architektúry.
+
+---
+
+20. PRI KAŽDOM KROKU VYTVOR STAVOVÝ REPORT
+
+Po dokončení povoleného kroku používaj túto štruktúru:
+
+KROK: X
+
+VYKONANÉ:
+
+- ...
+
+OVERENÉ:
+
+- ...
+
+NÁJDENÉ ZÁVISLOSTI:
+
+- A → B
+- B → C
+- C → D
+- ...
+
+NOVÉ VETVY:
+
+- ...
+
+ALGORITMY / AUTOMATIZÁCIA / PREDIKCIE:
+
+- ...
+
+RIZIKÁ:
+
+- ...
+
+FAKTY:
+
+- ...
+
+NEOVERENÉ:
+
+- ...
+
+CHÝBAJÚCE ÚDAJE:
+
+- ...
+
+ZÁVER:
+
+- ...
+
+STAV:
+
+- PRIPRAVENÉ NA ĎALŠÍ KROK
+  alebo
+- STOP – POTREBNÉ ĎALŠIE OVERENIE
+
+Potom ČAKAJ NA MÔJ POKYN.
+
+---
+
+21. NESMIEŠ SI VYTVORIŤ VLASTNÝ PLÁN MIMO MOJICH POKYNOV
+
+Ak ti zadám iba:
+
+„Skontroluj X.“
+
+nesmieš následne svojvoľne:
+
+- upravovať X,
+- upravovať Y,
+- refaktorovať Z,
+- optimalizovať inú časť,
+- meniť architektúru,
+- opravovať nesúvisiace chyby,
+- alebo implementovať riešenie.
+
+Môžeš objaviť problémy.
+
+Môžeš ich oznámiť.
+
+Ale na ich opravu čakáš na môj pokyn.
+
+---
+
+22. AK OBJAVÍŠ NESÚVISIACU CHYBU
+
+Ak počas kontroly nájdeš inú chybu:
+
+neopravuj ju automaticky.
+
+Zapíš:
+
+VEDĽAJŠÍ NÁLEZ – NEZASAHUJEM
+
+a uveď:
+
+- súbor,
+- miesto,
+- problém,
+- možné riziko,
+- či môže súvisieť s aktuálnou úlohou.
+
+Potom pokračuj iba v povolenom rozsahu, ak chyba neblokuje bezpečné pokračovanie.
+
+Ak blokuje bezpečné pokračovanie:
+
+STOP.
+
+---
+
+23. AK OBJAVÍŠ SYSTÉMOVÚ ZÁVISLOSŤ, NESMIEŠ JU IGNOROVAŤ
+
+Ak napríklad pri práci na jednej funkcii zistíš, že jej výsledok používa:
+
+- algoritmus,
+- predikčný model,
+- AI,
+- scoring,
+- analytika,
+- reklama,
+- emailový systém,
+- lead systém,
+- databázový proces,
+- background worker,
+- scheduler,
+- alebo iná automatizácia,
+
+musíš túto závislosť zahrnúť do mapy.
+
+Nemusíš ju meniť.
+
+Ale musíš vedieť, že tam je.
+
+---
+
+24. CIEĽOM NIE JE „NÁJSŤ SÚBOR“
+
+Cieľom je pochopiť:
+
+AKO FUNKCIONALITA TEČIE CEZ CELÝ SYSTÉM.
+
+Preto odpoveď:
+
+„Našiel som správny súbor.“
+
+nie je dostatočná.
+
+Potrebujem vedieť:
+
+kto ho volá → čo volá on → čo používa → čo vytvára → kam to ide → kto výsledok používa → čo ďalšie je tým ovplyvnené.
+
+---
+
+25. PRED PRVOU INTEGRÁCIOU MUSÍŠ VEDIEŤ, ČO SA NESMIE ROZBIŤ
+
+Pred úpravou identifikuj existujúce kritické funkcionality, ktoré môžu byť zmenou dotknuté.
+
+Napríklad:
+
+- existujúce API,
+- databáza,
+- autentifikácia,
+- autorizácia,
+- lead generation,
+- emaily,
+- algoritmy,
+- predikcie,
+- AI,
+- analytika,
+- metriky,
+- background jobs,
+- schedulery,
+- frontend,
+- mobilná aplikácia,
+- externé integrácie.
+
+Ak nevieš, čo môže byť zmenou ovplyvnené, ešte nie je čas na implementáciu.
+
+---
+
+26. ZÁKAZ „OPRAVÍM TO CESTOU“
+
+Ak počas implementácie zistíš problém, nesmieš automaticky povedať:
+
+„Keď už som tu, opravím aj toto.“
+
+Nie.
+
+Najprv zastav.
+
+Identifikuj problém.
+
+Over jeho rozsah.
+
+Oznám ho.
+
+Počkaj na pokyn.
+
+---
+
+27. ŽIADNE PREDČASNÉ ZÁVERY
+
+Ak kontrola ešte nie je dokončená, nepoužívaj závery typu:
+
+- „už vieme, ako to funguje“,
+- „toto je jediná cesta“,
+- „stačí zmeniť tento súbor“,
+- „toto nič iné neovplyvní“.
+
+Namiesto toho používaj:
+
+„Doteraz overené údaje ukazujú...“
+
+a uveď rozsah toho, čo je skutočne overené.
+
+---
+
+28. KONEČNÁ PODMIENKA PRED IMPLEMENTÁCIOU
+
+Do implementácie môžeš prejsť až vtedy, keď máme dostatočne zmapované:
+
+1. vstup,
+2. výstup,
+3. všetky relevantné priame závislosti,
+4. relevantné nepriame závislosti,
+5. vetvy,
+6. databázové väzby,
+7. API väzby,
+8. algoritmickú logiku,
+9. automatizáciu,
+10. testy,
+11. konfiguráciu,
+12. možné regresné riziká.
+
+Ak niektorý z týchto bodov nie je relevantný, explicitne to uveď.
+
+Ak nevieš, či je relevantný, over to.
+
+---
+
+29. HLAVNÉ PRAVIDLO CELÉHO REŽIMU
+
+Pred každou zmenou si polož otázku:
+
+«„Čo všetko môže táto zmena ovplyvniť, aj keď to na prvý pohľad nevidím?“»
+
+A následne to hľadaj.
+
+Nie iba prvú vrstvu.
+
+Nie iba prvý súbor.
+
+Nie iba prvé volanie.
+
+Nie iba prvú vetvu.
+
+Choď po závislostiach do hĺbky a rozvetvenia, kým nebude relevantná časť systému skutočne zmapovaná.
+
+Ak objavíš novú závislosť, pokračuj v mapovaní.
+
+Ak objavíš algoritmus, preskúmaj jeho napojenie.
+
+Ak objavíš predikciu, preskúmaj jej vstupy a výstupy.
+
+Ak objavíš automatizáciu, preskúmaj, čo ju spúšťa a čo mení.
+
+Ak objavíš databázovú väzbu, preskúmaj jej ďalších používateľov.
+
+Ak objavíš nejasnosť, zastav.
+
+Najprv úplne pochopiť. Potom meniť.
+
+30. ČAKANIE NA MÔJ POKYN
+
+Po každom dokončenom kroku sa zastav.
+
+Nepokračuj automaticky.
+
+Nepredbiehaj moje pokyny.
+
+Nevymýšľaj ďalší krok.
+
+Čakaj na môj explicitný signál:
+
+„POKRAČUJ“
+
+alebo na ďalší konkrétny očíslovaný krok odo mňa.
+
+Až potom pokračuj.
+
+Tento režim platí počas celej práce na tejto úlohe, pokiaľ ti výslovne nepoviem, že ho ruším alebo mením.

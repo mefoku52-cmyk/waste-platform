@@ -8,15 +8,22 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import os
 import urllib.error
 import urllib.request
 from collections.abc import AsyncIterator
 from typing import Any
 
+from app.modules.agent_platform.infrastructure.ai._net import (
+    log_http_error,
+    resolve_url,
+)
 from app.modules.agent_platform.infrastructure.ai.model_gateway import ModelGateway
 from app.modules.agent_platform.infrastructure.ai.model_request import ModelRequest
 from app.modules.agent_platform.infrastructure.ai.model_response import ModelResponse
+
+_log = logging.getLogger(__name__)
 
 _UA = "CMEP/1.0 (Mistral gateway)"
 _DEFAULT_URL = "https://api.mistral.ai/v1/chat/completions"
@@ -27,7 +34,7 @@ class MistralModelGateway(ModelGateway):
         return "mistral"
 
     def _url(self) -> str:
-        return os.getenv("MISTRAL_API_URL", _DEFAULT_URL).strip()
+        return resolve_url(os.getenv("MISTRAL_API_URL"), _DEFAULT_URL, "MISTRAL_API_URL")
 
     def _model(self, request: ModelRequest) -> str:
         # MISTRAL_MODEL je autorita — orchestrátor posiela request.model
@@ -98,6 +105,7 @@ class MistralModelGateway(ModelGateway):
                 if e.code == 429 and attempt < 1:
                     await asyncio.sleep(1)
                     continue
+                log_http_error(_log, "mistral", e)
                 raise
         else:
             if last_exc:
