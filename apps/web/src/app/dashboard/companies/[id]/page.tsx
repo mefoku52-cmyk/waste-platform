@@ -453,6 +453,14 @@ export default function CompanyDetailPage() {
                     {t('companies.editCompany')}
                   </Link>
 
+                  <Link
+                    href={`/dashboard/companies/${companyId}/page`}
+                    className="rounded-full px-4 py-2 text-sm font-semibold"
+                    style={{ background: GOLD, color: '#090807' }}
+                  >
+                    {t('companyPage.openEditor')}
+                  </Link>
+
                   {data.status === 'draft' ? (
                     <button
                       type="button"

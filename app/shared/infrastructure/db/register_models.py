@@ -21,6 +21,13 @@ from app.modules.companies.infrastructure.models import CompanyModel  # noqa: F4
 from app.modules.company_memberships.infrastructure.models import (
     CompanyMembershipModel,  # noqa: F401
 )
+from app.modules.company_pages.infrastructure.models import (  # noqa: F401
+    CompanyPageModel,
+    CompanyPhotoModel,
+)
+from app.modules.company_reviews.infrastructure.models import (  # noqa: F401
+    CompanyReviewModel,
+)
 from app.modules.compliance.infrastructure.models import (
     ComplianceRecordModel,  # noqa: F401
 )

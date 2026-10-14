@@ -1501,5 +1501,76 @@
   "security": {
     "title": "Bezpečnosť",
     "cancel": "Zrušiť"
+  },
+  "companyPage": {
+    "eyebrow": "Verejná stránka",
+    "title": "Verejný profil firmy",
+    "openEditor": "Verejná stránka",
+    "statusDraft": "Koncept",
+    "statusPublished": "Zverejnená",
+    "missingTitle": "Na zverejnenie ešte chýba:",
+    "missing": {
+      "displayName": "názov firmy",
+      "aboutShort": "krátky popis",
+      "contact": "verejný kontakt (e-mail alebo telefón)"
+    },
+    "save": "Uložiť koncept",
+    "saving": "Ukladám…",
+    "saved": "Uložené.",
+    "saveFailed": "Uloženie zlyhalo.",
+    "publish": "Zverejniť",
+    "publishing": "Pracujem…",
+    "published": "Stránka je zverejnená.",
+    "unpublish": "Stiahnuť",
+    "unpublished": "Stránka bola stiahnutá.",
+    "publishFailed": "Akcia zlyhala.",
+    "viewPublic": "Zobraziť verejne",
+    "slugSection": "Adresa stránky",
+    "slug": "Adresa (slug)",
+    "checkSlug": "Overiť dostupnosť",
+    "checking": "Overujem…",
+    "slugAvailable": "Adresa je voľná.",
+    "slugTaken": "Adresa je obsadená.",
+    "slugReason": {
+      "invalid": "Neplatný formát adresy (3-80 znakov, a-z, 0-9, -).",
+      "taken": "Táto adresa je už obsadená.",
+      "available": "Adresa je voľná."
+    },
+    "presentationSection": "Prezentácia",
+    "f": {
+      "displayName": "Názov firmy (zobrazovaný)",
+      "tagline": "Slogan / krátky podtitul",
+      "aboutShort": "Krátky popis (do 600 znakov)",
+      "aboutLong": "Podrobný popis",
+      "services": "Služby",
+      "specialization": "Zameranie",
+      "certifications": "Certifikáty a povolenia",
+      "openingHours": "Otváracie hodiny",
+      "languages": "Jazyky",
+      "categories": "Kategórie",
+      "area": "Oblasť pôsobenia",
+      "publicEmail": "Verejný e-mail",
+      "publicPhone": "Verejný telefón",
+      "publicWebsite": "Webová stránka",
+      "seoTitle": "SEO titulok",
+      "seoDescription": "SEO popis"
+    },
+    "operationsSection": "Prevádzka",
+    "contactsSection": "Verejné kontakty",
+    "contactsHint": "Zobrazia sa na verejnej stránke. Interné firemné kontakty ostávajú skryté.",
+    "seoSection": "SEO (pre vyhľadávače)",
+    "gallery": {
+      "title": "Fotogaléria",
+      "hint": "Maximálne 10 fotografií (JPG, PNG, WebP, GIF). Prvá fotografia je hlavná.",
+      "empty": "Zatiaľ žiadne fotografie.",
+      "primary": "Hlavná",
+      "caption": "Popis fotografie",
+      "makePrimary": "Nastaviť ako hlavnú",
+      "delete": "Odstrániť",
+      "add": "Pridať fotografiu",
+      "uploading": "Nahrávam…",
+      "full": "Galéria je plná (10)",
+      "uploadFailed": "Nahranie fotografie zlyhalo."
+    }
   }
 }

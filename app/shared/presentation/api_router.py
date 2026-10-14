@@ -20,6 +20,11 @@ from app.modules.companies.presentation.router import router as companies_router
 from app.modules.company_memberships.presentation.router import (
     router as memberships_router,
 )
+from app.modules.company_pages.presentation.public_router import (
+    public_router as company_pages_public_router,
+)
+from app.modules.company_pages.presentation.router import router as company_pages_router
+from app.modules.company_reviews.presentation.router import router as company_reviews_router
 from app.modules.compliance.presentation.router import router as compliance_router
 from app.modules.documents.presentation.router import router as documents_router
 from app.modules.events.presentation.router import router as events_router
@@ -47,6 +52,9 @@ api_router.include_router(auth_router)
 api_router.include_router(users_router)
 api_router.include_router(companies_router)
 api_router.include_router(memberships_router)
+api_router.include_router(company_pages_router)
+api_router.include_router(company_pages_public_router)
+api_router.include_router(company_reviews_router)
 api_router.include_router(admin_router)
 api_router.include_router(analytics_router)
 api_router.include_router(compliance_router)

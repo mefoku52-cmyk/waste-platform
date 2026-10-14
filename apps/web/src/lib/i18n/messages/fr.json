@@ -1502,5 +1502,76 @@
   "security": {
     "title": "Sécurité",
     "cancel": "Annuler"
+  },
+  "companyPage": {
+    "eyebrow": "Page publique",
+    "title": "Profil public de l'entreprise",
+    "openEditor": "Page publique",
+    "statusDraft": "Brouillon",
+    "statusPublished": "Publiée",
+    "missingTitle": "Encore manquant pour publier :",
+    "missing": {
+      "displayName": "nom de l'entreprise",
+      "aboutShort": "courte description",
+      "contact": "contact public (e-mail ou téléphone)"
+    },
+    "save": "Enregistrer le brouillon",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré.",
+    "saveFailed": "Échec de l'enregistrement.",
+    "publish": "Publier",
+    "publishing": "En cours…",
+    "published": "La page est publiée.",
+    "unpublish": "Dépublier",
+    "unpublished": "La page a été dépubliée.",
+    "publishFailed": "L'action a échoué.",
+    "viewPublic": "Voir en public",
+    "slugSection": "Adresse de la page",
+    "slug": "Adresse (slug)",
+    "checkSlug": "Vérifier la disponibilité",
+    "checking": "Vérification…",
+    "slugAvailable": "L'adresse est disponible.",
+    "slugTaken": "L'adresse est prise.",
+    "slugReason": {
+      "invalid": "Format d'adresse invalide (3-80 caractères, a-z, 0-9, -).",
+      "taken": "Cette adresse est déjà prise.",
+      "available": "L'adresse est disponible."
+    },
+    "presentationSection": "Présentation",
+    "f": {
+      "displayName": "Nom de l'entreprise (affiché)",
+      "tagline": "Slogan / sous-titre court",
+      "aboutShort": "Courte description (jusqu'à 600 caractères)",
+      "aboutLong": "Description détaillée",
+      "services": "Services",
+      "specialization": "Spécialisation",
+      "certifications": "Certificats et autorisations",
+      "openingHours": "Horaires d'ouverture",
+      "languages": "Langues",
+      "categories": "Catégories",
+      "area": "Zone d'activité",
+      "publicEmail": "E-mail public",
+      "publicPhone": "Téléphone public",
+      "publicWebsite": "Site web",
+      "seoTitle": "Titre SEO",
+      "seoDescription": "Description SEO"
+    },
+    "operationsSection": "Exploitation",
+    "contactsSection": "Contacts publics",
+    "contactsHint": "Affichés sur la page publique. Les contacts internes restent cachés.",
+    "seoSection": "SEO (pour les moteurs de recherche)",
+    "gallery": {
+      "title": "Galerie photos",
+      "hint": "Jusqu'à 10 photos (JPG, PNG, WebP, GIF). La première photo est la principale.",
+      "empty": "Aucune photo pour l'instant.",
+      "primary": "Principale",
+      "caption": "Légende de la photo",
+      "makePrimary": "Définir comme principale",
+      "delete": "Supprimer",
+      "add": "Ajouter une photo",
+      "uploading": "Téléversement…",
+      "full": "Galerie pleine (10)",
+      "uploadFailed": "Échec du téléversement de la photo."
+    }
   }
 }

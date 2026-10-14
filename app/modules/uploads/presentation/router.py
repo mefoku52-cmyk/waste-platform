@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import mimetypes
-import os
 import uuid
 from pathlib import Path
 
@@ -19,6 +18,15 @@ from app.modules.uploads.application.signing import (
     sign_file_url,
     verify_file_url,
 )
+from app.modules.uploads.application.storage import (
+    ALLOWED_EXT,
+    ALLOWED_MIME,
+    CHUNK_BYTES,
+    MAX_BYTES,
+    UPLOAD_ROOT,
+    content_matches_extension,
+    sanitize_file_id,
+)
 from app.shared.presentation.auth_dependencies import (
     get_current_user_optional,
     require_current_user,
@@ -28,21 +36,6 @@ from app.shared.presentation.error_schemas import error_responses
 from .schemas import UploadResponse
 
 router = APIRouter(prefix="/uploads", tags=["uploads"], redirect_slashes=False)
-
-APP_DATA_DIR = os.getenv("APP_DATA_DIR", "/var/data")
-UPLOAD_ROOT = Path(APP_DATA_DIR) / "uploads"
-
-ALLOWED_EXT = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".pdf"}
-ALLOWED_MIME = {
-    ".jpg": {"image/jpeg"},
-    ".jpeg": {"image/jpeg"},
-    ".png": {"image/png"},
-    ".webp": {"image/webp"},
-    ".gif": {"image/gif"},
-    ".pdf": {"application/pdf"},
-}
-MAX_BYTES = 8 * 1024 * 1024
-CHUNK_BYTES = 64 * 1024
 
 
 async def _authorize_document_file(
@@ -86,16 +79,9 @@ async def _authorize_document_file(
 
 
 def _validate_file_id(file_id: str) -> str:
-    safe = Path(file_id).name
-    if safe != file_id or ".." in file_id or "/" in file_id or "\\" in file_id:
+    safe = sanitize_file_id(file_id)
+    if safe is None:
         raise HTTPException(status_code=400, detail="Invalid file id")
-
-    suffix = Path(safe).suffix.lower()
-    stem = Path(safe).stem
-    if suffix not in ALLOWED_EXT:
-        raise HTTPException(status_code=400, detail="Unsupported file extension")
-    if len(stem) != 32 or any(c not in "0123456789abcdef" for c in stem.lower()):
-        raise HTTPException(status_code=400, detail="Invalid file id format")
     return safe
 
 
@@ -150,6 +136,17 @@ async def upload_file(
         raise
     finally:
         await file.close()
+
+    # Magic-byte kontrola: obsah súboru musí zodpovedať príponе (pri obrázkoch).
+    # Chráni pred podvrhnutým obsahom (napr. skript s príponou .png).
+    with dest.open("rb") as sniff:
+        header = sniff.read(16)
+    if not content_matches_extension(suffix, header):
+        dest.unlink(missing_ok=True)
+        raise HTTPException(
+            status_code=400,
+            detail=f"Content does not match extension {suffix}",
+        )
 
     return UploadResponse(
         fileId=file_id,
