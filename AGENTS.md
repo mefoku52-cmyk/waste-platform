@@ -205,3 +205,75 @@ Base: `52ec19c` (df6d307 karty, d991f46 routes, 52ec19c form-filling). Baseline 
   ARCHITECT_ADDENDUM (`e79e974`); useAiFormFilling na listing+company formulári; /dashboard/admin guard OK.
 - Stav: vetva `feat/kormidelnik-agent`, pushnutá na origin, NEMERGnutá, žiadny prod deploy/migrácia.
   Otvorené: finálny PR (rozhodnutie usera). Repo-wide ruff drift = pre-existing.
+
+## KORMIDELNÍK — diagnostika (2026-10-11, bez commitu)
+- **`docs/KORMIDELNIK.md` VYTVORENÝ** (untracked, necommitnutý) — 13 sekcií: legenda, E2E tok
+  (16 krokov), orchestrátor, tool katalóg, karty, pamäť, intent, prompt/security, frontend,
+  konfig, testy, riziká R1-R7, súvisiace súbory. Sekcia 11b = `verified` diagnostický beh.
+- Harness: `$TMPDIR/kormidelnik_diag/{harness.py,latency_probe.py,latency_probe2.py,uuid_probe*.py}`.
+  Beží proti reálnemu **Postgres 18.6** (port 5433, asyncpg) — produkčný dialekt. 36 kontrol, A-F.
+- **Reálne nálezy (2 FAIL z 36):**
+  - **N1** `agent_orchestrator.py:247-251` — ne-client tool sa appendne do `collected_calls` PRED
+    policy checkom (`:253`). Zamietnutý/neznámy server tool sa objaví v odpovedi `tool_calls`.
+    Bez bezpečnostného dopadu (nevykonal sa), ale zavádzajúca telemetria.
+  - **N2** `ai_conversation_repository.py:132-133` — `get_or_create` posiela `user_id/company_id`
+    ako string do `UUID(as_uuid=True)` bez konverzie. Postgres OK, **SQLite padá**
+    (`'str' object has no attribute 'hex'`) → `chat_router.py:678-687` to spolchne → pamäť ticho OFF
+    na sqlite (dev/smoke). Testy posielajú UUID objekty → maskujú bug.
+  - **N3 (perf)** 3 commity/turn (`get_or_create` + 2× `append_message`) + detached sumarizér =
+    ďalšia session/turn. Namerané lokálne 20 paralelných: /health p50 48ms, chat+DB **2674ms**,
+    chat bez DB 385ms → zápisy sa serializujú. Štruktúra commit-per-message je fixná.
+- Overené diagnostikou (predtým `unverified`): security blok na HTTP (D8: blocked→200 unavailable,
+  orchestrátor sa nezavolá). Autorizácia 401/402/403, validácia 422, timeout orchestrátora,
+  monotónnosť summary, izolácia pamäte medzi session — všetko PASS.
+- Gate sady nezmenený: 1115 passed/1 xfailed. Žiadny commit/push. Postgres po behu zastavený.
+
+## KORMIDELNÍK — N1+N2 OPRAVENÉ, N3 dokumentované (2026-10-11, bez commitu)
+- **N1 opravené** (`agent_orchestrator.py`): server tool sa do `collected_calls` pridáva až po
+  policy+permission+handler-exists (pred handler runom), nie pred policy. Nové
+  `tests/test_orchestrator_collected_calls.py` (6 testov: povolený/zamietnutý/neznámy/
+  unmapped/denied/client-action — overuje obsah `result.tool_calls`). Reverse-proof: na
+  starom kóde 4/6 fail, na novom 6/6 pass.
+- **N2 opravené** (`ai_conversation_repository.get_or_create`): `user_id`/`company_id` cez
+  `_uuid_or_none` (helper rozšírený na `str | uuid.UUID | None`). Testy v
+  `test_conversation_repository.py` (+5: UUID objekt, UUID string, None, idempotencia,
+  chýbajúci user_id→IntegrityError). SQLite 8 passed; Postgres 18.6 + asyncpg contract
+  probe `$TMPDIR/kormidelnik_diag/n2_pg_contract.py` = 5/5 (oficiálny fixture je hardcoded
+  sqlite → PG overený standalone probe, NE pytest run).
+- **N3 zostáva** (rozhodnutie usera): žiadna transakčná zmena. Meranie + návrh v
+  `docs/KORMIDELNIK.md` sekcia 11c.
+- Gate: plná sada `.venv/bin/pytest app/tests app/modules tests -q -p no:cacheprovider -o addopts=""`
+  → **1126 passed, 1 xfailed** (1115 + 6 N1 + 5 N2). Ruff na zmenených súboroch čistý.
+  Žiadny commit/push. Postgres po behu zastavený.
+
+## VEREJNÉ FIREMNÉ STRÁNKY + RECENZIE (2026-10-14, vetva feat/kormidelnik-agent, bez commitu)
+- Cieľ: `/firma/{slug}` verejná firemná stránka (SEO), editor v dashboarde, fotogaléria, recenzie.
+- **Backend HOTOVÝ** (2 nové moduly, kanonický zdroj ostáva `companies`):
+  - `app/modules/company_pages/` — `domain/{entities,enums,repositories}.py`,
+    `application/{services,slug}.py`, `infrastructure/{models,mappers,repositories}.py`,
+    `presentation/{router,public_router,schemas,dependencies,mappers}.py`.
+    Privátny router `/companies/{id}/page[/publish|/unpublish|/slug-available]` + photos
+    `/companies/{id}/photos[...]`; verejný `/public/company-pages/{slug}` (+ stabilné assety
+    `/public/company-pages/{slug}/assets/{file_id}`, bez podpisu — neexspirujú).
+  - `app/modules/company_reviews/` — recenzie (eligible = prihlásený, NIE člen, s ukončeným
+    dopytom `answered`/`closed`; nová = `pending`; UNIQUE(company_id, author_user_id);
+    moderácia platform admin). Routy `/companies/{id}/reviews[...]`.
+  - `app/modules/uploads/application/storage.py` — zdieľaný helper (UPLOAD_ROOT, sanitize_file_id,
+    sniff_image_type, content_matches_extension); `uploads/presentation/router.py` ho používa +
+    magic-byte kontrola obsahu (400 pri nesúlade).
+  - Registrované v `register_models.py` (CompanyPageModel, CompanyPhotoModel, CompanyReviewModel)
+    a `api_router.py` (3 routery). Migrácie `d3c4e5f6a7b8_add_company_pages.py` +
+    `e4d5f6a7b8c9_add_company_reviews.py`; **alembic head = e4d5f6a7b8c9**.
+- **BUG (opravený tento session):** `GET /companies/{id}/reviews/mine` vyžadoval
+  `require_company_member`, ale recenzovať môže len NEČLEN → endpoint bol pre oprávnených
+  nepoužiteľný. Odstránené (vracia len vlastnú recenziu, `require_current_user` stačí).
+- **Testy:** `tests/integration/{_company_helpers,test_company_pages,test_company_reviews}.py`
+  + `tests/integration/conftest.py` (autouse cleanup seedovaných firiem → nezanecháva špinu
+  v shared session-scoped SQLite DB). Plná sada **1222 passed, 1 warning** (predtým 1194).
+  Ruff na nových/zmenených súboroch čistý (`ruff check --fix` + `ruff format`).
+- **Frontend (Fáza 4/5):** ZATIAĽ NEROBNUTÉ. Plán: `features/company-pages/*` (editor+galéria),
+  `app/dashboard/companies/[id]/page` (editor route), `app/firma/[slug]/page.tsx` (SSR, server
+  fetch cez `API_PROXY_TARGET` — relatívne URL na serveri nefungujú), `sitemap.ts`, `robots.ts`,
+  JSON-LD, i18n kľúče `companyPage.*`. Konvencie: gold `#c9a84c`, `cmep-panel`, `AppShell`, `useT()`,
+  `http` z `lib/api/http.ts` (client), `SignedImage` (interné), verejný asset endpoint (bez podpisu).
+- Prod/deploy/migrácie na reálnej DB: NEMENENÉ. Žiadny commit/push.
