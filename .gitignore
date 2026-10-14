@@ -175,3 +175,15 @@ termux/
 # ignorované, aby sa náhodne necommitol ad-hoc schema skript.
 *.sql
 !migrations/**/*.sql
+
+# --- Termux scratch / lokálne prevádzkové súbory (hardening 2026-10-14) ---
+# Nesmú sa dostať do gitu (scratch skripty, zálohy, tunely, tajomstvá).
+# Súbory sa NEmažú, len sa ignorujú.
+_archive/backups/
+_archive/legacy-tests/
+*.bak*
+ngrok*
+redis.conf
+dump.sh
+suv.check
+AUDIT_LOG.md
