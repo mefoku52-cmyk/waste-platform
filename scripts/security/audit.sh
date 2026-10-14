@@ -28,19 +28,20 @@ fi
 # 2. Kontrola hardcoded secretov v zdrojaku
 echo ""
 echo "--- 2. Hardcoded secret scan ---"
-if grep -rn "password.*=.*[^${}]" app/ --include="*.py" | grep -v "__pycache__" | grep -v "test" | grep -v "example" | head -5; then
-    log_warn "Najdene potencialne hardcoded hodnoty (skontroluj vystup vyssie)"
+HARDCODED_HITS=$(grep -rn "password.*=.*[^${}]" app/ --include="*.py" 2>/dev/null | grep -v "__pycache__" | grep -v "test" | grep -v "example" | wc -l || true)
+if [ "$HARDCODED_HITS" -gt 0 ]; then
+    log_warn "Najdenych $HARDCODED_HITS potencialnych hardcoded hodnot (detal v: grep -rn 'password.*=' app/ --include='*.py')"
 else
     log_ok "Ziadne obvious hardcoded secrety v app/"
 fi
 
-# 3. Kontrola weak hesiel v .env
+# 3. Kontrola weak hesiel v .env (NIKDY nevypisovat hodnoty)
 echo ""
 echo "--- 3. Weak password check ---"
 for f in .env .env.production; do
     if [ -f "$f" ]; then
-        if grep -iE "(password|secret|key).*=(admin|password|123|secret|default|test)" "$f" 2>/dev/null; then
-            log_err "Slabe heslo/secret v $f"
+        if grep -qiE "(password|secret|key).*=(admin|password|123|secret|default|test)" "$f" 2>/dev/null; then
+            log_err "Slabe heslo/secret v $f (hodnota sa zamerne nevypisuje)"
         else
             log_ok "$f — ziadne obvious weak hodnoty"
         fi
