@@ -18,6 +18,11 @@ from app.modules.agent_platform.application.agent.intent_classifier import (
     intent_hint,
 )
 from app.modules.agent_platform.application.memory.context_builder import build_history
+from app.modules.agent_platform.domain.control.agent_gate import (
+    AgentGate,
+    resolve_agent_gate,
+)
+from app.modules.agent_platform.domain.control.control_mode import ControlMode
 from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_edge_tts
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
     SqlAlchemyAiConversationRepository,
@@ -27,6 +32,7 @@ from app.modules.agent_platform.presentation.dependencies import (
     get_agent_orchestrator,
     get_ai_conversation_repository,
     get_company_entitlement_service,
+    get_control_service,
 )
 from app.modules.companies.application.entitlements import CompanyEntitlementService
 from app.modules.companies.domain.enums import SubscriptionTier
@@ -571,7 +577,7 @@ def _build_summary_gateway():
         MistralModelGateway,
     )
 
-    return ChainModelGateway([GroqModelGateway(), CerebrasModelGateway(), MistralModelGateway()])
+    return ChainModelGateway([CerebrasModelGateway(), GroqModelGateway(), MistralModelGateway()])
 
 
 async def _summarize_in_background(conversation_id: str) -> None:
@@ -620,6 +626,27 @@ def _schedule_summary(conversation_id: str | None) -> None:
     task.add_done_callback(_SUMMARY_TASKS.discard)
 
 
+async def _resolve_chat_gate(control) -> AgentGate:
+    """Best-effort read of the platform ControlMode -> per-turn agent gate.
+
+    Resilience mirrors the security check: if the control state cannot be read
+    (e.g. a transient DB error) we fall back to NORMAL instead of blocking every
+    chat. The control row already exists on a healthy deployment.
+    """
+    try:
+        mode = await control.get_mode()
+    except Exception as exc:
+        import logging as _log
+
+        _log.getLogger("cmep.chat").warning(
+            "CONTROL_MODE_READ_FAILED type=%s msg=%s",
+            type(exc).__name__,
+            str(exc)[:200],
+        )
+        mode = ControlMode.NORMAL
+    return resolve_agent_gate(mode)
+
+
 @router.post("/chat", response_model=UserAiChatResponse)
 async def user_ai_chat(
     payload: UserAiChatRequest,
@@ -629,6 +656,7 @@ async def user_ai_chat(
     conversations: SqlAlchemyAiConversationRepository = Depends(
         get_ai_conversation_repository,
     ),
+    control=Depends(get_control_service),
     session: AsyncSession = Depends(get_db_session),
 ) -> UserAiChatResponse:
     text = payload.message.strip()
@@ -638,6 +666,16 @@ async def user_ai_chat(
             reply=None,
             source="user-ai",
             session_id=payload.session_id or "",
+        )
+
+    # Server-side ControlMode gate. Enforced BEFORE the agent runs, so a
+    # disabling mode stops the whole turn (text + any action), not just the
+    # reply. Checked before the entitlement gate: an operator kill switch wins.
+    gate = await _resolve_chat_gate(control)
+    if not gate.allowed:
+        raise HTTPException(
+            status_code=503,
+            detail=f"AI asistent je momentálne pozastavený (režim: {gate.mode.value}). Skús to neskôr.",
         )
 
     await _check_ai_entitlement(
@@ -748,8 +786,11 @@ async def user_ai_chat(
         )
 
     # Ak AI zavolala iba client actions a nevrátila text, vráť potvrdenie
+    # (počítajú sa len akcie, ktoré control gate dovolí zobraziť).
     _has_client_actions_pre = any(
-        str(tc.get("name") or "") in CLIENT_TOOL_NAMES for tc in (result.tool_calls or ())
+        str(tc.get("name") or "") in CLIENT_TOOL_NAMES
+        and gate.allows_client_action(str(tc.get("name") or ""))
+        for tc in (result.tool_calls or ())
     )
 
     if not result.text and _has_client_actions_pre:
@@ -809,12 +850,26 @@ async def user_ai_chat(
 
     client_actions: list[ClientAction] = []
     server_tool_calls: list[dict] = []
+    suppressed_actions: list[str] = []
     for tc in result.tool_calls or ():
         name = str(tc.get("name") or "")
         if name in CLIENT_TOOL_NAMES:
-            client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+            if gate.allows_client_action(name):
+                client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+            else:
+                # READ_ONLY: a mutating client action is never surfaced, so the
+                # frontend cannot execute it. We note it truthfully below.
+                suppressed_actions.append(name)
         else:
             server_tool_calls.append(dict(tc))
+
+    if suppressed_actions:
+        note = (
+            "Režim len na čítanie: nevykonal som akciu "
+            + ", ".join(sorted(set(suppressed_actions)))
+            + "."
+        )
+        result_text = f"{result_text}\n\n{note}" if result_text else note
 
     audio_base64 = None
     if payload.voice_response and result_text.strip():

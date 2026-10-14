@@ -262,11 +262,11 @@ async def get_agent_orchestrator(
             pass  # best-effort: never break caller
 
     return AgentOrchestrator(
-        # Groq (primárny) → Cerebras (1. fallback) → Mistral (2. fallback).
+        # Cerebras (primárny) → Groq (1. fallback) → Mistral (2. fallback).
         gateway=ChainModelGateway(
             [
-                GroqModelGateway(),
                 CerebrasModelGateway(),
+                GroqModelGateway(),
                 MistralModelGateway(),
             ]
         ),
