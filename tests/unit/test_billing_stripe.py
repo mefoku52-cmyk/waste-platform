@@ -337,3 +337,29 @@ def test_redact_helper_strips_all_secret_patterns():
     assert "[REDACTED]" in _redact("sk_live_ABC123")
     # long messages are truncated
     assert _redact("x" * 1000).endswith("...(truncated)")
+
+
+def test_checkout_only_uses_params_supported_by_sdk_api_version(client, monkeypatch):
+    """Regression (N1): every kwarg passed to Session.create must exist in the
+    installed Stripe SDK's param schema for the pinned API version.
+
+    The SDK default API version (2026-09-30.endive) dropped
+    ``payment_method_types``; passing it makes Stripe reject the call with HTTP
+    400. The card-only intent must instead use ``allowed_payment_method_types``.
+    """
+    from stripe.params.checkout._session_create_params import SessionCreateParams
+
+    _set_stripe_keys(monkeypatch)
+    fake = MagicMock()
+    fake.url = "https://checkout.stripe.com/c/pay_123"
+    fake.id = "cs_123"
+    with patch("stripe.checkout.Session.create", return_value=fake) as create:
+        r = client.post("/api/v1/billing/stripe/checkout", json=_checkout_body())
+
+    assert r.status_code == 200, r.text
+    kwargs = create.call_args.kwargs
+    valid = set(SessionCreateParams.__annotations__.keys())
+    unsupported = set(kwargs) - valid
+    assert not unsupported, f"unsupported Session.create params: {sorted(unsupported)}"
+    # card-only intent preserved through the current API's replacement param
+    assert kwargs.get("allowed_payment_method_types") == ["card"]

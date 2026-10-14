@@ -318,7 +318,7 @@ async def stripe_checkout(
     try:
         cs = stripe.checkout.Session.create(
             mode="payment",
-            payment_method_types=["card"],
+            allowed_payment_method_types=["card"],
             line_items=[
                 {
                     "price_data": {
