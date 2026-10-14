@@ -1,5 +1,7 @@
 """notifications repository implementations."""
 
+import uuid
+
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +12,17 @@ from .mappers import to_domain, to_model
 from .models import NotificationModel
 
 
+def _uuid(value: str | uuid.UUID) -> uuid.UUID:
+    """Normalise a str/uuid identifier to ``uuid.UUID``.
+
+    The model binds its id/user_id columns with ``UUID(as_uuid=True)``. SQLite
+    (no native UUID support) raises StatementError when a raw string is bound,
+    while Postgres accepts it — so every boundary must coerce first (same
+    pattern as the agent_platform conversation repository, N2).
+    """
+    return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
+
+
 class NotificationRepositoryImpl(NotificationRepository):
     """Notification repository implementation."""
 
@@ -18,16 +31,17 @@ class NotificationRepositoryImpl(NotificationRepository):
 
     async def get_by_id(self, id: str) -> NotificationEntity | None:
         result = await self.session.execute(
-            select(NotificationModel).where(NotificationModel.id == id)
+            select(NotificationModel).where(NotificationModel.id == _uuid(id))
         )
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
     async def list_by_user_id(self, user_id, page: int = 1, limit: int = 20):
+        uid = _uuid(user_id)
         offset = (page - 1) * limit
         result = await self.session.execute(
             select(NotificationModel)
-            .where(NotificationModel.user_id == user_id)
+            .where(NotificationModel.user_id == uid)
             .order_by(NotificationModel.created_at.desc())
             .offset(offset)
             .limit(limit)
@@ -38,7 +52,7 @@ class NotificationRepositoryImpl(NotificationRepository):
         result = await self.session.execute(
             select(func.count())
             .select_from(NotificationModel)
-            .where(NotificationModel.user_id == user_id)
+            .where(NotificationModel.user_id == _uuid(user_id))
         )
         return int(result.scalar_one())
 
@@ -46,7 +60,7 @@ class NotificationRepositoryImpl(NotificationRepository):
         result = await self.session.execute(
             select(func.count())
             .select_from(NotificationModel)
-            .where(NotificationModel.user_id == user_id)
+            .where(NotificationModel.user_id == _uuid(user_id))
             .where(NotificationModel.is_read.is_(False))
         )
         return int(result.scalar_one())
@@ -90,5 +104,7 @@ class NotificationRepositoryImpl(NotificationRepository):
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
-        await self.session.execute(sql_delete(NotificationModel).where(NotificationModel.id == id))
+        await self.session.execute(
+            sql_delete(NotificationModel).where(NotificationModel.id == _uuid(id))
+        )
         await self.session.commit()

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useLogout, useCurrentUser, useIsPlatformAdmin } from '@/features/auth';
 import { useT } from '@/lib/i18n/context';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { NotificationsBell } from '@/features/notifications/components/notifications-bell';
 
 const GOLD = '#c9a84c';
 const GOLD_BRIGHT = '#e8d48b';
@@ -42,6 +43,7 @@ export function DashboardHeader() {
               ⚙ Admin
             </Link>
           )}
+          <NotificationsBell />
           <LanguageSwitcher />
           {myEmail ? (
             <span className="hidden text-xs sm:inline" style={{ color: MUTED }}>
