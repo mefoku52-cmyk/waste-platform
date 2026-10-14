@@ -147,6 +147,39 @@ def test_validator_fill_form_field_allowlist_and_types() -> None:
     assert validate_client_action("fill_form_field", {"field": "quantity", "value": 5}).valid
 
 
+def test_validator_fill_form_field_company_fields() -> None:
+    """Company-form fields are fillable; logoUrl is not (no simple input)."""
+    for field, value in (
+        ("legalName", "Acme s.r.o."),
+        ("tradingName", "Acme"),
+        ("registrationNumber", "54642442"),
+        ("vatIdentifier", "SK2020123456"),
+        ("companyType", "seller"),
+        ("countryCode", "SK"),
+        ("addressLine1", "Hlavna 1"),
+        ("city", "Bratislava"),
+        ("postalCode", "81101"),
+        ("email", "a@b.sk"),
+        ("phone", "+421900000000"),
+        ("entityType", "company"),
+    ):
+        assert validate_client_action("fill_form_field", {"field": field, "value": value}).valid, (
+            field
+        )
+
+    # Numeric-only rule must not apply to string identifiers like postal codes.
+    assert validate_client_action(
+        "fill_form_field", {"field": "postalCode", "value": "81101"}
+    ).valid
+    # logoUrl is deliberately NOT fillable.
+    assert (
+        validate_client_action("fill_form_field", {"field": "logoUrl", "value": "x"}).valid is False
+    )
+    # highlight honours the same allowlist.
+    assert validate_client_action("highlight_field", {"field": "legalName"}).valid
+    assert validate_client_action("highlight_field", {"field": "logoUrl"}).valid is False
+
+
 def test_validator_show_toast_level() -> None:
     assert validate_client_action("show_toast", {"message": "hi"}).valid
     assert validate_client_action("show_toast", {"message": "hi", "level": "warning"}).valid
@@ -158,6 +191,37 @@ def test_validator_show_toast_strips_unknown_arguments() -> None:
     result = validate_client_action("show_toast", {"message": "hi", "injected": "x"})
     assert result.valid is True
     assert set(result.arguments) == {"message", "level"}
+
+
+def test_validator_new_no_arg_navigations() -> None:
+    """FIX 4: the added navigation actions are valid and argument-free."""
+    for name in (
+        "open_new_company",
+        "open_documents",
+        "open_new_document",
+        "open_chat",
+        "open_settings",
+        "open_admin",
+    ):
+        result = validate_client_action(name, {"junk": "x"})
+        assert result.valid is True, name
+        assert result.arguments == {}, name
+
+
+def test_open_admin_is_admin_only_schema() -> None:
+    """open_admin is offered only to admins but still allowlisted."""
+    from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+        ADMIN_CLIENT_ACTION_SCHEMAS,
+        CLIENT_ACTION_SCHEMAS,
+    )
+
+    regular = {s["function"]["name"] for s in CLIENT_ACTION_SCHEMAS}
+    admin_only = {s["function"]["name"] for s in ADMIN_CLIENT_ACTION_SCHEMAS}
+    assert "open_admin" in admin_only
+    assert "open_admin" not in regular
+    assert "open_admin" in CLIENT_ACTION_NAMES
+    for name in ("open_new_company", "open_documents", "open_chat", "open_settings"):
+        assert name in regular
 
 
 # ─── Orchestrator hand-off ──────────────────────────────────────────────────

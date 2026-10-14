@@ -15,8 +15,10 @@ import { AiUpgradePanel } from './ai-upgrade-panel';
 import { useT } from '@/lib/i18n/context';
 import { cmepAI } from '@/lib/ai-agent/dispatcher';
 import { getPageContext } from '@/lib/ai-agent/page-context';
+import { dashboardRoutes, safeEntityId } from '@/lib/ai-agent/dashboard-routes';
+import { AiCardList, type AiCard } from './ai-card-list';
 
-type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string };
+type Msg = { role: 'user' | 'ai'; text: string; audioBase64?: string; cards?: AiCard[] };
 
 // Browser SpeechSynthesis — hlas zariadenia (SK/EN/DE/...)
 function speakText(text: string, lang?: string): void {
@@ -36,6 +38,22 @@ function speakText(text: string, lang?: string): void {
 
 type ClientAction = { name: string; args: Record<string, unknown> };
 
+// No-argument navigation actions → destination + human label. One table so a
+// backend open_* tool only needs a single row here to become navigable.
+const NO_ARG_NAV_ACTIONS: Record<string, { path: string; label: string }> = {
+  open_new_listing: { path: dashboardRoutes.listingNew, label: 'formulár novej ponuky' },
+  open_listings_list: { path: dashboardRoutes.listings, label: 'zoznam ponúk' },
+  open_companies: { path: dashboardRoutes.companies, label: 'zoznam firiem' },
+  open_dashboard: { path: dashboardRoutes.root, label: 'dashboard' },
+  open_inquiries: { path: dashboardRoutes.inquiries, label: 'dopyty' },
+  open_new_company: { path: dashboardRoutes.companyNew, label: 'formulár novej firmy' },
+  open_documents: { path: dashboardRoutes.documents, label: 'zoznam dokumentov' },
+  open_new_document: { path: dashboardRoutes.documentNew, label: 'formulár nového dokumentu' },
+  open_chat: { path: dashboardRoutes.chat, label: 'chat' },
+  open_settings: { path: dashboardRoutes.settings, label: 'nastavenia' },
+  open_admin: { path: dashboardRoutes.admin, label: 'administráciu' },
+};
+
 type ChatResponse = {
   status: string;
   reply: string | null;
@@ -43,6 +61,7 @@ type ChatResponse = {
   session_id?: string;
   tool_calls?: unknown[];
   client_actions?: ClientAction[];
+  cards?: AiCard[];
   audio_base64?: string | null;
 };
 
@@ -81,12 +100,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
     const unregNavigate = cmepAI.register('navigate', (args) => {
       const url = typeof args.url === 'string' ? args.url : '';
       // Interné relatívne odkazy len — žiadne externé URL ani protocol-relative.
-      if (!url.startsWith('/') || url.startsWith('//')) return;
+      if (!url.startsWith('/') || url.startsWith('//')) {
+        throw new Error(`invalid_url:${url || '?'}`);
+      }
       router.push(url);
     });
     const unregToast = cmepAI.register('show_toast', (args) => {
       const message = typeof args.message === 'string' ? args.message.trim() : '';
-      if (!message) return;
+      if (!message) throw new Error('empty_message');
       setToast(message);
     });
     return () => {
@@ -155,6 +176,8 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
         setSessionId(res.session_id);
       }
 
+      const cards: AiCard[] = Array.isArray(res?.cards) ? res.cards : [];
+
       // Comet-style: vykonaj client actions lokálne
       if (Array.isArray(res?.client_actions) && res.client_actions.length > 0) {
         const notes: string[] = [];
@@ -163,38 +186,25 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
           const nm = action.name;
           const ar = action.args || {};
           if (nm === 'open_listing') {
-            router.push(`/dashboard/listings/${String(ar.listing_id || '')}`);
-            notes.push(`✓ Otvoril som ponuku`);
+            const id = safeEntityId(ar.listing_id);
+            if (id) {
+              router.push(dashboardRoutes.listing(id));
+              notes.push(`✓ Otvoril som ponuku`);
+            }
             continue;
           }
           if (nm === 'open_company') {
-            router.push(`/dashboard/companies/${String(ar.company_id || '')}`);
-            notes.push(`✓ Otvoril som firmu`);
+            const id = safeEntityId(ar.company_id);
+            if (id) {
+              router.push(dashboardRoutes.company(id));
+              notes.push(`✓ Otvoril som firmu`);
+            }
             continue;
           }
-          if (nm === 'open_new_listing') {
-            router.push('/dashboard/listings/new');
-            notes.push(`✓ Otvoril som formulár novej ponuky`);
-            continue;
-          }
-          if (nm === 'open_listings_list') {
-            router.push('/dashboard/listings');
-            notes.push(`✓ Otvoril som zoznam ponúk`);
-            continue;
-          }
-          if (nm === 'open_companies') {
-            router.push('/dashboard/companies');
-            notes.push(`✓ Otvoril som zoznam firiem`);
-            continue;
-          }
-          if (nm === 'open_dashboard') {
-            router.push('/dashboard');
-            notes.push(`✓ Otvoril som dashboard`);
-            continue;
-          }
-          if (nm === 'open_inquiries') {
-            router.push('/dashboard/inquiries');
-            notes.push(`✓ Otvoril som dopyty`);
+          const nav = NO_ARG_NAV_ACTIONS[nm];
+          if (nav) {
+            router.push(nav.path);
+            notes.push(`✓ Otvoril som ${nav.label}`);
             continue;
           }
 
@@ -211,21 +221,42 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
             }
             // show_toast sa zobrazuje ako plávajúci toast (viď nižšie),
             // preto sa nepridáva aj ako textová poznámka v chate.
+          } else {
+            // Truthful failure — the handler could not do what was asked.
+            const field = String(action.args?.field || '?');
+            let reason = '';
+            if (nm === 'fill_form_field') reason = `✗ Nepodarilo sa vyplniť pole „${field}“`;
+            else if (nm === 'highlight_field') reason = `✗ Pole „${field}“ sa nedá zvýrazniť`;
+            else if (nm === 'navigate') reason = `✗ Túto stránku sa nepodarilo otvoriť`;
+            else if (nm === 'show_toast') reason = '';
+            else reason = `✗ Akciu „${nm}“ sa nepodarilo vykonať`;
+            if (reason) notes.push(reason);
           }
         }
 
         if (notes.length > 0) {
-          setMessages((m) => [
-            ...m,
-            { role: 'ai', text: res.reply as string || '', audioBase64: res.audio_base64 || undefined },
-            { role: 'ai', text: notes.join('\n') },
-          ]);
+          const reply = (res.reply as string) || '';
+          if (voiceResponse && reply) speakText(reply, voiceLanguage);
+          setMessages((m) => {
+            const next = [...m];
+            if (reply) {
+              // Keep the assistant reply as its own bubble (with cards), and the
+              // action notes as a separate truthful line below it.
+              next.push({ role: 'ai', text: reply, audioBase64: res.audio_base64 || undefined, cards });
+              next.push({ role: 'ai', text: notes.join('\n') });
+            } else {
+              // No prose — never emit an empty bubble; attach cards to the notes.
+              next.push({ role: 'ai', text: notes.join('\n'), cards });
+            }
+            return next;
+          });
         } else if (res?.reply) {
-          setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+          if (voiceResponse) speakText(res.reply as string, voiceLanguage);
+          setMessages((m) => [...m, { role: 'ai', text: res.reply as string, cards }]);
         }
       } else if (res?.status === 'ok' && res.reply) {
         if (voiceResponse) speakText(res.reply as string, voiceLanguage);
-        setMessages((m) => [...m, { role: 'ai', text: res.reply as string }]);
+        setMessages((m) => [...m, { role: 'ai', text: res.reply as string, cards }]);
       } else if (!res?.reply) {
         setMessages((m) => [
           ...m,
@@ -401,18 +432,24 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
           <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
             {!minimized && messages.map((m, i) => (
-              <div
-                key={i}
-                className={`max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm ${
-                  m.role === 'user' ? 'ml-auto' : ''
-                }`}
-                style={
-                  m.role === 'user'
-                    ? { background: '#c9a84c', color: '#0b0b0b' }
-                    : { background: '#17140d', color: '#f3e6c4' }
-                }
-              >
-                {m.text}
+              <div key={i} className="space-y-2">
+                {m.text ? (
+                  <div
+                    className={`max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm ${
+                      m.role === 'user' ? 'ml-auto' : ''
+                    }`}
+                    style={
+                      m.role === 'user'
+                        ? { background: '#c9a84c', color: '#0b0b0b' }
+                        : { background: '#17140d', color: '#f3e6c4' }
+                    }
+                  >
+                    {m.text}
+                  </div>
+                ) : null}
+                {m.role === 'ai' && m.cards && m.cards.length > 0 ? (
+                  <AiCardList cards={m.cards} />
+                ) : null}
               </div>
             ))}
             {(busy || transcribing) && (

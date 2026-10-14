@@ -50,11 +50,6 @@ logger = logging.getLogger(__name__)
 _BACKGROUND_TASKS: set[asyncio.Task] = set()
 
 
-# Drzime silnu referenciu na beziace tasky, aby ich GC nezrusil pred
-# dokoncenim (ruff RUF006). Task sa po dokonceni sam odstrani.
-_BACKGROUND_TASKS: set[asyncio.Task] = set()
-
-
 async def _notify_safe(coro) -> None:
     """Fire-and-forget Telegram notifikacia. Nikdy nezlyha request."""
     try:

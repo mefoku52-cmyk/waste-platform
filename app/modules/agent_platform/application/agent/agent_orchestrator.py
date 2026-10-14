@@ -45,6 +45,8 @@ from app.modules.agent_platform.infrastructure.tools.client_action_validation im
 )
 
 MAX_TOOL_ITERATIONS = 6
+# Upper bound on cards collected across a whole turn (dedup by type+id).
+MAX_TOTAL_CARDS = 24
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +55,7 @@ class OrchestrationResult:
     tool_calls: tuple[dict[str, Any], ...]
     iterations: int
     provider: str | None = None
+    cards: tuple[dict[str, Any], ...] = ()
 
 
 class AgentOrchestrator:
@@ -78,6 +81,7 @@ class AgentOrchestrator:
         client_action_validator: (
             Callable[[str, Mapping[str, Any]], ClientActionValidation] | None
         ) = None,
+        card_builder: Callable[[str, Any], list[dict[str, Any]]] | None = None,
     ) -> None:
         self._gateway = gateway
         self._tool_schemas = tuple(tool_schemas)
@@ -93,6 +97,36 @@ class AgentOrchestrator:
         self._client_action_validator: Callable[
             [str, Mapping[str, Any]], ClientActionValidation
         ] = client_action_validator or validate_client_action
+        # Optional card builder: maps a successful tool result to UI cards.
+        self._card_builder = card_builder
+
+    def _collect_cards(
+        self,
+        tool_name: str,
+        data: Any,
+        cards: list[dict[str, Any]],
+        seen: set[tuple[Any, Any]],
+    ) -> None:
+        """Best-effort: append cards from one successful tool result.
+
+        A card-builder failure must never break the tool call, so it is
+        swallowed. Cards are deduplicated by (type, id) and capped so a single
+        turn cannot flood the UI.
+        """
+        if self._card_builder is None:
+            return
+        with contextlib.suppress(Exception):
+            built = self._card_builder(tool_name, data) or []
+            for card in built:
+                if not isinstance(card, Mapping):
+                    continue
+                key = (card.get("type"), card.get("id"))
+                if key[1] is not None and key in seen:
+                    continue
+                if len(cards) >= MAX_TOTAL_CARDS:
+                    return
+                seen.add(key)
+                cards.append(dict(card))
 
     async def _safe_audit(
         self,
@@ -149,6 +183,8 @@ class AgentOrchestrator:
         messages.append(ModelMessage(role="user", content=user_message))
 
         collected_calls: list[dict[str, Any]] = []
+        collected_cards: list[dict[str, Any]] = []
+        seen_cards: set[tuple[Any, Any]] = set()
 
         for iteration in range(MAX_TOOL_ITERATIONS):
             response: ModelResponse = await self._gateway.generate(
@@ -168,6 +204,7 @@ class AgentOrchestrator:
                     tool_calls=tuple(collected_calls),
                     iterations=iteration + 1,
                     provider=response.provider_metadata.get("provider"),
+                    cards=tuple(collected_cards),
                 )
 
             messages.append(
@@ -208,10 +245,6 @@ class AgentOrchestrator:
                     # pass and their arguments are validated, so a denied or
                     # malformed action is never handed to the frontend.
                     is_client_action = tool_name in self._client_tool_names
-                    if not is_client_action:
-                        collected_calls.append(
-                            {"name": tool_name, "arguments": args, "id": call.get("id", "")}
-                        )
 
                     if self._policy is not None:
                         decision = await self._policy.decide(
@@ -395,6 +428,14 @@ class AgentOrchestrator:
                         )
                         continue
 
+                    # Server tool call is recorded only now — after policy and
+                    # permission passed and a handler exists — so a denied,
+                    # unmapped or unknown tool never surfaces in the response as
+                    # an executed call (see N1).
+                    collected_calls.append(
+                        {"name": tool_name, "arguments": args, "id": call.get("id", "")}
+                    )
+
                     try:
                         result = await handler.handle(
                             ToolRequest(
@@ -413,6 +454,13 @@ class AgentOrchestrator:
                             "error_code": result.error_code,
                             "error_message": result.error_message,
                         }
+                        if result.success:
+                            self._collect_cards(
+                                tool_name,
+                                result.data,
+                                collected_cards,
+                                seen_cards,
+                            )
                     except Exception as exc:
                         outcome = "exception"
                         payload = {
@@ -447,6 +495,7 @@ class AgentOrchestrator:
             text="Prepáč, nepodarilo sa mi dokončiť odpoveď v rozumnom čase.",
             tool_calls=tuple(collected_calls),
             iterations=MAX_TOOL_ITERATIONS,
+            cards=tuple(collected_cards),
         )
 
 

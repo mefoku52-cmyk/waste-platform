@@ -1501,5 +1501,76 @@
   "security": {
     "title": "Sicherheit",
     "cancel": "Abbrechen"
+  },
+  "companyPage": {
+    "eyebrow": "Öffentliche Seite",
+    "title": "Öffentliches Firmenprofil",
+    "openEditor": "Öffentliche Seite",
+    "statusDraft": "Entwurf",
+    "statusPublished": "Veröffentlicht",
+    "missingTitle": "Für die Veröffentlichung fehlt noch:",
+    "missing": {
+      "displayName": "Firmenname",
+      "aboutShort": "Kurzbeschreibung",
+      "contact": "öffentlicher Kontakt (E-Mail oder Telefon)"
+    },
+    "save": "Entwurf speichern",
+    "saving": "Speichern…",
+    "saved": "Gespeichert.",
+    "saveFailed": "Speichern fehlgeschlagen.",
+    "publish": "Veröffentlichen",
+    "publishing": "Arbeite…",
+    "published": "Die Seite ist veröffentlicht.",
+    "unpublish": "Zurückziehen",
+    "unpublished": "Die Seite wurde zurückgezogen.",
+    "publishFailed": "Aktion fehlgeschlagen.",
+    "viewPublic": "Öffentlich ansehen",
+    "slugSection": "Seitenadresse",
+    "slug": "Adresse (Slug)",
+    "checkSlug": "Verfügbarkeit prüfen",
+    "checking": "Prüfe…",
+    "slugAvailable": "Die Adresse ist verfügbar.",
+    "slugTaken": "Die Adresse ist belegt.",
+    "slugReason": {
+      "invalid": "Ungültiges Adressformat (3-80 Zeichen, a-z, 0-9, -).",
+      "taken": "Diese Adresse ist bereits belegt.",
+      "available": "Die Adresse ist verfügbar."
+    },
+    "presentationSection": "Präsentation",
+    "f": {
+      "displayName": "Firmenname (angezeigt)",
+      "tagline": "Slogan / kurzer Untertitel",
+      "aboutShort": "Kurzbeschreibung (bis 600 Zeichen)",
+      "aboutLong": "Ausführliche Beschreibung",
+      "services": "Leistungen",
+      "specialization": "Spezialisierung",
+      "certifications": "Zertifikate & Genehmigungen",
+      "openingHours": "Öffnungszeiten",
+      "languages": "Sprachen",
+      "categories": "Kategorien",
+      "area": "Tätigkeitsbereich",
+      "publicEmail": "Öffentliche E-Mail",
+      "publicPhone": "Öffentliches Telefon",
+      "publicWebsite": "Webseite",
+      "seoTitle": "SEO-Titel",
+      "seoDescription": "SEO-Beschreibung"
+    },
+    "operationsSection": "Betrieb",
+    "contactsSection": "Öffentliche Kontakte",
+    "contactsHint": "Werden auf der öffentlichen Seite angezeigt. Interne Firmenkontakte bleiben verborgen.",
+    "seoSection": "SEO (für Suchmaschinen)",
+    "gallery": {
+      "title": "Fotogalerie",
+      "hint": "Bis zu 10 Fotos (JPG, PNG, WebP, GIF). Das erste Foto ist das Hauptfoto.",
+      "empty": "Noch keine Fotos.",
+      "primary": "Hauptfoto",
+      "caption": "Fotobeschriftung",
+      "makePrimary": "Als Hauptfoto festlegen",
+      "delete": "Entfernen",
+      "add": "Foto hinzufügen",
+      "uploading": "Hochladen…",
+      "full": "Galerie ist voll (10)",
+      "uploadFailed": "Foto-Upload fehlgeschlagen."
+    }
   }
 }

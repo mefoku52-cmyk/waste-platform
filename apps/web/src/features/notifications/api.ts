@@ -6,4 +6,7 @@ export const notificationsApi = {
 
   unreadCount: () =>
     http.get<{ unread: number }>('/notifications/unread-count'),
+
+  markRead: (id: string) =>
+    http.post(`/notifications/${encodeURIComponent(id)}/mark-read`),
 };

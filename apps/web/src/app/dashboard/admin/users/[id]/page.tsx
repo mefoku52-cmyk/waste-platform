@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useAuthRequired, useIsPlatformAdmin } from "@/features/auth";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { DashboardFooter } from "@/components/layout/dashboard-footer";
 import {
@@ -39,9 +40,24 @@ function statusColor(status: string | undefined): string {
 export default function AdminUserDetailPage() {
   const params = useParams();
   const userId = typeof params?.id === "string" ? params.id : undefined;
+  const { isLoading: authLoading } = useAuthRequired();
+  const isAdmin = useIsPlatformAdmin();
 
   const { data: summary, isLoading, error } = useAdminUserSummary(userId);
   const { data: activity } = useAdminUserActivity(userId, 100);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen" style={{ background: BG, color: FG }}>
+        <DashboardHeader />
+        <div className="mx-auto max-w-5xl px-4 py-16 text-center" style={{ color: MUTED }}>
+          Načítavam…
+        </div>
+        <DashboardFooter />
+      </div>
+    );
+  }
+  if (!isAdmin) return null;
 
   if (isLoading) {
     return (

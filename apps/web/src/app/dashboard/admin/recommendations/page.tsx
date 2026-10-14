@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
+import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
 import { DashboardHeader } from '@/components/layout/dashboard-header';
 import { DashboardFooter } from '@/components/layout/dashboard-footer';
 import { config } from '@/lib/config';
@@ -32,6 +33,8 @@ async function fetchListings(): Promise<ListingRow[]> {
 
 export default function AdminRecommendationsPage() {
   const { t } = useT();
+  const { isLoading: authLoading } = useAuthRequired();
+  const isAdmin = useIsPlatformAdmin();
   const listingsQuery = useQuery({ queryKey: ['admin-listings'], queryFn: fetchListings });
   const firstId = listingsQuery.data?.[0]?.id;
   const recQuery = useQuery({
@@ -39,6 +42,15 @@ export default function AdminRecommendationsPage() {
     queryFn: () => getListingRecommendations(firstId as string),
     enabled: !!firstId,
   });
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: BG, color: FG }}>
+        <div className="text-sm" style={{ color: MUTED }}>Načítavam…</div>
+      </div>
+    );
+  }
+  if (!isAdmin) return null;
 
   return (
     <div className="min-h-screen" style={{ background: BG, color: FG }}>

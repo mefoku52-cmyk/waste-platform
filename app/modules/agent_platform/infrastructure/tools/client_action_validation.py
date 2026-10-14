@@ -32,6 +32,7 @@ _TOAST_LEVELS = frozenset({"info", "success", "warning", "error"})
 
 _FORM_FIELDS = frozenset(
     {
+        # Listing form
         "title",
         "description",
         "materialType",
@@ -42,6 +43,20 @@ _FORM_FIELDS = frozenset(
         "currency",
         "condition",
         "companyId",
+        "imageUrl",
+        # Company form
+        "entityType",
+        "legalName",
+        "tradingName",
+        "registrationNumber",
+        "vatIdentifier",
+        "companyType",
+        "countryCode",
+        "addressLine1",
+        "city",
+        "postalCode",
+        "email",
+        "phone",
     }
 )
 _NUMERIC_FIELDS = frozenset({"quantity", "price"})
@@ -52,6 +67,12 @@ _NO_ARG_ACTIONS = frozenset(
         "open_companies",
         "open_dashboard",
         "open_inquiries",
+        "open_new_company",
+        "open_documents",
+        "open_new_document",
+        "open_chat",
+        "open_settings",
+        "open_admin",
     }
 )
 

@@ -13,6 +13,8 @@ import { useRouter } from 'next/navigation';
 import { useT } from '@/lib/i18n/context';
 import { uploadFile } from '../../uploads/api';
 import { SignedImage } from '../../uploads/components/signed-image';
+import { useAiFormFilling } from '@/lib/ai-agent/use-ai-form-filling';
+import { COMPANY_FORM_FIELDS } from '@/lib/ai-agent/form-fields';
 
 const ENTITY_TYPE_OPTIONS = [
   { value: 'sole_trader', labelKey: 'companyForm.entityType.soleTrader' },
@@ -71,6 +73,7 @@ export const CompanyForm = ({
     register,
     handleSubmit,
     watch,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<CompanyInput>({
@@ -113,6 +116,9 @@ export const CompanyForm = ({
   const nameLabel = isSoleTrader
     ? t('companyForm.legalNameSoleTrader')
     : t('companyForm.legalNameCompany');
+
+  // AI Agent — let the assistant fill this form (fill_form_field/highlight_field).
+  useAiFormFilling({ setValue, fields: COMPANY_FORM_FIELDS });
 
   const onSubmit = (data: CompanyInput) => {
     // Backend očakáva obe polia (registrationNumber aj taxIdentifier).

@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
+from app.modules.agent_platform.application.agent.card_builder import build_cards
 from app.modules.agent_platform.infrastructure.ai.cerebras_gateway import CerebrasModelGateway
 from app.modules.agent_platform.infrastructure.ai.chain_gateway import ChainModelGateway
 from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
@@ -48,6 +49,7 @@ from app.modules.agent_platform.infrastructure.tools.project_read import (
     ProjectReadHandler,
 )
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+    ADMIN_CLIENT_ACTION_SCHEMAS,
     CLIENT_ACTION_NAMES,
     CLIENT_ACTION_SCHEMAS,
     build_admin_tools,
@@ -176,6 +178,8 @@ async def get_agent_orchestrator(
             tool_handlers[tool_name] = admin_handler
             tool_scopes[tool_name] = ("admin", "read")
         tool_schemas = tool_schemas + build_admin_tools()
+        # Admin-only client navigation (e.g. open_admin) is offered only here.
+        tool_schemas = tool_schemas + ADMIN_CLIENT_ACTION_SCHEMAS
 
     # Frontend-only client actions: allowlisted and scoped, but never executed
     # server-side. They are dispatched to the UI only after validation.
@@ -258,11 +262,11 @@ async def get_agent_orchestrator(
             pass  # best-effort: never break caller
 
     return AgentOrchestrator(
-        # Groq (primárny) → Cerebras (1. fallback) → Mistral (2. fallback).
+        # Cerebras (primárny) → Groq (1. fallback) → Mistral (2. fallback).
         gateway=ChainModelGateway(
             [
-                GroqModelGateway(),
                 CerebrasModelGateway(),
+                GroqModelGateway(),
                 MistralModelGateway(),
             ]
         ),
@@ -275,6 +279,7 @@ async def get_agent_orchestrator(
         event_publisher=_build_event_bus(session=session),
         model="openai/gpt-oss-120b",
         client_tool_names=CLIENT_ACTION_NAMES,
+        card_builder=build_cards,
     )
 
 

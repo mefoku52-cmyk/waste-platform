@@ -1501,5 +1501,76 @@
   "security": {
     "title": "Security",
     "cancel": "Cancel"
+  },
+  "companyPage": {
+    "eyebrow": "Public page",
+    "title": "Company public profile",
+    "openEditor": "Public page",
+    "statusDraft": "Draft",
+    "statusPublished": "Published",
+    "missingTitle": "Still missing for publishing:",
+    "missing": {
+      "displayName": "company name",
+      "aboutShort": "short description",
+      "contact": "public contact (email or phone)"
+    },
+    "save": "Save draft",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "saveFailed": "Saving failed.",
+    "publish": "Publish",
+    "publishing": "Working…",
+    "published": "The page is published.",
+    "unpublish": "Unpublish",
+    "unpublished": "The page has been unpublished.",
+    "publishFailed": "The action failed.",
+    "viewPublic": "View public",
+    "slugSection": "Page address",
+    "slug": "Address (slug)",
+    "checkSlug": "Check availability",
+    "checking": "Checking…",
+    "slugAvailable": "The address is available.",
+    "slugTaken": "The address is taken.",
+    "slugReason": {
+      "invalid": "Invalid address format (3-80 chars, a-z, 0-9, -).",
+      "taken": "This address is already taken.",
+      "available": "The address is available."
+    },
+    "presentationSection": "Presentation",
+    "f": {
+      "displayName": "Company name (displayed)",
+      "tagline": "Tagline / short subtitle",
+      "aboutShort": "Short description (up to 600 chars)",
+      "aboutLong": "Detailed description",
+      "services": "Services",
+      "specialization": "Specialization",
+      "certifications": "Certificates & permits",
+      "openingHours": "Opening hours",
+      "languages": "Languages",
+      "categories": "Categories",
+      "area": "Area of operation",
+      "publicEmail": "Public email",
+      "publicPhone": "Public phone",
+      "publicWebsite": "Website",
+      "seoTitle": "SEO title",
+      "seoDescription": "SEO description"
+    },
+    "operationsSection": "Operations",
+    "contactsSection": "Public contacts",
+    "contactsHint": "Shown on the public page. Internal company contacts stay hidden.",
+    "seoSection": "SEO (for search engines)",
+    "gallery": {
+      "title": "Photo gallery",
+      "hint": "Up to 10 photos (JPG, PNG, WebP, GIF). The first photo is the primary one.",
+      "empty": "No photos yet.",
+      "primary": "Primary",
+      "caption": "Photo caption",
+      "makePrimary": "Set as primary",
+      "delete": "Remove",
+      "add": "Add photo",
+      "uploading": "Uploading…",
+      "full": "Gallery is full (10)",
+      "uploadFailed": "Photo upload failed."
+    }
   }
 }

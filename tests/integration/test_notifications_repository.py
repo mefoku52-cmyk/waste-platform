@@ -191,19 +191,45 @@ async def test_list_all_includes_created_row(repo, cleanup):
     assert entity.id in {n.id for n in listed}
 
 
-@pytest.mark.xfail(
-    reason=(
-        "get_by_id binds the raw id against a UUID(as_uuid=True) column. On a "
-        "dialect without native UUID support (SQLite) the bind processor calls "
-        "str.hex and raises StatementError. The service layer passes str, and "
-        "Pydantic/schema ids arrive as str in the API layer."
-    ),
-    strict=False,
-)
 async def test_get_by_id_accepts_a_string_id(repo, cleanup):
-    """Documents a latent bug: sibling repos coerce with uuid.UUID(str(id))."""
+    """Regression (N2-class): str ids must bind on SQLite AND Postgres.
+
+    Previously the repository bound the raw string against a UUID(as_uuid=True)
+    column, which raises StatementError on SQLite. Same fix as the
+    agent_platform conversation repository.
+    """
     entity = _entity()
     cleanup.append(entity.id)
     created = await repo.create(entity)
 
     assert await repo.get_by_id(str(created.id)) is not None
+
+
+async def test_list_by_user_id_accepts_string_user_id(repo, cleanup):
+    user = uuid4()
+    entity = _entity(user_id=user)
+    cleanup.append(entity.id)
+    await repo.create(entity)
+
+    listed = await repo.list_by_user_id(str(user), page=1, limit=10)
+
+    assert [n.id for n in listed] == [entity.id]
+
+
+async def test_count_unread_accepts_string_user_id(repo, cleanup):
+    user = uuid4()
+    entity = _entity(user_id=user, is_read=False)
+    cleanup.append(entity.id)
+    await repo.create(entity)
+
+    assert await repo.count_unread(str(user)) == 1
+    assert await repo.count_by_user_id(str(user)) == 1
+
+
+async def test_delete_accepts_string_id(repo, cleanup):
+    entity = _entity()
+    created = await repo.create(entity)
+
+    await repo.delete(str(created.id))
+
+    assert await repo.get_by_id(str(created.id)) is None

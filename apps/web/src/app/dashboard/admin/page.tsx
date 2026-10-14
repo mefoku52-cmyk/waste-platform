@@ -367,6 +367,28 @@ export default function AdminPage() {
 
       <section className="mt-12">
         <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+          ODPORÚČANIA
+        </p>
+        <h2
+          className="mb-3 text-2xl md:text-3xl"
+          style={{ fontFamily: 'DM Serif Display, serif' }}
+        >
+          Manažment odporúčaní
+        </h2>
+        <p className="mb-4 text-sm" style={{ color: MUTED }}>
+          Automatické odporúčania materiálov a trás, ktoré systém navrhuje firmám.
+        </p>
+        <Link
+          href="/dashboard/admin/recommendations"
+          className="inline-flex rounded-full px-5 py-2 text-sm font-semibold"
+          style={{ background: GOLD, color: BG }}
+        >
+          Otvoriť odporúčania →
+        </Link>
+      </section>
+
+      <section className="mt-12">
+        <p className="mb-2 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
           FEEDBACK OD POUZIVATELOV
         </p>
         <h2

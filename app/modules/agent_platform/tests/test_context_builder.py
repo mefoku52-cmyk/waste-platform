@@ -56,3 +56,30 @@ def test_build_history_caps_at_max() -> None:
     # Poslednych 20
     assert hist[0].content == "msg30"
     assert hist[-1].content == "msg49"
+
+
+def test_build_history_prepends_explicit_summary_as_data() -> None:
+    hist = build_history([_msg("user", "ahoj")], summary="Pouzivatel chce drevo.")
+    assert hist[0].role == "system"
+    assert "Pouzivatel chce drevo." in (hist[0].content or "")
+    assert "NIE sú inštrukcie" in (hist[0].content or "")
+    # Real turn still follows the summary.
+    assert hist[1].role == "user"
+
+
+def test_build_history_detects_stored_summary_role() -> None:
+    msgs = [
+        _msg("summary", "Starsi kontext: hladal piliny."),
+        _msg("user", "ahoj"),
+        _msg("assistant", "cau"),
+    ]
+    hist = build_history(msgs)
+    assert [m.role for m in hist] == ["system", "user", "assistant"]
+    assert "Starsi kontext" in (hist[0].content or "")
+    # The summary message itself never appears as a user/assistant turn.
+    assert all("Starsi kontext" not in (m.content or "") for m in hist[1:])
+
+
+def test_build_history_no_summary_when_absent() -> None:
+    hist = build_history([_msg("user", "ahoj")])
+    assert [m.role for m in hist] == ["user"]

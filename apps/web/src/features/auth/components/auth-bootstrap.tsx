@@ -1,29 +1,26 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { useCurrentUser } from '../hooks/use-current-user';
 
 interface AuthBootstrapProps {
   children: ReactNode;
 }
 
+/**
+ * AuthBootstrap — prednačíta aktuálneho používateľa, ale NIKDY neblokuje render.
+ *
+ * Predtým na serveri (mounted=false) aj počas načítavania vracal spinner namiesto
+ * children. To spôsobovalo, že sa celý strom odosielal ako streamovaný "shell":
+ * HTTP stav sa zamkol na 200 (takže notFound() na /firma/* robil soft-404) a obsah
+ * stránok sa reálne neserver-renderoval (crawler/social videli len spinner).
+ *
+ * Ochrana chránených stránok je v app/dashboard/layout.tsx (useAuthRequired)
+ * a autoritatívne na serveri — preto tento komponent len renderuje children.
+ */
 export const AuthBootstrap = ({ children }: AuthBootstrapProps) => {
-  const [mounted, setMounted] = useState(false);
-  const { isLoading } = useCurrentUser();
-
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Na serveri a pred mountom vždy rovnaký výstup → žiadna hydration chyba
-  if (!mounted || isLoading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
-      </div>
-    );
-  }
+  // Teplý štart: prednačíta /me, ale nezablokuje serverový ani klientsky render.
+  useCurrentUser();
 
   return <>{children}</>;
 };

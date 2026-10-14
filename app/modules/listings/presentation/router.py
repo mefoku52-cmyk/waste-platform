@@ -491,11 +491,31 @@ class AiDraftStreamRequest(BaseModel):
 async def ai_draft_stream(
     payload: AiDraftStreamRequest,
     current_user=Depends(require_current_user),
+    entitlement=Depends(get_entitlement_service),
 ) -> StreamingResponse:
-    """SSE stream AI draftu (A1.1). Bez AI tieru → 409 (rovnako ako /ai-draft)."""
-    # AK ma existujuci ai-draft handler blok vyberu firmy s AI tierom,
-    # skopiruj ho sem (vratane 409). Bez neho funguje stream pre kazdeho.
-    del current_user
+    """SSE stream AI draftu (A1.1). Bez AI tieru → 409 (rovnako ako /ai-draft).
+
+    Frontend (ai-draft-panel.tsx) už 409 spracúva ako ``ai_tier_required`` —
+    gate tu chýbal, stream fungoval pre každého prihláseného užívateľa.
+    """
+    from app.modules.companies.domain.enums import SubscriptionTier
+
+    if payload.company_id:
+        company_id = str(payload.company_id)
+    else:
+        my_ids = membership_company_ids(current_user)
+        if not my_ids:
+            raise ConflictDomainError("Nemáš firmu — najprv ju vytvor.")
+        company_id = str(my_ids[0])
+        # Multi-company robustness: uprednostni prvú firmu s AI tierom.
+        for candidate in my_ids:
+            if await entitlement.has_tier(str(candidate), SubscriptionTier.AI):
+                company_id = str(candidate)
+                break
+
+    has_ai = await entitlement.has_tier(company_id, SubscriptionTier.AI)
+    if not has_ai:
+        raise ConflictDomainError("AI draft je dostupný iba pre firmy s AI predplatným.")
 
     async def event_source() -> AsyncIterator[str]:
         drafter = ListingDrafter()
