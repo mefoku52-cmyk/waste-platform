@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import base64
+import logging
+import re
 import uuid
 from urllib.parse import urlencode
 
@@ -207,6 +209,90 @@ def _stripe_prices() -> dict[tuple[str, int], int]:
     }
 
 
+logger = logging.getLogger(__name__)
+
+# Secrets that must never reach the logs, even if embedded in an error message.
+_STRIPE_SECRET_PATTERNS = (
+    re.compile(r"sk_(?:live|test)_[A-Za-z0-9]+"),
+    re.compile(r"pk_(?:live|test)_[A-Za-z0-9]+"),
+    re.compile(r"whsec_[A-Za-z0-9]+"),
+    re.compile(r"(?i)bearer\s+[A-Za-z0-9._\-]+"),
+)
+
+# Errors caused by server-side configuration, not by the caller's request.
+_STRIPE_CONFIG_ERRORS = (
+    stripe.error.AuthenticationError,
+    stripe.error.PermissionError,
+)
+
+
+def _redact(text: object, *, limit: int = 300) -> str:
+    """Strip secret-looking tokens and truncate a message for safe logging."""
+    out = "" if text is None else str(text)
+    for pattern in _STRIPE_SECRET_PATTERNS:
+        out = pattern.sub("[REDACTED]", out)
+    if len(out) > limit:
+        out = out[:limit] + "...(truncated)"
+    return out
+
+
+def _stripe_error_fields(exc: stripe.error.StripeError) -> dict[str, str]:
+    error_obj = getattr(exc, "error", None)
+    err_type = getattr(error_obj, "type", None) or getattr(exc, "type", None)
+    err_code = getattr(exc, "code", None) or getattr(error_obj, "code", None)
+    raw_message = getattr(exc, "user_message", None) or getattr(exc, "message", None) or str(exc)
+    return {
+        "error_class": type(exc).__name__,
+        "error_type": str(err_type or "-"),
+        "error_code": str(err_code or "-"),
+        "stripe_request_id": str(getattr(exc, "request_id", None) or "-"),
+        "message": _redact(raw_message),
+    }
+
+
+def _log_stripe_error(exc: stripe.error.StripeError) -> str:
+    """Log a safe subset of a Stripe error. Returns a correlation id.
+
+    Never logs the API key, the full request, headers or payment data.
+    """
+    correlation_id = uuid.uuid4().hex[:12]
+    fields = _stripe_error_fields(exc)
+    logger.warning(
+        "stripe.checkout failed correlation_id=%s class=%s type=%s code=%s "
+        "request_id=%s message=%s",
+        correlation_id,
+        fields["error_class"],
+        fields["error_type"],
+        fields["error_code"],
+        fields["stripe_request_id"],
+        fields["message"],
+    )
+    return correlation_id
+
+
+def _stripe_failure(exc: stripe.error.StripeError) -> HTTPException:
+    """Map a Stripe error to an appropriate HTTP status + safe client detail."""
+    _log_stripe_error(exc)
+
+    if isinstance(exc, _STRIPE_CONFIG_ERRORS):
+        # Misconfigured live/test key or insufficient permissions: server-side
+        # setup issue. Do not leak the raw provider message to the client.
+        return HTTPException(status_code=503, detail="Payment provider is not configured")
+
+    if isinstance(exc, stripe.error.RateLimitError):
+        return HTTPException(status_code=429, detail="Payment provider is busy, try again")
+
+    if isinstance(exc, stripe.error.APIConnectionError):
+        return HTTPException(status_code=502, detail="Payment provider is unreachable")
+
+    if isinstance(exc, (stripe.error.InvalidRequestError, stripe.error.CardError)):
+        message = getattr(exc, "user_message", None) or getattr(exc, "message", None) or str(exc)
+        return HTTPException(status_code=400, detail=f"Stripe error: {_redact(message, limit=200)}")
+
+    # Unexpected provider failure.
+    return HTTPException(status_code=502, detail="Payment provider error")
+
+
 @router.post("/stripe/checkout")
 async def stripe_checkout(
     body: _StripeCheckoutIn,
@@ -254,7 +340,7 @@ async def stripe_checkout(
         )
         return {"url": cs.url, "id": cs.id}
     except stripe.error.StripeError as exc:
-        raise HTTPException(status_code=400, detail=f"Stripe error: {getattr(exc, 'user_message', None) or str(exc)}")
+        raise _stripe_failure(exc) from exc
 
 
 @router.post("/stripe/webhook")
