@@ -39,6 +39,7 @@ _AUTH_DEP_NAMES = {
 PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
     {
         # --- auth entry points ---
+        ("GET", "/api/v1/transport/offers"),
         ("POST", "/api/v1/auth/login"),
         ("POST", "/api/v1/auth/logout"),
         ("POST", "/api/v1/auth/refresh"),
