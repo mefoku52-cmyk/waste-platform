@@ -144,6 +144,10 @@
         "chat": {
           "label": "Chat",
           "desc": "Interné správy medzi firmami"
+        },
+        "carriers": {
+          "label": "Prepravcovia",
+          "desc": "Doprava, logistika a skladovanie"
         }
       }
     },

@@ -56,6 +56,13 @@ const DASHBOARD_TILES = [
     descKey: 'dashboard.motto.tiles.chat.desc',
     img: 'https://images.unsplash.com/photo-1587560699334-cc4ff634909a?w=1600&q=80',
   },
+  {
+    key: 'carriers',
+    href: '/prepravcovia',
+    labelKey: 'dashboard.motto.tiles.carriers.label',
+    descKey: 'dashboard.motto.tiles.carriers.desc',
+    img: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1600&q=80',
+  },
 ] as const;
 
 // 5 dekoratívnych materiálov — neklikateľné, len na vizuál pod dlaždicami.
