@@ -28,7 +28,7 @@ from app.modules.agent_platform.infrastructure.ai.model_response import ModelRes
 logger = logging.getLogger(__name__)
 
 # Jediné miesto, kde je definované poradie providerov pre chat agenta.
-PROVIDER_ORDER: tuple[str, ...] = ("cerebras", "groq", "mistral")
+PROVIDER_ORDER: tuple[str, ...] = ("cerebras", "groq")
 
 _DEFAULT_PROVIDER_TIMEOUT_S = 20.0
 _DEFAULT_TOTAL_TIMEOUT_S = 45.0
@@ -56,11 +56,8 @@ def build_default_model_chain() -> ChainModelGateway:
         CerebrasModelGateway,
     )
     from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
-    from app.modules.agent_platform.infrastructure.ai.mistral_gateway import (
-        MistralModelGateway,
-    )
 
-    return ChainModelGateway([CerebrasModelGateway(), GroqModelGateway(), MistralModelGateway()])
+    return ChainModelGateway([CerebrasModelGateway(), GroqModelGateway()])
 
 
 class ChainModelGateway(ModelGateway):
