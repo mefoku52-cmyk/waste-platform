@@ -20,10 +20,14 @@ async def create_transport_offer(
     current_user=Depends(require_current_user),
 ):
 
+    from datetime import datetime
+
+    now = datetime.now()
+
     # Vytvoríme nový záznam
     offer = TransportOffer(
         id=uuid.uuid4(),
-        company_id=payload.companyId,
+        company_id=str(payload.companyId),
         title=payload.title,
         description=payload.description,
         transport_from=payload.transportFrom,
@@ -35,6 +39,9 @@ async def create_transport_offer(
         has_refrigeration=payload.hasRefrigeration,
         has_adr=payload.hasAdr,
         has_hydraulic_arm=payload.hasHydraulicArm,
+        status="active",
+        created_at=now,
+        updated_at=now,
     )
 
     session.add(offer)
