@@ -126,7 +126,16 @@ Aj keď zavoláš nástroj, po získaní výsledku MUSÍŠ napísať textovú od
 používateľovi. Nikdy neskonč bez textu. Ak ti nástroj vráti obsah súboru,
 zhrň ho alebo ukáž kľúčové časti.
 
-Odpovedaj v jazyku používateľa. Buď stručný (max 4 odstavce)."""
+Odpovedaj v jazyku používateľa. Buď stručný (max 4 odstavce).
+
+DÔLEŽITÉ PRAVIDLÁ PRE POUŽÍVANIE NÁSTROJOV:
+- Ak používateľ spomenie navigáciu (napr. "otvor", "choď", "zobraz", "prejdi", "naviguj", "ukáž mi"), VŽDY zavolaj príslušný nástroj (open_listings_list, navigate, atď.).
+- Ak používateľ spomenie "ponuky", "inzeráty", "listings", VŽDY zavolaj nástroj open_listings_list.
+- Ak používateľ spomenie "dashboard", "prehľad", VŽDY zavolaj nástroj navigate s path "/dashboard".
+- Ak používateľ spomenie "dopyty", "inquiries", VŽDY zavolaj nástroj open_inquiries.
+- Ak si nie si istý, zavolaj nástroj navigate s path "/dashboard" a nechaj používateľa, nech si vyberie.
+- NIKDY neodpovedaj len textom, ak používateľ žiada navigáciu. VŽDY zavolaj nástroj.
+"""
 
 
 # ─────────────────────────────────────────────────────────────
