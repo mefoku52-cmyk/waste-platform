@@ -21,7 +21,7 @@ def upgrade() -> None:
     op.create_table(
         "transport_offers",
         sa.Column("id", postgresql.UUID(as_uuid=True), nullable=False),
-        sa.Column("company_id", postgresql.UUID(as_uuid=True), nullable=False),
+        sa.Column("company_id", sa.String(), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
         sa.Column("transport_from", sa.String(length=255), nullable=False),
