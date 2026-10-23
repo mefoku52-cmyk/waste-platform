@@ -55,9 +55,8 @@ def build_default_model_chain() -> ChainModelGateway:
     from app.modules.agent_platform.infrastructure.ai.cerebras_gateway import (
         CerebrasModelGateway,
     )
-    from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
 
-    return ChainModelGateway([CerebrasModelGateway(), GroqModelGateway()])
+    return ChainModelGateway([CerebrasModelGateway()])
 
 
 class ChainModelGateway(ModelGateway):
