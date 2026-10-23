@@ -33,7 +33,7 @@ _log = logging.getLogger(__name__)
 
 _UA = "CMEP/1.0 (Cerebras gateway)"
 _DEFAULT_URL = "https://api.cerebras.ai/v1/chat/completions"
-_DEFAULT_MODEL = "llama-3.3-70b"
+_DEFAULT_MODEL = "gpt-oss-120b"
 
 
 class CerebrasModelGateway(ModelGateway):
