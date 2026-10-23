@@ -251,6 +251,20 @@ export const CompanyForm = ({
         </FormField>
       </div>
 
+      {/* Prepravca / Logistika */}
+      <div className="flex items-center gap-3 rounded-lg border border-slate-300 bg-white px-3 py-2">
+        <input
+          type="checkbox"
+          id="logisticsCapability"
+          {...register('logisticsCapability')}
+          disabled={isPending}
+          className="h-4 w-4 accent-[#c9a84c]"
+        />
+        <label htmlFor="logisticsCapability" className="text-sm cursor-pointer">
+          Som prepravca / logistická firma (poskytujem dopravu, skladovanie, ADR)
+        </label>
+      </div>
+
       <FormField label={t('companyForm.addressLabel')} error={errors.addressLine1?.message}>
         <Input
           {...register('addressLine1')}
