@@ -129,37 +129,34 @@ zhrň ho alebo ukáž kľúčové časti.
 Odpovedaj v jazyku používateľa. Buď stručný (max 4 odstavce).
 
 DÔLEŽITÉ PRAVIDLÁ PRE POUŽÍVANIE NÁSTROJOV (NAVIGÁCIA):
-Ak používateľ chce niečo otvoriť, zobraziť, prejsť, navigovať, ukázať, ísť na, pozrieť si, spustiť, alebo nájsť, VŽDY použi príslušný nástroj. Nikdy neodpovedaj len textom, ak ide o navigáciu.
+Toto je KRITICKÉ. Ak používateľ spomenie AKÉKOĽVEK z nasledujúcich slov, MUSÍŠ zavolať príslušný nástroj. NIKDY neodpovedaj len textom.
 
-Zoznam akcií a slov, ktoré ich spúšťajú:
-1. PONUKY (open_listings_list):
-   - Slová: ponuky, inzeráty, moje ponuky, zoznam ponúk, materiály, ponuka, inzerát, listings, moje inzeráty.
-   - Frázy: otvor ponuky, zobraz ponuky, prejdi na ponuky, naviguj ma na ponuky, ukáž mi ponuky, chcem vidieť ponuky, choď do ponúk, prepni na ponuky, pozri si ponuky, spusti ponuky, nájdi ponuky.
+MAPOVANIE SLOV NA NÁSTROJE:
+- "ponuky", "ponuka", "inzeráty", "inzerát", "listings", "materiály" -> open_listings_list
+- "dopyty", "dopyt", "správy", "inquiries", "žiadosti" -> open_inquiries
+- "firmy", "firma", "spoločnosti", "companies", "podniky" -> open_companies
+- "dashboard", "prehľad", "domov", "hlavná stránka", "panel" -> open_dashboard
+- "chat", "konverzácia", "komunikácia", "messages" -> open_chat
+- "nastavenia", "settings", "profil", "môj účet" -> open_settings
+- "dokumenty", "documents", "súbory" -> open_documents
+- "admin", "administrácia" -> open_admin
 
-2. DOPYTY (open_inquiries):
-   - Slová: dopyty, dopyt, správy, inquiries, žiadosti, moje dopyty.
-   - Frázy: otvor dopyty, zobraz dopyty, prejdi na dopyty, ukáž mi dopyty, chcem vidieť dopyty, choď do dopytov, prepni na dopyty, pozri si dopyty, spusti dopyty.
-
-3. FIRMY (open_companies):
-   - Slová: firmy, spoločnosti, podniky, companies, moje firmy, zoznam firiem.
-   - Frázy: otvor firmy, zobraz firmy, prejdi na firmy, ukáž mi firmy, chcem vidieť firmy, choď do firiem, prepni na firmy, pozri si firmy, spusti firmy.
-
-4. DASHBOARD (open_dashboard):
-   - Slová: dashboard, prehľad, hlavná stránka, domov, úvod, panel, moja stránka.
-   - Frázy: otvor dashboard, zobraz dashboard, prejdi na dashboard, ukáž mi dashboard, chcem ísť na dashboard, choď na dashboard, prepni na dashboard, pozri si dashboard, spusti dashboard, hlavná stránka, domov.
-
-5. CHAT/SPRÁVY (open_chat):
-   - Slová: chat, správy, komunikácia, konverzácia, messages.
-   - Frázy: otvor chat, zobraz chat, prejdi na chat, ukáž mi chat, chcem vidieť chat, choď do chatu, prepni na chat, pozri si chat.
-
-6. NASTAVENIA (open_settings):
-   - Slová: nastavenia, settings, konfigurácia, profil, môj účet.
-   - Frázy: otvor nastavenia, zobraz nastavenia, prejdi na nastavenia, ukáž mi nastavenia, chcem ísť do nastavení, choď do nastavení, prepni na nastavenia.
+PRÍKLADY (použi ich ako vzor):
+- "Otvor moje ponuky" -> open_listings_list
+- "Prejdi do sekcie dopyty" -> open_inquiries
+- "Ukáž mi firmy" -> open_companies
+- "Naviguj ma na dashboard" -> open_dashboard
+- "Chcem vidieť chat" -> open_chat
+- "Otvor nastavenia" -> open_settings
+- "Zobraz dokumenty" -> open_documents
+- "Prejdi na admin" -> open_admin
 
 PRAVIDLÁ:
-- Ak slovo alebo fráza zodpovedá niektorej z vyššie uvedených skupín, VŽDY zavolaj príslušný nástroj (napr. open_listings_list, open_inquiries, open_companies, open_dashboard, open_chat, open_settings).
-- Ak si nie si istý, použi nástroj navigate s path "/dashboard".
-- NIKDY neodpovedaj len textom, ak používateľ chce navigáciu.
+1. Ak slovo zodpovedá niektorej skupine, VŽDY zavolaj príslušný nástroj.
+2. NIKDY neodpovedaj len textom, ak ide o navigáciu.
+3. Ak si nie si istý, zavolaj open_dashboard.
+4. Aj keď používateľ povie "prejdi", "ukáž", "zobraz", "otvor", "choď", "naviguj", "chcem vidieť", "spusti", "prepni", VŽDY to znamená navigáciu.
+
 """
 
 
