@@ -369,9 +369,10 @@ async def stripe_webhook(request: Request, session=Depends(get_db_session)):
         md = sess.get("metadata", {}) or {}
         if md.get("kind") == "promote" and md.get("listing_id"):
             try:
-                from app.modules.listings.presentation.dependencies import get_listings_service
+                from app.modules.listings.application.services import ListingsService
+                from app.modules.listings.infrastructure.repositories import ListingsRepositoryImpl
 
-                svc = get_listings_service(session=session)
+                svc = ListingsService(repository=ListingsRepositoryImpl(session))
                 await svc.promote(
                     md["listing_id"],
                     days=int(md.get("days", "7")),

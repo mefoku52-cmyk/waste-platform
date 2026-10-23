@@ -96,6 +96,7 @@ async def ai_draft_listing(
 
     if payload.companyId:
         company_id = str(payload.companyId)
+        require_company_member(current_user, company_id, action="use AI draft for")
     else:
         my_ids = membership_company_ids(current_user)
         if not my_ids:
@@ -502,6 +503,7 @@ async def ai_draft_stream(
 
     if payload.company_id:
         company_id = str(payload.company_id)
+        require_company_member(current_user, company_id, action="use AI draft for")
     else:
         my_ids = membership_company_ids(current_user)
         if not my_ids:

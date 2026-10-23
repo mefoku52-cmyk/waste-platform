@@ -185,6 +185,8 @@ class AgentOrchestrator:
         collected_calls: list[dict[str, Any]] = []
         collected_cards: list[dict[str, Any]] = []
         seen_cards: set[tuple[Any, Any]] = set()
+        # Deduplicate identical server tool calls within the same turn.
+        _seen_server_calls: set[tuple[str, str]] = set()
 
         for iteration in range(MAX_TOOL_ITERATIONS):
             response: ModelResponse = await self._gateway.generate(
@@ -245,6 +247,29 @@ class AgentOrchestrator:
                     # pass and their arguments are validated, so a denied or
                     # malformed action is never handed to the frontend.
                     is_client_action = tool_name in self._client_tool_names
+                    # Deduplicate identical server tool invocations within a turn
+                    # (LLM sometimes repeats the same call across iterations).
+                    if not is_client_action and tool_name:
+                        _args_key = json.dumps(args, sort_keys=True, ensure_ascii=False)
+                        _dup_key = (tool_name, _args_key)
+                        if _dup_key in _seen_server_calls:
+                            outcome = "duplicate_skipped"
+                            messages.append(
+                                ModelMessage(
+                                    role="tool",
+                                    content=json.dumps(
+                                        {
+                                            "success": True,
+                                            "skipped": True,
+                                            "reason": "duplicate_call_in_turn",
+                                            "tool_name": tool_name,
+                                        },
+                                        ensure_ascii=False,
+                                    ),
+                                    tool_call_id=call.get("id", ""),
+                                )
+                            )
+                            continue
 
                     if self._policy is not None:
                         decision = await self._policy.decide(
@@ -435,6 +460,8 @@ class AgentOrchestrator:
                     collected_calls.append(
                         {"name": tool_name, "arguments": args, "id": call.get("id", "")}
                     )
+                    _args_key = json.dumps(args, sort_keys=True, ensure_ascii=False)
+                    _seen_server_calls.add((tool_name, _args_key))
 
                     try:
                         result = await handler.handle(
@@ -500,7 +527,7 @@ class AgentOrchestrator:
 
 
 def _outcome_to_event_type(outcome: str) -> PlatformEventType:
-    if outcome in {"executed", "dispatched_to_client"}:
+    if outcome in {"executed", "dispatched_to_client", "duplicate_skipped"}:
         return PlatformEventType.TOOL_EXECUTED
     if outcome in {"failed", "exception"}:
         return PlatformEventType.TOOL_FAILED

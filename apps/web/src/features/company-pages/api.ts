@@ -3,6 +3,7 @@ import {
   CompanyPageData,
   CompanyPageUpsertInput,
   CompanyPhotoData,
+  CompanyPhotoQuota,
   PageResponse,
   PhotosResponse,
   ReviewData,
@@ -45,6 +46,9 @@ export const companyPagesApi = {
     const res = await http.get<PhotosResponse>(`/companies/${companyId}/photos`);
     return res.items;
   },
+
+  getPhotoQuota: (companyId: string) =>
+    http.get<CompanyPhotoQuota>(`/companies/${companyId}/photos/quota`),
 
   addPhoto: async (
     companyId: string,

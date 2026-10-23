@@ -28,6 +28,7 @@ export interface MeResponse {
   user: User;
   memberships: Membership[];
   roleCodes?: string[];
+  isPlatformAdmin?: boolean;
 }
 
 export interface AuthResponse {

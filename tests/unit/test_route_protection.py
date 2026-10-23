@@ -53,6 +53,7 @@ PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/api/v1/public/company-pages"),
         ("GET", "/api/v1/public/company-pages/{slug}"),
         ("GET", "/api/v1/public/company-pages/{slug}/assets/{file_id}"),
+        ("POST", "/api/v1/public/company-pages/{slug}/contact"),
         # --- public landing/analytics ingestion ---
         ("POST", "/api/v1/events/contact"),
         ("POST", "/api/v1/analytics/acquisition/events"),

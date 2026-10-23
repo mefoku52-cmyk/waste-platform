@@ -1,7 +1,7 @@
 """inquiries API router."""
 
 from datetime import datetime
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi import status as http_status
@@ -203,14 +203,25 @@ async def create_inquiry(
             details=f"listing={created.listing_id}",
         )
 
-        from sqlalchemy import text
+        from app.modules.companies.infrastructure.models import CompanyModel
+        from app.modules.listings.infrastructure.models import ListingsModel
 
-        r = await session.execute(
-            text("SELECT company_id FROM listings WHERE id = :id"),
-            {"id": str(created.listing_id)},
-        )
-        row = r.first()
-        seller_cid = row[0] if row else None
+        listing = await session.get(ListingsModel, UUID(str(created.listing_id)))
+        seller_cid = getattr(listing, "company_id", None)
+        listing_title = getattr(listing, "title", None)
+        seller_email = None
+        if seller_cid is not None:
+            company = await session.get(CompanyModel, str(seller_cid))
+            seller_email = getattr(company, "email", None)
+
+        email_lines = [
+            "Nový dopyt k ponuke" + (f": {listing_title}" if listing_title else "") + ".",
+            "",
+            f"E-mail kupujúceho: {created.contact_email}",
+        ]
+        if created.contact_phone:
+            email_lines.append(f"Telefón: {created.contact_phone}")
+        email_lines.extend(["", "Správa:", created.message or ""])
 
         await notify_company_members(
             session=session,
@@ -220,6 +231,9 @@ async def create_inquiry(
             notif_type="inquiry_received",
             related_entity_id=created.id,
             exclude_user_id=actor,
+            email_body="\n".join(email_lines),
+            reply_to=created.contact_email,
+            fallback_email=seller_email,
         )
     except Exception:
         pass  # best-effort: never break caller

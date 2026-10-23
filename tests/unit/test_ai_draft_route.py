@@ -12,11 +12,12 @@ from app.shared.presentation.auth_dependencies import require_current_user
 
 
 class _FakeUser:
-    def __init__(self, memberships):
+    def __init__(self, memberships, role_codes=None):
         self.id = str(uuid4())
         self.email = "test@example.com"
         self.isPlatformAdmin = False
         self.memberships = memberships
+        self.roleCodes = role_codes or []
 
 
 @pytest.fixture
@@ -24,8 +25,8 @@ def client():
     return TestClient(app)
 
 
-def _override_user(memberships):
-    app.dependency_overrides[require_current_user] = lambda: _FakeUser(memberships)
+def _override_user(memberships, role_codes=None):
+    app.dependency_overrides[require_current_user] = lambda: _FakeUser(memberships, role_codes)
 
 
 def _override_entitlement(ai_company_ids):
@@ -170,3 +171,92 @@ def test_ai_draft_persona_forwarded(client):
 
     assert r.status_code == 200, r.text
     assert seen.get("persona") == "drzy"
+
+
+class _FakeDrafter:
+    def __init__(self, called=None):
+        self._called = called if called is not None else {}
+
+    @staticmethod
+    def is_provider_configured():
+        return False
+
+    async def draft(self, *, prompt, persona="bystry"):
+        self._called["draft"] = True
+
+        class _D:
+            title = "t"
+            description = "d"
+            materialType = None
+            quantity = None
+            unit = None
+            location = None
+            condition = None
+            currency = "EUR"
+            price = None
+
+        return _D()
+
+
+def test_ai_draft_explicit_company_rejects_non_member(client):
+    """Explicitné companyId mimo členstva → 403 aj pri AI tier; drafter sa nespustí."""
+    member_id = str(uuid4())
+    other_id = str(uuid4())
+    _override_user([{"companyId": member_id}])
+    _override_entitlement({other_id})
+
+    called = {}
+
+    with patch(
+        "app.modules.listings.application.listing_drafter.ListingDrafter",
+        lambda: _FakeDrafter(called),
+    ):
+        r = client.post(
+            "/api/v1/listings/ai-draft",
+            json={"prompt": "Predám oceľový šrot", "companyId": other_id},
+        )
+
+    assert r.status_code == 403, r.text
+    assert "draft" not in called
+
+
+def test_ai_draft_explicit_company_allows_member(client):
+    """Explicitné companyId člena firmy s AI tier → draft sa vygeneruje."""
+    member_id = str(uuid4())
+    _override_user([{"companyId": member_id}])
+    _override_entitlement({member_id})
+
+    called = {}
+
+    with patch(
+        "app.modules.listings.application.listing_drafter.ListingDrafter",
+        lambda: _FakeDrafter(called),
+    ):
+        r = client.post(
+            "/api/v1/listings/ai-draft",
+            json={"prompt": "Predám oceľový šrot", "companyId": member_id},
+        )
+
+    assert r.status_code == 200, r.text
+    assert called.get("draft") is True
+
+
+def test_ai_draft_explicit_company_allows_platform_admin(client):
+    """Platform admin obchádza členstvo (require_company_member bypass)."""
+    other_id = str(uuid4())
+    _override_user([], role_codes=["platform_admin"])
+    _override_entitlement({other_id})
+
+    called = {}
+
+    with patch(
+        "app.modules.listings.application.listing_drafter.ListingDrafter",
+        lambda: _FakeDrafter(called),
+    ):
+        r = client.post(
+            "/api/v1/listings/ai-draft",
+            json={"prompt": "Predám oceľový šrot", "companyId": other_id},
+        )
+
+    assert r.status_code == 200, r.text
+    assert called.get("draft") is True

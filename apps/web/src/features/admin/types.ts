@@ -55,3 +55,66 @@ export interface AdminUserActivityResponse {
   items: AdminUserActivityItem[];
   total: number;
 }
+
+export interface AdminCompanyListItem {
+  id: string;
+  status: string;
+  legalName: string;
+  tradingName: string | null;
+  registrationNumber: string;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  countryCode: string | null;
+  subscriptionTier: string | null;
+  companyType: string | null;
+  photoCount: number;
+  createdAt: string | null;
+}
+
+export interface AdminCompaniesResponse {
+  items: AdminCompanyListItem[];
+  meta: { page: number; pageSize: number; total: number };
+}
+
+export interface AdminCompanyDetail extends AdminCompanyListItem {
+  taxIdentifier: string | null;
+  vatIdentifier: string | null;
+  websiteUrl: string | null;
+  addressLine1: string | null;
+  addressLine2: string | null;
+  postalCode: string | null;
+  sellerCapability: boolean;
+  buyerCapability: boolean;
+  logisticsCapability: boolean;
+  verificationSubmittedAt: string | null;
+  verifiedAt: string | null;
+  rejectedAt: string | null;
+  pageSlug: string | null;
+  pageStatus: string | null;
+  publicEmail: string | null;
+  publicPhone: string | null;
+  counts: Record<string, number>;
+  memberships: {
+    userId: string;
+    email: string | null;
+    firstName: string | null;
+    lastName: string | null;
+    role: string;
+    status: string;
+    isPrimaryContact: boolean;
+  }[];
+  photos: {
+    id: string;
+    fileUrl: string;
+    caption: string | null;
+    altText: string | null;
+    position: number;
+    isPrimary: boolean;
+    createdAt: string | null;
+  }[];
+}
+
+export interface AdminCompanyDetailResponse {
+  data: AdminCompanyDetail;
+}

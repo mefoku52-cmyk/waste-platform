@@ -50,6 +50,9 @@ class CmepListingSearchHandler:
             result = await self._service.list_marketplace(
                 page=page,
                 limit=page_size,
+                q=args.get("q"),
+                material_type=args.get("material_type"),
+                location=args.get("location"),
             )
         except Exception as exc:
             return ToolResult(

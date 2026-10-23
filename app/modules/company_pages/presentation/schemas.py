@@ -91,6 +91,14 @@ class CompanyPagePhotosResponse(BaseModel):
     meta: dict
 
 
+class CompanyPhotoQuotaResponse(BaseModel):
+    uploadedThisYear: int
+    quotaPerYear: int
+    remainingThisYear: int
+    calendarYear: int
+    total: int
+
+
 class SlugAvailableResponse(BaseModel):
     slug: str
     available: bool
@@ -152,6 +160,19 @@ class PublicSitemapEntry(BaseModel):
 class PublicSitemapResponse(BaseModel):
     items: list[PublicSitemapEntry]
     meta: dict
+
+
+class PublicCompanyContactRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=200)
+    email: EmailStr
+    phone: str | None = Field(default=None, max_length=64)
+    message: str = Field(min_length=1, max_length=4000)
+    website: str | None = Field(default=None, max_length=512)
+
+
+class PublicCompanyContactResponse(BaseModel):
+    ok: bool = True
+    message: str = "Správa bola odoslaná."
 
 
 class PublicCompanyPageResponse(BaseModel):

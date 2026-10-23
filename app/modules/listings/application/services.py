@@ -23,13 +23,39 @@ class ListingsService:
     async def count_all(self, company_ids=None) -> int:
         return await self.repository.count_all(company_ids=company_ids)
 
-    async def list_marketplace(self, page: int = 1, limit: int = 20, exclude_company_ids=None):
+    async def list_marketplace(
+        self,
+        page: int = 1,
+        limit: int = 20,
+        exclude_company_ids=None,
+        *,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ):
         return await self.repository.list_marketplace(
-            page, limit, exclude_company_ids=exclude_company_ids
+            page,
+            limit,
+            exclude_company_ids=exclude_company_ids,
+            q=q,
+            material_type=material_type,
+            location=location,
         )
 
-    async def count_marketplace(self, exclude_company_ids=None) -> int:
-        return await self.repository.count_marketplace(exclude_company_ids=exclude_company_ids)
+    async def count_marketplace(
+        self,
+        exclude_company_ids=None,
+        *,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ) -> int:
+        return await self.repository.count_marketplace(
+            exclude_company_ids=exclude_company_ids,
+            q=q,
+            material_type=material_type,
+            location=location,
+        )
 
     async def create(self, entity: ListingsEntity) -> ListingsEntity:
         entity.validate()

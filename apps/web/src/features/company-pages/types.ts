@@ -66,6 +66,14 @@ export type PhotosResponse = {
   meta: Record<string, unknown>;
 };
 
+export type CompanyPhotoQuota = {
+  uploadedThisYear: number;
+  quotaPerYear: number;
+  remainingThisYear: number;
+  calendarYear: number;
+  total: number;
+};
+
 export type SlugAvailability = {
   slug: string;
   available: boolean;

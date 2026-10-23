@@ -55,15 +55,62 @@ class ListingsRepositoryImpl(ListingsRepository):
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
 
-    async def list_marketplace(
-        self, page: int = 1, limit: int = 20, exclude_company_ids=None
-    ) -> list[ListingsEntity]:
-        offset = (page - 1) * limit
-        stmt = select(ListingsModel).where(ListingsModel.status == "published")
+    @staticmethod
+    def _apply_marketplace_filters(
+        stmt,
+        *,
+        exclude_company_ids=None,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ):
+        from sqlalchemy import func, or_
+
         if exclude_company_ids:
             ids = [str(x) for x in exclude_company_ids if x is not None]
             if ids:
                 stmt = stmt.where(ListingsModel.company_id.notin_(ids))
+        if material_type:
+            mt = str(material_type).strip()
+            if mt:
+                stmt = stmt.where(func.lower(ListingsModel.material_type) == func.lower(mt))
+        if location:
+            loc = str(location).strip()
+            if loc:
+                stmt = stmt.where(func.lower(ListingsModel.location).contains(func.lower(loc)))
+        if q:
+            qq = str(q).strip()
+            if qq:
+                pattern = f"%{qq.lower()}%"
+                stmt = stmt.where(
+                    or_(
+                        func.lower(ListingsModel.title).contains(pattern),
+                        func.lower(ListingsModel.description).contains(pattern),
+                        func.lower(ListingsModel.material_type).contains(pattern),
+                        func.lower(ListingsModel.location).contains(pattern),
+                    )
+                )
+        return stmt
+
+    async def list_marketplace(
+        self,
+        page: int = 1,
+        limit: int = 20,
+        exclude_company_ids=None,
+        *,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ) -> list[ListingsEntity]:
+        offset = (page - 1) * limit
+        stmt = select(ListingsModel).where(ListingsModel.status == "published")
+        stmt = self._apply_marketplace_filters(
+            stmt,
+            exclude_company_ids=exclude_company_ids,
+            q=q,
+            material_type=material_type,
+            location=location,
+        )
         # promoted (TOP) listings first, then by created_at
         from sqlalchemy import case
 
@@ -79,16 +126,26 @@ class ListingsRepositoryImpl(ListingsRepository):
         models = result.scalars().all()
         return [to_domain(m) for m in models]
 
-    async def count_marketplace(self, exclude_company_ids=None) -> int:
+    async def count_marketplace(
+        self,
+        exclude_company_ids=None,
+        *,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ) -> int:
         stmt = (
             select(func.count())
             .select_from(ListingsModel)
             .where(ListingsModel.status == "published")
         )
-        if exclude_company_ids:
-            ids = [str(x) for x in exclude_company_ids if x is not None]
-            if ids:
-                stmt = stmt.where(ListingsModel.company_id.notin_(ids))
+        stmt = self._apply_marketplace_filters(
+            stmt,
+            exclude_company_ids=exclude_company_ids,
+            q=q,
+            material_type=material_type,
+            location=location,
+        )
         result = await self.session.execute(stmt)
         return int(result.scalar_one())
 

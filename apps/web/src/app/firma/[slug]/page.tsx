@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { siteBaseUrl, siteBaseUrlFromEnv } from '@/lib/site';
 
+import { PublicContactForm } from '@/features/company-pages/components/public-contact-form';
 import { fetchPublicCompanyPage } from '@/features/company-pages/server';
 import type { PublicCompanyPage } from '@/features/company-pages/types';
 
@@ -416,6 +417,12 @@ export default async function PublicCompanyPage({ params }: Params) {
               </div>
             </section>
           )}
+
+          {/* KONTAKTNÝ FORMULÁR */}
+          <section className="mt-8">
+            <SectionTitle>Napíšte firme</SectionTitle>
+            <PublicContactForm slug={page.slug} />
+          </section>
 
           <p className="mt-10 text-center text-xs" style={{ color: MUTED }}>
             Profil na platforme CMEP · Obehové materiály

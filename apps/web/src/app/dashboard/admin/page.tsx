@@ -249,6 +249,13 @@ export default function AdminPage() {
             <p className="mb-6 text-sm" style={{ color: MUTED }}>
               {t('admin.firmsHintPrefix')}<strong style={{ color: GOLD_BRIGHT }}>{t('admin.verify')}</strong>{t('admin.firmsHintMiddle')}<strong style={{ color: GOLD_BRIGHT }}>{t('admin.reject')}</strong>{t('admin.firmsHintSuffix')}
             </p>
+            <Link
+              href="/dashboard/admin/companies"
+              className="mb-4 inline-block rounded-full border px-4 py-2 text-sm"
+              style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD }}
+            >
+              Detailný prehľad firiem
+            </Link>
             <div
               className="rounded-2xl border p-5"
               style={{

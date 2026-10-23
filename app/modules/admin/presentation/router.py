@@ -6,8 +6,11 @@ from app.shared.presentation.auth_dependencies import (
 
 """admin API router."""
 
-from fastapi import APIRouter, Depends, HTTPException
+import re
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi import status as http_status
+from sqlalchemy import func, or_, select
 
 from app.shared.domain.exceptions import ForbiddenDomainError, ValidationDomainError
 from app.shared.presentation.authorization import current_user_id, is_platform_admin
@@ -20,25 +23,62 @@ from .schemas import (
     AdminAuditEntryCreateRequest,
     AdminAuditEntryData,
     AdminAuditEntryResponse,
+    AdminCompaniesResponse,
+    AdminCompanyDetailData,
+    AdminCompanyDetailResponse,
+    AdminCompanyListItem,
+    AdminCompanyMembershipData,
+    AdminCompanyPhotoData,
     PaginatedAdminAuditEntriesResponse,
     PaginationMeta,
 )
 
 router = APIRouter(prefix="/admin", tags=["admin-audit"])
 
+_SENSITIVE_RE = re.compile(
+    r"(?i)\b(token|secret|password|passwd|api[_-]?key|authorization|refresh[_-]?token|access[_-]?token)\b"
+    r"\s*[:=]\s*([^\s;,]+)"
+)
+_JWT_RE = re.compile(r"\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b")
+_LONG_HEX_RE = re.compile(r"\b[a-f0-9]{32,}\b", re.IGNORECASE)
 
-def _to_data(entity: AdminAuditEntryEntity) -> AdminAuditEntryData:
+
+def _redact_details(details: str | None) -> str | None:
+    if not details:
+        return details
+    redacted = _SENSITIVE_RE.sub(lambda m: f"{m.group(1)}=[REDACTED]", details)
+    redacted = _JWT_RE.sub("[REDACTED]", redacted)
+    return _LONG_HEX_RE.sub("[REDACTED]", redacted)
+
+
+def _to_data(entity: AdminAuditEntryEntity, actor=None) -> AdminAuditEntryData:
+    email = getattr(actor, "email", None) if actor is not None else None
+    first = getattr(actor, "first_name", None) if actor is not None else None
+    last = getattr(actor, "last_name", None) if actor is not None else None
+    name = " ".join(x for x in (first, last) if x) or None
     return AdminAuditEntryData(
         id=entity.id,
         actorUserId=entity.actor_user_id,
+        actorEmail=email,
+        actorName=name,
         action=entity.action,
         targetType=entity.target_type,
         targetId=entity.target_id,
-        details=entity.details,
+        details=_redact_details(entity.details),
         status=entity.status.value,
         createdAt=entity.created_at,
         updatedAt=entity.updated_at,
     )
+
+
+async def _load_actors(session, entities) -> dict:
+    ids = {str(e.actor_user_id) for e in entities if e.actor_user_id}
+    if not ids:
+        return {}
+    from app.modules.users.infrastructure.models import UserModel
+
+    rows = (await session.execute(select(UserModel).where(UserModel.id.in_(ids)))).scalars().all()
+    return {str(u.id): u for u in rows}
 
 
 @router.get(
@@ -75,11 +115,13 @@ async def list_all_admin(
     limit: int = 20,
     current_user=Depends(require_admin),
     service: AdminAuditEntryService = Depends(get_admin_service),
+    session=Depends(get_db_session),
 ):
     items = await service.list_all(page, limit)
     total = await service.count_all()
+    actors = await _load_actors(session, items)
     return PaginatedAdminAuditEntriesResponse(
-        items=[_to_data(e) for e in items],
+        items=[_to_data(e, actors.get(str(e.actor_user_id))) for e in items],
         meta=PaginationMeta(page=page, pageSize=limit, total=total),
     )
 
@@ -268,6 +310,236 @@ async def admin_user_activity(
 
 
 @router.get(
+    "/companies",
+    response_model=AdminCompaniesResponse,
+    summary="List companies for platform admin",
+    operation_id="adminListCompanies",
+    responses=error_responses(401, 403, 422, 500),
+)
+async def admin_list_companies(
+    page: int = Query(default=1, ge=1),
+    pageSize: int = Query(default=20, ge=1, le=100),
+    status: str | None = Query(default=None, max_length=32),
+    q: str | None = Query(default=None, max_length=200),
+    current_user=Depends(require_admin),
+    session=Depends(get_db_session),
+):
+    from app.modules.companies.infrastructure.models import CompanyModel
+    from app.modules.company_pages.infrastructure.models import CompanyPhotoModel
+
+    stmt = select(CompanyModel)
+    if status:
+        stmt = stmt.where(CompanyModel.status == status)
+    if q and q.strip():
+        like = f"%{q.strip()}%"
+        stmt = stmt.where(
+            or_(
+                CompanyModel.legal_name.ilike(like),
+                CompanyModel.trading_name.ilike(like),
+                CompanyModel.registration_number.ilike(like),
+                CompanyModel.email.ilike(like),
+            )
+        )
+    total = int(
+        (
+            await session.execute(select(func.count()).select_from(stmt.order_by(None).subquery()))
+        ).scalar_one()
+    )
+    rows = (
+        (
+            await session.execute(
+                stmt.order_by(CompanyModel.created_at.desc())
+                .offset((page - 1) * pageSize)
+                .limit(pageSize)
+            )
+        )
+        .scalars()
+        .all()
+    )
+    ids = [str(c.id) for c in rows]
+    photo_counts: dict[str, int] = {}
+    if ids:
+        photo_rows = await session.execute(
+            select(CompanyPhotoModel.company_id, func.count())
+            .where(CompanyPhotoModel.company_id.in_(ids))
+            .group_by(CompanyPhotoModel.company_id)
+        )
+        photo_counts = {str(cid): int(cnt) for cid, cnt in photo_rows.all()}
+
+    items = [
+        AdminCompanyListItem(
+            id=str(c.id),
+            status=str(c.status),
+            legalName=c.legal_name,
+            tradingName=c.trading_name,
+            registrationNumber=c.registration_number,
+            email=c.email,
+            phone=c.phone,
+            city=c.city,
+            countryCode=c.country_code,
+            subscriptionTier=c.subscription_tier,
+            companyType=c.company_type,
+            photoCount=photo_counts.get(str(c.id), 0),
+            createdAt=c.created_at,
+        )
+        for c in rows
+    ]
+    return AdminCompaniesResponse(
+        items=items,
+        meta=PaginationMeta(page=page, pageSize=pageSize, total=total),
+    )
+
+
+@router.get(
+    "/companies/{company_id}",
+    response_model=AdminCompanyDetailResponse,
+    summary="Company detail for platform admin",
+    operation_id="adminGetCompany",
+    responses=error_responses(401, 403, 404, 500),
+)
+async def admin_get_company(
+    company_id: str,
+    current_user=Depends(require_admin),
+    session=Depends(get_db_session),
+):
+    import uuid as _uuid
+
+    from app.modules.companies.infrastructure.models import CompanyModel
+    from app.modules.company_memberships.infrastructure.models import (
+        CompanyMembershipModel,
+    )
+    from app.modules.company_pages.infrastructure.models import (
+        CompanyPageModel,
+        CompanyPhotoModel,
+    )
+    from app.modules.inquiries.infrastructure.models import InquiryModel
+    from app.modules.listings.infrastructure.models import ListingsModel
+    from app.modules.users.infrastructure.models import UserModel
+
+    company = await session.get(CompanyModel, str(company_id))
+    if company is None:
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    page_row = (
+        (
+            await session.execute(
+                select(CompanyPageModel).where(CompanyPageModel.company_id == str(company.id))
+            )
+        )
+        .scalars()
+        .first()
+    )
+    photo_rows = (
+        (
+            await session.execute(
+                select(CompanyPhotoModel)
+                .where(CompanyPhotoModel.company_id == str(company.id))
+                .order_by(
+                    CompanyPhotoModel.position.asc(),
+                    CompanyPhotoModel.created_at.asc(),
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    membership_rows = (
+        await session.execute(
+            select(CompanyMembershipModel, UserModel)
+            .outerjoin(UserModel, UserModel.id == CompanyMembershipModel.user_id)
+            .where(CompanyMembershipModel.company_id == str(company.id))
+            .order_by(CompanyMembershipModel.created_at.asc())
+        )
+    ).all()
+
+    counts: dict[str, int] = {
+        "photos": len(photo_rows),
+        "memberships": len(membership_rows),
+    }
+    try:
+        cid = _uuid.UUID(str(company.id))
+        counts["listings"] = int(
+            (
+                await session.execute(
+                    select(func.count())
+                    .select_from(ListingsModel)
+                    .where(ListingsModel.company_id == cid)
+                )
+            ).scalar_one()
+        )
+        counts["inquiries"] = int(
+            (
+                await session.execute(
+                    select(func.count())
+                    .select_from(InquiryModel)
+                    .where(InquiryModel.company_id == cid)
+                )
+            ).scalar_one()
+        )
+    except (ValueError, TypeError):
+        counts["listings"] = 0
+        counts["inquiries"] = 0
+
+    data = AdminCompanyDetailData(
+        id=str(company.id),
+        status=str(company.status),
+        legalName=company.legal_name,
+        tradingName=company.trading_name,
+        registrationNumber=company.registration_number,
+        taxIdentifier=company.tax_identifier,
+        vatIdentifier=company.vat_identifier,
+        email=company.email,
+        phone=company.phone,
+        websiteUrl=company.website_url,
+        city=company.city,
+        countryCode=company.country_code,
+        addressLine1=company.address_line_1,
+        addressLine2=company.address_line_2,
+        postalCode=company.postal_code,
+        subscriptionTier=company.subscription_tier,
+        companyType=company.company_type,
+        sellerCapability=bool(company.seller_capability),
+        buyerCapability=bool(company.buyer_capability),
+        logisticsCapability=bool(company.logistics_capability),
+        verificationSubmittedAt=company.verification_submitted_at,
+        verifiedAt=company.verified_at,
+        rejectedAt=company.rejected_at,
+        photoCount=len(photo_rows),
+        createdAt=company.created_at,
+        pageSlug=page_row.slug if page_row else None,
+        pageStatus=str(page_row.status) if page_row else None,
+        publicEmail=page_row.public_email if page_row else None,
+        publicPhone=page_row.public_phone if page_row else None,
+        counts=counts,
+        memberships=[
+            AdminCompanyMembershipData(
+                userId=str(m.user_id),
+                email=getattr(u, "email", None),
+                firstName=getattr(u, "first_name", None),
+                lastName=getattr(u, "last_name", None),
+                role=str(m.membership_role),
+                status=str(m.status),
+                isPrimaryContact=bool(m.is_primary_contact),
+            )
+            for m, u in membership_rows
+        ],
+        photos=[
+            AdminCompanyPhotoData(
+                id=str(p.id),
+                fileUrl=p.file_url,
+                caption=p.caption,
+                altText=p.alt_text,
+                position=int(p.position or 0),
+                isPrimary=bool(p.is_primary),
+                createdAt=p.created_at,
+            )
+            for p in photo_rows
+        ],
+    )
+    return AdminCompanyDetailResponse(data=data)
+
+
+@router.get(
     "/{id}",
     response_model=AdminAuditEntryResponse,
     summary="Get audit entry by ID",
@@ -278,6 +550,7 @@ async def get_admin(
     id: str,
     current_user=Depends(require_admin),
     service: AdminAuditEntryService = Depends(get_admin_service),
+    session=Depends(get_db_session),
 ):
     entity = await service.get_by_id(id)
     if entity is None:
@@ -285,7 +558,8 @@ async def get_admin(
             status_code=http_status.HTTP_404_NOT_FOUND,
             detail="AdminAuditEntry not found",
         )
-    return AdminAuditEntryResponse(data=_to_data(entity))
+    actors = await _load_actors(session, [entity])
+    return AdminAuditEntryResponse(data=_to_data(entity, actors.get(str(entity.actor_user_id))))
 
 
 @router.post(

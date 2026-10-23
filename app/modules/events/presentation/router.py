@@ -168,4 +168,21 @@ async def submit_contact(
         if hasattr(result, "__await__"):
             await result
 
+    from app.shared.application.side_effects import notify_platform_admins
+
+    email_lines = [
+        "Nový kontakt z webu trc-cmep.sk",
+        "",
+        f"Meno: {payload_data['name']}",
+        f"E-mail: {payload_data['email']}",
+    ]
+    if payload_data["company"]:
+        email_lines.append(f"Firma: {payload_data['company']}")
+    email_lines.extend(["", "Správa:", payload_data["message"]])
+    await notify_platform_admins(
+        subject=f"Kontakt z webu: {payload_data['name']}",
+        body="\n".join(email_lines),
+        reply_to=payload_data["email"],
+    )
+
     return EventOut(id=str(row.id), eventType="contact_submitted")

@@ -60,7 +60,11 @@ def main():
         for i in range(0, len(vals), 40):
             translated.extend(translate_batch(vals[i : i + 40], target, key))
             time.sleep(0.5)
-        for k, v in zip(keys, translated):
+        if len(keys) != len(translated):
+            raise ValueError(
+                f"Počet kľúčov ({len(keys)}) sa nezhoduje s počtom prekladov ({len(translated)})"
+            )
+        for k, v in zip(keys, translated, strict=True):
             lp[k] = v
         p.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"✅ {code}: {len(translated)} preložených")

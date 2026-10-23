@@ -6,6 +6,7 @@ import { CompanyPageUpsertInput } from '../types';
 export const companyPageKeys = {
   page: (companyId: string) => ['company-page', companyId] as const,
   photos: (companyId: string) => ['company-photos', companyId] as const,
+  photoQuota: (companyId: string) => ['company-photo-quota', companyId] as const,
 };
 
 /** Editor dáta verejnej stránky (draft alebo published). */
@@ -23,6 +24,16 @@ export function useCompanyPhotos(companyId: string) {
   return useQuery({
     queryKey: companyPageKeys.photos(companyId),
     queryFn: () => companyPagesApi.listPhotos(companyId),
+    enabled: Boolean(companyId),
+    retry: 1,
+  });
+}
+
+/** Ročná kvóta fotogalérie. */
+export function useCompanyPhotoQuota(companyId: string) {
+  return useQuery({
+    queryKey: companyPageKeys.photoQuota(companyId),
+    queryFn: () => companyPagesApi.getPhotoQuota(companyId),
     enabled: Boolean(companyId),
     retry: 1,
   });
@@ -66,6 +77,7 @@ export function useAddCompanyPhoto(companyId: string) {
       companyPagesApi.addPhoto(companyId, input),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: companyPageKeys.photos(companyId) });
+      qc.invalidateQueries({ queryKey: companyPageKeys.photoQuota(companyId) });
     },
   });
 }
@@ -94,6 +106,7 @@ export function useDeleteCompanyPhoto(companyId: string) {
     mutationFn: (photoId: string) => companyPagesApi.deletePhoto(companyId, photoId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: companyPageKeys.photos(companyId) });
+      qc.invalidateQueries({ queryKey: companyPageKeys.photoQuota(companyId) });
     },
   });
 }

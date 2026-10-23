@@ -24,10 +24,26 @@ class ListingsRepository(ABC):
     async def count_all(self, company_ids=None) -> int: ...
 
     @abstractmethod
-    async def list_marketplace(self, page: int = 1, limit: int = 20, exclude_company_ids=None): ...
+    async def list_marketplace(
+        self,
+        page: int = 1,
+        limit: int = 20,
+        exclude_company_ids=None,
+        *,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ): ...
 
     @abstractmethod
-    async def count_marketplace(self, exclude_company_ids=None) -> int: ...
+    async def count_marketplace(
+        self,
+        exclude_company_ids=None,
+        *,
+        q: str | None = None,
+        material_type: str | None = None,
+        location: str | None = None,
+    ) -> int: ...
 
     @abstractmethod
     async def get_company_status(self, company_id): ...

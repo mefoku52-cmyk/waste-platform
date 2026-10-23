@@ -17,7 +17,7 @@ import mimetypes
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +28,8 @@ from app.modules.company_pages.presentation.dependencies import (
     get_photo_repo,
 )
 from app.modules.company_pages.presentation.schemas import (
+    PublicCompanyContactRequest,
+    PublicCompanyContactResponse,
     PublicCompanyInfo,
     PublicCompanyListing,
     PublicCompanyPageResponse,
@@ -213,6 +215,118 @@ async def get_public_company_page(
         ratingCount=summary["count"],
         reviews=public_reviews,
     )
+
+
+@public_router.post(
+    "/company-pages/{slug}/contact",
+    response_model=PublicCompanyContactResponse,
+    responses=error_responses(404, 429, 500),
+)
+async def contact_public_company_page(
+    slug: str,
+    body: PublicCompanyContactRequest,
+    request: Request,
+    page_service=Depends(get_company_page_service),
+    company_repo=Depends(get_company_repo),
+    session: AsyncSession = Depends(get_db_session),
+):
+    """Kontaktný formulár z verejnej firemnej stránky (bez auth).
+
+    Správa sa uloží ako activity event (interná stopa) a best-effort sa
+    prepošle členom firmy a verejnému firemnému e-mailu. Rate-limit 5/hod/IP.
+    """
+    page = await _load_published_page(slug, page_service)
+    company = await company_repo.get_by_id(page.company_id)
+    if company is None:
+        raise NotFoundDomainError("Verejná stránka neexistuje.")
+
+    # Honeypot: boti vyplnia skryté pole. Tvárime sa, že správa odišla,
+    # ale nič neukladáme ani neposielame.
+    if (body.website or "").strip():
+        return PublicCompanyContactResponse()
+
+    import hashlib
+    import json
+    from datetime import UTC, datetime, timedelta
+
+    from sqlalchemy import func
+
+    from app.modules.events.infrastructure.models import ActivityEventModel
+
+    ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (
+        request.client.host if request.client else "unknown"
+    )
+    ip_hash = hashlib.sha256(ip.encode()).hexdigest()[:16]
+    company_id = str(company.id)
+    one_hour_ago = datetime.now(UTC).replace(tzinfo=None) - timedelta(hours=1)
+    cnt_stmt = select(func.count(ActivityEventModel.id)).where(
+        ActivityEventModel.event_type == "company_page_contact_submitted",
+        ActivityEventModel.company_id == company_id,
+        ActivityEventModel.payload.contains(ip_hash),
+        ActivityEventModel.created_at >= one_hour_ago,
+    )
+    count = int((await session.execute(cnt_stmt)).scalar() or 0)
+    if count >= 5:
+        raise HTTPException(
+            status_code=429,
+            detail="Príliš veľa správ. Skús neskôr.",
+        )
+
+    display_name = (
+        (page.display_name or "").strip()
+        or getattr(company, "trading_name", None)
+        or getattr(company, "legal_name", None)
+        or "firma"
+    )
+    payload_data = {
+        "name": body.name.strip(),
+        "email": str(body.email).strip(),
+        "phone": (body.phone or "").strip(),
+        "message": body.message.strip(),
+        "ip_hash": ip_hash,
+        "user_agent": (request.headers.get("user-agent") or "")[:300],
+    }
+    session.add(
+        ActivityEventModel(
+            event_type="company_page_contact_submitted",
+            actor_user_id=None,
+            company_id=company_id,
+            listing_id=None,
+            payload=json.dumps(payload_data, ensure_ascii=False)[:2000],
+        )
+    )
+    commit = getattr(session, "commit", None)
+    if commit:
+        result = commit()
+        if hasattr(result, "__await__"):
+            await result
+
+    email_lines = [
+        f"Nová správa z verejnej stránky: {display_name}",
+        "",
+        f"Meno: {payload_data['name']}",
+        f"E-mail: {payload_data['email']}",
+    ]
+    if payload_data["phone"]:
+        email_lines.append(f"Telefón: {payload_data['phone']}")
+    email_lines.extend(["", "Správa:", payload_data["message"]])
+
+    fallback = (page.public_email or "").strip() or (getattr(company, "email", None) or "").strip()
+    from app.shared.application.side_effects import notify_company_members
+
+    await notify_company_members(
+        session=session,
+        company_id=company.id,
+        title=f"Nová správa z verejnej stránky ({display_name})",
+        message=payload_data["message"],
+        notif_type="company_page_contact",
+        related_entity_id=None,
+        email_body="\n".join(email_lines),
+        reply_to=payload_data["email"],
+        fallback_email=fallback or None,
+    )
+
+    return PublicCompanyContactResponse()
 
 
 @public_router.get(

@@ -118,6 +118,7 @@ async def test_non_admin_does_not_get_project_tools() -> None:
 async def test_non_admin_policy_denies_project_tool() -> None:
     """Ani keby model zavolal project_read_file, policy ho musí odmietnuť."""
     orch = await _build_orchestrator(_regular_user())
+    assert orch._policy is not None
     decision = await orch._policy.decide(
         PolicyContext(
             actor_id="user-1",

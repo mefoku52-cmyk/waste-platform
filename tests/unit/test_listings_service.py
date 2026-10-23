@@ -60,10 +60,10 @@ class FakeListingsRepo:
     async def count_all(self, company_ids=None) -> int:
         return len(self.items)
 
-    async def list_marketplace(self, page=1, limit=20, exclude_company_ids=None):
+    async def list_marketplace(self, page=1, limit=20, exclude_company_ids=None, **kwargs):
         return list(self.items)
 
-    async def count_marketplace(self, exclude_company_ids=None) -> int:
+    async def count_marketplace(self, exclude_company_ids=None, **kwargs) -> int:
         return len(self.items)
 
     async def create(self, entity):

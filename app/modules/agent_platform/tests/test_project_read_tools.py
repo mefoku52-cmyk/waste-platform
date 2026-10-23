@@ -189,6 +189,7 @@ async def test_oversized_file_denied(handler: ProjectReadHandler, repo_root: Pat
     result = await handler.handle(_req("project_read_file", {"path": "big.md"}))
     assert result.success is False
     assert result.error_code == "PERMISSION"
+    assert result.error_message is not None
     assert result.error_message.startswith("file_too_large")
 
 

@@ -1,7 +1,7 @@
 """analytics API router."""
 
 import json
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -306,7 +306,7 @@ async def get_admin_stats(
     if not is_platform_admin(current_user):
         raise ForbiddenDomainError("Platform admin only")
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     yesterday_start = today_start - timedelta(days=1)
     week_start = today_start - timedelta(days=7)

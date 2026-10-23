@@ -77,7 +77,7 @@ def main():
         legal = target.get("legal", {})
 
         # Nájdi chýbajúce kľúče
-        missing = [k for k in sk.keys() if k not in legal]
+        missing = [k for k in sk if k not in legal]
         if not missing:
             print(f"✅ {lang_code}: všetko preložené ({len(legal)} kľúčov)")
             continue
@@ -100,7 +100,7 @@ def main():
             print(f"❌ Nesúlad: {len(texts)} → {len(translations)}")
             sys.exit(1)
 
-        for k, v in zip(keys, translations):
+        for k, v in zip(keys, translations, strict=True):
             legal[k] = v
 
         target["legal"] = legal

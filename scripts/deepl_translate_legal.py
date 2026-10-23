@@ -150,7 +150,7 @@ def translate_legal(target_lang_code: str, api_key: str, dry_run: bool = False):
         sys.exit(1)
 
     # 6. Vytvor nový legal objekt
-    new_legal = dict(zip(keys, translations))
+    new_legal = dict(zip(keys, translations, strict=True))
 
     # 7. Záloha
     backup = target_file.with_suffix(".json.bak4")

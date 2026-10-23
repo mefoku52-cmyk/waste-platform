@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import builtins
+
 from sqlalchemy.exc import IntegrityError
 
 from app.modules.company_pages.application.slug import (
@@ -28,7 +30,8 @@ from app.shared.domain.exceptions import (
 )
 
 # Kapacita galérie v prvej verzii (požadovaná kapacita, nie povinnosť).
-MAX_PHOTOS = 10
+MAX_PHOTOS_PER_YEAR = 10
+MAX_PHOTOS = MAX_PHOTOS_PER_YEAR
 
 # Firma musí byť overená, aby mohla zverejniť verejnú stránku.
 PUBLISHABLE_COMPANY_STATUSES = frozenset({"verified"})
@@ -204,8 +207,35 @@ class CompanyPhotoService:
         self.uuid_generator = uuid_generator
         self.clock = clock
 
-    async def list(self, company_id) -> list[CompanyPhoto]:
+    async def list(self, company_id) -> builtins.list[CompanyPhoto]:
         return await self.repo.list_by_company(company_id)
+
+    def _year_start(self):
+        now = self.clock.now()
+        return now.replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    async def quota_status(self, company_id) -> dict:
+        """Ročná kvóta: uploady v aktuálnom kalendárnom roku.
+
+        Použité = max(fotky vytvorené tento rok, úspešné upload eventy).
+        Eventy držia kvótu aj po zmazaní fotky; fotky pokrývajú staršie
+        záznamy vytvorené pred zavedením event ledgeru.
+        """
+        since = self._year_start()
+        created = await self.repo.count_created_since(company_id, since)
+        try:
+            uploaded = await self.repo.count_uploaded_since(company_id, since)
+        except Exception:
+            # activity_events nemusí existovať v staršej DB — kvóta sa potom
+            # počíta len z aktuálnych fotiek, ale galéria nesmie spadnúť.
+            uploaded = 0
+        used = max(int(created), int(uploaded))
+        return {
+            "uploadedThisYear": used,
+            "quotaPerYear": MAX_PHOTOS_PER_YEAR,
+            "remainingThisYear": max(0, MAX_PHOTOS_PER_YEAR - used),
+            "calendarYear": since.year,
+        }
 
     async def add(
         self,
@@ -216,9 +246,12 @@ class CompanyPhotoService:
         alt_text: str | None,
         actor_user_id,
     ) -> CompanyPhoto:
-        count = await self.repo.count_by_company(company_id)
-        if count >= MAX_PHOTOS:
-            raise ValidationDomainError(f"Galéria je plná (maximum {MAX_PHOTOS} fotografií).")
+        quota = await self.quota_status(company_id)
+        if quota["remainingThisYear"] <= 0:
+            raise ValidationDomainError(
+                f"Ročný limit galérie je vyčerpaný (maximum {MAX_PHOTOS_PER_YEAR} "
+                "fotografií za kalendárny rok)."
+            )
         existing = await self.repo.list_by_company(company_id)
         is_first = len(existing) == 0
         now = self.clock.now()
@@ -273,7 +306,9 @@ class CompanyPhotoService:
                 new_primary.updated_at = self.clock.now()
                 await self.repo.update(new_primary)
 
-    async def reorder(self, *, company_id, ordered_ids: list, actor_user_id) -> list[CompanyPhoto]:
+    async def reorder(
+        self, *, company_id, ordered_ids: builtins.list, actor_user_id
+    ) -> builtins.list[CompanyPhoto]:
         photos = await self.repo.list_by_company(company_id)
         by_id = {str(p.id): p for p in photos}
         # Prijmeme len ID patriace tejto firme, v poradí podľa požiadavky;
@@ -297,7 +332,9 @@ class CompanyPhotoService:
                 await self.repo.update(p)
         return await self.repo.list_by_company(company_id)
 
-    async def set_primary(self, *, company_id, photo_id, actor_user_id) -> list[CompanyPhoto]:
+    async def set_primary(
+        self, *, company_id, photo_id, actor_user_id
+    ) -> builtins.list[CompanyPhoto]:
         photos = await self.repo.list_by_company(company_id)
         target = None
         for p in photos:

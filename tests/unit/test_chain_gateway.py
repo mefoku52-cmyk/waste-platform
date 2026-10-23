@@ -103,3 +103,90 @@ async def test_all_failed_raises_last_error():
 
     with pytest.raises(RuntimeError, match="mistral down"):
         await chain.generate(_req())
+
+
+class StreamStubGateway(ModelGateway):
+    def __init__(
+        self, name: str, *, error: Exception | None = None, chunks: list[str] | None = None
+    ):
+        self._name = name
+        self._error = error
+        self._chunks = chunks or []
+        self.calls = 0
+
+    def provider_name(self) -> str:
+        return self._name
+
+    async def generate(self, request: ModelRequest) -> ModelResponse:
+        self.calls += 1
+        if self._error is not None:
+            raise self._error
+        return ModelResponse(
+            request_id=request.request_id,
+            text="ok",
+            finish_reason="stop",
+            tool_calls=(),
+            provider_metadata={"provider": self._name},
+        )
+
+    async def stream(self, request: ModelRequest):
+        self.calls += 1
+        if self._error is not None:
+            raise self._error
+        for c in self._chunks:
+            yield c
+
+
+@pytest.mark.asyncio
+async def test_stream_first_gateway_wins_when_ok():
+    groq = StreamStubGateway("groq", chunks=["a", "b"])
+    cerebras = StreamStubGateway("cerebras", chunks=["x"])
+    chain = ChainModelGateway([groq, cerebras])
+    out = []
+    async for c in chain.stream(_req()):
+        out.append(c)
+    assert out == ["a", "b"]
+    assert groq.calls == 1
+    assert cerebras.calls == 0
+
+
+@pytest.mark.asyncio
+async def test_stream_falls_back_to_next_if_first_fails_before_yield():
+    groq = StreamStubGateway("groq", error=RuntimeError("fail"))
+    cerebras = StreamStubGateway("cerebras", chunks=["hi"])
+    chain = ChainModelGateway([groq, cerebras])
+    out = []
+    async for c in chain.stream(_req()):
+        out.append(c)
+    assert out == ["hi"]
+    assert groq.calls == 1
+    assert cerebras.calls == 1
+
+
+@pytest.mark.asyncio
+async def test_stream_does_not_switch_after_partial_yield():
+    class PartialError(StreamStubGateway):
+        async def stream(self, request: ModelRequest):
+            self.calls += 1
+            yield "hello"
+            raise RuntimeError("mid-stream")
+
+    groq = PartialError("groq", chunks=[])
+    cerebras = StreamStubGateway("cerebras", chunks=["world"])
+    chain = ChainModelGateway([groq, cerebras])
+    out = []
+    with pytest.raises(RuntimeError, match="mid-stream"):
+        async for c in chain.stream(_req()):
+            out.append(c)
+    assert out == ["hello"]
+    assert cerebras.calls == 0
+
+
+@pytest.mark.asyncio
+async def test_stream_all_failed_raises_last_error():
+    groq = StreamStubGateway("groq", error=RuntimeError("g"))
+    cerebras = StreamStubGateway("cerebras", error=RuntimeError("c"))
+    chain = ChainModelGateway([groq, cerebras])
+    with pytest.raises(RuntimeError, match="c"):
+        async for _ in chain.stream(_req()):
+            pass

@@ -17,11 +17,12 @@ from app.shared.presentation.auth_dependencies import require_current_user
 
 
 class _FakeUser:
-    def __init__(self, memberships):
+    def __init__(self, memberships, role_codes=None):
         self.id = str(uuid4())
         self.email = "test@example.com"
         self.isPlatformAdmin = False
         self.memberships = memberships
+        self.roleCodes = role_codes or []
 
 
 @pytest.fixture
@@ -29,8 +30,8 @@ def client():
     return TestClient(app)
 
 
-def _override_user(memberships):
-    app.dependency_overrides[require_current_user] = lambda: _FakeUser(memberships)
+def _override_user(memberships, role_codes=None):
+    app.dependency_overrides[require_current_user] = lambda: _FakeUser(memberships, role_codes)
 
 
 def _override_entitlement(ai_company_ids):
@@ -156,3 +157,82 @@ def test_ai_draft_stream_explicit_company_without_tier_rejected(client):
         json={"prompt": "Predám šrot", "company_id": "c1"},
     )
     assert r.status_code == 409
+
+
+def _tracking_drafter(called):
+    class _TrackingDrafter:
+        @staticmethod
+        def is_provider_configured():
+            return False
+
+        async def stream(self, *, prompt, persona="bystry"):
+            called["stream"] = True
+            yield {"type": "draft", "title": "Oceľový šrot", "text": "Predám 5 ton"}
+
+    return _TrackingDrafter
+
+
+def test_ai_draft_stream_explicit_company_rejects_non_member(client):
+    """Explicitné company_id mimo členstva → 403 aj pri AI tier; stream sa nespustí."""
+    member_id = str(uuid4())
+    other_id = str(uuid4())
+    _override_user([{"companyId": member_id}])
+    _override_entitlement({other_id})
+
+    called = {}
+
+    with patch(
+        "app.modules.listings.presentation.router.ListingDrafter",
+        _tracking_drafter(called),
+    ):
+        r = client.post(
+            "/api/v1/listings/ai-draft/stream",
+            json={"prompt": "Predám šrot", "company_id": other_id},
+        )
+
+    assert r.status_code == 403, r.text
+    assert "stream" not in called
+
+
+def test_ai_draft_stream_explicit_company_allows_member(client):
+    """Explicitné company_id člena firmy s AI tier → stream sa spustí."""
+    member_id = str(uuid4())
+    _override_user([{"companyId": member_id}])
+    _override_entitlement({member_id})
+
+    called = {}
+
+    with (
+        patch(
+            "app.modules.listings.presentation.router.ListingDrafter",
+            _tracking_drafter(called),
+        ),
+        _stream(client, company_id=member_id) as r,
+    ):
+        assert r.status_code == 200
+        body = r.read().decode()
+
+    assert called.get("stream") is True
+    assert "data: " in body
+
+
+def test_ai_draft_stream_explicit_company_allows_platform_admin(client):
+    """Platform admin obchádza členstvo (require_company_member bypass)."""
+    other_id = str(uuid4())
+    _override_user([], role_codes=["platform_admin"])
+    _override_entitlement({other_id})
+
+    called = {}
+
+    with (
+        patch(
+            "app.modules.listings.presentation.router.ListingDrafter",
+            _tracking_drafter(called),
+        ),
+        _stream(client, company_id=other_id) as r,
+    ):
+        assert r.status_code == 200
+        body = r.read().decode()
+
+    assert called.get("stream") is True
+    assert "data: " in body

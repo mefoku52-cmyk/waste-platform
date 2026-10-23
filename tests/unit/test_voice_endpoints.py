@@ -124,6 +124,7 @@ def test_transcribe_ok_with_mocked_provider(client):
     assert r.status_code == 200, r.text
     assert r.json() == {"text": "Dobrý deň, volám sa."}
     m.assert_awaited_once()
+    assert m.await_args is not None
     args, _kwargs = m.await_args
     assert args[0] == _MP3
 

@@ -45,7 +45,8 @@ def log_http_error(logger: logging.Logger, provider: str, error: object) -> None
     status = getattr(error, "code", None)
     code: str | None = None
     try:
-        raw = error.read()  # type: ignore[attr-defined]
+        read = getattr(error, "read", None)
+        raw = read() if callable(read) else b""
         if raw:
             data = json.loads(raw.decode("utf-8", "replace"))
             if isinstance(data, dict):

@@ -67,20 +67,36 @@ async def cleanup_created():
     from sqlalchemy import delete
 
     from app.modules.companies.infrastructure.models import CompanyModel
+    from app.modules.company_memberships.infrastructure.models import (
+        CompanyMembershipModel,
+    )
     from app.modules.company_pages.infrastructure.models import (
         CompanyPageModel,
         CompanyPhotoModel,
     )
     from app.modules.company_reviews.infrastructure.models import CompanyReviewModel
+    from app.modules.events.infrastructure.models import ActivityEventModel
     from app.modules.inquiries.infrastructure.models import InquiryModel
+    from app.modules.listings.infrastructure.models import ListingsModel
 
     async with async_session_factory() as session:
-        for model in (CompanyPhotoModel, CompanyPageModel, CompanyReviewModel):
+        for model in (
+            CompanyPhotoModel,
+            CompanyPageModel,
+            CompanyReviewModel,
+            CompanyMembershipModel,
+        ):
             await session.execute(delete(model).where(model.company_id.in_(ids)))
-        # inquiries.company_id je UUID typ → konvertuj
+        await session.execute(
+            delete(ActivityEventModel).where(ActivityEventModel.company_id.in_(ids))
+        )
+        # inquiries/listings.company_id je UUID typ → konvertuj
         inquiry_uuids = [uuid.UUID(i) for i in ids]
         await session.execute(
             delete(InquiryModel).where(InquiryModel.company_id.in_(inquiry_uuids))
+        )
+        await session.execute(
+            delete(ListingsModel).where(ListingsModel.company_id.in_(inquiry_uuids))
         )
         await session.execute(delete(CompanyModel).where(CompanyModel.id.in_(ids)))
         await session.commit()

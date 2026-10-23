@@ -35,9 +35,10 @@ from app.modules.company_pages.presentation.schemas import (
     CompanyPageReorderRequest,
     CompanyPageResponse,
     CompanyPageUpsertRequest,
+    CompanyPhotoQuotaResponse,
     SlugAvailableResponse,
 )
-from app.shared.application.side_effects import write_audit
+from app.shared.application.side_effects import write_activity_event, write_audit
 from app.shared.domain.exceptions import NotFoundDomainError
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
@@ -75,6 +76,11 @@ async def _get_company_or_404(company_repo, company_id):
     if company is None:
         raise NotFoundDomainError("Firma neexistuje.")
     return company
+
+
+async def _photos_meta(service: CompanyPhotoService, company_id, photos) -> dict:
+    quota = await service.quota_status(company_id)
+    return {"total": len(photos), **quota}
 
 
 def _fields_from_payload(payload: CompanyPageUpsertRequest) -> dict:
@@ -233,6 +239,22 @@ async def check_slug_available(
 
 
 @router.get(
+    "/{company_id}/photos/quota",
+    response_model=CompanyPhotoQuotaResponse,
+    responses=error_responses(401, 403, 500),
+)
+async def get_company_photo_quota(
+    company_id: UUID,
+    current_user=Depends(require_current_user),
+    service: CompanyPhotoService = Depends(get_company_photo_service),
+):
+    require_company_member(current_user, company_id, action="view photos of")
+    quota = await service.quota_status(company_id)
+    photos = await service.list(company_id)
+    return CompanyPhotoQuotaResponse(total=len(photos), **quota)
+
+
+@router.get(
     "/{company_id}/photos",
     response_model=CompanyPagePhotosResponse,
     responses=error_responses(401, 403, 500),
@@ -246,7 +268,7 @@ async def list_company_photos(
     photos = await service.list(company_id)
     return CompanyPagePhotosResponse(
         items=[to_photo_data(p) for p in photos],
-        meta={"total": len(photos)},
+        meta=await _photos_meta(service, company_id, photos),
     )
 
 
@@ -282,10 +304,18 @@ async def add_company_photo(
             target_id=photo.id,
             details=f"companyId={company_id}",
         )
+    with contextlib.suppress(Exception):
+        await write_activity_event(
+            session=session,
+            event_type="company_photo.uploaded",
+            actor_user_id=actor,
+            company_id=company_id,
+            payload=f"photo_id={photo.id}",
+        )
     photos = await service.list(company_id)
     return CompanyPagePhotosResponse(
         items=[to_photo_data(p) for p in photos],
-        meta={"total": len(photos)},
+        meta=await _photos_meta(service, company_id, photos),
     )
 
 
@@ -314,7 +344,7 @@ async def update_company_photo(
     photos = await service.list(company_id)
     return CompanyPagePhotosResponse(
         items=[to_photo_data(p) for p in photos],
-        meta={"total": len(photos)},
+        meta=await _photos_meta(service, company_id, photos),
     )
 
 
@@ -345,7 +375,7 @@ async def delete_company_photo(
     photos = await service.list(company_id)
     return CompanyPagePhotosResponse(
         items=[to_photo_data(p) for p in photos],
-        meta={"total": len(photos)},
+        meta=await _photos_meta(service, company_id, photos),
     )
 
 
@@ -369,7 +399,7 @@ async def reorder_company_photos(
     )
     return CompanyPagePhotosResponse(
         items=[to_photo_data(p) for p in photos],
-        meta={"total": len(photos)},
+        meta=await _photos_meta(service, company_id, photos),
     )
 
 
@@ -391,5 +421,5 @@ async def set_primary_company_photo(
     )
     return CompanyPagePhotosResponse(
         items=[to_photo_data(p) for p in photos],
-        meta={"total": len(photos)},
+        meta=await _photos_meta(service, company_id, photos),
     )

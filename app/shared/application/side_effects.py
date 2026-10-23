@@ -81,6 +81,9 @@ async def notify_company_members(
     notif_type: str = "inquiry_received",
     related_entity_id=None,
     exclude_user_id=None,
+    email_body: str | None = None,
+    reply_to: str | None = None,
+    fallback_email: str | None = None,
 ):
     try:
         if not company_id:
@@ -119,17 +122,54 @@ async def notify_company_members(
                 )
             )
 
-        # Best-effort: posle aj transakcny email vsetkym clenom.
+        # Best-effort: posle aj transakcny email vsetkym clenom (+ fallback adresa).
         await _send_transactional_emails_to_members(
             session=session,
             company_id=company_id,
             title=title,
-            message=message[:2000],
+            message=(email_body or message)[:2000],
             related_entity_id=related_entity_id,
             exclude_user_id=exclude_user_id,
+            reply_to=reply_to,
+            fallback_email=fallback_email,
         )
     except Exception:
         logger.exception("notify_company_members failed")
+
+
+async def notify_platform_admins(
+    *,
+    subject: str,
+    body: str,
+    reply_to: str | None = None,
+) -> int:
+    """Posle email vsetkym platform adminom (best-effort). Vrati pocet pokusov."""
+    try:
+        from app.core.config import settings
+        from app.shared.infrastructure.email.transactional import (
+            send_transactional_email,
+        )
+
+        raw = getattr(settings, "PLATFORM_ADMIN_EMAILS", "") or ""
+        recipients = []
+        for part in raw.replace(";", ",").split(","):
+            email = part.strip()
+            if email and "@" in email and email.lower() not in {e.lower() for e in recipients}:
+                recipients.append(email)
+        for email in recipients:
+            try:
+                await send_transactional_email(
+                    to=email,
+                    subject=subject,
+                    body=body[:4000],
+                    reply_to=reply_to,
+                )
+            except Exception:
+                logger.exception("admin notification email to %s failed", email)
+        return len(recipients)
+    except Exception:
+        logger.exception("notify_platform_admins failed")
+        return 0
 
 
 async def _send_transactional_emails_to_members(
@@ -140,8 +180,10 @@ async def _send_transactional_emails_to_members(
     message: str,
     related_entity_id=None,
     exclude_user_id=None,
+    reply_to: str | None = None,
+    fallback_email: str | None = None,
 ) -> None:
-    """Posle email vsetkym clenom firmy okrem excluded usera.
+    """Posle email vsetkym clenom firmy okrem excluded usera + fallback adrese.
 
     Best-effort: nikdy nezlyha, nikdy nezablokuje volajuceho.
     Nikdy neposle na prazdny email.
@@ -159,8 +201,6 @@ async def _send_transactional_emails_to_members(
             return
 
         members = await SqlAlchemyCompanyMembershipRepository(session).list_by_company_id(cid)
-        if not members:
-            return
 
         excl = str(exclude_user_id) if exclude_user_id else None
         user_ids = []
@@ -172,32 +212,50 @@ async def _send_transactional_emails_to_members(
                 continue
             user_ids.append(uid)
 
-        if not user_ids:
-            return
-
-        rows = (
-            (
-                await session.execute(
-                    select(UserModel).where(UserModel.id.in_([str(u) for u in user_ids]))
+        rows = []
+        if user_ids:
+            rows = (
+                (
+                    await session.execute(
+                        select(UserModel).where(UserModel.id.in_([str(u) for u in user_ids]))
+                    )
                 )
+                .scalars()
+                .all()
             )
-            .scalars()
-            .all()
-        )
+
+        recipients: list[str] = []
+        for user in rows:
+            email = (user.email or "").strip()
+            if email and "@" in email:
+                recipients.append(email)
+        fallback = (fallback_email or "").strip()
+        if fallback and "@" in fallback:
+            recipients.append(fallback)
+
+        deduped: list[str] = []
+        seen: set[str] = set()
+        for email in recipients:
+            key = email.lower()
+            if key in seen:
+                continue
+            seen.add(key)
+            deduped.append(email)
+
+        if not deduped:
+            return
 
         from app.shared.infrastructure.email.transactional import (
             send_transactional_email,
         )
 
-        for user in rows:
-            email = (user.email or "").strip()
-            if not email or "@" not in email:
-                continue
+        for email in deduped:
             try:
                 await send_transactional_email(
                     to=email,
                     subject=title,
                     body=message,
+                    reply_to=reply_to,
                 )
             except Exception:
                 logger.exception("transactional email to %s failed (company_id=%s)", email, cid)

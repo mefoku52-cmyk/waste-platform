@@ -8,6 +8,7 @@ import { useT } from '@/lib/i18n/context';
 
 import {
   useAddCompanyPhoto,
+  useCompanyPhotoQuota,
   useCompanyPhotos,
   useDeleteCompanyPhoto,
   useReorderCompanyPhotos,
@@ -27,6 +28,7 @@ type Props = { companyId: string };
 export function PhotoGalleryManager({ companyId }: Props) {
   const { t } = useT();
   const photosQuery = useCompanyPhotos(companyId);
+  const quotaQuery = useCompanyPhotoQuota(companyId);
   const add = useAddCompanyPhoto(companyId);
   const update = useUpdateCompanyPhoto(companyId);
   const remove = useDeleteCompanyPhoto(companyId);
@@ -38,7 +40,11 @@ export function PhotoGalleryManager({ companyId }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   const photos = photosQuery.data ?? [];
-  const full = photos.length >= MAX_PHOTOS;
+  const quota = quotaQuery.data;
+  const uploadedThisYear = quota?.uploadedThisYear ?? photos.length;
+  const quotaPerYear = quota?.quotaPerYear ?? MAX_PHOTOS;
+  const remaining = quota?.remainingThisYear ?? Math.max(0, quotaPerYear - uploadedThisYear);
+  const full = remaining <= 0;
 
   async function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -74,12 +80,12 @@ export function PhotoGalleryManager({ companyId }: Props) {
           {t('companyPage.gallery.title')}
         </p>
         <span className="text-xs" style={{ color: MUTED }}>
-          {photos.length} / {MAX_PHOTOS}
+          {uploadedThisYear} / {quotaPerYear} tento rok · zostáva {remaining}
         </span>
       </div>
 
       <p className="mb-3 text-xs" style={{ color: MUTED }}>
-        {t('companyPage.gallery.hint')}
+        {t('companyPage.gallery.hint')} Kvóta sa obnovuje každý kalendárny rok.
       </p>
 
       {error ? (

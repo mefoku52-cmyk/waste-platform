@@ -126,6 +126,27 @@ class CompanyPhotoRepositoryImpl(CompanyPhotoRepository):
         )
         return int((await self.session.execute(stmt)).scalar_one())
 
+    async def count_created_since(self, company_id, since) -> int:
+        stmt = (
+            select(func.count())
+            .select_from(CompanyPhotoModel)
+            .where(CompanyPhotoModel.company_id == str(_as_uuid(company_id)))
+            .where(CompanyPhotoModel.created_at >= since)
+        )
+        return int((await self.session.execute(stmt)).scalar_one())
+
+    async def count_uploaded_since(self, company_id, since) -> int:
+        from app.modules.events.infrastructure.models import ActivityEventModel
+
+        stmt = (
+            select(func.count())
+            .select_from(ActivityEventModel)
+            .where(ActivityEventModel.company_id == str(_as_uuid(company_id)))
+            .where(ActivityEventModel.event_type == "company_photo.uploaded")
+            .where(ActivityEventModel.created_at >= since)
+        )
+        return int((await self.session.execute(stmt)).scalar_one())
+
     async def create(self, photo: CompanyPhoto) -> CompanyPhoto:
         model = photo_to_model(photo)
         self.session.add(model)

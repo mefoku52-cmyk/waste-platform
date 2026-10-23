@@ -175,9 +175,12 @@ def _current_user(company_ids, is_admin=False):
     class User:
         pass
 
-    u = User()
-    u.memberships = [{"companyId": cid} for cid in company_ids]
-    u.is_platform_admin = is_admin
+    from types import SimpleNamespace
+
+    u = SimpleNamespace(
+        memberships=[{"companyId": cid} for cid in company_ids],
+        is_platform_admin=is_admin,
+    )
     return u
 
 
