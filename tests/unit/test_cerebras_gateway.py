@@ -18,7 +18,7 @@ from app.modules.agent_platform.infrastructure.ai.model_request import (
     ModelRequest,
 )
 
-_MODEL = "llama-3.3-70b"
+_MODEL = "gpt-oss-120b"
 
 
 class FakeResponse:
@@ -124,7 +124,7 @@ async def test_env_model_missing_uses_default_model(monkeypatch):
     await CerebrasModelGateway().generate(make_request(model="openai/gpt-oss-120b"))
 
     sent = json.loads(calls[0].data.decode("utf-8"))
-    assert sent["model"] == _MODEL  # default llama-3.3-70b, nie request.model
+    assert sent["model"] == _MODEL  # default gpt-oss-120b, nie request.model
 
 
 @pytest.mark.asyncio
