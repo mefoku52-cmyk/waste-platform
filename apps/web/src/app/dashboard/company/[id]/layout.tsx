@@ -12,6 +12,7 @@ const menuItems = [
   { href: "/inquiries", label: "✉️ Dopyty" },
   { href: "/members", label: "👥 Členovia" },
   { href: "/photos", label: "📸 Fotky" },
+  { href: "/reviews", label: "⭐ Recenzie" },
   { href: "/settings", label: "⚙️ Nastavenia" },
 ];
 
