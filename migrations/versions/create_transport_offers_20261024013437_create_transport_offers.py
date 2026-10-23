@@ -1,6 +1,6 @@
 """create transport_offers table
 
-Revision ID: create_transport_offers_20261024013437
+Revision ID: transport_offers_01
 Revises: add_listing_type_20261024013009
 Create Date: 2026-10-24T01:34:37.379513
 
@@ -11,7 +11,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "create_transport_offers_20261024013437"
+revision = "transport_offers_01"
 down_revision = "add_listing_type_20261024013009"
 branch_labels = None
 depends_on = None
