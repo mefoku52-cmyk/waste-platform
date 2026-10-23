@@ -447,6 +447,17 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                     {m.text}
                   </div>
                 ) : null}
+                {m.role === 'ai' && m.text ? (
+                  <button
+                    type="button"
+                    onClick={() => speakText(m.text)}
+                    className="ml-1 flex items-center gap-1 rounded-full px-2 py-1 text-xs transition hover:scale-105"
+                    style={{ background: 'rgba(201,168,76,0.15)', color: '#c9a84c' }}
+                    title="Prečítať nahlas"
+                  >
+                    🔊 Prečítať nahlas
+                  </button>
+                ) : null}
                 {m.role === 'ai' && m.cards && m.cards.length > 0 ? (
                   <AiCardList cards={m.cards} />
                 ) : null}
