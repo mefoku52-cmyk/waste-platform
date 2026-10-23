@@ -145,6 +145,7 @@ def test_webhook_rejects_bad_signature(client, monkeypatch):
 def test_webhook_promotes_listing_on_completed(client, monkeypatch):
     _set_stripe_keys(monkeypatch)
     fake_session = MagicMock()
+    mock_svc = AsyncMock()
 
     with (
         patch(
@@ -164,9 +165,9 @@ def test_webhook_promotes_listing_on_completed(client, monkeypatch):
             },
         ),
         patch(
-            "app.modules.listings.presentation.dependencies.get_listings_service",
-            return_value=AsyncMock(),
-        ) as get_svc,
+            "app.modules.listings.application.services.ListingsService",
+            return_value=mock_svc,
+        ),
         patch(
             "app.modules.billing.presentation.router.get_db_session",
             return_value=fake_session,
@@ -180,9 +181,8 @@ def test_webhook_promotes_listing_on_completed(client, monkeypatch):
 
     assert r.status_code == 200, r.text
     assert r.json() == {"received": True}
-    get_svc.assert_called_once()
-    svc = get_svc.return_value
-    svc.promote.assert_awaited_once()
+    # Overíme, že promote metóda bola zavolaná
+    mock_svc.promote.assert_awaited_once()
 
 
 def test_webhook_other_event_types_are_ignored(client, monkeypatch):
