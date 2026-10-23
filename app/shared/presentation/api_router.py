@@ -42,6 +42,7 @@ from app.modules.notifications.presentation.telegram_router import (
 )
 from app.modules.prediction.presentation.router import router as prediction_router
 from app.modules.recommendations.presentation.router import router as recommendations_router
+from app.modules.transport.presentation.router import router as transport_router
 from app.modules.uploads.presentation.router import router as uploads_router
 from app.modules.users.presentation.router import router as users_router
 from app.shared.presentation.metrics_router import router as metrics_router
@@ -96,3 +97,4 @@ api_router.include_router(agent_platform_security_router)
 api_router.include_router(agent_platform_approvals_router)
 api_router.include_router(agent_platform_alerts_router)
 api_router.include_router(agent_platform_audit_router)
+api_router.include_router(transport_router)
