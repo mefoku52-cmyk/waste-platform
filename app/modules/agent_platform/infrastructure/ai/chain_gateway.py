@@ -28,7 +28,7 @@ from app.modules.agent_platform.infrastructure.ai.model_response import ModelRes
 logger = logging.getLogger(__name__)
 
 # Jediné miesto, kde je definované poradie providerov pre chat agenta.
-PROVIDER_ORDER: tuple[str, ...] = ("cerebras", "groq")
+PROVIDER_ORDER: tuple[str, ...] = ("cerebras",)
 
 _DEFAULT_PROVIDER_TIMEOUT_S = 20.0
 _DEFAULT_TOTAL_TIMEOUT_S = 45.0
