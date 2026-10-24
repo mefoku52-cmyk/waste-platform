@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { config } from "@/lib/config";
 import Link from "next/link";
 import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
@@ -37,7 +38,15 @@ async function fetchTransportOffers(): Promise<TransportOffer[]> {
 
 export default function CarriersPage() {
   const { data: me } = useCurrentUser();
+  const [companyId, setCompanyId] = useState<string | null>(null);
   const isLoggedIn = Boolean(me && (me as any).id);
+
+  // Zistíme, akú firmu má používateľ (prvú z jeho memberships)
+  useEffect(() => {
+    if (me && (me as any).memberships && (me as any).memberships.length > 0) {
+      setCompanyId((me as any).memberships[0].companyId);
+    }
+  }, [me]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["transport-offers"],
@@ -64,7 +73,13 @@ export default function CarriersPage() {
         </p>
         {isLoggedIn && (
           <Link
-            href="/dashboard/company/transport"
+            href={companyId ? `/dashboard/company/${companyId}/transport` : "#"}
+            onClick={(e) => {
+              if (!companyId) {
+                e.preventDefault();
+                alert("Najprv si musíte vytvoriť firmu v sekcii 'Pridať firmu'.");
+              }
+            }}
             className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
             style={{ background: GOLD, color: "#0b0b0b" }}
           >
