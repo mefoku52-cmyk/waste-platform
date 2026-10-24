@@ -73,15 +73,10 @@ export default function CarriersPage() {
         </p>
         {isLoggedIn && (
           <Link
-            href={companyId ? `/dashboard/company/${companyId}/transport` : "#"}
-            onClick={(e) => {
-              if (!companyId) {
-                e.preventDefault();
-                alert("Najprv si musíte vytvoriť firmu v sekcii 'Pridať firmu'.");
-              }
-            }}
+            href="/dashboard/companies/new"
             className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
             style={{ background: GOLD, color: "#0b0b0b" }}
+            title="Najprv si vytvorte firmu"
           >
             + Pridať dopravnú službu
           </Link>
