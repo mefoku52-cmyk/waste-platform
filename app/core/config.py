@@ -183,7 +183,7 @@ class Settings(BaseSettings):
     RESEND_REPLY_TO: str = "trc-cmep@gmail.com"
 
     # --- Lead outreach limits ---
-    LEAD_OUTREACH_DAILY_LIMIT: int = 200
+    LEAD_OUTREACH_DAILY_LIMIT: int = 300
     LEAD_OUTREACH_ENABLED: bool = False
 
     # --- Telegram ---
