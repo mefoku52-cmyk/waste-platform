@@ -34,6 +34,13 @@ export function DashboardHeader() {
 
         {/* Pravá strana: Admin (len pre admina) + jazyk + odhlásiť */}
         <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/dashboard/company/transport"
+            className="rounded-full border px-3 py-1.5 text-xs font-semibold"
+            style={{ borderColor: GOLD, color: GOLD_BRIGHT }}
+          >
+            🚚 Ponuka dopravy
+          </Link>
           {isAdmin && (
             <Link
               href="/dashboard/admin"
