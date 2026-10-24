@@ -250,6 +250,15 @@ export default function AdminPage() {
               {t('admin.firmsHintPrefix')}<strong style={{ color: GOLD_BRIGHT }}>{t('admin.verify')}</strong>{t('admin.firmsHintMiddle')}<strong style={{ color: GOLD_BRIGHT }}>{t('admin.reject')}</strong>{t('admin.firmsHintSuffix')}
             </p>
             <Link
+              href="/dashboard/admin/analytics"
+              className="flex flex-col gap-2 rounded-2xl border p-5 transition hover:border-[#c9a84c]"
+              style={{ borderColor: "rgba(201,168,76,0.25)" }}
+            >
+              <span className="text-2xl">📊</span>
+              <span className="font-semibold" style={{ color: "#e8d48b" }}>Analytics</span>
+              <span className="text-xs" style={{ color: "#9a8f7c" }}>Návštevnosť a štatistiky</span>
+            </Link>
+            <Link
               href="/dashboard/admin/companies"
               className="mb-4 inline-block rounded-full border px-4 py-2 text-sm"
               style={{ borderColor: 'rgba(201,168,76,0.4)', color: GOLD }}
