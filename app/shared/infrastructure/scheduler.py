@@ -190,7 +190,14 @@ def start_scheduler() -> AsyncIOScheduler | None:
             misfire_grace_time=3600,
         )
     if outreach_on:
-        logger.info("daily_lead_discover 07:15 vypnuty — nahrada je daily_lead_outreach 09:00")
+        logger.info("daily_lead_outreach 09:00 zapnuty")
+        scheduler.add_job(
+            _daily_lead_outreach_wrapper,
+            CronTrigger(hour=9, minute=0),
+            id="daily_lead_outreach",
+            replace_existing=True,
+            misfire_grace_time=3600,
+        )
     if cleanup_on:
         scheduler.add_job(
             _cleanup_pending_users_wrapper,
