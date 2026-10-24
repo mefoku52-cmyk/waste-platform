@@ -7,13 +7,13 @@ const GOLD = "#c9a84c";
 const MUTED = "#9a8f7c";
 
 const menuItems = [
-  { href: "", label: "📊 Prehľad" },
-  { href: "/listings", label: "📦 Ponuky" },
-  { href: "/inquiries", label: "✉️ Dopyty" },
-  { href: "/members", label: "👥 Členovia" },
-  { href: "/photos", label: "📸 Fotky" },
-  { href: "/reviews", label: "⭐ Recenzie" },
-  { href: "/settings", label: "⚙️ Nastavenia" },
+  { href: "", label: "Prehľad", img: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=100&q=80" },
+  { href: "/listings", label: "Ponuky", img: "https://images.unsplash.com/photo-1553413077-190dd305871c?w=100&q=80" },
+  { href: "/inquiries", label: "Dopyty", img: "https://images.unsplash.com/photo-1521791136064-7986c2920216?w=100&q=80" },
+  { href: "/members", label: "Členovia", img: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=100&q=80" },
+  { href: "/photos", label: "Fotky", img: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=100&q=80" },
+  { href: "/reviews", label: "Recenzie", img: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=100&q=80" },
+  { href: "/settings", label: "Nastavenia", img: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=100&q=80" },
 ];
 
 export default function CompanyDashboardLayout({
@@ -46,12 +46,17 @@ export default function CompanyDashboardLayout({
               <Link
                 key={item.href}
                 href={href}
-                className="block rounded-lg px-3 py-2 text-sm transition"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition"
                 style={{
                   background: isActive ? "rgba(201,168,76,0.15)" : "transparent",
                   color: isActive ? GOLD : MUTED,
                 }}
               >
+                <img 
+                  src={item.img} 
+                  alt={item.label} 
+                  className="h-6 w-6 rounded-full object-cover border border-[rgba(201,168,76,0.3)]" 
+                />
                 {item.label}
               </Link>
             );
