@@ -3,7 +3,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Index, String, Text
+from sqlalchemy import Column, DateTime, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.shared.infrastructure.db.base import Base
@@ -36,7 +36,6 @@ class OutreachCandidateModel(Base):
     )
     approved_at = Column(DateTime, nullable=True)
     sent_at = Column(DateTime, nullable=True)
-    is_blacklisted = Column(Boolean, nullable=False, default=False, server_default="false")
 
     __table_args__ = (
         Index("ix_outreach_candidates_status", "status"),
