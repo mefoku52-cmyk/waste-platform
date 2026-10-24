@@ -325,8 +325,8 @@ async def send_outreach_email(
     )
 
     if not result.ok:
-        # Fallback na SMTP len ak Resend nie je nakonfigurovany vobec
-        if "nie je nakonfigurovany" in result.message:
+        # Fallback na SMTP VŽDY, ak Resend zlyhá (napr. 403 - doména nie je overená)
+        if True:
             ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
             if ok:
                 await write_audit(
