@@ -2,6 +2,8 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { config } from "@/lib/config";
+import Link from "next/link";
+import { useCurrentUser } from "@/features/auth/hooks/use-current-user";
 
 const GOLD = "#c9a84c";
 const MUTED = "#9a8f7c";
@@ -19,6 +21,7 @@ type TransportOffer = {
   hasRefrigeration: boolean;
   hasAdr: boolean;
   hasHydraulicArm: boolean;
+  hazardousTypes: string[];
   createdAt: string;
 };
 
@@ -33,6 +36,9 @@ async function fetchTransportOffers(): Promise<TransportOffer[]> {
 }
 
 export default function CarriersPage() {
+  const { data: me } = useCurrentUser();
+  const isLoggedIn = Boolean(me && (me as any).id);
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["transport-offers"],
     queryFn: fetchTransportOffers,
@@ -45,9 +51,20 @@ export default function CarriersPage() {
       <h1 className="mb-2 font-serif text-3xl" style={{ color: GOLD }}>
         Prepravcovia
       </h1>
-      <p className="mb-6 text-sm" style={{ color: MUTED }}>
-        Aktuálne ponuky dopravy a logistiky od overených firiem.
-      </p>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm" style={{ color: MUTED }}>
+          Aktuálne ponuky dopravy a logistiky od overených firiem.
+        </p>
+        {isLoggedIn && (
+          <Link
+            href="/dashboard/company/transport"
+            className="rounded-full px-4 py-2 text-sm font-semibold transition hover:opacity-90"
+            style={{ background: GOLD, color: "#0b0b0b" }}
+          >
+            + Pridať dopravnú službu
+          </Link>
+        )}
+      </div>
 
       {isLoading ? (
         <p style={{ color: MUTED }}>Načítavam ponuky dopravy...</p>
@@ -97,6 +114,23 @@ export default function CarriersPage() {
                   <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
                     Chladenie
                   </span>
+                )}
+                {offer.hazardousTypes && offer.hazardousTypes.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    <span className="text-xs font-semibold" style={{ color: GOLD }}>Nebezpečný odpad:</span>
+                    {offer.hazardousTypes.map((h) => (
+                      <span key={h} className="rounded-full px-2 py-0.5 text-xs" style={{ background: "rgba(255,0,0,0.15)", color: "#ff6b6b" }}>
+                        {h === "biohazard" ? "Biohazard" :
+                         h === "hospital_waste" ? "Nemocničný odpad" :
+                         h === "acids" ? "Kyseliny" :
+                         h === "chemicals" ? "Chemikálie" :
+                         h === "infectious" ? "Infekčný materiál" :
+                         h === "radioactive" ? "Rádioaktívny" :
+                         h === "flammable" ? "Horľaviny" :
+                         h === "toxic" ? "Toxické" : h}
+                      </span>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>
