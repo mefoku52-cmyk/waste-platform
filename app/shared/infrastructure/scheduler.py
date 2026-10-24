@@ -167,6 +167,21 @@ async def _daily_lead_outreach_wrapper() -> None:
             total_found,
             (time.time() - start_time) / 60,
         )
+        # Automatické odoslanie draftov
+        logger.info("Spúšťam automatické odosielanie draftov...")
+        from app.modules.lead_finder.presentation.router import auto_send_batch
+
+        async with async_session_factory() as session:
+            try:
+                result = await auto_send_batch(
+                    payload={"limit": 30, "dry_run": False},
+                    session=session,
+                    current_user=None,
+                )
+                logger.info("Auto-send výsledok: %s", result)
+            except Exception as exc:
+                logger.exception("Auto-send zlyhal: %s", exc)
+                _notify_scheduler_failure("auto_send_batch", exc)
     except Exception as exc:
         logger.exception("Daily lead outreach zlyhal")
         _notify_scheduler_failure("daily_lead_outreach", exc)
