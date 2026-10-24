@@ -1,3 +1,4 @@
+import json
 import uuid
 
 from fastapi import APIRouter, Depends, Query
@@ -39,6 +40,7 @@ async def create_transport_offer(
         has_refrigeration=payload.hasRefrigeration,
         has_adr=payload.hasAdr,
         has_hydraulic_arm=payload.hasHydraulicArm,
+        hazardous_types=json.dumps(payload.hazardousTypes),
         status="active",
         created_at=now,
         updated_at=now,
@@ -61,6 +63,7 @@ async def create_transport_offer(
         hasRefrigeration=offer.has_refrigeration,
         hasAdr=offer.has_adr,
         hasHydraulicArm=offer.has_hydraulic_arm,
+        hazardousTypes=json.loads(offer.hazardous_types) if offer.hazardous_types else [],
         status=offer.status,
         createdAt=offer.created_at,
     )
