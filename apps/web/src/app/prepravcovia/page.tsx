@@ -82,9 +82,10 @@ export default function CarriersPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {offers.map((offer) => (
-            <div
+            <Link
               key={offer.id}
-              className="rounded-xl border p-4 transition hover:border-[#c9a84c]"
+              href={`/prepravcovia/${offer.id}`}
+              className="block rounded-xl border p-4 transition hover:border-[#c9a84c]"
               style={{ borderColor: "rgba(201,168,76,0.25)" }}
             >
               <h2 className="font-semibold" style={{ color: GOLD }}>
@@ -140,7 +141,7 @@ export default function CarriersPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
