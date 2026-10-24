@@ -31,6 +31,7 @@ class TransportOffer(Base):
     has_refrigeration = Column(Boolean, nullable=False, default=False)
     has_adr = Column(Boolean, nullable=False, default=False)
     has_hydraulic_arm = Column(Boolean, nullable=False, default=False)
+    hazardous_types = Column(Text, nullable=True)  # JSON array typov nebezpečného odpadu
 
     # Stav a audit
     status = Column(String(32), nullable=False, default="active")  # active, inactive

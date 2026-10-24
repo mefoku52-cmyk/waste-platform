@@ -1,47 +1,44 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { config } from "@/lib/config";
 
 const GOLD = "#c9a84c";
 const MUTED = "#9a8f7c";
 
-type Company = {
+type TransportOffer = {
   id: string;
-  tradingName?: string | null;
-  legalName?: string | null;
-  city?: string | null;
-  logisticsCapability?: boolean | null;
+  title: string;
+  description?: string | null;
+  transportFrom: string;
+  transportTo?: string | null;
+  vehicleType: string;
+  capacityTons?: number | null;
+  pricePerKm?: number | null;
+  currency: string;
+  hasRefrigeration: boolean;
+  hasAdr: boolean;
+  hasHydraulicArm: boolean;
+  createdAt: string;
 };
 
-type CompaniesResponse = {
-  items: Company[];
-  total: number;
-};
-
-async function fetchCarriers(): Promise<CompaniesResponse> {
-  const token = localStorage.getItem("accessToken");
-  const res = await fetch(`${config.apiBaseUrl}/companies?logisticsCapability=true&pageSize=50`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
+async function fetchTransportOffers(): Promise<TransportOffer[]> {
+  const res = await fetch(`${config.apiBaseUrl}/transport/offers`, {
+    headers: { "Content-Type": "application/json" },
   });
-  const body = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(typeof body.detail === "string" ? body.detail : `HTTP ${res.status}`);
+    throw new Error(`HTTP ${res.status}`);
   }
-  return body as CompaniesResponse;
+  return res.json();
 }
 
 export default function CarriersPage() {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["carriers"],
-    queryFn: fetchCarriers,
+    queryKey: ["transport-offers"],
+    queryFn: fetchTransportOffers,
   });
 
-  const items = data?.items || [];
+  const offers = data || [];
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
@@ -49,31 +46,60 @@ export default function CarriersPage() {
         Prepravcovia
       </h1>
       <p className="mb-6 text-sm" style={{ color: MUTED }}>
-        Firmy, ktoré poskytujú dopravu, skladovanie a logistické služby.
+        Aktuálne ponuky dopravy a logistiky od overených firiem.
       </p>
 
       {isLoading ? (
-        <p style={{ color: MUTED }}>Načítavam...</p>
+        <p style={{ color: MUTED }}>Načítavam ponuky dopravy...</p>
       ) : error ? (
-        <p style={{ color: "red" }}>{error.message}</p>
-      ) : items.length === 0 ? (
-        <p style={{ color: MUTED }}>Zatiaľ žiadni prepravcovia.</p>
+        <p style={{ color: "red" }}>Chyba pri načítaní: {error.message}</p>
+      ) : offers.length === 0 ? (
+        <p style={{ color: MUTED }}>Zatiaľ žiadne ponuky dopravy.</p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
-          {items.map((c) => (
-            <Link
-              key={c.id}
-              href={`/dashboard/companies/${c.id}`}
-              className="block rounded-xl border p-4 transition hover:border-[#c9a84c]"
+          {offers.map((offer) => (
+            <div
+              key={offer.id}
+              className="rounded-xl border p-4 transition hover:border-[#c9a84c]"
               style={{ borderColor: "rgba(201,168,76,0.25)" }}
             >
               <h2 className="font-semibold" style={{ color: GOLD }}>
-                {c.tradingName || c.legalName || "Firma"}
+                {offer.title}
               </h2>
-              <p className="text-sm" style={{ color: MUTED }}>
-                {c.city || "—"}
+              <p className="mt-1 text-sm" style={{ color: MUTED }}>
+                {offer.transportFrom} → {offer.transportTo || "kamkoľvek"}
               </p>
-            </Link>
+              <div className="mt-2 flex flex-wrap gap-2 text-xs">
+                <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
+                  {offer.vehicleType}
+                </span>
+                {offer.capacityTons && (
+                  <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
+                    {offer.capacityTons} t
+                  </span>
+                )}
+                {offer.pricePerKm && (
+                  <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
+                    {offer.pricePerKm} {offer.currency}/km
+                  </span>
+                )}
+                {offer.hasAdr && (
+                  <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
+                    ADR
+                  </span>
+                )}
+                {offer.hasHydraulicArm && (
+                  <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
+                    Hydraulická ruka
+                  </span>
+                )}
+                {offer.hasRefrigeration && (
+                  <span className="rounded-full px-2 py-1" style={{ background: "rgba(201,168,76,0.15)", color: GOLD }}>
+                    Chladenie
+                  </span>
+                )}
+              </div>
+            </div>
           ))}
         </div>
       )}

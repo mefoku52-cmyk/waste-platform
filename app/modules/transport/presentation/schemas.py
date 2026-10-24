@@ -16,6 +16,7 @@ class TransportOfferCreateRequest(BaseModel):
     hasRefrigeration: bool = False
     hasAdr: bool = False
     hasHydraulicArm: bool = False
+    hazardousTypes: list[str] = []
     companyId: UUID
 
 
@@ -32,5 +33,6 @@ class TransportOfferResponse(BaseModel):
     hasRefrigeration: bool
     hasAdr: bool
     hasHydraulicArm: bool
+    hazardousTypes: list[str] = []
     status: str
     createdAt: datetime
