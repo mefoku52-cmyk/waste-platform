@@ -117,7 +117,7 @@ async def _daily_lead_outreach_wrapper() -> None:
     try:
         async with async_session_factory() as session:
             # 1. Najdi 30 novych firiem z RPO + draftni
-            result = await run_daily_discover(session, limit=30, draft=True)
+            result = await run_daily_discover(session, limit=50, draft=True)
             logger.info(
                 "Daily lead discover: %s",
                 {
@@ -130,7 +130,7 @@ async def _daily_lead_outreach_wrapper() -> None:
 
         # 2. Backfill emaily pre starych bez emailu (5 firiem)
         async with async_session_factory() as session:
-            bf = await backfill_emails(session, limit=5)
+            bf = await backfill_emails(session, limit=20)
             logger.info(
                 "Daily backfill emails: %s",
                 {
