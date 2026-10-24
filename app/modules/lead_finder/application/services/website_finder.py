@@ -237,56 +237,52 @@ class WebsiteFinder:
 
     def _search(self, query: str) -> list[dict]:
         """
-        Search DuckDuckGo for possible official company websites.
-
-        This method only discovers candidates. It does NOT decide whether
-        a result is the company's official website. That decision belongs
-        exclusively to find_website() direct verification.
-
-        Synchronous by design — callers run it via asyncio.to_thread.
+        Search Seznam.cz for possible official company websites.
+        Seznam je benevolentnejší ako DuckDuckGo a funguje z dátových centier.
         """
-        global _ddg_disabled
+        from urllib.parse import quote
 
-        # Circuit breaker: production (Render/AWS datacenter IP) is blocked by
-        # DuckDuckGo. Once that is established, stop paying the timeout cost.
-        if _ddg_disabled:
-            logger.debug("DDG disabled (datacenter IP block), skipping query: %s", query)
-            return []
+        import httpx
+        from bs4 import BeautifulSoup
 
-        DDGS = None
-        for module_name in ("duckduckgo_search",):
-            try:
-                module = importlib.import_module(module_name)
-                DDGS = getattr(module, "DDGS", None)
-                if DDGS is not None:
-                    break
-            except ImportError:
-                continue
-
-        if DDGS is None:
-            logger.error("duckduckgo_search is not installed")
-            return []
-
+        url = f"https://search.seznam.cz/?q={quote(query)}"
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
         try:
-            with DDGS(timeout=self._timeout) as ddgs:
-                results = list(ddgs.text(query, max_results=10))
+            with httpx.Client(timeout=10.0, follow_redirects=True) as client:
+                resp = client.get(url, headers=headers)
+                resp.raise_for_status()
+                html = resp.text
+
+                soup = BeautifulSoup(html, "html.parser")
+                results = []
+                # Seznam má odkazy priamo v <a> tagoch
+                for a in soup.select("a"):
+                    href = a.get("href", "")
+                    if (
+                        href
+                        and isinstance(href, str)
+                        and href.startswith("http")
+                        and "seznam" not in href
+                    ):
+                        title = a.get_text(strip=True)
+                        if title:  # len ak má text
+                            results.append({"href": href, "title": title[:100]})
+
+                # Deduplikácia (Seznam vracia duplicitné odkazy)
+                seen = set()
+                unique_results = []
+                for r in results:
+                    if r["href"] not in seen:
+                        seen.add(r["href"])
+                        unique_results.append(r)
+
+                logger.info("Seznam search: query=%r results=%d", query, len(unique_results))
+                return unique_results
         except Exception as exc:
-            _ddg_disabled = True
-            logger.warning(
-                "DuckDuckGo unreachable (%s: %s) — disabling DDG for this "
-                "process, website discovery falls back to directory only",
-                type(exc).__name__,
-                exc,
-            )
+            logger.warning("Seznam search failed: %s", exc)
             return []
-
-        logger.info(
-            "DuckDuckGo search: query=%r results=%d",
-            query,
-            len(results),
-        )
-
-        return results
 
     async def find_website(
         self,
