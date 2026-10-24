@@ -51,6 +51,13 @@ export default function CarriersPage() {
       <h1 className="mb-2 font-serif text-3xl" style={{ color: GOLD }}>
         Prepravcovia
       </h1>
+      <div className="mb-6 h-48 w-full overflow-hidden rounded-2xl border border-[rgba(201,168,76,0.25)]">
+        <img 
+          src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1200&q=80" 
+          alt="Prepravcovia" 
+          className="h-full w-full object-cover" 
+        />
+      </div>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm" style={{ color: MUTED }}>
           Aktuálne ponuky dopravy a logistiky od overených firiem.
