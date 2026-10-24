@@ -18,7 +18,7 @@ export default function AdminAnalyticsPage() {
     queryKey: ["admin-analytics"],
     queryFn: async () => {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`${config.apiBaseUrl}/admin/analytics/stats`, {
+      const res = await fetch(`${config.apiBaseUrl}/analytics/admin/stats`, {
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
