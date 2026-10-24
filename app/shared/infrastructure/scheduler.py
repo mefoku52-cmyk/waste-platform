@@ -102,10 +102,13 @@ async def _cleanup_pending_users_wrapper() -> None:
 
 
 async def _daily_lead_outreach_wrapper() -> None:
-    """Daily outreach — najdi 35 novych firiem + draftni emaily.
+    """Daily outreach — spracuje až 300 firiem v dávkach po 50.
 
-    Spusti sa denne o 9:00 Europe/Bratislava. 30 z RPO + 5 z backfillu.
+    Spusti sa denne o 9:00 Europe/Bratislava. Beží max 70 minút (do 10:10).
     """
+    import asyncio
+    import time
+
     from app.modules.lead_finder.application.services.backfill_emails import (
         backfill_emails,
     )
@@ -114,30 +117,56 @@ async def _daily_lead_outreach_wrapper() -> None:
     )
     from app.shared.infrastructure.db.session import async_session_factory
 
-    try:
-        async with async_session_factory() as session:
-            # 1. Najdi 30 novych firiem z RPO + draftni
-            result = await run_daily_discover(session, limit=50, draft=True)
-            logger.info(
-                "Daily lead discover: %s",
-                {
-                    "picked": (result or {}).get("picked"),
-                    "created": (result or {}).get("created"),
-                    "drafted": (result or {}).get("drafted"),
-                    "emails_found": (result or {}).get("emails_found"),
-                },
-            )
+    start_time = time.time()
+    max_duration = 70 * 60  # 70 minút (do 10:10)
+    total_found = 0
+    total_processed = 0
 
-        # 2. Backfill emaily pre starych bez emailu (5 firiem)
-        async with async_session_factory() as session:
-            bf = await backfill_emails(session, limit=20)
-            logger.info(
-                "Daily backfill emails: %s",
-                {
-                    "processed": bf.get("processed"),
-                    "found": bf.get("found"),
-                },
-            )
+    try:
+        # Cyklus: 6 dávok po 50 firiem (spolu 300)
+        for batch_num in range(6):
+            # Skontrolujeme, či sme ešte v časovom limite
+            if time.time() - start_time > max_duration:
+                logger.info("Dosiahnutý časový limit 70 minút. Zastavujem.")
+                break
+
+            async with async_session_factory() as session:
+                # 1. Nájdi 50 nových firiem z RPO + draftni
+                result = await run_daily_discover(session, limit=50, draft=True)
+                picked = (result or {}).get("picked", 0)
+                created = (result or {}).get("created", 0)
+                drafted = (result or {}).get("drafted", 0)
+                emails_found = (result or {}).get("emails_found", 0)
+                total_processed += picked
+                total_found += emails_found
+                logger.info(
+                    "Dávka %d: picked=%d, created=%d, drafted=%d, emails_found=%d",
+                    batch_num + 1,
+                    picked,
+                    created,
+                    drafted,
+                    emails_found,
+                )
+
+            # 2. Backfill e-maily pre starých bez e-mailu (20 firiem)
+            async with async_session_factory() as session:
+                bf = await backfill_emails(session, limit=20)
+                logger.info(
+                    "Dávka %d backfill: processed=%d, found=%d",
+                    batch_num + 1,
+                    bf.get("processed", 0),
+                    bf.get("found", 0),
+                )
+
+            # Pauza 10 sekúnd medzi dávkami (aby sme nezaťažili server)
+            await asyncio.sleep(10)
+
+        logger.info(
+            "Daily outreach hotový: spracovaných=%d, nájdených e-mailov=%d, trvalo=%.1f min",
+            total_processed,
+            total_found,
+            (time.time() - start_time) / 60,
+        )
     except Exception as exc:
         logger.exception("Daily lead outreach zlyhal")
         _notify_scheduler_failure("daily_lead_outreach", exc)
