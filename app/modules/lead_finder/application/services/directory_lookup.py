@@ -21,6 +21,22 @@ _JUNK_EMAIL_MARKERS = (
     "example.net",
 )
 
+_SKIP_DOMAINS = (
+    "obchodnyvestnik",
+    "orsr.sk",
+    "finstat.sk",
+    "zlatestranky.sk",
+    "indexpodnikatela.sk",
+    "registeruz.sk",
+    "firmy.sk",
+    "firmydata.sk",
+    "valida.sk",
+    "peniaze.sk",
+    "podnikajte.sk",
+    "bazos.sk",
+    "heureka.sk",
+)
+
 _HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -78,6 +94,9 @@ def lookup_public_email(company_name: str, city: str | None, ico: str | None) ->
                     if any(
                         x in real_url for x in ("google.", "youtube.", "facebook.", "linkedin.")
                     ):
+                        continue
+                    # Preskočíme registre a katalógy
+                    if any(d in real_url for d in _SKIP_DOMAINS):
                         continue
                     try:
                         r2 = client.get(real_url, timeout=10.0)
