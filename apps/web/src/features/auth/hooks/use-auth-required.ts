@@ -23,5 +23,5 @@ export const useAuthRequired = () => {
     }
   }, [user, isLoading, isFetching, isError, token, router]);
 
-  return { user, isLoading: isLoading || isFetching };
+  return { user, isLoading: isLoading || (isFetching && !user) };
 };
