@@ -186,6 +186,10 @@ def create_app() -> FastAPI:
 
     logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
 
+    from app.shared.presentation.ops_router import router as ops_router
+
+    app.include_router(ops_router)
+
     return app
 
 
