@@ -72,6 +72,30 @@ export default function AdminAnalyticsPage() {
               ))}
             </div>
           </div>
+
+          <div className="mt-8 rounded-xl border overflow-x-auto" style={{ borderColor: "rgba(201,168,76,0.25)" }}>
+            <div className="p-4 border-b" style={{ borderColor: "rgba(201,168,76,0.15)" }}>
+              <h2 className="text-lg font-semibold" style={{ color: GOLD }}>Denná návštevnosť (tabuľka)</h2>
+            </div>
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr style={{ borderBottom: "1px solid rgba(201,168,76,0.15)" }}>
+                  <th className="px-4 py-2 text-left" style={{ color: MUTED }}>Dátum</th>
+                  <th className="px-4 py-2 text-right" style={{ color: MUTED }}>Počet zobrazení stránok</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(data.daily || {})
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([date, count]) => (
+                    <tr key={date} style={{ borderBottom: "1px solid rgba(201,168,76,0.08)" }}>
+                      <td className="px-4 py-2" style={{ color: "#f3e6c4" }}>{date}</td>
+                      <td className="px-4 py-2 text-right" style={{ color: "#f3e6c4" }}>{count}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         </>
       ) : null}
     </div>
