@@ -30,5 +30,20 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     redirect('/dashboard');
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <nav
+        aria-label="Administratorske nastroje"
+        className="border-b border-[#c9a84c]/20 bg-[#090807] px-4 py-3"
+      >
+        <a
+          href="/dashboard/admin/diagnostics"
+          className="text-sm text-[#e8d48b] underline"
+        >
+          Diagnostika platformy
+        </a>
+      </nav>
+      {children}
+    </>
+  );
 }
