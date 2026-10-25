@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { config } from "@/lib/config";
+import { http } from "@/lib/api/http";
 
 const GOLD = "#c9a84c";
 const MUTED = "#9a8f7c";
@@ -16,14 +16,7 @@ type Stats = {
 export default function AdminAnalyticsPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-analytics"],
-    queryFn: async () => {
-      const token = localStorage.getItem("accessToken");
-      const res = await fetch(`${config.apiBaseUrl}/analytics/admin/stats`, {
-        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return res.json() as Promise<Stats>;
-    },
+    queryFn: async () => http.get<Stats>("/analytics/admin/stats?days=30"),
   });
 
   return (
