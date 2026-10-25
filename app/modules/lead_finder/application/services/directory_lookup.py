@@ -48,7 +48,7 @@ def lookup_public_email(company_name: str, city: str | None, ico: str | None) ->
     query_parts = [f'"{company_name}"']
     if city:
         query_parts.append(city)
-    query_parts.append("email")
+    query_parts.append("@")
     query = " ".join(query_parts)
 
     url = f"https://www.google.com/search?q={quote(query)}&num=5"
