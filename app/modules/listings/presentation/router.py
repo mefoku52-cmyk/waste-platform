@@ -1,6 +1,6 @@
 """listings API router."""
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi import status as http_status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -418,6 +418,28 @@ async def promote_listing(
         my_companies = {str(x) for x in _membership_company_ids(current_user)}
         if str(existing.company_id) not in my_companies:
             raise ConflictDomainError("Nemáš oprávnenie topovať túto ponuku.")
+
+    # Platba: promote vyžaduje overený Stripe Checkout Session (F-16).
+    # Platform admin môže topovať bez platby (interné/comp).
+    if not is_platform_admin(current_user):
+        sid = (payload.stripe_session_id or "").strip()
+        if not sid:
+            raise HTTPException(status_code=402, detail="Stripe checkout session required")
+        try:
+            import stripe
+
+            from app.core.config import settings
+
+            stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
+            session = stripe.checkout.Session.retrieve(sid)
+        except Exception:
+            raise HTTPException(status_code=402, detail="Invalid Stripe session")
+        if getattr(session, "payment_status", None) != "paid":
+            raise HTTPException(status_code=402, detail="Payment not completed")
+        # Zabezpečenie: session metadata musí odkazovať na toto listing_id
+        meta = getattr(session, "metadata", None) or {}
+        if str(meta.get("listing_id", "")) not in ("", str(listing_id)):
+            raise HTTPException(status_code=402, detail="Session does not match listing")
 
     await service.promote(listing_id, days=payload.days, tier=payload.tier)
     updated = await service.get_by_id(listing_id)

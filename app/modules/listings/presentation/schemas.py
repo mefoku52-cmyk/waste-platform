@@ -79,6 +79,9 @@ class ListingStatsResponse(BaseModel):
 class PromoteListingRequest(BaseModel):
     days: int = Field(default=7, ge=7, le=30)
     tier: str = Field(default="top", pattern="^(top|gold)$")
+    stripe_session_id: str | None = Field(
+        default=None, description="Overeny Stripe Checkout Session ID"
+    )
 
 
 class PromoteListingResponse(BaseModel):
