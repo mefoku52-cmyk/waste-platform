@@ -64,6 +64,8 @@ PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/api/v1/billing/notify"),
         ("POST", "/api/v1/admin/telegram/webhook"),
         # --- infrastructure probes (static, no sensitive data) ---
+        ("GET", "/api/v1/ops/health"),
+        ("GET", "/api/v1/ops/ready"),
         ("GET", "/api/v1/metrics"),
         ("GET", "/api/v1/agent-platform/health"),
         ("GET", "/api/v1/agent-platform/control/health"),

@@ -1,6 +1,12 @@
 """listings infrastructure mappers - domain entity <-> SQLAlchemy model."""
 
+import uuid
+
 from app.modules.listings.domain.entities import ListingsEntity
+
+
+def _uuid(value):
+    return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
 from app.modules.listings.domain.enums import ListingsStatus
 from app.modules.listings.infrastructure.models import ListingsModel
 
@@ -42,7 +48,7 @@ def to_model(entity: ListingsEntity) -> ListingsModel:
         condition=entity.condition,
         location=entity.location,
         status=entity.status.value,
-        company_id=entity.company_id,
+        company_id=_uuid(entity.company_id),
         description=entity.description,
         image_url=getattr(entity, "image_url", None),
         created_at=entity.created_at,
