@@ -202,6 +202,110 @@ def test_webhook_other_event_types_are_ignored(client, monkeypatch):
     assert r.json() == {"received": True}
 
 
+def test_webhook_rejects_invalid_payload(client, monkeypatch):
+    _set_stripe_keys(monkeypatch)
+
+    with patch("stripe.Webhook.construct_event", side_effect=ValueError("bad payload")):
+        r = client.post(
+            "/api/v1/billing/stripe/webhook",
+            content=b"not-json",
+            headers={"stripe-signature": "ok"},
+        )
+
+    assert r.status_code == 400
+    assert "Invalid payload" in r.text
+
+
+def test_webhook_skips_promote_when_no_listing_id(client, monkeypatch):
+    _set_stripe_keys(monkeypatch)
+    mock_svc = AsyncMock()
+
+    with (
+        patch(
+            "stripe.Webhook.construct_event",
+            return_value={
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "metadata": {"kind": "promote", "days": "7", "tier": "top"},
+                    }
+                },
+            },
+        ),
+        patch("app.modules.listings.application.services.ListingsService", return_value=mock_svc),
+    ):
+        r = client.post(
+            "/api/v1/billing/stripe/webhook",
+            content=b"{}",
+            headers={"stripe-signature": "ok"},
+        )
+
+    assert r.status_code == 200
+    mock_svc.promote.assert_not_awaited()
+
+
+def test_webhook_skips_promote_when_kind_not_promote(client, monkeypatch):
+    _set_stripe_keys(monkeypatch)
+    mock_svc = AsyncMock()
+
+    with (
+        patch(
+            "stripe.Webhook.construct_event",
+            return_value={
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "metadata": {"kind": "donation", "listing_id": "list-9"},
+                    }
+                },
+            },
+        ),
+        patch("app.modules.listings.application.services.ListingsService", return_value=mock_svc),
+    ):
+        r = client.post(
+            "/api/v1/billing/stripe/webhook",
+            content=b"{}",
+            headers={"stripe-signature": "ok"},
+        )
+
+    assert r.status_code == 200
+    mock_svc.promote.assert_not_awaited()
+
+
+def test_webhook_swallows_promote_exception(client, monkeypatch):
+    _set_stripe_keys(monkeypatch)
+    mock_svc = AsyncMock()
+    mock_svc.promote.side_effect = RuntimeError("db down")
+
+    with (
+        patch(
+            "stripe.Webhook.construct_event",
+            return_value={
+                "type": "checkout.session.completed",
+                "data": {
+                    "object": {
+                        "metadata": {
+                            "kind": "promote",
+                            "listing_id": "list-7",
+                            "days": "7",
+                            "tier": "top",
+                        }
+                    }
+                },
+            },
+        ),
+        patch("app.modules.listings.application.services.ListingsService", return_value=mock_svc),
+    ):
+        r = client.post(
+            "/api/v1/billing/stripe/webhook",
+            content=b"{}",
+            headers={"stripe-signature": "ok"},
+        )
+
+    assert r.status_code == 200
+    assert r.json() == {"received": True}
+
+
 # ---------------------------------------------------------------------------
 # Checkout pricing, error mapping and safe logging
 # ---------------------------------------------------------------------------

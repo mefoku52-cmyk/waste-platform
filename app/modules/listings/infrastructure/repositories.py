@@ -1,5 +1,7 @@
 """listings repository implementations."""
 
+import uuid
+
 from sqlalchemy import delete as sql_delete
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +12,10 @@ from .mappers import to_domain, to_model
 from .models import ListingsModel
 
 
+def _uuid(value):
+    return value if isinstance(value, uuid.UUID) else uuid.UUID(str(value))
+
+
 class ListingsRepositoryImpl(ListingsRepository):
     """Listings repository implementation."""
 
@@ -17,7 +23,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         self.session = session
 
     async def get_by_id(self, id: str) -> ListingsEntity | None:
-        result = await self.session.execute(select(ListingsModel).where(ListingsModel.id == id))
+        result = await self.session.execute(select(ListingsModel).where(ListingsModel.id == _uuid(id)))
         model = result.scalar_one_or_none()
         return to_domain(model) if model else None
 
@@ -27,7 +33,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         offset = (page - 1) * limit
         stmt = select(ListingsModel)
         if company_ids is not None:
-            ids = [str(x) for x in company_ids]
+            ids = [_uuid(x) for x in company_ids]
             if not ids:
                 return []
             stmt = stmt.where(ListingsModel.company_id.in_(ids))
@@ -48,7 +54,7 @@ class ListingsRepositoryImpl(ListingsRepository):
     async def count_all(self, company_ids=None) -> int:
         stmt = select(func.count()).select_from(ListingsModel)
         if company_ids is not None:
-            ids = [str(x) for x in company_ids]
+            ids = [_uuid(x) for x in company_ids]
             if not ids:
                 return 0
             stmt = stmt.where(ListingsModel.company_id.in_(ids))
@@ -67,7 +73,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         from sqlalchemy import func, or_
 
         if exclude_company_ids:
-            ids = [str(x) for x in exclude_company_ids if x is not None]
+            ids = [_uuid(x) for x in exclude_company_ids if x is not None]
             if ids:
                 stmt = stmt.where(ListingsModel.company_id.notin_(ids))
         if material_type:
@@ -189,7 +195,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         return to_domain(model)
 
     async def delete(self, id: str) -> None:
-        await self.session.execute(sql_delete(ListingsModel).where(ListingsModel.id == id))
+        await self.session.execute(sql_delete(ListingsModel).where(ListingsModel.id == _uuid(id)))
         await self.session.commit()
 
     async def find_matches(self, *, material_type: str, exclude_company_ids, limit: int = 20):
@@ -198,7 +204,7 @@ class ListingsRepositoryImpl(ListingsRepository):
         if material_type:
             stmt = stmt.where(ListingsModel.material_type.ilike(f"%{material_type.strip()}%"))
         if exclude_company_ids:
-            stmt = stmt.where(~ListingsModel.company_id.in_(list(exclude_company_ids)))
+            stmt = stmt.where(~ListingsModel.company_id.in_([_uuid(x) for x in exclude_company_ids]))
         stmt = stmt.order_by(ListingsModel.created_at.desc()).limit(limit)
         rows = (await self.session.execute(stmt)).scalars().all()
         return [to_domain(r) for r in rows]
