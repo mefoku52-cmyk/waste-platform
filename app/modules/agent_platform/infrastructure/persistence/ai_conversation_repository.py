@@ -88,6 +88,16 @@ class AiConversationRepository(ABC):
     ) -> AiMessage: ...
 
     @abstractmethod
+    async def append_messages(
+        self,
+        *,
+        conversation_id: str,
+        messages: list[dict[str, Any]],
+    ) -> list[AiMessage]:
+        """Append several messages in a single commit (batch)."""
+        ...
+
+    @abstractmethod
     async def count_messages(self, *, conversation_id: str) -> int:
         """Number of non-summary messages in the conversation."""
         ...
@@ -198,6 +208,42 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
             await self._session.rollback()
             raise
         return _to_msg(msg)
+
+    async def append_messages(
+        self,
+        *,
+        conversation_id: str,
+        messages: list[dict[str, Any]],
+    ) -> list[AiMessage]:
+        try:
+            cid = uuid.UUID(conversation_id)
+        except (ValueError, TypeError):
+            raise ValueError("Invalid conversation id")
+
+        now = datetime.now(UTC).replace(tzinfo=None)
+        out: list[AiMessage] = []
+        for m in messages:
+            msg = AiMessageModel(
+                id=uuid.uuid4(),
+                conversation_id=cid,
+                role=m.get("role", "user"),
+                content=m.get("content", "") or "",
+                tool_calls=m.get("tool_calls"),
+                created_at=now,
+            )
+            self._session.add(msg)
+            out.append(msg)
+
+        conv = await self._session.get(AiConversationModel, cid)
+        if conv is not None:
+            conv.updated_at = now
+
+        try:
+            await self._session.commit()
+        except Exception:
+            await self._session.rollback()
+            raise
+        return [_to_msg(m) for m in out]
 
     async def count_messages(self, *, conversation_id: str) -> int:
         cid = _uuid_or_none(conversation_id)

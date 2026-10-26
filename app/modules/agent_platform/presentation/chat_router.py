@@ -854,15 +854,12 @@ async def user_ai_chat(
 
     if conversation_id:
         try:
-            await conversations.append_message(
+            await conversations.append_messages(
                 conversation_id=conversation_id,
-                role="user",
-                content=text,
-            )
-            await conversations.append_message(
-                conversation_id=conversation_id,
-                role="assistant",
-                content=result.text,
+                messages=[
+                    {"role": "user", "content": text},
+                    {"role": "assistant", "content": result.text},
+                ],
             )
         except Exception:
             pass  # best-effort: never break caller
