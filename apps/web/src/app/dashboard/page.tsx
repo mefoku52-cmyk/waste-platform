@@ -12,7 +12,7 @@ const MUTED = '#9a8f7c';
 const SILVER = '#e5e5e5';
 const SILVER_MUTED = '#a8a8a8';
 
-// 6 navigačných dlaždíc — každá má vlastnú fotku a href.
+// 8 navigačných dlaždíc — každá má vlastnú fotku a href.
 const DASHBOARD_TILES = [
   {
     key: 'overview',
@@ -62,6 +62,13 @@ const DASHBOARD_TILES = [
     labelKey: 'dashboard.motto.tiles.carriers.label',
     descKey: 'dashboard.motto.tiles.carriers.desc',
     img: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1600&q=80',
+  },
+  {
+    key: 'subscription',
+    href: '/dashboard/subscription',
+    labelKey: 'dashboard.motto.tiles.subscription.label',
+    descKey: 'dashboard.motto.tiles.subscription.desc',
+    img: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600&q=80',
   },
 ] as const;
 

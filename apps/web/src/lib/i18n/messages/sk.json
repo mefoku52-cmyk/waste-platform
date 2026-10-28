@@ -148,6 +148,10 @@
         "carriers": {
           "label": "Prepravcovia",
           "desc": "Doprava, logistika a skladovanie"
+        },
+        "subscription": {
+          "label": "Predplatné",
+          "desc": "Získajte viac. AI asistent a inteligentná navigácia."
         }
       }
     },
