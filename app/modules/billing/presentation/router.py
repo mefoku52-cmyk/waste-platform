@@ -383,3 +383,70 @@ async def stripe_webhook(request: Request, session=Depends(get_db_session)):
                 pass
 
     return {"received": True}
+
+
+# ============================================================
+# Stripe Subscription (FREE, AI, AI Navigácia)
+# ============================================================
+
+
+class _StripeSubscriptionIn(BaseModel):
+    tier: str = Field(default="ai")  # "ai" alebo "ai_navigation"
+    company_id: str
+    success_url: str
+    cancel_url: str
+
+
+_STRIPE_SUBSCRIPTION_PRICES = {
+    "ai": 2900,  # 29 € v centoch
+    "ai_navigation": 9900,  # 99 € v centoch
+}
+
+
+@router.post("/stripe/subscription")
+async def stripe_subscription(
+    body: _StripeSubscriptionIn,
+    current_user=Depends(require_current_user),
+):
+    secret = getattr(settings, "STRIPE_SECRET_KEY", None)
+    if not secret:
+        raise HTTPException(status_code=503, detail="Stripe not configured")
+    stripe.api_key = secret
+
+    amount = _STRIPE_SUBSCRIPTION_PRICES.get(body.tier)
+    if amount is None:
+        raise HTTPException(status_code=422, detail="Unknown subscription tier")
+
+    try:
+        user_id = str(current_user_id(current_user) or "")
+    except Exception:
+        user_id = ""
+
+    try:
+        cs = stripe.checkout.Session.create(
+            mode="payment",
+            allowed_payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "eur",
+                        "unit_amount": amount,
+                        "product_data": {
+                            "name": f"CMEP {body.tier.upper()} (mesačné predplatné)",
+                        },
+                    },
+                    "quantity": 1,
+                }
+            ],
+            success_url=body.success_url,
+            cancel_url=body.cancel_url,
+            metadata={
+                "kind": "subscription",
+                "tier": body.tier,
+                "company_id": body.company_id,
+                "user_id": user_id,
+            },
+        )
+        return {"url": cs.url, "id": cs.id}
+    except stripe.error.StripeError as exc:
+        raise _stripe_failure(exc) from exc

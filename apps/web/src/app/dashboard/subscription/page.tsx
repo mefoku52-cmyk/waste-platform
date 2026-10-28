@@ -29,7 +29,12 @@ export default function SubscriptionPage() {
         }
       } catch {}
       
-      const res = await fetch(`${config.apiBaseUrl}/billing/checkout`, {
+      if (!companyId) {
+        alert("Najprv si musíte vytvoriť firmu v sekcii 'Pridať firmu'.");
+        return;
+      }
+
+      const res = await fetch(`${config.apiBaseUrl}/billing/stripe/subscription`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,8 +48,8 @@ export default function SubscriptionPage() {
         }),
       });
       const data = await res.json();
-      if (data.checkout_url || data.url) {
-        window.location.href = data.checkout_url || data.url;
+      if (data.url) {
+        window.location.href = data.url;
       } else {
         alert("Chyba pri vytváraní platby: " + JSON.stringify(data));
       }
