@@ -87,8 +87,9 @@ async def billing_checkout(
     current_user=Depends(require_current_user),
     session=Depends(get_db_session),
 ):
-    if payload.tier != "pro":
-        raise HTTPException(status_code=400, detail="only_pro")
+    allowed_tiers = ("pro", "ai", "ai_navigation")
+    if payload.tier not in allowed_tiers:
+        raise HTTPException(status_code=400, detail="invalid_tier")
     cfg = _cfg()
     amount = int(getattr(settings, "GOPAY_PRO_AMOUNT_CENTS", 0) or 0)
     if not _ready(cfg) or amount <= 0:
@@ -104,7 +105,7 @@ async def billing_checkout(
         "callback": {"return_url": cfg["return_url"], "notification_url": cfg["notify_url"]},
         "additional_params": [
             {"name": "company_id", "value": payload.company_id},
-            {"name": "tier", "value": "pro"},
+            {"name": "tier", "value": payload.tier},
         ],
     }
     async with httpx.AsyncClient(timeout=20) as client:
@@ -151,7 +152,7 @@ async def billing_notify(request: Request, session=Depends(get_db_session)):
     company_id = _param(data, "company_id")
     tier = _param(data, "tier") or "pro"
     updated = 0
-    if state == "PAID" and company_id and tier == "pro":
+    if state == "PAID" and company_id and tier in ("pro", "ai", "ai_navigation"):
         result = await session.execute(
             text(
                 """
