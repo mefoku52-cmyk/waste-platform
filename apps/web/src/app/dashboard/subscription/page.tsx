@@ -14,6 +14,21 @@ export default function SubscriptionPage() {
   async function handleSelectPlan(tier: string) {
     try {
       const token = localStorage.getItem("accessToken");
+      // Získame company_id používateľa
+      let companyId = null;
+      try {
+        const meRes = await fetch(`${config.apiBaseUrl}/auth/me`, {
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          const memberships = me.memberships || [];
+          if (memberships.length > 0) {
+            companyId = memberships[0].companyId;
+          }
+        }
+      } catch {}
+      
       const res = await fetch(`${config.apiBaseUrl}/billing/checkout`, {
         method: "POST",
         headers: {
@@ -22,6 +37,7 @@ export default function SubscriptionPage() {
         },
         body: JSON.stringify({
           tier: tier,
+          company_id: companyId,
           success_url: window.location.origin + "/dashboard/subscription?success=true",
           cancel_url: window.location.origin + "/dashboard/subscription?canceled=true",
         }),
