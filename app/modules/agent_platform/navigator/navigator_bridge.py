@@ -32,7 +32,7 @@ class NavigatorBridge:
                 name="cerebras",
                 api_url=os.environ.get("CEREBRAS_API_URL", "https://api.cerebras.ai/v1/chat/completions"),
                 api_key_env="CEREBRAS_API_KEY",
-                model_name=os.environ.get("CEREBRAS_MODEL", "llama3.1-8b"),
+                model_name=os.environ.get("CEREBRAS_MODEL", "llama-3.3-70b"),
                 policy=self._policy,
             )
             
