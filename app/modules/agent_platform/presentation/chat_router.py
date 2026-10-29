@@ -28,6 +28,7 @@ from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repos
     SqlAlchemyAiConversationRepository,
 )
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import CLIENT_ACTION_NAMES
+from app.modules.agent_platform.navigator.navigator_bridge import get_navigator_bridge
 from app.modules.agent_platform.presentation.dependencies import (
     get_agent_orchestrator,
     get_ai_conversation_repository,
@@ -674,7 +675,7 @@ async def _resolve_chat_gate(control) -> AgentGate:
             type(exc).__name__,
             str(exc)[:200],
         )
-        mode = ControlMode.NORMAL
+    mode = ControlMode.NORMAL
     return resolve_agent_gate(mode)
 
 
@@ -790,25 +791,61 @@ async def user_ai_chat(
             session_id=session_id,
         )
 
+    # 1. Skus novy navigator (TaskCoordinator)
+    navigator_result = None
     try:
-        result = await orchestrator.respond(
+        bridge = get_navigator_bridge()
+        nav_response = await bridge.respond(
             system_prompt=system_prompt,
             user_message=text,
             actor_id=actor_id,
             actor_type="user",
             session_id=session_id,
             conversation_history=history,
+            old_orchestrator=None,  # fallback riesime nizsie
         )
-    except Exception as exc:
+        if isinstance(nav_response, dict) and nav_response.get("status") == "ok":
+            # Novy navigator uspel - vytvorime fake result pre zvyšok kodu
+            navigator_result = nav_response
+    except Exception as nav_exc:
         import logging as _log
 
-        _log.getLogger("cmep.chat").exception(
-            "ORCHESTRATOR_EXCEPTION actor=%s session=%s type=%s msg=%s",
-            actor_id,
-            session_id,
-            type(exc).__name__,
-            str(exc)[:200],
+        _log.getLogger("cmep.chat").warning("NAVIGATOR_BRIDGE_EXCEPTION: %s", str(nav_exc)[:200])
+
+    # 2. Ak novy navigator uspel, pouzijeme jeho odpoved
+    if navigator_result is not None:
+        # Vytvorime objekt podobny OrchestrationResult
+        class _NavResult:
+            def __init__(self, text, tool_calls=()):
+                self.text = text
+                self.tool_calls = tool_calls
+                self.provider = 'navigator'
+
+        result = _NavResult(
+            text=navigator_result.get("reply", ""),
+            tool_calls=(),
         )
+    else:
+        # 3. Fallback na stary orchestrator
+        try:
+            result = await orchestrator.respond(
+                system_prompt=system_prompt,
+                user_message=text,
+                actor_id=actor_id,
+                actor_type="user",
+                session_id=session_id,
+                conversation_history=history,
+            )
+        except Exception as exc:
+            import logging as _log
+
+            _log.getLogger("cmep.chat").exception(
+                "ORCHESTRATOR_EXCEPTION actor=%s session=%s type=%s msg=%s",
+                actor_id,
+                session_id,
+                type(exc).__name__,
+                str(exc)[:200],
+            )
         return UserAiChatResponse(
             status="unavailable",
             reply=None,
