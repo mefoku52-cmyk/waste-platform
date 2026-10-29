@@ -819,11 +819,17 @@ async def user_ai_chat(
             def __init__(self, text, tool_calls=()):
                 self.text = text
                 self.tool_calls = tool_calls
-                self.provider = 'navigator'
+                self.provider = "navigator"
+
+        # Ziskame akciu z navigatora a premenime ju na tool_call pre frontend
+        nav_action = navigator_result.get("action")
+        nav_tool_calls = ()
+        if nav_action:
+            nav_tool_calls = ({"name": nav_action, "args": {}},)
 
         result = _NavResult(
             text=navigator_result.get("reply", ""),
-            tool_calls=(),
+            tool_calls=nav_tool_calls,
         )
     else:
         # 3. Fallback na stary orchestrator
