@@ -41,7 +41,7 @@ class NavigatorBridge:
                 name="mistral",
                 api_url="https://api.mistral.ai/v1/chat/completions",
                 api_key_env="MISTRAL_API_KEY",
-                model_name="mistral-large-latest",
+                model_name="mistral-small-latest",
                 policy=self._policy,
             )
             
