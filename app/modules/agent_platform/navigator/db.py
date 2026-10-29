@@ -17,7 +17,7 @@ class DatabaseInterface:
         if not self.dsn:
             return {"available": False, "reason": "DATABASE_URL nie je nastavena"}
         try:
-            import psycopg2  # type: ignore
+            import psycopg2
         except ImportError:
             return {"available": False, "reason": "psycopg2 nie je nainstalovany (neinstalujem)"}
         try:
@@ -32,7 +32,7 @@ class DatabaseInterface:
         if not self.dsn:
             return []
         try:
-            import psycopg2  # type: ignore
+            import psycopg2
 
             conn = psycopg2.connect(self.dsn)
             cur = conn.cursor()

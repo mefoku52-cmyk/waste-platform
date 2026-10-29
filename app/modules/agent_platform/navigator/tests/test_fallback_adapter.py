@@ -94,7 +94,7 @@ def test_fallback_vrati_chybu_ak_vsetky_zlyhaju():
     router = FallbackAdapter(adapters, policy=ExecutionPolicy(mode=ExecutionMode.DRY_RUN))
     result = router.infer("test")
     assert result.available is False
-    assert "Vsetky modely zlyhali" in result.error
+    assert result.error is not None and "Vsetky modely zlyhali" in result.error
 
 
 def test_fallback_respektuje_disabled():
@@ -107,4 +107,4 @@ def test_fallback_respektuje_disabled():
     router = FallbackAdapter(adapters, policy=ExecutionPolicy(mode=ExecutionMode.DISABLED))
     result = router.infer("test")
     assert result.available is False
-    assert "DISABLED" in result.error
+    assert result.error is not None and "DISABLED" in result.error
