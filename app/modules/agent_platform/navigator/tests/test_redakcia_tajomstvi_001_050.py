@@ -4,7 +4,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
 
-from cmep_riadenie.logging_safe import redact, redact_any
+from app.modules.agent_platform.navigator.logging_safe import redact, redact_any
 
 
 # ============================================================================
@@ -359,7 +359,7 @@ def test_040_tajomstvo_podobne_ale_nie_totozne_s_vzorom():
 
 def test_041_vysledok_adaptera_pred_ulozenim():
     """Tajomstvo sa nezapíše do denníka."""
-    from cmep_riadenie.decision_log import DecisionLog
+    from app.modules.agent_platform.navigator.decision_log import DecisionLog
     import tempfile
     with tempfile.TemporaryDirectory() as td:
         log = DecisionLog(f"{td}/decisions.jsonl", authorize=True)
@@ -370,8 +370,8 @@ def test_041_vysledok_adaptera_pred_ulozenim():
 
 def test_042_vysledok_koordinatora_pred_vratenim():
     """Tajomstvo sa nevráti volajúcemu."""
-    from cmep_riadenie.task_coordinator import TaskCoordinator
-    from cmep_riadenie.execution_policy import ExecutionPolicy, ExecutionMode
+    from app.modules.agent_platform.navigator.task_coordinator import TaskCoordinator
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
     def leak():
         return {"api_key": "sk_live_abcdefghijklmnopqrstuvwxyz"}
     coord = TaskCoordinator(policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
@@ -381,8 +381,8 @@ def test_042_vysledok_koordinatora_pred_vratenim():
 
 def test_043_chybove_hlásenie_diagnostického_workflow():
     """Tajomstvo sa nezobrazí v reporte."""
-    from cmep_riadenie.diagnostic_workflow import DiagnosticWorkflow
-    from cmep_riadenie.execution_policy import ExecutionPolicy, ExecutionMode
+    from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
     wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
     result = wf.run(agent_name="observer")
     report_str = str(result["report"])
@@ -391,8 +391,8 @@ def test_043_chybove_hlásenie_diagnostického_workflow():
 
 def test_044_detail_blokera_diagnostiky():
     """Citlivý obsah blokéra sa zrediguje."""
-    from cmep_riadenie.diagnostic_workflow import DiagnosticWorkflow
-    from cmep_riadenie.execution_policy import ExecutionPolicy, ExecutionMode
+    from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
     wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
     result = wf.run(agent_name="observer")
     for b in result["report"]["blockers"]:
@@ -401,8 +401,8 @@ def test_044_detail_blokera_diagnostiky():
 
 def test_045_porovnanie_vystupov_modelov():
     """Porovnávač nezverejní rozpoznané tajomstvá."""
-    from cmep_riadenie.model_comparator import compare
-    from cmep_riadenie.model_adapter import ModelResponse
+    from app.modules.agent_platform.navigator.model_comparator import compare
+    from app.modules.agent_platform.navigator.model_adapter import ModelResponse
     a = ModelResponse(adapter="m", result="sk_live_abcdefghijklmnopqrstuvwxyz", deterministic=True, mode="approved", available=True)
     b = ModelResponse(adapter="m", result="different", deterministic=True, mode="approved", available=True)
     r = compare(a, b)
@@ -412,7 +412,7 @@ def test_045_porovnanie_vystupov_modelov():
 
 def test_046_audita_udalost_obsahujici_citlivy_vstup():
     """Uložená udalosť je bezpečne redigovaná."""
-    from cmep_riadenie.decision_log import DecisionLog
+    from app.modules.agent_platform.navigator.decision_log import DecisionLog
     import tempfile
     with tempfile.TemporaryDirectory() as td:
         log = DecisionLog(f"{td}/decisions.jsonl", authorize=True)
@@ -423,8 +423,8 @@ def test_046_audita_udalost_obsahujici_citlivy_vstup():
 
 def test_047_redakcia_pred_exportom_reportu():
     """Export neobsahuje pôvodné tajomstvo."""
-    from cmep_riadenie.diagnostic_workflow import DiagnosticWorkflow
-    from cmep_riadenie.execution_policy import ExecutionPolicy, ExecutionMode
+    from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
     wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
     result = wf.run(agent_name="observer")
     import json
@@ -434,7 +434,7 @@ def test_047_redakcia_pred_exportom_reportu():
 
 def test_048_redakcia_v_diagnostickom_logu():
     """Log zostáva bez rozpoznaných tajomství."""
-    from cmep_riadenie.logging_safe import SafeLogger
+    from app.modules.agent_platform.navigator.logging_safe import SafeLogger
     logger = SafeLogger("test_redaction")
     logger.info("api_key=sk_live_abcdefghijklmnopqrstuvwxyz")
     assert True
@@ -442,7 +442,7 @@ def test_048_redakcia_v_diagnostickom_logu():
 
 def test_049_redakcia_po_opakovanim_spracovania():
     """Opakované spracovanie nezavedie nový únik."""
-    from cmep_riadenie.logging_safe import redact_any
+    from app.modules.agent_platform.navigator.logging_safe import redact_any
     data = {"api_key": "sk_live_abcdefghijklmnopqrstuvwxyz"}
     r1 = redact_any(data)
     r2 = redact_any(r1)
@@ -451,8 +451,8 @@ def test_049_redakcia_po_opakovanim_spracovania():
 
 def test_050_suhrny_report_z_viecero_zdroju():
     """Redakcia sa uplatní na všetky podporované zdroje."""
-    from cmep_riadenie.diagnostic_workflow import DiagnosticWorkflow
-    from cmep_riadenie.execution_policy import ExecutionPolicy, ExecutionMode
+    from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
     wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
     result = wf.run(agent_name="observer")
     report_str = str(result)
