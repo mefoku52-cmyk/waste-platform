@@ -24,36 +24,36 @@ class NavigatorBridge:
             policy=self._policy, role_manager=self._role_manager, max_attempts=1, default_timeout=10.0
         )
         
-        # 1. Vytvorime adaptéry (presne podla toho, co mame v Render Environment)
+        # 1. Vytvorime adaptéry - citame z Environment premenných!
         adapters = {}
         
-        # GROQ - hlavny model
+        # GROQ - hlavny model (pouzije GROQ_MODEL z Renderu, inak default)
         if os.environ.get("GROQ_API_KEY"):
             adapters["groq"] = GenericAPIAdapter(
                 name="groq",
                 api_url="https://api.groq.com/openai/v1/chat/completions",
                 api_key_env="GROQ_API_KEY",
-                model_name="llama-3.3-70b-versatile",
+                model_name=os.environ.get("GROQ_MODEL", "llama3-8b-8192"),
                 policy=self._policy,
             )
             
-        # CEREBRAS - fallback 1 (pouzivame spravny nazov modelu pre Cerebras)
+        # CEREBRAS - fallback 1 (pouzije CEREBRAS_MODEL z Renderu)
         if os.environ.get("CEREBRAS_API_KEY"):
             adapters["cerebras"] = GenericAPIAdapter(
                 name="cerebras",
-                api_url="https://api.cerebras.ai/v1/chat/completions",
+                api_url=os.environ.get("CEREBRAS_API_URL", "https://api.cerebras.ai/v1/chat/completions"),
                 api_key_env="CEREBRAS_API_KEY",
-                model_name="llama3.1-8b",
+                model_name=os.environ.get("CEREBRAS_MODEL", "llama3.1-8b"),
                 policy=self._policy,
             )
             
-        # MISTRAL - fallback 2
+        # MISTRAL - fallback 2 (pouzije MISTRAL_MODEL z Renderu)
         if os.environ.get("MISTRAL_API_KEY"):
             adapters["mistral"] = GenericAPIAdapter(
                 name="mistral",
                 api_url="https://api.mistral.ai/v1/chat/completions",
                 api_key_env="MISTRAL_API_KEY",
-                model_name="mistral-small-latest",
+                model_name=os.environ.get("MISTRAL_MODEL", "mistral-small-latest"),
                 policy=self._policy,
             )
 
