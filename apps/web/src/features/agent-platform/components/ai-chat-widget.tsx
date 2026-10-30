@@ -86,7 +86,19 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [busy, setBusy] = useState(false);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
-  const [messages, setMessages] = useState<Msg[]>([]);
+  const [messages, setMessages] = useState<Msg[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cmep_chat_history');
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cmep_chat_history', JSON.stringify(messages));
+    }
+  }, [messages]);
   const [sessionId, setSessionId] = useState<string>('');
   const [persona, setPersona] = useState<Persona>('bystry');
   const [toast, setToast] = useState<string | null>(null);
@@ -352,7 +364,17 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   }
 
   if (tierLoading) {
-    return null;
+    if (minimized) {
+    return (
+      <button
+        onClick={() => setMinimized(false)}
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg"
+        style={{ background: GOLD }}
+      >
+        <span className="text-2xl">💬</span>
+      </button>
+    );
+  }
   }
   if (tier === 'free' || tier === 'unknown') {
     return <AiUpgradePanel reason={tier} companyId={companyId} />;

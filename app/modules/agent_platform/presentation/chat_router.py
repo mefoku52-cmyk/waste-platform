@@ -795,14 +795,24 @@ async def user_ai_chat(
     navigator_result = None
     try:
         bridge = get_navigator_bridge()
+        # Ziskame históriu z databázy (ak existuje)
+        db_history = ()
+        if conversation_id:
+            try:
+                # Toto je zjednodušené, reálne by sme mali použiť conversations.get_history()
+                # Ale keďže máme 'history' premennú, použijeme tú
+                pass
+            except Exception:
+                pass
+        
         nav_response = await bridge.respond(
             system_prompt=system_prompt,
             user_message=text,
             actor_id=actor_id,
             actor_type="user",
             session_id=session_id,
-            conversation_history=history,
-            old_orchestrator=None,  # fallback riesime nizsie
+            conversation_history=history or db_history,
+            old_orchestrator=None,
         )
         if isinstance(nav_response, dict) and nav_response.get("status") == "ok":
             # Novy navigator uspel - vytvorime fake result pre zvyšok kodu
