@@ -130,7 +130,7 @@ export default function MyListingsPage() {
         kicker="PONUKY"
         title="Ponuky"
         subtitle="Prehľad vašich ponúk a materiálov na platforme."
-        bgImage="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop"
+        imageUrl="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         {!isVerified && warningKey && (

@@ -71,7 +71,7 @@ export default function CompaniesPage() {
         kicker="FIRMY"
         title="Firmy"
         subtitle="Prehľad firiem na platforme. Zaregistruj svoju firmu a dostaň sa do popredia."
-        bgImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+        imageUrl="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">

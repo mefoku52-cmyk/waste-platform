@@ -22,7 +22,7 @@ export default function InquiriesPage() {
         kicker="DOPYTY"
         title="Dopyty"
         subtitle="Prehľad vašich prijatých a odoslaných dopytov."
-        bgImage="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2070&auto=format&fit=crop"
+        imageUrl="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
