@@ -9,10 +9,11 @@ type PremiumHeroProps = {
   title: string;
   subtitle: string;
   imageUrl: string;
+  kicker?: string; // Voliteľný malý nadpis nad titulkom
   children?: ReactNode;
 };
 
-export function PremiumHero({ title, subtitle, imageUrl, children }: PremiumHeroProps) {
+export function PremiumHero({ title, subtitle, imageUrl, kicker, children }: PremiumHeroProps) {
   return (
     <div className="relative h-72 w-full overflow-hidden">
       <img
@@ -22,6 +23,11 @@ export function PremiumHero({ title, subtitle, imageUrl, children }: PremiumHero
       />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0b0b0b]" />
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        {kicker && (
+          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.3em]" style={{ color: GOLD_BRIGHT }}>
+            {kicker}
+          </p>
+        )}
         <h1 className="font-serif text-5xl md:text-6xl" style={{ color: GOLD_BRIGHT }}>
           {title}
         </h1>
