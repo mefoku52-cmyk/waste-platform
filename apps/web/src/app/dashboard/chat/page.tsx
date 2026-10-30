@@ -1,5 +1,6 @@
 "use client";
 
+import { PremiumHero } from '@/components/layout/premium-hero';
 import { AppShell } from "@/components/layout/app-shell";
 import { ChatShell } from "@/features/chat/components/chat-shell";
 import { useT } from "@/lib/i18n/context";

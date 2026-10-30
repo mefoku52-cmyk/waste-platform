@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
+import { PremiumHero } from '@/components/layout/premium-hero';
 import { AppShell } from '@/components/layout/app-shell';
 import { config } from '@/lib/config';
 import { useT } from '@/lib/i18n/context';
@@ -66,6 +67,12 @@ export default function CompaniesPage() {
 
   return (
     <AppShell>
+      <PremiumHero
+        kicker="FIRMY"
+        title="Firmy"
+        subtitle="Prehľad firiem na platforme. Zaregistruj svoju firmu a dostaň sa do popredia."
+        bgImage="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
+      />
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>

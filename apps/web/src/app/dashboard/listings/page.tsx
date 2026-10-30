@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 
+import { PremiumHero } from '@/components/layout/premium-hero';
 import { AppShell } from '@/components/layout/app-shell';
 import { useListings, useMarketplace } from '@/features/listings';
 import { useState, useEffect } from 'react';
@@ -125,6 +126,12 @@ export default function MyListingsPage() {
 
   return (
     <AppShell>
+      <PremiumHero
+        kicker="PONUKY"
+        title="Ponuky"
+        subtitle="Prehľad vašich ponúk a materiálov na platforme."
+        bgImage="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop"
+      />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         {!isVerified && warningKey && (
           <div
