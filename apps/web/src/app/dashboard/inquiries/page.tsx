@@ -1,5 +1,6 @@
 'use client';
 
+import { PremiumHero } from '@/components/layout/premium-hero';
 import { AppShell } from '@/components/layout/app-shell';
 import { InquiriesTable } from '@/features/inquiries/components/inquiries-table';
 import { useT } from '@/lib/i18n/context';
@@ -17,6 +18,12 @@ export default function InquiriesPage() {
 
   return (
     <AppShell>
+      <PremiumHero
+        kicker="DOPYTY"
+        title="Dopyty"
+        subtitle="Prehľad vašich prijatých a odoslaných dopytov."
+        bgImage="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2070&auto=format&fit=crop"
+      />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
           {t('inquiries.section')}

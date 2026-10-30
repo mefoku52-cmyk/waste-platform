@@ -74,7 +74,7 @@ export default function CarriersPage() {
               <Link
                 key={offer.id}
                 href={`/prepravcovia/${offer.id}`}
-                className="block rounded-xl border p-4 transition hover:border-[#c9a84c]"
+                className="block rounded-2xl border p-5 sm:p-6 transition hover:border-[#c9a84c]"
                 style={{ borderColor: "rgba(201,168,76,0.25)" }}
               >
                 <h2 className="font-semibold" style={{ color: GOLD }}>{offer.title}</h2>

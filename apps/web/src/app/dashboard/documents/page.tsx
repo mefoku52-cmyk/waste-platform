@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 
+import { PremiumHero } from '@/components/layout/premium-hero';
 import { AppShell } from '@/components/layout/app-shell';
 import { useDocuments } from '@/features/documents';
 import { useT } from '@/lib/i18n/context';
@@ -18,6 +19,12 @@ export default function DocumentsPage() {
 
   return (
     <AppShell>
+      <PremiumHero
+        kicker="DOKUMENTY"
+        title="Dokumenty"
+        subtitle="Správa vašich dokumentov a zmlúv."
+        bgImage="https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=2070&auto=format&fit=crop"
+      />
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
           <div>
