@@ -577,6 +577,33 @@ OPEN_SETTINGS_SCHEMA: dict[str, Any] = {
     },
 }
 
+OPEN_TRANSPORT_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_transport",
+        "description": "Otvorí stránku prepravcov.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_SUBSCRIPTION_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_subscription",
+        "description": "Otvorí stránku predplatného.",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
+OPEN_MARKETPLACE_SCHEMA: dict[str, Any] = {
+    "type": "function",
+    "function": {
+        "name": "open_marketplace",
+        "description": "Otvorí marketplace (všetky ponuky).",
+        "parameters": {"type": "object", "properties": {}},
+    },
+}
+
 OPEN_ADMIN_SCHEMA: dict[str, Any] = {
     "type": "function",
     "function": {
@@ -605,6 +632,9 @@ CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
     OPEN_NEW_DOCUMENT_SCHEMA,
     OPEN_CHAT_SCHEMA,
     OPEN_SETTINGS_SCHEMA,
+    OPEN_TRANSPORT_SCHEMA,
+    OPEN_SUBSCRIPTION_SCHEMA,
+    OPEN_MARKETPLACE_SCHEMA,
 )
 
 # Attached to the model ONLY when the caller is a platform admin.

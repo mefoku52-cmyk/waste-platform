@@ -73,6 +73,9 @@ _NO_ARG_ACTIONS = frozenset(
         "open_chat",
         "open_settings",
         "open_admin",
+        "open_transport",
+        "open_subscription",
+        "open_marketplace",
     }
 )
 
