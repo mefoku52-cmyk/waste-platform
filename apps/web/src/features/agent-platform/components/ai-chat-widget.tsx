@@ -50,6 +50,8 @@ const NO_ARG_NAV_ACTIONS: Record<string, { path: string; label: string }> = {
   open_documents: { path: dashboardRoutes.documents, label: 'zoznam dokumentov' },
   open_new_document: { path: dashboardRoutes.documentNew, label: 'formulár nového dokumentu' },
   open_chat: { path: dashboardRoutes.chat, label: 'chat' },
+  open_transport: { path: dashboardRoutes.transport, label: 'prepravcovia' },
+  open_subscription: { path: dashboardRoutes.subscription, label: 'predplatné' },
   open_settings: { path: dashboardRoutes.settings, label: 'nastavenia' },
   open_admin: { path: dashboardRoutes.admin, label: 'administráciu' },
 };

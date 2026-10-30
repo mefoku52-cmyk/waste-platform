@@ -26,6 +26,8 @@ export const dashboardRoutes = {
   documents: '/dashboard/documents',
   documentNew: '/dashboard/documents/new',
   chat: '/dashboard/chat',
+  transport: '/prepravcovia',
+  subscription: '/dashboard/subscription',
   settings: '/dashboard/settings/security',
   admin: '/dashboard/admin',
 } as const;
