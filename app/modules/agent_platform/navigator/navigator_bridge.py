@@ -132,9 +132,17 @@ class NavigatorBridge:
                         clean_result = raw_text.replace("```json", "").replace("```", "").strip()
                         if clean_result.startswith("{") and clean_result.endswith("}"):
                             data = json.loads(clean_result)
-                            action = data.get("action")
                             
-                            if isinstance(action, str) and action in NAV_PAGES:
+                            # Podpora pre jednu akciu alebo zoznam akcii
+                            if "actions" in data and isinstance(data["actions"], list):
+                                valid_actions = [a for a in data["actions"] if a in NAV_PAGES]
+                                if valid_actions:
+                                    reply = "Otváram: " + ", ".join([NAV_PAGES[a][0] for a in valid_actions]) + "."
+                                    action = valid_actions # Posleme zoznam
+                                else:
+                                    reply = raw_text
+                            elif "action" in data and isinstance(data["action"], str) and data["action"] in NAV_PAGES:
+                                action = data["action"]
                                 reply = nav_reply(action)
                             else:
                                 action = None
@@ -146,7 +154,7 @@ class NavigatorBridge:
 
             return {
                 "status": "ok", "reply": reply, "source": "navigator",
-                "session_id": session_id, "action": action, "tasks": [t.id for t in assignment.tasks],
+                "session_id": session_id, "action": action if isinstance(action, list) else ([action] if action else []), "tasks": [t.id for t in assignment.tasks],
             }
             
         except Exception as exc:

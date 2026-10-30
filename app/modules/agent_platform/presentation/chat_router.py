@@ -821,11 +821,15 @@ async def user_ai_chat(
                 self.tool_calls = tool_calls
                 self.provider = "navigator"
 
-        # Ziskame akciu z navigatora a premenime ju na tool_call pre frontend
+        # Ziskame akcie z navigatora (moze to byt string alebo zoznam)
         nav_action = navigator_result.get("action")
         nav_tool_calls = ()
+        
         if nav_action:
-            nav_tool_calls = ({"name": nav_action, "args": {}},)
+            if isinstance(nav_action, list):
+                nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
+            elif isinstance(nav_action, str):
+                nav_tool_calls = ({"name": nav_action, "args": {}},)
 
         result = _NavResult(
             text=navigator_result.get("reply", ""),
