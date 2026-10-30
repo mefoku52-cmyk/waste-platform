@@ -27,6 +27,8 @@ NAV_PAGES = {
     "open_inquiries": ("dopyty", "dopyty, otazky k ponukam"),
     "open_chat": ("chat", "spravy medzi firmami"),
     "open_settings": ("nastavenia", "nastavenia, bezpecnost, heslo"),
+    "open_transport": ("prepravcovia", "prepravcovia, doprava, logistika"),
+    "open_subscription": ("predplatné", "predplatne, cennik, tarify, plan"),
 }
 
 
