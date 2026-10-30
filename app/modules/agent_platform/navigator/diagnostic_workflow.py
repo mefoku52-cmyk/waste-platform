@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
+
 """Diagnostický pracovný tok CMEP.
 
 Prechádza postupom:
@@ -12,7 +15,6 @@ Prechádza postupom:
 Nikdy neaplikuje návrhy do $HOME/waste-platform. Nevyžaduje API kľúče.
 """
 
-from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import UTC, datetime

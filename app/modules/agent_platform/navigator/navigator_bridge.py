@@ -1,4 +1,4 @@
-"""Bridge - realna AI logika pre navigatora s FALLBACKOM."""
+"""Bridge - realna AI logika pre navigatora s FALLBACKOM a dynamickym zoznamom stranok."""
 from __future__ import annotations
 import os
 import json
@@ -14,6 +14,44 @@ from app.modules.agent_platform.navigator.fallback_adapter import FallbackAdapte
 
 _log = logging.getLogger("cmep.navigator.bridge")
 
+# Stranky, ktore vie navigator otvorit. 
+# KLUCE musia existovat vo frontende (NO_ARG_NAV_ACTIONS v ai-chat-widget.tsx)
+NAV_PAGES = {
+    "open_dashboard": ("dashboard", "prehlad, domov, uvodna stranka"),
+    "open_listings_list": ("zoznam ponúk", "ponuky, trhovisko, moje ponuky"),
+    "open_new_listing": ("formulár novej ponuky", "pridat alebo vytvorit novu ponuku"),
+    "open_companies": ("zoznam firiem", "firmy"),
+    "open_new_company": ("formulár novej firmy", "pridat alebo vytvorit novu firmu"),
+    "open_documents": ("zoznam dokumentov", "dokumenty, zmluvy, certifikaty"),
+    "open_new_document": ("formulár nového dokumentu", "pridat alebo nahrat novy dokument"),
+    "open_inquiries": ("dopyty", "dopyty, otazky k ponukam"),
+    "open_chat": ("chat", "spravy medzi firmami"),
+    "open_settings": ("nastavenia", "nastavenia, bezpecnost, heslo"),
+}
+
+
+def build_nav_prompt(user_message: str) -> str:
+    pages = [
+        "- " + action + ": " + label + " (" + hint + ")"
+        for action, (label, hint) in NAV_PAGES.items()
+    ]
+    return (
+        "Si inteligentny asistent platformy CMEP.\n"
+        "Pouzivatel napisal: '" + user_message[:500] + "'\n\n"
+        "Stranky, ktore vies otvorit (a ich akcie):\n" + "\n".join(pages) + "\n\n"
+        "PRAVIDLA:\n"
+        "1. Ak pouzivatel chce otvorit niektoru z tychto stranok, odpovedz IBA JSON-om "
+        'v tvare {"action": "nazov_akcie"} a nic ine. Pouzi presne jeden nazov zo zoznamu.\n'
+        "2. Ak chce stranku, ktora v zozname nie je (napr. predplatne, prepravcovia), "
+        "alebo sa pyta na nieco ine, odpovedz normalnym textom bez JSON. "
+        "Nikdy nevymyslaj nazov akcie."
+    )
+
+
+def nav_reply(action: str) -> str:
+    return "Otváram: " + NAV_PAGES[action][0] + "."
+
+
 class NavigatorBridge:
     def __init__(self):
         self._intake = TaskIntake()
@@ -21,43 +59,38 @@ class NavigatorBridge:
         self._role_manager = AgentRoleManager()
         self._role_manager.register_agent(Agent(name="navigator", role=AgentRole.COORDINATOR))
         self._coordinator = TaskCoordinator(
-            policy=self._policy, role_manager=self._role_manager, max_attempts=1, default_timeout=10.0
+            policy=self._policy, role_manager=self._role_manager, max_attempts=1, default_timeout=10
         )
         
-        # 1. Vytvorime adaptéry - citame z Environment premenných!
         adapters = {}
         
-        # GROQ - hlavny model (pouzije GROQ_MODEL z Renderu, inak default)
+        # GROQ - hlavny model
         if os.environ.get("GROQ_API_KEY"):
             adapters["groq"] = GenericAPIAdapter(
-                name="groq",
-                api_url="https://api.groq.com/openai/v1/chat/completions",
-                api_key_env="GROQ_API_KEY",
+                name="groq", api_url="https://api.groq.com/openai/v1/chat/completions",
+                api_key_env="GROQ_API_KEY", 
                 model_name=os.environ.get("GROQ_MODEL", "llama3-8b-8192"),
                 policy=self._policy,
             )
             
-        # CEREBRAS - fallback 1 (pouzije CEREBRAS_MODEL z Renderu)
+        # CEREBRAS - fallback 1
         if os.environ.get("CEREBRAS_API_KEY"):
             adapters["cerebras"] = GenericAPIAdapter(
-                name="cerebras",
-                api_url=os.environ.get("CEREBRAS_API_URL", "https://api.cerebras.ai/v1/chat/completions"),
+                name="cerebras", api_url=os.environ.get("CEREBRAS_API_URL", "https://api.cerebras.ai/v1/chat/completions"),
                 api_key_env="CEREBRAS_API_KEY",
                 model_name=os.environ.get("CEREBRAS_MODEL", "llama3.1-8b"),
                 policy=self._policy,
             )
             
-        # MISTRAL - fallback 2 (pouzije MISTRAL_MODEL z Renderu)
+        # MISTRAL - fallback 2
         if os.environ.get("MISTRAL_API_KEY"):
             adapters["mistral"] = GenericAPIAdapter(
-                name="mistral",
-                api_url="https://api.mistral.ai/v1/chat/completions",
+                name="mistral", api_url="https://api.mistral.ai/v1/chat/completions",
                 api_key_env="MISTRAL_API_KEY",
                 model_name=os.environ.get("MISTRAL_MODEL", "mistral-small-latest"),
                 policy=self._policy,
             )
 
-        # 2. Zapojime ich do FallbackAdapteru
         if adapters:
             self._adapter = FallbackAdapter(adapters=adapters, policy=self._policy)
             _log.info(f"Navigator inicializovany s modelmi: {list(adapters.keys())}")
@@ -72,16 +105,14 @@ class NavigatorBridge:
         try:
             assignment = self._intake.accept(title=user_message[:100], description=user_message)
             
-            ai_prompt = (
-                f"Si inteligentny AI asistent pre platformu CMEP.\n"
-                f"Pouzivatel sa pyta: '{user_message}'\n\n"
-                "MAS DVE MOZNOSTI ODPOVEDE:\n"
-                "1. AK CHCE NAVIGOVAT (otvorit firmu, chat, dopyty, prehlad), odpovedz IBA ako JSON: {\"action\": \"open_companies\"} (alebo open_chat, open_inquiries, open_dashboard).\n"
-                "2. AK SA PYTA NA NIEČO INÉ, odpovedz NORMALNYM TEXTom (ziadny JSON)."
-            )
+            history_text = ""
+            if conversation_history:
+                history_text = "Predchadzajuca konverzacia:\n" + "\n".join([f"{m.role}: {m.content}" for m in conversation_history[-3:]]) + "\n\n"
+
+            ai_prompt = history_text + build_nav_prompt(user_message)
             
             if not self._adapter:
-                reply = "CHYBA: Na serveri nie su nastavene API kluce (Cerebras, Mistral alebo Groq)."
+                reply = "CHYBA: Na serveri nie su nastavene API kluce."
             else:
                 response = self._adapter.infer(ai_prompt)
                 action = None
@@ -97,22 +128,20 @@ class NavigatorBridge:
                         if clean_result.startswith("{") and clean_result.endswith("}"):
                             data = json.loads(clean_result)
                             action = data.get("action")
-                            if action:
-                                reply = f"Otvaram... ({action})"
+                            
+                            if isinstance(action, str) and action in NAV_PAGES:
+                                reply = nav_reply(action)
                             else:
-                                reply = "Rozumiem, ale neviem aku akciu mam vykonat."
+                                action = None
+                                reply = raw_text # Alebo "Tuto stranku neviem otvorit."
                         else:
                             reply = raw_text
                     except Exception:
                         reply = raw_text
 
             return {
-                "status": "ok",
-                "reply": reply,
-                "source": "navigator",
-                "session_id": session_id,
-                "action": action,
-                "tasks": [t.id for t in assignment.tasks],
+                "status": "ok", "reply": reply, "source": "navigator",
+                "session_id": session_id, "action": action, "tasks": [t.id for t in assignment.tasks],
             }
             
         except Exception as exc:

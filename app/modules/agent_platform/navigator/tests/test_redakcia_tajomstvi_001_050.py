@@ -6,10 +6,10 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from app.modules.agent_platform.navigator.logging_safe import redact, redact_any
 
-
 # ============================================================================
 # Oblasť 1: Redakcia tajomstiev v dátových štruktúrach (001-010)
 # ============================================================================
+
 
 def test_001_api_key_v_korenovom_poli():
     """API kľúč v hodnote koreňového poľa sa rediguje."""
@@ -74,7 +74,9 @@ def test_007_tajomstvo_v_kombinacii_s_beznym_textom():
 
 def test_008_rovnake_tajomstvo_na_viecero_miestach():
     """Žiadny rozpoznaný výskyt neujde."""
-    result = redact("key=sk_live_abcdefghijklmnopqrstuvwxyz and key=sk_live_abcdefghijklmnopqrstuvwxyz")
+    result = redact(
+        "key=sk_live_abcdefghijklmnopqrstuvwxyz and key=sk_live_abcdefghijklmnopqrstuvwxyz"
+    )
     assert result.count("[REDACTED]") >= 2
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in result
 
@@ -98,6 +100,7 @@ def test_010_prazdna_hodnota_citliveho_pola():
 # Oblasť 2: Redakcia v textoch a serializovaných dátach (011-020)
 # ============================================================================
 
+
 def test_011_bearer_token_v_obycajnom_texte():
     """Token sa odstráni alebo nahradí."""
     result = redact("Authorization: Bearer ghp_abcdefghijklmnopqrstuvwxyz1234567890")
@@ -108,6 +111,7 @@ def test_011_bearer_token_v_obycajnom_texte():
 def test_012_token_v_json_retazci():
     """Redakcia funguje pred alebo po serializácii."""
     import json
+
     data = {"token": "ghp_abcdefghijklmnopqrstuvwxyz1234567890"}
     serialized = json.dumps(data)
     result = redact(serialized)
@@ -140,7 +144,9 @@ def test_016_tajomstvo_v_retazci_s_uvozovkami():
 
 def test_017_viac_tokenov_oddelanych_medzerami():
     """Každý rozpoznaný token sa zrediguje."""
-    result = redact("token1=ghp_abcdefghijklmnopqrstuvwxyz1234567890 token2=sk_live_abcdefghijklmnopqrstuvwxyz")
+    result = redact(
+        "token1=ghp_abcdefghijklmnopqrstuvwxyz1234567890 token2=sk_live_abcdefghijklmnopqrstuvwxyz"
+    )
     assert "ghp_abcdefghijklmnopqrstuvwxyz1234567890" not in result
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in result
 
@@ -169,6 +175,7 @@ def test_020_neplatny_serializovany_vstup_obsahujici_token():
 # ============================================================================
 # Oblasť 3: Výnimky, tracebacky a chybové správy (021-030)
 # ============================================================================
+
 
 def test_021_tajomstvo_v_sprave_vynimky():
     """Správa sa zrediguje pred zaznamenaním."""
@@ -212,6 +219,7 @@ def test_024_tajomstvo_v_kontexte_context():
 def test_025_tajomstvo_v_tracebacku():
     """Stopu nemožno použiť na získanie tajomstva."""
     import traceback
+
     try:
         raise ValueError("sk_live_abcdefghijklmnopqrstuvwxyz")
     except ValueError:
@@ -222,6 +230,7 @@ def test_025_tajomstvo_v_tracebacku():
 
 def test_026_vlastna_vynimka_s_citlivym_atributom():
     """Atribút sa nezverejní pri serializácii."""
+
     class CustomError(Exception):
         def __init__(self, secret):
             self.secret = secret
@@ -245,6 +254,7 @@ def test_027_vynimka_bez_spravy():
 
 def test_028_vynimka_s_nestandardnym_str():
     """Chybná konverzia textu neobíde bezpečné spracovanie."""
+
     class BadStrError(Exception):
         def __str__(self):
             return "sk_live_abcdefghijklmnopqrstuvwxyz"
@@ -277,6 +287,7 @@ def test_030_redakcia_zlyha_pochode_spracovania_vynimky():
 # ============================================================================
 # Oblasť 4: Hraničné prípady redakcie (031-040)
 # ============================================================================
+
 
 def test_031_unicode_znaky_v_bliznosti_tajomstva():
     """Rozpoznávanie zachová bezpečnosť pri Unicode texte."""
@@ -318,7 +329,7 @@ def test_036_velky_pocet_vyskytov():
 
 def test_037_cyklicka_data_struktura():
     """Redakcia cyklických štruktúr - NEOVERITEĽNÉ: aktuálna implementácia spôsobí RecursionError."""
-    import sys
+
     data = {"api_key": "sk_live_abcdefghijklmnopqrstuvwxyz"}
     data["self"] = data
     try:
@@ -329,14 +340,14 @@ def test_037_cyklicka_data_struktura():
         assert True  # Dokumentovaná obmedzenosť
 
 
-
-
 def test_038_objekt_s_chybovym_pristupom_k_atributu():
     """Bezpečné spracovanie nezverejní citlivý stav objektu."""
+
     class BadAttr:
         @property
         def api_key(self):
             raise ValueError("cannot access")
+
     result = redact_any({"obj": BadAttr()})
     assert isinstance(result, dict)
 
@@ -357,10 +368,13 @@ def test_040_tajomstvo_podobne_ale_nie_totozne_s_vzorom():
 # Oblasť 5: Redakcia naprieč systémom (041-050)
 # ============================================================================
 
+
 def test_041_vysledok_adaptera_pred_ulozenim():
     """Tajomstvo sa nezapíše do denníka."""
-    from app.modules.agent_platform.navigator.decision_log import DecisionLog
     import tempfile
+
+    from app.modules.agent_platform.navigator.decision_log import DecisionLog
+
     with tempfile.TemporaryDirectory() as td:
         log = DecisionLog(f"{td}/decisions.jsonl", authorize=True)
         log.add_decision("d1", "test", "summary with sk_live_abcdefghijklmnopqrstuvwxyz", actor="a")
@@ -370,10 +384,12 @@ def test_041_vysledok_adaptera_pred_ulozenim():
 
 def test_042_vysledok_koordinatora_pred_vratenim():
     """Tajomstvo sa nevráti volajúcemu."""
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
     from app.modules.agent_platform.navigator.task_coordinator import TaskCoordinator
-    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
+
     def leak():
         return {"api_key": "sk_live_abcdefghijklmnopqrstuvwxyz"}
+
     coord = TaskCoordinator(policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
     result = coord.run("t1", leak)
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in str(result.result)
@@ -382,8 +398,11 @@ def test_042_vysledok_koordinatora_pred_vratenim():
 def test_043_chybove_hlásenie_diagnostického_workflow():
     """Tajomstvo sa nezobrazí v reporte."""
     from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
-    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
-    wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
+
+    wf = DiagnosticWorkflow(
+        repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED)
+    )
     result = wf.run(agent_name="observer")
     report_str = str(result["report"])
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in report_str
@@ -392,8 +411,11 @@ def test_043_chybove_hlásenie_diagnostického_workflow():
 def test_044_detail_blokera_diagnostiky():
     """Citlivý obsah blokéra sa zrediguje."""
     from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
-    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
-    wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
+
+    wf = DiagnosticWorkflow(
+        repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED)
+    )
     result = wf.run(agent_name="observer")
     for b in result["report"]["blockers"]:
         assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in str(b)
@@ -401,10 +423,19 @@ def test_044_detail_blokera_diagnostiky():
 
 def test_045_porovnanie_vystupov_modelov():
     """Porovnávač nezverejní rozpoznané tajomstvá."""
-    from app.modules.agent_platform.navigator.model_comparator import compare
     from app.modules.agent_platform.navigator.model_adapter import ModelResponse
-    a = ModelResponse(adapter="m", result="sk_live_abcdefghijklmnopqrstuvwxyz", deterministic=True, mode="approved", available=True)
-    b = ModelResponse(adapter="m", result="different", deterministic=True, mode="approved", available=True)
+    from app.modules.agent_platform.navigator.model_comparator import compare
+
+    a = ModelResponse(
+        adapter="m",
+        result="sk_live_abcdefghijklmnopqrstuvwxyz",
+        deterministic=True,
+        mode="approved",
+        available=True,
+    )
+    b = ModelResponse(
+        adapter="m", result="different", deterministic=True, mode="approved", available=True
+    )
     r = compare(a, b)
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in str(r.evidence_a.result_hash)
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in str(r.evidence_b.result_hash)
@@ -412,11 +443,15 @@ def test_045_porovnanie_vystupov_modelov():
 
 def test_046_audita_udalost_obsahujici_citlivy_vstup():
     """Uložená udalosť je bezpečne redigovaná."""
-    from app.modules.agent_platform.navigator.decision_log import DecisionLog
     import tempfile
+
+    from app.modules.agent_platform.navigator.decision_log import DecisionLog
+
     with tempfile.TemporaryDirectory() as td:
         log = DecisionLog(f"{td}/decisions.jsonl", authorize=True)
-        log.add_decision("d1", "test", "summary with ghp_abcdefghijklmnopqrstuvwxyz1234567890", actor="a")
+        log.add_decision(
+            "d1", "test", "summary with ghp_abcdefghijklmnopqrstuvwxyz1234567890", actor="a"
+        )
         raw = log.log_path.read_text(encoding="utf-8")
         assert "ghp_abcdefghijklmnopqrstuvwxyz1234567890" not in raw
 
@@ -424,10 +459,14 @@ def test_046_audita_udalost_obsahujici_citlivy_vstup():
 def test_047_redakcia_pred_exportom_reportu():
     """Export neobsahuje pôvodné tajomstvo."""
     from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
-    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
-    wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
+
+    wf = DiagnosticWorkflow(
+        repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED)
+    )
     result = wf.run(agent_name="observer")
     import json
+
     exported = json.dumps(result["report"])
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in exported
 
@@ -435,6 +474,7 @@ def test_047_redakcia_pred_exportom_reportu():
 def test_048_redakcia_v_diagnostickom_logu():
     """Log zostáva bez rozpoznaných tajomství."""
     from app.modules.agent_platform.navigator.logging_safe import SafeLogger
+
     logger = SafeLogger("test_redaction")
     logger.info("api_key=sk_live_abcdefghijklmnopqrstuvwxyz")
     assert True
@@ -443,6 +483,7 @@ def test_048_redakcia_v_diagnostickom_logu():
 def test_049_redakcia_po_opakovanim_spracovania():
     """Opakované spracovanie nezavedie nový únik."""
     from app.modules.agent_platform.navigator.logging_safe import redact_any
+
     data = {"api_key": "sk_live_abcdefghijklmnopqrstuvwxyz"}
     r1 = redact_any(data)
     r2 = redact_any(r1)
@@ -452,8 +493,11 @@ def test_049_redakcia_po_opakovanim_spracovania():
 def test_050_suhrny_report_z_viecero_zdroju():
     """Redakcia sa uplatní na všetky podporované zdroje."""
     from app.modules.agent_platform.navigator.diagnostic_workflow import DiagnosticWorkflow
-    from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
-    wf = DiagnosticWorkflow(repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED))
+    from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
+
+    wf = DiagnosticWorkflow(
+        repo_path="/nonexistent", policy=ExecutionPolicy(mode=ExecutionMode.APPROVED)
+    )
     result = wf.run(agent_name="observer")
     report_str = str(result)
     assert "sk_live_abcdefghijklmnopqrstuvwxyz" not in report_str
