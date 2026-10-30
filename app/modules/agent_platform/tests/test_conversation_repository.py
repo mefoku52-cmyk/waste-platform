@@ -149,3 +149,47 @@ async def test_get_or_create_rejects_missing_user_id(session) -> None:
     repo = SqlAlchemyAiConversationRepository(session)
     with pytest.raises(IntegrityError):
         await repo.get_or_create(session_id="s-bad", user_id=None, company_id=None)
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_rejects_session_owned_by_another_user(session) -> None:
+    repo = SqlAlchemyAiConversationRepository(session)
+    owner_id = str(uuid.uuid4())
+    other_id = str(uuid.uuid4())
+    first = await repo.get_or_create(
+        session_id="shared-session",
+        user_id=owner_id,
+        company_id=None,
+    )
+
+    with pytest.raises(PermissionError):
+        await repo.get_or_create(
+            session_id="shared-session",
+            user_id=other_id,
+            company_id=None,
+        )
+
+    assert (await repo.get_or_create(
+        session_id="shared-session",
+        user_id=owner_id,
+        company_id=None,
+    )).id == first.id
+
+
+@pytest.mark.asyncio
+async def test_get_or_create_rejects_session_reused_across_companies(session) -> None:
+    repo = SqlAlchemyAiConversationRepository(session)
+    user_id = str(uuid.uuid4())
+    company_id = str(uuid.uuid4())
+    await repo.get_or_create(
+        session_id="company-session",
+        user_id=user_id,
+        company_id=company_id,
+    )
+
+    with pytest.raises(PermissionError):
+        await repo.get_or_create(
+            session_id="company-session",
+            user_id=user_id,
+            company_id=str(uuid.uuid4()),
+        )

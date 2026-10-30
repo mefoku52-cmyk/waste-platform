@@ -1,6 +1,6 @@
 """listings application services."""
 
-from app.shared.domain.exceptions import NotFoundDomainError
+from app.shared.domain.exceptions import ForbiddenDomainError, NotFoundDomainError
 
 from ..domain.entities import ListingsEntity
 from ..domain.repositories import ListingsRepository
@@ -144,9 +144,7 @@ class ListingsService:
         if existing is None:
             raise NotFoundDomainError(f"Listing {listing_id} not found")
         owner_ids = {str(x) for x in (owner_company_ids or []) if x is not None}
-        if owner_ids and str(existing.company_id) not in owner_ids:
-            from app.shared.domain.exceptions import ValidationDomainError
-
-            raise ValidationDomainError("Statistiky moze vidiet len vlastnik ponuky.")
+        if not owner_ids or str(existing.company_id) not in owner_ids:
+            raise ForbiddenDomainError("Statistiky moze vidiet len vlastnik ponuky.")
         stats = await self.repository.get_listing_stats(listing_id)
         return {"views": stats["views"], "uniqueViewers": stats["unique_viewers"]}

@@ -91,3 +91,15 @@ async def test_chat_gate_no_company_returns_403(monkeypatch) -> None:
             entitlements=ent,  # type: ignore[arg-type]
         )
     assert exc.value.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_control_mode_read_failure_fails_closed() -> None:
+    class _BrokenControl:
+        async def get_mode(self):
+            raise RuntimeError("database unavailable")
+
+    with pytest.raises(HTTPException) as exc:
+        await chat_router._resolve_chat_gate(_BrokenControl())
+
+    assert exc.value.status_code == 503
