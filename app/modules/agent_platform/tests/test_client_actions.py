@@ -277,3 +277,22 @@ def test_chat_router_client_names_match_schema() -> None:
     from app.modules.agent_platform.presentation import chat_router
 
     assert chat_router.CLIENT_TOOL_NAMES == CLIENT_ACTION_NAMES
+
+
+def test_validator_accepts_safe_navigation_actions() -> None:
+    for name in ("open_transport", "open_subscription", "open_marketplace"):
+        result = validate_client_action(name, {"ignored": "argument"})
+        assert result.valid is True, name
+        assert result.arguments == {}, name
+
+    assert "select_plan_ai" not in CLIENT_ACTION_NAMES
+    assert "select_plan_ai_nav" not in CLIENT_ACTION_NAMES
+
+
+def test_open_admin_client_action_is_server_authorized(monkeypatch) -> None:
+    from app.modules.agent_platform.presentation import chat_router
+
+    monkeypatch.setattr(chat_router, "is_platform_admin", lambda user: user == "admin")
+    assert chat_router._client_action_allowed_for_user("open_admin", "user") is False
+    assert chat_router._client_action_allowed_for_user("open_admin", "admin") is True
+    assert chat_router._client_action_allowed_for_user("open_dashboard", "user") is True

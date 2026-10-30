@@ -133,6 +133,12 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
         stmt = select(AiConversationModel).where(AiConversationModel.session_id == session_id)
         existing = (await self._session.execute(stmt)).scalar_one_or_none()
         if existing is not None:
+            requested_user_id = _uuid_or_none(user_id)
+            requested_company_id = _uuid_or_none(company_id)
+            if existing.user_id != requested_user_id:
+                raise PermissionError("conversation belongs to another user")
+            if existing.company_id != requested_company_id:
+                raise PermissionError("conversation belongs to another company")
             return _to_conv(existing)
 
         now = datetime.now(UTC).replace(tzinfo=None)

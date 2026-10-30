@@ -22,7 +22,6 @@ from app.modules.agent_platform.domain.control.agent_gate import (
     AgentGate,
     resolve_agent_gate,
 )
-from app.modules.agent_platform.domain.control.control_mode import ControlMode
 from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_edge_tts
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
     SqlAlchemyAiConversationRepository,
@@ -658,24 +657,32 @@ def _schedule_summary(conversation_id: str | None) -> None:
     task.add_done_callback(_SUMMARY_TASKS.discard)
 
 
-async def _resolve_chat_gate(control) -> AgentGate:
-    """Best-effort read of the platform ControlMode -> per-turn agent gate.
+def _client_action_allowed_for_user(name: str, user: object) -> bool:
+    """Apply role-sensitive authorization to client actions on the server."""
+    if name == "open_admin":
+        return is_platform_admin(user)
+    return True
 
-    Resilience mirrors the security check: if the control state cannot be read
-    (e.g. a transient DB error) we fall back to NORMAL instead of blocking every
-    chat. The control row already exists on a healthy deployment.
+
+async def _resolve_chat_gate(control) -> AgentGate:
+    """Read the platform ControlMode gate, failing closed if unavailable.
+
+    A control-state read failure must not silently disable the operator kill
+    switch. Return HTTP 503 so the request can be retried after recovery.
     """
     try:
         mode = await control.get_mode()
     except Exception as exc:
         import logging as _log
 
-        _log.getLogger("cmep.chat").warning(
-            "CONTROL_MODE_READ_FAILED type=%s msg=%s",
+        _log.getLogger("cmep.chat").exception(
+            "CONTROL_MODE_READ_FAILED type=%s",
             type(exc).__name__,
-            str(exc)[:200],
         )
-    mode = ControlMode.NORMAL
+        raise HTTPException(
+            status_code=503,
+            detail="AI asistent je momentálne nedostupný.",
+        ) from exc
     return resolve_agent_gate(mode)
 
 
@@ -745,13 +752,18 @@ async def user_ai_chat(
                 summary = await get_summary(conversation_id=conversation_id)
                 summary_text = summary.content if summary else None
         history = build_history(stored, summary=summary_text)
+    except PermissionError as exc:
+        # Avoid revealing whether another user's session identifier exists.
+        raise HTTPException(
+            status_code=404,
+            detail="Konverzácia neexistuje.",
+        ) from exc
     except Exception as exc:
         import logging as _log
 
         _log.getLogger("cmep.chat").exception(
-            "CONVERSATION_LOAD_EXCEPTION type=%s msg=%s",
+            "CONVERSATION_LOAD_EXCEPTION type=%s",
             type(exc).__name__,
-            str(exc)[:200],
         )
         conversation_id = None
         history = ()
@@ -775,11 +787,13 @@ async def user_ai_chat(
         import logging as _log
 
         _log.getLogger("cmep.chat").exception(
-            "SECURITY_CHECK_EXCEPTION type=%s msg=%s",
+            "SECURITY_CHECK_EXCEPTION type=%s",
             type(exc).__name__,
-            str(exc)[:200],
         )
-        security_decision = "allow"
+        raise HTTPException(
+            status_code=503,
+            detail="Bezpečnostná kontrola dočasne nedostupná.",
+        ) from exc
 
     # Ak je decision BLOCK, chat sa zastavi. Vratime neutralnu odpoved,
     # aby sme neprezradili, ze nieco detegujeme.
@@ -795,23 +809,13 @@ async def user_ai_chat(
     navigator_result = None
     try:
         bridge = get_navigator_bridge()
-        # Ziskame históriu z databázy (ak existuje)
-        db_history = ()
-        if conversation_id:
-            try:
-                # Toto je zjednodušené, reálne by sme mali použiť conversations.get_history()
-                # Ale keďže máme 'history' premennú, použijeme tú
-                pass
-            except Exception:
-                pass
-        
         nav_response = await bridge.respond(
             system_prompt=system_prompt,
             user_message=text,
             actor_id=actor_id,
             actor_type="user",
             session_id=session_id,
-            conversation_history=history or db_history,
+            conversation_history=history,
             old_orchestrator=None,
         )
         if isinstance(nav_response, dict) and nav_response.get("status") == "ok":
@@ -834,7 +838,7 @@ async def user_ai_chat(
         # Ziskame akcie z navigatora (moze to byt string alebo zoznam)
         nav_action = navigator_result.get("action")
         nav_tool_calls = ()
-        
+
         if nav_action:
             if isinstance(nav_action, list):
                 nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
@@ -910,7 +914,7 @@ async def user_ai_chat(
         result_text = result.text
 
     if conversation_id:
-        try:
+        with contextlib.suppress(Exception):
             await conversations.append_messages(
                 conversation_id=conversation_id,
                 messages=[
@@ -918,8 +922,6 @@ async def user_ai_chat(
                     {"role": "assistant", "content": result.text},
                 ],
             )
-        except Exception:
-            pass  # best-effort: never break caller
         # Detached: summarize older turns once the conversation grows. The reply
         # has already been assembled, so this can neither block nor break it.
         _schedule_summary(conversation_id)
@@ -939,7 +941,7 @@ async def user_ai_chat(
     for tc in result.tool_calls or ():
         name = str(tc.get("name") or "")
         if name in CLIENT_TOOL_NAMES:
-            if gate.allows_client_action(name):
+            if gate.allows_client_action(name) and _client_action_allowed_for_user(name, current_user):
                 client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
             else:
                 # READ_ONLY: a mutating client action is never surfaced, so the
@@ -950,7 +952,7 @@ async def user_ai_chat(
 
     if suppressed_actions:
         note = (
-            "Režim len na čítanie: nevykonal som akciu "
+            "Nepovolil som tieto akcie: "
             + ", ".join(sorted(set(suppressed_actions)))
             + "."
         )

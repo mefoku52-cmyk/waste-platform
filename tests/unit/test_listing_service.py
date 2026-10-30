@@ -9,7 +9,11 @@ import pytest
 from app.modules.listings.application.services import ListingsService
 from app.modules.listings.domain.entities import ListingsEntity
 from app.modules.listings.domain.enums import ListingsStatus
-from app.shared.domain.exceptions import NotFoundDomainError, ValidationDomainError
+from app.shared.domain.exceptions import (
+    ForbiddenDomainError,
+    NotFoundDomainError,
+    ValidationDomainError,
+)
 
 
 def _listing(**over):
@@ -78,8 +82,22 @@ async def test_get_stats_wrong_owner():
     repo = MagicMock()
     repo.get_by_id = AsyncMock(return_value=lst)
     svc = ListingsService(repo)
-    with pytest.raises(ValidationDomainError):
+    with pytest.raises(ForbiddenDomainError):
         await svc.get_stats(str(lst.id), owner_company_ids=["other-company"])
+
+
+@pytest.mark.asyncio
+async def test_get_stats_rejects_user_without_company_memberships():
+    lst = _listing()
+    repo = MagicMock()
+    repo.get_by_id = AsyncMock(return_value=lst)
+    repo.get_listing_stats = AsyncMock(return_value={"views": 7, "unique_viewers": 3})
+    svc = ListingsService(repo)
+
+    with pytest.raises(ForbiddenDomainError):
+        await svc.get_stats(str(lst.id), owner_company_ids=[])
+
+    repo.get_listing_stats.assert_not_awaited()
 
 
 @pytest.mark.asyncio
