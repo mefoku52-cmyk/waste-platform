@@ -2,11 +2,9 @@
 
 from __future__ import annotations
 
-import pytest
-
-from app.modules.agent_platform.navigator.model_adapter import ModelAdapter, ModelResponse
-from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
+from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
 from app.modules.agent_platform.navigator.fallback_adapter import FallbackAdapter
+from app.modules.agent_platform.navigator.model_adapter import ModelAdapter, ModelResponse
 from app.modules.agent_platform.navigator.model_config import MODEL_PRIORITY
 
 
