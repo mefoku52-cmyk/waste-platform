@@ -23,7 +23,7 @@ export default function DocumentsPage() {
         kicker="DOKUMENTY"
         title="Dokumenty"
         subtitle="Správa vašich dokumentov a zmlúv."
-        imageUrl="https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=2070&auto=format&fit=crop"
+        imageUrl="/images/heroes/fotky.jpg"
       />
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">

@@ -13,6 +13,12 @@ export default function ChatPage() {
 
   return (
     <AppShell>
+      <PremiumHero
+        kicker="CHAT"
+        title="Chat"
+        subtitle="Komunikácia s firmami a partnermi."
+        imageUrl="/images/heroes/fotky.jpg"
+      />
       <ChatShell>
         <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
           <p className="font-serif text-xl" style={{ color: GOLD_BRIGHT }}>
