@@ -119,7 +119,7 @@ export default function SubscriptionPage() {
               <li className="flex items-start gap-2"><span style={{ color: GOLD }}>✓</span> Rýchlejšia práca s ponukami a dopytmi</li>
               <li className="flex items-start gap-2"><span style={{ color: GOLD }}>✓</span> Automatické dopĺňanie údajov</li>
             </ul>
-            <button onClick={() => handleSelectPlan("ai")} className="mt-8 w-full rounded-xl py-3 text-sm font-semibold transition hover:opacity-90" style={{ background: GOLD, color: "#0b0b0b" }}>
+            <button id="btn-select-ai" onClick={() => handleSelectPlan("ai")} className="mt-8 w-full rounded-xl py-3 text-sm font-semibold transition hover:opacity-90" style={{ background: GOLD, color: "#0b0b0b" }}>
               Vybrať plán
             </button>
           </div>
@@ -145,7 +145,7 @@ export default function SubscriptionPage() {
               <li className="flex items-start gap-2"><span style={{ color: "#2dd4bf" }}>✓</span> Predikcia nákladov a času</li>
               <li className="flex items-start gap-2"><span style={{ color: "#2dd4bf" }}>✓</span> Plná integrácia do platformy</li>
             </ul>
-            <button onClick={() => handleSelectPlan("ai_navigation")} className="mt-8 w-full rounded-xl py-3 text-sm font-semibold transition hover:opacity-90" style={{ background: "#2dd4bf", color: "#0b0b0b" }}>
+            <button id="btn-select-ai-nav" onClick={() => handleSelectPlan("ai_navigation")} className="mt-8 w-full rounded-xl py-3 text-sm font-semibold transition hover:opacity-90" style={{ background: "#2dd4bf", color: "#0b0b0b" }}>
               Vybrať plán
             </button>
           </div>

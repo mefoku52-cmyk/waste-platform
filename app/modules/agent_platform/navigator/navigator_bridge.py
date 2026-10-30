@@ -29,6 +29,9 @@ NAV_PAGES = {
     "open_settings": ("nastavenia", "nastavenia, bezpecnost, heslo"),
     "open_transport": ("prepravcovia", "prepravcovia, doprava, logistika"),
     "open_subscription": ("predplatné", "predplatne, cennik, tarify, plan"),
+    "open_marketplace": ("marketplace", "vsetky ponuky, trh, marketplace"),
+    "select_plan_ai": ("AI plan", "vybrat AI plan, chcem AI"),
+    "select_plan_ai_nav": ("AI Navigacia plan", "vybrat AI navigaciu, chcem navigaciu"),
 }
 
 
