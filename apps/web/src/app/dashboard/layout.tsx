@@ -9,6 +9,8 @@ import { useAuthRequired } from '@/features/auth/hooks/use-auth-required';
  * Oprávnenia sa vždy overujú aj na serveri — toto je len UI vrstva, ktorá
  * presmeruje neprihláseného používateľa na /login.
  */
+import { AiChatWidget } from '@/features/agent-platform/components/ai-chat-widget';
+
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { isLoading } = useAuthRequired();
 
@@ -22,5 +24,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return <>{children}
+        <AiChatWidget /></>;
 }

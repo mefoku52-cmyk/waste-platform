@@ -1,11 +1,12 @@
 'use client';
 
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 
 import { AppShell } from '@/components/layout/app-shell';
 import { useListings, useMarketplace } from '@/features/listings';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { http } from '@/lib/api/http';
 import { useT } from '@/lib/i18n/context';
 import { SignedImage } from '@/features/uploads/components/signed-image';
@@ -74,6 +75,13 @@ type Listing = {
 export default function MyListingsPage() {
   const { t } = useT();
   const [mine, setMine] = useState(true);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'marketplace') {
+      setMine(false);
+    }
+  }, [searchParams]);
   const own = useListings() as {
     data?: unknown;
     isLoading?: boolean;
