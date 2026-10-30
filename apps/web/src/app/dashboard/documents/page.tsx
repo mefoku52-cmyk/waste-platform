@@ -28,12 +28,8 @@ export default function DocumentsPage() {
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-              {t('documents.section')}
-            </p>
-            <h1 className="mt-2 font-serif text-3xl sm:text-4xl" style={{ color: GOLD_BRIGHT }}>
-              {t('documents.title')}
-            </h1>
+            
+            
           </div>
           <Link href="/dashboard/documents/new" className="rounded-full border px-4 py-2 text-sm" style={{ borderColor: 'rgba(201,168,76,0.48)', color: GOLD_BRIGHT }}>
             + {t('documents.addButton')}

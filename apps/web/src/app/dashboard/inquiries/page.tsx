@@ -25,12 +25,7 @@ export default function InquiriesPage() {
         imageUrl="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
-          {t('inquiries.section')}
-        </p>
-        <h1 className="mt-2 font-serif text-3xl sm:text-4xl" style={{ color: GOLD_BRIGHT }}>
-          {t('inquiries.title')}
-        </h1>
+        
 
         <section className="mt-8">
           <div className="rounded-2xl border p-5 sm:p-6" style={BOX_STYLE}>
