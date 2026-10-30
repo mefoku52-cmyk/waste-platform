@@ -99,7 +99,12 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
       localStorage.setItem('cmep_chat_history', JSON.stringify(messages));
     }
   }, [messages]);
-  const [sessionId, setSessionId] = useState<string>('');
+  const [sessionId, setSessionId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('cmep_chat_session_id') || '';
+    }
+    return '';
+  });
   const [persona, setPersona] = useState<Persona>('bystry');
   const [toast, setToast] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -108,7 +113,14 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    setSessionId(aiSessionStore.getSessionId());
+    const storedSession = localStorage.getItem('cmep_chat_session_id');
+    if (storedSession) {
+      setSessionId(storedSession);
+    } else {
+      const newSession = aiSessionStore.getSessionId();
+      setSessionId(newSession);
+      localStorage.setItem('cmep_chat_session_id', newSession);
+    }
     setPersona(personaStore.get());
   }, []);
 
@@ -364,20 +376,31 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   }
 
   if (tierLoading) {
-    if (minimized) {
     return (
-      <button
-        onClick={() => setMinimized(false)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg"
-        style={{ background: GOLD }}
-      >
-        <span className="text-2xl">💬</span>
-      </button>
+      <div className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg" style={{ background: '#1a1a1a' }}>
+        <span className="text-xs" style={{ color: MUTED }}>...</span>
+      </div>
     );
-  }
   }
   if (tier === 'free' || tier === 'unknown') {
     return <AiUpgradePanel reason={tier} companyId={companyId} />;
+  }
+
+  // AK JE CHAT MINIMALIZOVANY, ZOBRAZIME LEN MALU BUBLINKU
+  if (minimized) {
+    return (
+      <button
+        type="button"
+        onClick={() => setMinimized(false)}
+        aria-label="Otvoriť chat"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition hover:scale-105"
+        style={{ background: '#c9a84c', color: '#0b0b0b' }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </button>
+    );
   }
 
   return (
