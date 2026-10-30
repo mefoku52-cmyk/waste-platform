@@ -669,13 +669,14 @@ async def _resolve_chat_gate(control) -> AgentGate:
         mode = await control.get_mode()
     except Exception as exc:
         import logging as _log
-
         _log.getLogger("cmep.chat").warning(
             "CONTROL_MODE_READ_FAILED type=%s msg=%s",
             type(exc).__name__,
             str(exc)[:200],
         )
-    mode = ControlMode.NORMAL
+        # fail-closed: nepokračuj v NORMAL pri chybe
+        from fastapi import HTTPException
+        raise HTTPException(status_code=503, detail="AI riadenie dočasne nedostupné") from exc
     return resolve_agent_gate(mode)
 
 
@@ -773,13 +774,14 @@ async def user_ai_chat(
         )
     except Exception as exc:
         import logging as _log
-
         _log.getLogger("cmep.chat").exception(
             "SECURITY_CHECK_EXCEPTION type=%s msg=%s",
             type(exc).__name__,
             str(exc)[:200],
         )
-        security_decision = "allow"
+        # fail-closed
+        from fastapi import HTTPException
+        raise HTTPException(status_code=503, detail="Bezpečnostná kontrola dočasne nedostupná") from exc
 
     # Ak je decision BLOCK, chat sa zastavi. Vratime neutralnu odpoved,
     # aby sme neprezradili, ze nieco detegujeme.
@@ -836,10 +838,19 @@ async def user_ai_chat(
         nav_tool_calls = ()
         
         if nav_action:
+            def _to_tc(a):
+                if isinstance(a, str):
+                    return {"name": a, "args": {}}
+                if isinstance(a, dict):
+                    name = a.get("name") or a.get("action") or ""
+                    args = a.get("args") or a.get("arguments") or {}
+                    return {"name": name, "args": dict(args) if isinstance(args, dict) else {}}
+                return None
             if isinstance(nav_action, list):
-                nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
-            elif isinstance(nav_action, str):
-                nav_tool_calls = ({"name": nav_action, "args": {}},)
+                nav_tool_calls = tuple(tc for a in nav_action if (tc := _to_tc(a)) and tc["name"])
+            else:
+                tc = _to_tc(nav_action)
+                nav_tool_calls = (tc,) if tc and tc["name"] else ()
 
         result = _NavResult(
             text=navigator_result.get("reply", ""),

@@ -120,17 +120,24 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
         user_id: str,
         company_id: str | None,
     ) -> AiConversation:
+        uid = _uuid_or_none(user_id)
+        cid = _uuid_or_none(company_id)
+
         stmt = select(AiConversationModel).where(AiConversationModel.session_id == session_id)
         existing = (await self._session.execute(stmt)).scalar_one_or_none()
         if existing is not None:
+            if existing.user_id != uid:
+                raise PermissionError("conversation belongs to another user")
+            if existing.company_id != cid:
+                raise PermissionError("conversation belongs to another company")
             return _to_conv(existing)
 
         now = datetime.now(UTC).replace(tzinfo=None)
         model = AiConversationModel(
             id=uuid.uuid4(),
             session_id=session_id,
-            user_id=_uuid_or_none(user_id),
-            company_id=_uuid_or_none(company_id),
+            user_id=uid,
+            company_id=cid,
             created_at=now,
             updated_at=now,
         )
@@ -139,7 +146,13 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
             await self._session.commit()
         except Exception:
             await self._session.rollback()
-            raise
+            # race: re-load and re-check ownership
+            existing = (await self._session.execute(stmt)).scalar_one_or_none()
+            if existing is None:
+                raise
+            if existing.user_id != uid or existing.company_id != cid:
+                raise PermissionError("conversation belongs to another actor")
+            return _to_conv(existing)
         return _to_conv(model)
 
     async def get_messages(
