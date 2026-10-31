@@ -1,0 +1,452 @@
+CMEP AI - DAVKA 04
+FORMULARE, NAHLAD A POTVRDENIE
+READ-ONLY AUDIT
+Datum: Sat Oct 31 09:14:18 CET 2026
+
+=== 1. STAV REPOZITARA ===
+audit/hardening-2026-10-14
+46de0969d99c7c775f4fec084bf4d27d8c4e790b
+M  .pre-commit-config.yaml
+ M app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py
+M  app/modules/agent_platform/presentation/chat_router.py
+ M app/modules/listings/application/services.py
+?? app/modules/agent_platform/presentation/user_ai_chat_router.py
+?? cmep_ai_architektura/
+?? final_check.py
+?? waste-platform/
+
+=== 2. FRONTEND AI FORMULARE ===
+
+--- apps/web/src/lib/ai-agent/use-ai-form-filling.ts ---
+5:import { cmepAI } from './dispatcher';
+9:// Registers the `fill_form_field` and `highlight_field` client actions for the
+11:// field, field not on screen). The dispatcher turns a throw into status
+12:// 'error', so the widget only ever shows "✓" when the value really landed —
+13:// this is the fix for the old silent `catch {}` that faked success.
+29:  setValue: UseFormSetValue<T>;
+34:export function useAiFormFilling<T extends FieldValues>({ setValue, fields }: Options<T>) {
+38:    const unregFill = cmepAI.register('fill_form_field', (args) => {
+43:      setValue(field as Path<T>, args.value as never, {
+50:    const unregHighlight = cmepAI.register('highlight_field', (args) => {
+65:  }, [setValue, fields]);
+
+--- apps/web/src/lib/ai-agent/form-fields.ts ---
+
+--- apps/web/src/lib/ai-agent/page-context.ts ---
+
+--- apps/web/src/lib/ai-agent/dispatcher.ts ---
+3:// Comet-style client-side action dispatcher.
+4:// Komponenty registrujú handlery, AI ich volá cez client_actions.
+16:  status: 'ok' | 'error' | 'no_handler';
+17:  error?: string;
+31:  async dispatch(name: string, args: Record<string, unknown>): Promise<AIEvent> {
+45:      const ev: AIEvent = { type: 'action', name, args, status: 'error', error: msg };
+
+--- apps/web/src/features/agent-platform/components/ai-chat-widget.tsx ---
+16:import { cmepAI } from '@/lib/ai-agent/dispatcher';
+68:  client_actions?: ClientAction[];
+173:    const fresh = aiSessionStore.resetSession();
+211:      if (Array.isArray(res?.client_actions) && res.client_actions.length > 0) {
+213:        for (const action of res.client_actions) {
+245:          const ev = await cmepAI.dispatch(nm, ar);
+247:            if (action.name === 'fill_form_field') {
+253:            } else if (action.name === 'highlight_field') {
+262:            if (nm === 'fill_form_field') reason = `✗ Nepodarilo sa vyplniť pole „${field}“`;
+263:            else if (nm === 'highlight_field') reason = `✗ Pole „${field}“ sa nedá zvýrazniť`;
+353:          } catch (error: unknown) {
+354:            const message = error instanceof Error ? error.message : 'Prepis hlasu sa nepodaril.';
+364:    } catch (error: unknown) {
+366:      const message = error instanceof Error ? error.message : 'Mikrofón sa nepodarilo spustiť.';
+
+=== 3. FORMULAR PONUKY ===
+apps/web/src/features/listings/components/listing-form.tsx
+apps/web/src/features/listings/schemas.ts
+
+=== 4. FORMULAR FIRMY ===
+apps/web/src/features/companies/components/company-form.tsx
+apps/web/src/features/companies/schemas.ts
+
+=== 5. OSTATNE FORMULARE ===
+apps/web/src/features/auth/components/login-form.tsx
+apps/web/src/features/auth/components/register-form.tsx
+apps/web/src/features/auth/hooks/use-is-platform-admin.ts
+apps/web/src/features/companies/components/company-form.tsx
+apps/web/src/features/company-pages/components/public-contact-form.tsx
+apps/web/src/features/documents/components/document-form.tsx
+apps/web/src/features/listings/components/listing-form.tsx
+
+=== 6. POTVRDENIE A NAHLAD PRED ULOZENIM ===
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:218:      const preview = await http.post<AutoApproveResponse>(
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:223:      if (preview.approved === 0) {
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:225:          `Žiadnych kandidátov na auto-schválenie (${preview.total_checked} skontrolovaných).`,
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:232:        `Auto-schváliť ${preview.approved} kandidátov?\n\n` +
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:233:        `Bez emailu: ${preview.skipped_no_email}\n` +
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:234:        `Junk: ${preview.skipped_junk}\n` +
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:235:        `Invalid: ${preview.skipped_invalid}\n\n` +
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:237:        preview.sample_approved
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:561:          ". Skontroluj náhľad a pošli.",
+apps/web/src/app/dashboard/admin/lead-outreach/page.tsx:1694:                Manuálny náhľad a odoslanie jednej firmy
+apps/web/src/features/admin/components/admin-users-table.tsx:110:            : 'Potvrdiť zmazanie'
+
+=== 7. BACKEND ZAPISOVACIE ENDPOINTY ===
+app/modules/listings/domain/enums.py:10:    PUBLISHED = "published"
+app/modules/listings/application/services.py:74:    async def publish(self, id: str):
+app/modules/listings/application/services.py:75:        """draft → published, len ak firma listing-u je verified."""
+app/modules/listings/application/services.py:97:        existing.status = ListingsStatus.PUBLISHED
+app/modules/listings/infrastructure/repositories.py:106:        stmt = select(ListingsModel).where(ListingsModel.status == "published")
+app/modules/listings/infrastructure/repositories.py:140:            .where(ListingsModel.status == "published")
+app/modules/listings/infrastructure/repositories.py:196:        """Published listings with same material_type, excluding given companies."""
+app/modules/listings/infrastructure/repositories.py:197:        stmt = select(ListingsModel).where(ListingsModel.status == "published")
+app/modules/listings/presentation/router.py:260:    is_public = str(getattr(entity.status, "value", entity.status)) == "published"
+app/modules/listings/presentation/router.py:273:async def create_listing(
+app/modules/listings/presentation/router.py:301:async def update_listing(
+app/modules/listings/presentation/router.py:313:    if request.status is not None and request.status.value == "published":
+app/modules/listings/presentation/router.py:314:        raise ConflictDomainError("Listing publication must use POST /api/v1/listings/{id}/publish")
+app/modules/listings/presentation/router.py:341:    "/{id}/publish",
+app/modules/listings/presentation/router.py:345:async def publish_listing(
+app/modules/listings/presentation/router.py:357:        result = await service.publish(id)
+app/modules/listings/presentation/router.py:371:            action="listing.published",
+app/modules/companies/domain/enums.py:6:    VERIFICATION_SUBMITTED = "verification_submitted"
+app/modules/companies/domain/entities.py:34:    verification_submitted_at: datetime | None
+app/modules/companies/domain/entities.py:56:                CompanyStatus.VERIFICATION_SUBMITTED,
+app/modules/companies/domain/entities.py:59:            CompanyStatus.VERIFICATION_SUBMITTED: {
+app/modules/companies/domain/entities.py:67:                CompanyStatus.VERIFICATION_SUBMITTED,
+app/modules/companies/application/dto.py:30:    verification_submitted_at: datetime | None
+app/modules/companies/application/mappers.py:29:        verification_submitted_at=company.verification_submitted_at,
+app/modules/companies/application/services.py:87:            verification_submitted_at=None,
+app/modules/companies/application/services.py:242:        if target_status == CompanyStatus.VERIFICATION_SUBMITTED:
+app/modules/companies/application/services.py:243:            company.verification_submitted_at = now
+app/modules/companies/infrastructure/models.py:38:    verification_submitted_at: Mapped[DateTime | None] = mapped_column(
+app/modules/companies/infrastructure/mappers.py:37:        verification_submitted_at=model.verification_submitted_at,
+app/modules/companies/infrastructure/mappers.py:77:        verification_submitted_at=entity.verification_submitted_at,
+app/modules/companies/infrastructure/repositories.py:99:        model.verification_submitted_at = company.verification_submitted_at
+app/modules/companies/presentation/schemas.py:79:    verificationSubmittedAt: datetime | None
+app/modules/companies/presentation/mappers.py:28:        verificationSubmittedAt=dto.verification_submitted_at,
+app/modules/companies/presentation/dependencies.py:35:def get_create_company_service(
+app/modules/companies/presentation/dependencies.py:59:def get_update_company_service(
+app/modules/companies/presentation/router.py:8:    get_create_company_service,
+app/modules/companies/presentation/router.py:13:    get_update_company_service,
+app/modules/companies/presentation/router.py:105:async def create_company(
+app/modules/companies/presentation/router.py:108:    service=Depends(get_create_company_service),
+app/modules/companies/presentation/router.py:167:async def update_company(
+app/modules/companies/presentation/router.py:171:    service=Depends(get_update_company_service),
+app/modules/companies/presentation/router.py:215:        # Neadministrativny prechod (napr. verification_submitted) vyzaduje
+app/modules/companies/presentation/router.py:463:    Vracia iba listingy so statusom 'published'. Drafty a ostatné stavy
+app/modules/companies/presentation/router.py:477:        .where(ListingsModel.status == "published")
+
+=== 8. TESTY FORMULAROV A AI VYPĹŇANIA ===
+app/modules/agent_platform/tests/__pycache__/test_client_actions.cpython-314-pytest-9.1.1.pyc
+app/modules/agent_platform/tests/__pycache__/test_client_actions.cpython-314.pyc
+app/modules/agent_platform/tests/test_client_actions.py
+apps/web/.next/server/app/dashboard/listings.html
+apps/web/.next/server/app/dashboard/listings.meta
+apps/web/.next/server/app/dashboard/listings.rsc
+apps/web/node_modules/@hookform/resolvers/ajv/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/ajv/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/arktype/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/arktype/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/class-validator/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/class-validator/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/computed-types/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/computed-types/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/effect-ts/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/effect-ts/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/fluentvalidation-ts/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/fluentvalidation-ts/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/io-ts/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/io-ts/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/joi/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/joi/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/nope/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/nope/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/superstruct/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/superstruct/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/typanion/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/typanion/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/typebox/src/__tests__/Form-compiler.tsx
+apps/web/node_modules/@hookform/resolvers/typebox/src/__tests__/Form-native-validation-compiler.tsx
+apps/web/node_modules/@hookform/resolvers/typebox/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/typebox/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/typeschema/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/typeschema/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/valibot/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/valibot/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/vest/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/vest/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/vine/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/vine/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/yup/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/yup/src/__tests__/Form.tsx
+apps/web/node_modules/@hookform/resolvers/zod/src/__tests__/Form-native-validation.tsx
+apps/web/node_modules/@hookform/resolvers/zod/src/__tests__/Form.tsx
+apps/web/node_modules/@tanstack/react-query/build/codemods/src/utils/transformers/query-cache-transformer.cjs
+apps/web/node_modules/@tanstack/react-query/build/codemods/src/utils/transformers/query-client-transformer.cjs
+apps/web/node_modules/@tanstack/react-query/build/codemods/src/utils/transformers/use-query-like-transformer.cjs
+apps/web/node_modules/@tanstack/react-query/build/codemods/src/v4/key-transformation.cjs
+apps/web/node_modules/@tanstack/react-query/build/codemods/src/v5/remove-overloads/transformers/filter-aware-usage-transformer.cjs
+apps/web/node_modules/@tanstack/react-query/build/codemods/src/v5/remove-overloads/transformers/query-fn-aware-usage-transformer.cjs
+apps/web/node_modules/@typescript-eslint/eslint-plugin/dist/rules/naming-convention-utils/format.d.ts
+apps/web/node_modules/@typescript-eslint/eslint-plugin/dist/rules/naming-convention-utils/format.js
+apps/web/node_modules/ajv/lib/compile/formats.js
+apps/web/node_modules/ajv/lib/dot/format.jst
+apps/web/node_modules/ajv/lib/dotjs/format.js
+apps/web/node_modules/aria-query/lib/etc/roles/literal/formRole.js
+apps/web/node_modules/autoprefixer/lib/hacks/transform-decl.js
+apps/web/node_modules/axobject-query/lib/etc/objects/FormRole.js
+apps/web/node_modules/caniuse-lite/data/features/form-attribute.js
+apps/web/node_modules/caniuse-lite/data/features/form-submit-attributes.js
+apps/web/node_modules/caniuse-lite/data/features/form-validation.js
+apps/web/node_modules/caniuse-lite/data/features/forms.js
+apps/web/node_modules/caniuse-lite/data/features/transforms2d.js
+apps/web/node_modules/caniuse-lite/data/features/transforms3d.js
+apps/web/node_modules/es-abstract/2022/IsStringWellFormedUnicode.js
+apps/web/node_modules/es-abstract/2023/IsStringWellFormedUnicode.js
+apps/web/node_modules/es-abstract/2024/IsStringWellFormedUnicode.js
+apps/web/node_modules/es-abstract/2025/IsStringWellFormedUnicode.js
+apps/web/node_modules/eslint-plugin-jsx-a11y/lib/util/implicitRoles/form.js
+apps/web/node_modules/eslint/lib/cli-engine/formatters/formatters-meta.json
+apps/web/node_modules/jiti/dist/plugins/babel-plugin-transform-import-meta.d.ts
+apps/web/node_modules/next/dist/api/form.d.ts
+apps/web/node_modules/next/dist/api/form.js
+apps/web/node_modules/next/dist/api/form.js.map
+apps/web/node_modules/next/dist/build/babel/loader/transform.d.ts
+apps/web/node_modules/next/dist/build/babel/loader/transform.js
+apps/web/node_modules/next/dist/build/babel/loader/transform.js.map
+apps/web/node_modules/next/dist/build/babel/plugins/next-ssg-transform.d.ts
+apps/web/node_modules/next/dist/build/babel/plugins/next-ssg-transform.js
+apps/web/node_modules/next/dist/build/babel/plugins/next-ssg-transform.js.map
+apps/web/node_modules/next/dist/build/manifests/formatter/format-manifest.d.ts
+apps/web/node_modules/next/dist/build/manifests/formatter/format-manifest.js
+apps/web/node_modules/next/dist/build/manifests/formatter/format-manifest.js.map
+apps/web/node_modules/next/dist/build/output/format.d.ts
+apps/web/node_modules/next/dist/build/output/format.js
+apps/web/node_modules/next/dist/build/output/format.js.map
+apps/web/node_modules/next/dist/build/swc/jest-transformer.d.ts
+apps/web/node_modules/next/dist/build/swc/jest-transformer.js
+apps/web/node_modules/next/dist/build/swc/jest-transformer.js.map
+apps/web/node_modules/next/dist/client/app-dir/form.d.ts
+apps/web/node_modules/next/dist/client/app-dir/form.js
+apps/web/node_modules/next/dist/client/app-dir/form.js.map
+apps/web/node_modules/next/dist/client/form-shared.d.ts
+apps/web/node_modules/next/dist/client/form-shared.js
+apps/web/node_modules/next/dist/client/form-shared.js.map
+apps/web/node_modules/next/dist/client/form.d.ts
+apps/web/node_modules/next/dist/client/form.js
+apps/web/node_modules/next/dist/client/form.js.map
+apps/web/node_modules/next/dist/compiled/@next/font/dist/format-available-values.d.ts
+apps/web/node_modules/next/dist/compiled/@next/font/dist/format-available-values.js
+apps/web/node_modules/next/dist/compiled/babel/plugin-transform-define.js
+apps/web/node_modules/next/dist/compiled/babel/plugin-transform-modules-commonjs.js
+apps/web/node_modules/next/dist/compiled/babel/plugin-transform-react-remove-prop-types.js
+apps/web/node_modules/next/dist/compiled/babel/plugin-transform-runtime.js
+apps/web/node_modules/next/dist/esm/api/form.js
+apps/web/node_modules/next/dist/esm/api/form.js.map
+apps/web/node_modules/next/dist/esm/build/babel/loader/transform.js
+apps/web/node_modules/next/dist/esm/build/babel/loader/transform.js.map
+apps/web/node_modules/next/dist/esm/build/babel/plugins/next-ssg-transform.js
+apps/web/node_modules/next/dist/esm/build/babel/plugins/next-ssg-transform.js.map
+apps/web/node_modules/next/dist/esm/build/manifests/formatter/format-manifest.js
+apps/web/node_modules/next/dist/esm/build/manifests/formatter/format-manifest.js.map
+apps/web/node_modules/next/dist/esm/build/output/format.js
+apps/web/node_modules/next/dist/esm/build/output/format.js.map
+apps/web/node_modules/next/dist/esm/build/swc/jest-transformer.js
+apps/web/node_modules/next/dist/esm/build/swc/jest-transformer.js.map
+apps/web/node_modules/next/dist/esm/client/app-dir/form.js
+apps/web/node_modules/next/dist/esm/client/app-dir/form.js.map
+apps/web/node_modules/next/dist/esm/client/form-shared.js
+apps/web/node_modules/next/dist/esm/client/form-shared.js.map
+apps/web/node_modules/next/dist/esm/client/form.js
+apps/web/node_modules/next/dist/esm/client/form.js.map
+apps/web/node_modules/next/dist/esm/lib/eslint/customFormatter.js
+apps/web/node_modules/next/dist/esm/lib/eslint/customFormatter.js.map
+apps/web/node_modules/next/dist/esm/lib/format-cli-help-output.js
+apps/web/node_modules/next/dist/esm/lib/format-cli-help-output.js.map
+apps/web/node_modules/next/dist/esm/lib/format-dynamic-import-path.js
+apps/web/node_modules/next/dist/esm/lib/format-dynamic-import-path.js.map
+apps/web/node_modules/next/dist/esm/lib/format-server-error.js
+apps/web/node_modules/next/dist/esm/lib/format-server-error.js.map
+apps/web/node_modules/next/dist/esm/lib/typescript/diagnosticFormatter.js
+apps/web/node_modules/next/dist/esm/lib/typescript/diagnosticFormatter.js.map
+apps/web/node_modules/next/dist/esm/server/lib/format-hostname.js
+apps/web/node_modules/next/dist/esm/server/lib/format-hostname.js.map
+apps/web/node_modules/next/dist/esm/shared/lib/format-webpack-messages.js
+apps/web/node_modules/next/dist/esm/shared/lib/format-webpack-messages.js.map
+apps/web/node_modules/next/dist/esm/shared/lib/router/utils/format-next-pathname-info.js
+apps/web/node_modules/next/dist/esm/shared/lib/router/utils/format-next-pathname-info.js.map
+apps/web/node_modules/next/dist/esm/shared/lib/router/utils/format-url.js
+apps/web/node_modules/next/dist/esm/shared/lib/router/utils/format-url.js.map
+apps/web/node_modules/next/dist/lib/eslint/customFormatter.d.ts
+apps/web/node_modules/next/dist/lib/eslint/customFormatter.js
+apps/web/node_modules/next/dist/lib/eslint/customFormatter.js.map
+apps/web/node_modules/next/dist/lib/format-cli-help-output.d.ts
+apps/web/node_modules/next/dist/lib/format-cli-help-output.js
+apps/web/node_modules/next/dist/lib/format-cli-help-output.js.map
+apps/web/node_modules/next/dist/lib/format-dynamic-import-path.d.ts
+apps/web/node_modules/next/dist/lib/format-dynamic-import-path.js
+apps/web/node_modules/next/dist/lib/format-dynamic-import-path.js.map
+apps/web/node_modules/next/dist/lib/format-server-error.d.ts
+apps/web/node_modules/next/dist/lib/format-server-error.js
+apps/web/node_modules/next/dist/lib/format-server-error.js.map
+apps/web/node_modules/next/dist/lib/typescript/diagnosticFormatter.d.ts
+apps/web/node_modules/next/dist/lib/typescript/diagnosticFormatter.js
+apps/web/node_modules/next/dist/lib/typescript/diagnosticFormatter.js.map
+apps/web/node_modules/next/dist/server/lib/format-hostname.d.ts
+apps/web/node_modules/next/dist/server/lib/format-hostname.js
+apps/web/node_modules/next/dist/server/lib/format-hostname.js.map
+apps/web/node_modules/next/dist/shared/lib/format-webpack-messages.d.ts
+apps/web/node_modules/next/dist/shared/lib/format-webpack-messages.js
+apps/web/node_modules/next/dist/shared/lib/format-webpack-messages.js.map
+apps/web/node_modules/next/dist/shared/lib/router/utils/format-next-pathname-info.d.ts
+apps/web/node_modules/next/dist/shared/lib/router/utils/format-next-pathname-info.js
+apps/web/node_modules/next/dist/shared/lib/router/utils/format-next-pathname-info.js.map
+apps/web/node_modules/next/dist/shared/lib/router/utils/format-url.d.ts
+apps/web/node_modules/next/dist/shared/lib/router/utils/format-url.js
+apps/web/node_modules/next/dist/shared/lib/router/utils/format-url.js.map
+apps/web/node_modules/next/form.d.ts
+apps/web/node_modules/next/form.js
+apps/web/node_modules/react-hook-form/dist/form.d.ts
+apps/web/node_modules/react-hook-form/dist/form.d.ts.map
+apps/web/node_modules/react-hook-form/dist/formState.d.ts
+apps/web/node_modules/react-hook-form/dist/formState.d.ts.map
+apps/web/node_modules/react-hook-form/dist/logic/createFormControl.d.ts
+apps/web/node_modules/react-hook-form/dist/logic/createFormControl.d.ts.map
+apps/web/node_modules/react-hook-form/dist/logic/getProxyFormState.d.ts
+apps/web/node_modules/react-hook-form/dist/logic/getProxyFormState.d.ts.map
+apps/web/node_modules/react-hook-form/dist/logic/shouldRenderFormState.d.ts
+apps/web/node_modules/react-hook-form/dist/logic/shouldRenderFormState.d.ts.map
+apps/web/node_modules/react-hook-form/dist/types/form.d.ts
+apps/web/node_modules/react-hook-form/dist/types/form.d.ts.map
+apps/web/node_modules/react-hook-form/dist/useForm.d.ts
+apps/web/node_modules/react-hook-form/dist/useForm.d.ts.map
+apps/web/node_modules/react-hook-form/dist/useFormContext.d.ts
+apps/web/node_modules/react-hook-form/dist/useFormContext.d.ts.map
+apps/web/node_modules/react-hook-form/dist/useFormControlContext.d.ts
+apps/web/node_modules/react-hook-form/dist/useFormControlContext.d.ts.map
+apps/web/node_modules/react-hook-form/dist/useFormState.d.ts
+apps/web/node_modules/react-hook-form/dist/useFormState.d.ts.map
+apps/web/node_modules/react-hook-form/dist/utils/extractFormValues.d.ts
+apps/web/node_modules/react-hook-form/dist/utils/extractFormValues.d.ts.map
+apps/web/node_modules/react-hook-form/dist/utils/formData.d.ts
+apps/web/node_modules/react-hook-form/dist/utils/formData.d.ts.map
+apps/web/node_modules/styled-jsx/lib/style-transform.js
+apps/web/node_modules/sucrase/dist/esm/transformers/CJSImportTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/ESMImportTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/FlowTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/JSXTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/JestHoistTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/NumericSeparatorTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/OptionalCatchBindingTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/OptionalChainingNullishTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/ReactDisplayNameTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/ReactHotLoaderTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/RootTransformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/Transformer.js
+apps/web/node_modules/sucrase/dist/esm/transformers/TypeScriptTransformer.js
+apps/web/node_modules/sucrase/dist/esm/util/formatTokens.js
+apps/web/node_modules/sucrase/dist/transformers/CJSImportTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/ESMImportTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/FlowTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/JSXTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/JestHoistTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/NumericSeparatorTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/OptionalCatchBindingTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/OptionalChainingNullishTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/ReactDisplayNameTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/ReactHotLoaderTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/RootTransformer.js
+apps/web/node_modules/sucrase/dist/transformers/Transformer.js
+apps/web/node_modules/sucrase/dist/transformers/TypeScriptTransformer.js
+apps/web/node_modules/sucrase/dist/types/transformers/CJSImportTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/ESMImportTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/FlowTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/JSXTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/JestHoistTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/NumericSeparatorTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/OptionalCatchBindingTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/OptionalChainingNullishTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/ReactDisplayNameTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/ReactHotLoaderTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/RootTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/Transformer.d.ts
+apps/web/node_modules/sucrase/dist/types/transformers/TypeScriptTransformer.d.ts
+apps/web/node_modules/sucrase/dist/types/util/formatTokens.d.ts
+apps/web/node_modules/sucrase/dist/util/formatTokens.js
+apps/web/node_modules/tailwindcss/lib/util/formatVariantSelector.js
+apps/web/node_modules/tailwindcss/lib/util/transformThemeValue.js
+apps/web/node_modules/tailwindcss/lib/util/validateFormalSyntax.js
+apps/web/node_modules/tailwindcss/src/util/formatVariantSelector.js
+apps/web/node_modules/tailwindcss/src/util/transformThemeValue.js
+apps/web/node_modules/tailwindcss/src/util/validateFormalSyntax.js
+apps/web/node_modules/undici-types/formdata.d.ts
+apps/web/node_modules/zod/src/v3/tests/transformer.test.ts
+apps/web/node_modules/zod/src/v4/classic/tests/string-formats.test.ts
+apps/web/node_modules/zod/src/v4/classic/tests/transform.test.ts
+apps/web/src/components/ui/form-field.tsx
+apps/web/src/features/auth/components/login-form.tsx
+apps/web/src/features/auth/components/register-form.tsx
+apps/web/src/features/auth/hooks/use-is-platform-admin.ts
+apps/web/src/features/companies/components/company-form.tsx
+apps/web/src/features/companies/hooks/use-company.ts
+apps/web/src/features/companies/hooks/use-create-company.ts
+apps/web/src/features/companies/hooks/use-transition-company-status.ts
+apps/web/src/features/companies/hooks/use-update-company.ts
+apps/web/src/features/company-pages/components/company-page-editor.tsx
+apps/web/src/features/company-pages/components/public-contact-form.tsx
+apps/web/src/features/company-pages/hooks/use-company-page.ts
+apps/web/src/features/documents/components/document-form.tsx
+apps/web/src/features/inquiries/components/listing-inquiry-button.tsx
+apps/web/src/features/listings/components/delete-listing-button.tsx
+apps/web/src/features/listings/components/listing-filters.tsx
+apps/web/src/features/listings/components/listing-form.tsx
+apps/web/src/features/listings/components/listings-table.tsx
+apps/web/src/features/listings/components/promote-listing-button.tsx
+apps/web/src/features/listings/components/publish-listing-button.tsx
+apps/web/src/features/listings/hooks/use-create-listing.ts
+apps/web/src/features/listings/hooks/use-listing.ts
+apps/web/src/features/listings/hooks/use-listings.ts
+apps/web/src/features/listings/hooks/use-update-listing.ts
+apps/web/src/lib/ai-agent/form-fields.ts
+apps/web/src/lib/ai-agent/use-ai-form-filling.ts
+tests/integration/__pycache__/_company_helpers.cpython-314.pyc
+tests/integration/__pycache__/test_company_pages.cpython-314-pytest-9.1.1.pyc
+tests/integration/__pycache__/test_company_photo_quota.cpython-314-pytest-9.1.1.pyc
+tests/integration/__pycache__/test_company_reviews.cpython-314-pytest-9.1.1.pyc
+tests/integration/__pycache__/test_listings_repository.cpython-314-pytest-9.1.1.pyc
+tests/integration/_company_helpers.py
+tests/integration/test_company_pages.py
+tests/integration/test_company_photo_quota.py
+tests/integration/test_company_reviews.py
+tests/integration/test_listings_repository.py
+tests/load/k6/scenarios/listings.js
+tests/unit/__pycache__/test_client_action_validation.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_cmep_company_search_handler.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_company_service.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_company_service.cpython-314.pyc
+tests/unit/__pycache__/test_company_services.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_company_services.cpython-314.pyc
+tests/unit/__pycache__/test_company_status_transitions.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_company_status_transitions.cpython-314.pyc
+tests/unit/__pycache__/test_company_transition.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_company_transition.cpython-314.pyc
+tests/unit/__pycache__/test_listing_service.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_listing_service.cpython-314.pyc
+tests/unit/__pycache__/test_listings_entity_validation.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_listings_entity_validation.cpython-314.pyc
+tests/unit/__pycache__/test_listings_service.cpython-314-pytest-9.1.1.pyc
+tests/unit/__pycache__/test_listings_service.cpython-314.pyc
+tests/unit/modules/companies/__pycache__/test_company_repository.cpython-314-pytest-9.1.1.pyc
+
+=== 9. ZAVERECNY STAV ===
+audit/hardening-2026-10-14
+46de096
+M  .pre-commit-config.yaml
+ M app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py
+M  app/modules/agent_platform/presentation/chat_router.py
+ M app/modules/listings/application/services.py
+?? app/modules/agent_platform/presentation/user_ai_chat_router.py
+?? cmep_ai_architektura/
+?? final_check.py
+?? waste-platform/
+
+KONIEC DAVKY 04
+Zdrojove subory neboli upravovane.

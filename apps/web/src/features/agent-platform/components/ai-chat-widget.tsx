@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
+import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 
 import { http } from '@/lib/api/http';
@@ -86,7 +87,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [transcribing, setTranscribing] = useState(false);
   const [messages, setMessages] = useState<Msg[]>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('cmep_chat_history');
+      const saved = sessionStorage.getItem('cmep_chat_history');
       return saved ? JSON.parse(saved) : [];
     }
     return [];
@@ -94,12 +95,12 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('cmep_chat_history', JSON.stringify(messages));
+      sessionStorage.setItem('cmep_chat_history', JSON.stringify(messages));
     }
   }, [messages]);
   const [sessionId, setSessionId] = useState<string>(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('cmep_chat_session_id') || '';
+      return sessionStorage.getItem('cmep_chat_session_id') || '';
     }
     return '';
   });
@@ -111,13 +112,13 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const storedSession = localStorage.getItem('cmep_chat_session_id');
+    const storedSession = sessionStorage.getItem('cmep_chat_session_id');
     if (storedSession) {
       setSessionId(storedSession);
     } else {
       const newSession = aiSessionStore.getSessionId();
       setSessionId(newSession);
-      localStorage.setItem('cmep_chat_session_id', newSession);
+      sessionStorage.setItem('cmep_chat_session_id', newSession);
     }
     setPersona(personaStore.get());
   }, []);

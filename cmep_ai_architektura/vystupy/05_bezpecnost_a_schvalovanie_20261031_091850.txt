@@ -1,0 +1,844 @@
+CMEP AI - DAVKA 05
+BEZPECNOST, OPRAVNENIA A SCHVALOVANIE
+READ-ONLY AUDIT
+Datum: Sat Oct 31 09:18:50 CET 2026
+
+=== 1. STAV REPOZITARA ===
+audit/hardening-2026-10-14
+46de0969d99c7c775f4fec084bf4d27d8c4e790b
+M  .pre-commit-config.yaml
+ M app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py
+M  app/modules/agent_platform/presentation/chat_router.py
+ M app/modules/listings/application/services.py
+?? app/modules/agent_platform/presentation/user_ai_chat_router.py
+?? cmep_ai_architektura/
+?? final_check.py
+?? waste-platform/
+
+=== 2. BEZPECNOSTNE A SCHVALOVACIE SUBORY ===
+app/modules/agent_platform/application/approval/approval_service.py
+app/modules/agent_platform/application/approval/approval_workflow.py
+app/modules/agent_platform/application/permission/permission_engine.py
+app/modules/agent_platform/application/permission/permission_resolver.py
+app/modules/agent_platform/application/policy/policy_engine.py
+app/modules/agent_platform/application/policy/policy_evaluator.py
+app/modules/agent_platform/application/security/security_alert_service.py
+app/modules/agent_platform/application/security/security_engine.py
+app/modules/agent_platform/application/security/security_risk_engine.py
+app/modules/agent_platform/application/security/security_signal_service.py
+app/modules/agent_platform/domain/agent/agent_scope.py
+app/modules/agent_platform/domain/approval/approval_decision.py
+app/modules/agent_platform/domain/approval/approval_request.py
+app/modules/agent_platform/domain/approval/approval_status.py
+app/modules/agent_platform/domain/control/agent_gate.py
+app/modules/agent_platform/domain/permission/permission_decision.py
+app/modules/agent_platform/domain/permission/permission_request.py
+app/modules/agent_platform/domain/permission/permission_scope.py
+app/modules/agent_platform/domain/policy/policy_context.py
+app/modules/agent_platform/domain/policy/policy_decision.py
+app/modules/agent_platform/domain/policy/policy_rule.py
+app/modules/agent_platform/domain/security/security_decision.py
+app/modules/agent_platform/domain/security/security_observation.py
+app/modules/agent_platform/domain/security/security_pattern.py
+app/modules/agent_platform/domain/security/security_risk.py
+app/modules/agent_platform/domain/security/security_signal.py
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py
+app/modules/agent_platform/infrastructure/ai/chain_gateway.py
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py
+app/modules/agent_platform/infrastructure/ai/model_gateway.py
+app/modules/agent_platform/infrastructure/ai/voice_gateway.py
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py
+app/modules/agent_platform/infrastructure/persistence/approval_repository.py
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py
+app/modules/agent_platform/infrastructure/security/security_event_store.py
+app/modules/agent_platform/navigator/chain_gateway.py
+app/modules/agent_platform/navigator/execution_policy.py
+app/modules/agent_platform/navigator/permissions.py
+app/modules/agent_platform/presentation/approvals_router.py
+app/modules/agent_platform/presentation/security_router.py
+app/modules/agent_platform/scripts/verify_policy_boundaries.sh
+app/modules/agent_platform/scripts/verify_security_events.sh
+app/modules/agent_platform/tests/test_agent_permission_gate.py
+app/modules/agent_platform/tests/test_agent_policy_gate.py
+app/modules/agent_platform/tests/test_chat_gate.py
+
+=== 3. EXECUTION POLICY ===
+
+=== 4. SCHVALOVACIE ROUTY ===
+
+--- app/modules/agent_platform/domain/approval/approval_status.py ---
+1:"""Approval status."""
+7:    PENDING = "pending"
+8:    APPROVED = "approved"
+
+--- app/modules/agent_platform/domain/approval/approval_request.py ---
+6:from .approval_status import ApprovalStatus
+22:    status: ApprovalStatus = ApprovalStatus.PENDING
+
+--- app/modules/agent_platform/domain/approval/approval_decision.py ---
+6:from .approval_status import ApprovalStatus
+12:    status: ApprovalStatus
+
+--- app/modules/agent_platform/application/approval/approval_service.py ---
+29:        await self._repository.update_status(
+31:            decision.status,
+
+--- app/modules/agent_platform/application/approval/approval_workflow.py ---
+36:        from app.modules.agent_platform.domain.approval.approval_status import (
+45:        if existing.status != ApprovalStatus.APPROVED:
+
+--- app/modules/agent_platform/infrastructure/persistence/approval_repository.py ---
+12:from ...domain.approval.approval_status import ApprovalStatus
+25:    async def update_status(
+28:        status: ApprovalStatus,
+58:            status=approval.status.value,
+78:    async def update_status(
+81:        status: ApprovalStatus,
+91:        m.status = status.value
+120:            status=ApprovalStatus(m.status),
+
+--- app/modules/agent_platform/presentation/approvals_router.py ---
+16:from app.modules.agent_platform.domain.approval.approval_status import ApprovalStatus
+22:from app.shared.presentation.auth_dependencies import require_admin
+23:from app.shared.presentation.authorization import current_user_id
+25:router = APIRouter(
+35:@router.get("")
+38:    status: str | None = Query(default=None),
+39:    current_user=Depends(require_admin),
+43:    if status:
+44:        stmt = stmt.where(ApprovalRequestModel.status == status)
+46:    rows = (await session.execute(stmt)).scalars().all()
+57:                "status": r.status,
+72:    target_status: ApprovalStatus,
+80:        raise HTTPException(status_code=404, detail=f"Approval {approval_id} not found")
+84:        status=target_status,
+87:        reason=reason or "admin decision",
+92:        "status": result.status.value,
+97:@router.post("/{approval_id}/approve")
+98:async def approve(
+101:    current_user=Depends(require_admin),
+104:    actor = current_user_id(current_user) or "admin"
+108:@router.post("/{approval_id}/deny")
+112:    current_user=Depends(require_admin),
+115:    actor = current_user_id(current_user) or "admin"
+119:@router.get("/{approval_id}/is-executable")
+122:    current_user=Depends(require_admin),
+
+=== 5. POLICY A OPRAVNENIA V RUNTIME ===
+app/modules/agent_platform/domain/agent/agent_scope.py:10:    Scope describes where the agent operates. It does not itself authorize
+app/modules/agent_platform/domain/permission/permission_scope.py:8:    """Explicit scope for a permission."""
+app/modules/agent_platform/domain/tools/tool_definition.py:21:    requires_approval: bool = False
+app/modules/agent_platform/domain/events/event_type.py:16:    POLICY_EVALUATED = "policy.evaluated"
+app/modules/agent_platform/domain/events/event_type.py:17:    PERMISSION_EVALUATED = "permission.evaluated"
+app/modules/agent_platform/application/agent/agent_response.py:13:    requires_approval: bool = False
+app/modules/agent_platform/application/agent/agent_orchestrator.py:14:from app.modules.agent_platform.application.permission.permission_engine import (
+app/modules/agent_platform/application/agent/agent_orchestrator.py:17:from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+app/modules/agent_platform/application/agent/agent_orchestrator.py:21:from app.modules.agent_platform.domain.permission.permission_decision import (
+app/modules/agent_platform/application/agent/agent_orchestrator.py:24:from app.modules.agent_platform.domain.permission.permission_request import (
+app/modules/agent_platform/application/agent/agent_orchestrator.py:27:from app.modules.agent_platform.domain.permission.permission_scope import (
+app/modules/agent_platform/application/agent/agent_orchestrator.py:30:from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/application/agent/agent_orchestrator.py:31:from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
+app/modules/agent_platform/application/agent/agent_orchestrator.py:64:    The orchestrator never authorizes itself – authorization happens in the
+app/modules/agent_platform/application/agent/agent_orchestrator.py:77:        tool_scopes: dict[str, tuple[str, str]] | None = None,
+app/modules/agent_platform/application/agent/agent_orchestrator.py:92:        self._tool_scopes = dict(tool_scopes or {})
+app/modules/agent_platform/application/agent/agent_orchestrator.py:275:                        decision = await self._policy.decide(
+app/modules/agent_platform/application/agent/agent_orchestrator.py:306:                            outcome = "requires_approval_policy"
+app/modules/agent_platform/application/agent/agent_orchestrator.py:312:                                            "error": "tool_requires_approval",
+app/modules/agent_platform/application/agent/agent_orchestrator.py:325:                        scope_pair = self._tool_scopes.get(tool_name)
+app/modules/agent_platform/application/agent/agent_orchestrator.py:342:                        perm_decision = await self._permission.authorize(
+app/modules/agent_platform/application/agent/agent_orchestrator.py:373:                            outcome = "requires_approval_permission"
+app/modules/agent_platform/application/agent/agent_orchestrator.py:542:    if outcome in {"requires_approval_policy", "requires_approval_permission"}:
+app/modules/agent_platform/application/agent/intent_classifier.py:3:This is the FIRST, deterministic layer of intent detection. It never authorizes
+app/modules/agent_platform/application/policy/policy_evaluator.py:5:from ...domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/application/policy/policy_evaluator.py:6:from ...domain.policy.policy_decision import PolicyDecision
+app/modules/agent_platform/application/policy/policy_engine.py:5:from ...domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/application/policy/policy_engine.py:6:from ...domain.policy.policy_decision import PolicyDecision
+app/modules/agent_platform/application/permission/permission_resolver.py:5:from ...domain.permission.permission_decision import PermissionDecision
+app/modules/agent_platform/application/permission/permission_resolver.py:6:from ...domain.permission.permission_request import PermissionRequest
+app/modules/agent_platform/application/permission/permission_engine.py:5:from ...domain.permission.permission_decision import PermissionDecision
+app/modules/agent_platform/application/permission/permission_engine.py:6:from ...domain.permission.permission_request import PermissionRequest
+app/modules/agent_platform/application/permission/permission_engine.py:11:    async def authorize(self, request: PermissionRequest) -> PermissionDecision:
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:12:from ...domain.permission.permission_request import PermissionRequest
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:13:from ...domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:24:    It never authorizes.
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:31:    """Evaluates whether the proposed action is allowed by policy."""
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:45:    def requires_approval(self, tool_name: str) -> bool: ...
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:51:    """Dispatches an already-authorized tool request asynchronously."""
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:72:        policy_decision = self.policy.evaluate(self._policy_context(request))
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:77:        permission_decision = self.permission.evaluate(self._permission_request(request))
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:82:        if self.approval.requires_approval(proposed_tool.tool_name):
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:143:        from ...domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:161:        from ...domain.permission.permission_request import PermissionRequest
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:162:        from ...domain.permission.permission_scope import PermissionScope
+app/modules/agent_platform/infrastructure/tools/tool_catalog.py:50:            requires_approval=False,
+app/modules/agent_platform/infrastructure/tools/tool_catalog.py:59:            requires_approval=True,
+app/modules/agent_platform/infrastructure/tools/forbidden_tool_names.py:28:        "permission.grant",
+app/modules/agent_platform/infrastructure/tools/forbidden_tool_names.py:29:        "permission.escalate",
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:62:    Tool arguments are never allowed to override the authorized company
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:83:        is_platform_admin: bool,
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:87:        self._is_platform_admin = bool(is_platform_admin)
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:105:        # A non-admin with no authorized company membership has no
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:107:        if not self._is_platform_admin and not self._company_ids:
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:113:                error_message="No authorized company scope.",
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:160:            company_ids=None if self._is_platform_admin else list(self._company_ids),
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:10:- Handlers receive `company_ids` and `is_platform_admin` at construction.
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:78:        is_platform_admin: bool = False,
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:84:        self._is_admin = bool(is_platform_admin)
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:169:        if self._is_admin:
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:192:                owner_company_ids=set(self._company_ids) if not self._is_admin else None,
+app/modules/agent_platform/infrastructure/tools/cmep_company_search_handler.py:33:        is_platform_admin: bool,
+app/modules/agent_platform/infrastructure/tools/cmep_company_search_handler.py:37:        self._is_platform_admin = bool(is_platform_admin)
+app/modules/agent_platform/infrastructure/tools/cmep_company_search_handler.py:74:        if self._is_platform_admin:
+app/modules/agent_platform/infrastructure/testing/phase3_adapters.py:12:from ...domain.permission.permission_request import PermissionRequest
+app/modules/agent_platform/infrastructure/testing/phase3_adapters.py:15:from ...domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/infrastructure/testing/phase3_adapters.py:77:    def requires_approval(self, tool_name: str) -> bool:
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:3:The agent platform never authorizes itself.
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:10:from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:11:from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:12:from app.modules.agent_platform.domain.policy.policy_decision import (
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:35:                rule_id="policy.missing_tool_name",
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:41:                rule_id="policy.unknown_tool",
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py:46:            rule_id="policy.allowlisted_tool",
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:3:The agent platform never authorizes itself.
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:13:from app.modules.agent_platform.application.permission.permission_engine import (
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:16:from app.modules.agent_platform.domain.permission.permission_decision import (
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:20:from app.modules.agent_platform.domain.permission.permission_request import (
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:43:    async def authorize(self, request: PermissionRequest) -> PermissionDecision:
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:51:                policy_rule_id="permission.missing_actor_id",
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:58:                policy_rule_id="permission.unknown_actor_type",
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:69:                policy_rule_id="permission.scope_not_allowed",
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py:75:            policy_rule_id="permission.allowlisted",
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:82:        is_platform_admin=False,
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:122:        is_platform_admin=False,
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:155:        is_platform_admin=False,
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:175:async def test_company_search_tool_cannot_override_authorized_scope():
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:193:        is_platform_admin=False,
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:194:        company_ids=("authorized-company",),
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:206:                "company_ids": ["unauthorized-company"],
+app/modules/agent_platform/tests/test_client_actions.py:19:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_client_actions.py:22:from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/tests/test_client_actions.py:95:        tool_scopes=scopes,
+app/modules/agent_platform/tests/test_client_actions.py:211:def test_open_admin_is_admin_only_schema() -> None:
+app/modules/agent_platform/tests/test_project_read_production.py:18:from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/tests/test_project_read_production.py:19:from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
+app/modules/agent_platform/tests/test_project_read_production.py:103:    assert orch._tool_scopes["project_read_file"] == ("admin", "read")
+app/modules/agent_platform/tests/test_project_read_production.py:104:    assert orch._tool_scopes["project_list_dir"] == ("admin", "read")
+app/modules/agent_platform/tests/test_project_read_production.py:122:    decision = await orch._policy.decide(
+app/modules/agent_platform/tests/test_project_read_production.py:244:    """Model, ktorý si vymyslí OpenList tool, musí dostať denied_by_policy."""
+app/modules/agent_platform/tests/test_role_aware_prompt.py:23:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: True)
+app/modules/agent_platform/tests/test_role_aware_prompt.py:30:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: False)
+app/modules/agent_platform/tests/test_role_aware_prompt.py:37:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: False)
+app/modules/agent_platform/tests/test_role_aware_prompt.py:39:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: True)
+app/modules/agent_platform/tests/test_role_aware_prompt.py:50:    monkeypatch.setattr(chat_router, "is_platform_admin", boom)
+app/modules/agent_platform/tests/test_agent_policy_gate.py:10:from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+app/modules/agent_platform/tests/test_agent_policy_gate.py:11:from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
+app/modules/agent_platform/tests/test_agent_policy_gate.py:14:from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/tests/test_agent_policy_gate.py:80:    decision = await policy.decide(_ctx("nope"))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:82:    assert decision.rule_id == "policy.unknown_tool"
+app/modules/agent_platform/tests/test_agent_policy_gate.py:88:    decision = await policy.decide(_ctx("search_companies"))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:95:    decision = await policy.decide(_ctx(""))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:97:    assert decision.rule_id == "policy.missing_tool_name"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:10:from app.modules.agent_platform.domain.permission.permission_decision import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:13:from app.modules.agent_platform.domain.permission.permission_request import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:16:from app.modules.agent_platform.domain.permission.permission_scope import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:21:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:100:    decision = await _engine().authorize(_req())
+app/modules/agent_platform/tests/test_agent_permission_gate.py:106:    decision = await _engine().authorize(_req(actor_type="guest"))
+app/modules/agent_platform/tests/test_agent_permission_gate.py:108:    assert decision.policy_rule_id == "permission.unknown_actor_type"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:119:    decision = await _engine().authorize(_req(resource="payments", action="charge"))
+app/modules/agent_platform/tests/test_agent_permission_gate.py:121:    assert decision.policy_rule_id == "permission.scope_not_allowed"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:136:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:161:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:186:        tool_scopes={},
+app/modules/agent_platform/tests/test_agent_audit.py:12:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_agent_audit.py:15:from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/tests/test_agent_audit.py:92:    tool_scopes=None,
+app/modules/agent_platform/tests/test_agent_audit.py:101:        tool_scopes=tool_scopes,
+app/modules/agent_platform/tests/test_agent_audit.py:149:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_chat_gate.py:30:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: True)
+app/modules/agent_platform/tests/test_chat_gate.py:44:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: False)
+app/modules/agent_platform/tests/test_chat_gate.py:57:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: False)
+app/modules/agent_platform/tests/test_chat_gate.py:70:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: False)
+app/modules/agent_platform/tests/test_chat_gate.py:84:    monkeypatch.setattr(chat_router, "is_platform_admin", lambda u: False)
+app/modules/agent_platform/tests/test_card_builder.py:200:    from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_card_builder.py:203:    from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/tests/test_card_builder.py:219:        tool_scopes=scopes,
+app/modules/agent_platform/tests/test_card_builder.py:281:    from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_card_builder.py:284:    from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/tests/test_card_builder.py:301:        tool_scopes={"search_listings": ("listings", "search")},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:15:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:18:from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:89:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:145:        tool_scopes={},  # scope not mapped → denied before execution
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:163:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:183:        tool_scopes={"navigate": ("client", "action")},
+app/modules/agent_platform/presentation/chat_router.py:43:    is_platform_admin,
+app/modules/agent_platform/presentation/chat_router.py:255:        is_admin = is_platform_admin(current_user)
+app/modules/agent_platform/presentation/chat_router.py:257:        is_admin = False
+app/modules/agent_platform/presentation/chat_router.py:258:    addendum = ARCHITECT_ADDENDUM if is_admin else CUSTOMER_ADDENDUM
+app/modules/agent_platform/presentation/chat_router.py:566:    if is_platform_admin(current_user):
+app/modules/agent_platform/presentation/dependencies.py:21:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/presentation/dependencies.py:27:from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+app/modules/agent_platform/presentation/dependencies.py:79:    is_platform_admin,
+app/modules/agent_platform/presentation/dependencies.py:108:        is_admin: bool = bool(is_platform_admin(current_user))
+app/modules/agent_platform/presentation/dependencies.py:111:        is_admin = False
+app/modules/agent_platform/presentation/dependencies.py:115:        is_platform_admin=is_admin,
+app/modules/agent_platform/presentation/dependencies.py:124:    tool_scopes: dict[str, tuple[str, str]] = {
+app/modules/agent_platform/presentation/dependencies.py:135:    tool_scopes["search_nearby_companies"] = ("recommendations", "read")
+app/modules/agent_platform/presentation/dependencies.py:136:    tool_scopes["get_listing_transport"] = ("recommendations", "read")
+app/modules/agent_platform/presentation/dependencies.py:146:        is_platform_admin=is_admin,
+app/modules/agent_platform/presentation/dependencies.py:157:        tool_scopes[_tool_name] = ("listings", "read")
+app/modules/agent_platform/presentation/dependencies.py:161:    if is_admin:
+app/modules/agent_platform/presentation/dependencies.py:165:        tool_scopes["project_read_file"] = ("admin", "read")
+app/modules/agent_platform/presentation/dependencies.py:166:        tool_scopes["project_list_dir"] = ("admin", "read")
+app/modules/agent_platform/presentation/dependencies.py:170:    if is_admin:
+app/modules/agent_platform/presentation/dependencies.py:179:            tool_scopes[tool_name] = ("admin", "read")
+app/modules/agent_platform/presentation/dependencies.py:186:    tool_scopes.update(client_action_scopes())
+app/modules/agent_platform/presentation/dependencies.py:193:        allowed_scopes=frozenset(tool_scopes.values()),
+app/modules/agent_platform/presentation/dependencies.py:243:                "requires_approval_policy": AuditAction.REQUEST,
+app/modules/agent_platform/presentation/dependencies.py:244:                "requires_approval_permission": AuditAction.REQUEST,
+app/modules/agent_platform/presentation/dependencies.py:277:        tool_scopes=tool_scopes,
+app/modules/agent_platform/presentation/dependencies.py:340:async def get_approval_workflow(
+app/modules/agent_platform/presentation/dependencies.py:343:    from app.modules.agent_platform.application.approval.approval_workflow import (
+app/modules/agent_platform/presentation/approvals_router.py:126:    from app.modules.agent_platform.application.approval.approval_workflow import (
+app/modules/agent_platform/presentation/user_ai_chat_router.py:43:    is_platform_admin,
+app/modules/agent_platform/presentation/user_ai_chat_router.py:255:        is_admin = is_platform_admin(current_user)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:257:        is_admin = False
+app/modules/agent_platform/presentation/user_ai_chat_router.py:258:    addendum = ARCHITECT_ADDENDUM if is_admin else CUSTOMER_ADDENDUM
+app/modules/agent_platform/presentation/user_ai_chat_router.py:569:    if is_platform_admin(current_user):
+app/modules/agent_platform/presentation/user_ai_chat_router.py:666:        return is_platform_admin(user)
+app/modules/agent_platform/navigator/agent_roles.py:156:        PermissionPolicy. PermissionPolicy blokuje iba explicitne zakazane
+app/modules/agent_platform/navigator/agent_roles.py:192:        policy_allowed = self.policy.is_allowed(operation)
+app/modules/agent_platform/navigator/agent_roles.py:199:                reason=f"Operacia '{operation}' je zakazana politikou {self.policy.mode.value}",
+app/modules/agent_platform/navigator/chain_gateway.py:61:            mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/cli.py:111:    print(f"  Rezim: {policy.mode.value}")
+app/modules/agent_platform/navigator/cli.py:112:    print(f"  Zakazane operacie: {len(policy.FORBIDDEN_OPERATIONS)}")
+app/modules/agent_platform/navigator/cli.py:139:    sm = StateManager(Path.home() / "cmep-riadiaci-system" / "stav", authorize=lambda op: True)
+app/modules/agent_platform/navigator/cli.py:174:    sm = StateManager(Path.home() / "cmep-riadiaci-system" / "stav", authorize=lambda op: True)
+app/modules/agent_platform/navigator/cli.py:205:    allowed = policy.is_allowed(op)
+app/modules/agent_platform/navigator/cli.py:207:    print(f"Režim: {policy.mode.value}")
+app/modules/agent_platform/navigator/decision_log.py:89:    def __init__(self, log_path: str | Path, authorize: bool = True):
+app/modules/agent_platform/navigator/decision_log.py:98:        self._authorize = authorize
+app/modules/agent_platform/navigator/decision_log.py:100:    def _check_authorized(self) -> None:
+app/modules/agent_platform/navigator/decision_log.py:101:        if not self._authorize:
+app/modules/agent_platform/navigator/decision_log.py:183:        self._check_authorized()
+app/modules/agent_platform/navigator/decision_log.py:233:        self._check_authorized()
+app/modules/agent_platform/navigator/diagnostic_workflow.py:390:        checks["execution_mode"] = self.policy.mode.value
+app/modules/agent_platform/navigator/diagnostic_workflow.py:391:        if self.policy.mode == ExecutionMode.DISABLED:
+app/modules/agent_platform/navigator/diagnostic_workflow.py:521:            execution_mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/execution_policy.py:113:    def request_approval(
+app/modules/agent_platform/navigator/fallback_adapter.py:85:            mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/generic_api_adapter.py:58:                mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/generic_api_adapter.py:92:                    mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/generic_api_adapter.py:102:                mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/generic_api_adapter.py:111:                mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/mock_adapter.py:45:            mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/model_adapter.py:72:        if self.policy.mode == ExecutionMode.DISABLED:
+app/modules/agent_platform/navigator/model_adapter.py:77:                mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/model_adapter.py:81:        if not self.policy.is_allowed("diagnose"):
+app/modules/agent_platform/navigator/model_adapter.py:86:                mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/monitor.py:135:        sm = StateManager(state_dir, authorize=lambda op: True)
+app/modules/agent_platform/navigator/monitor.py:149:        sm = StateManager(state_dir, authorize=lambda op: True)
+app/modules/agent_platform/navigator/monitor.py:164:        sm = StateManager(state_dir, authorize=lambda op: True)
+app/modules/agent_platform/navigator/monitor.py:196:        sm = StateManager(state_dir, authorize=lambda op: True)
+app/modules/agent_platform/navigator/monitor_cli.py:67:    sm = StateManager(_state_dir(), authorize=lambda op: True)
+app/modules/agent_platform/navigator/monitor_cli.py:102:    sm = StateManager(_state_dir(), authorize=lambda op: True)
+app/modules/agent_platform/navigator/monitor_cli.py:130:    allowed = policy.is_allowed(op)
+app/modules/agent_platform/navigator/monitor_cli.py:132:    print(f"Režim: {policy.mode.value}")
+app/modules/agent_platform/navigator/state.py:22:    def __init__(self, state_dir: str | Path, authorize: Callable[[str], bool] | None = None):
+app/modules/agent_platform/navigator/state.py:34:        self._authorize = authorize or (lambda op: False)
+app/modules/agent_platform/navigator/state.py:52:        if not self._authorize("save"):
+app/modules/agent_platform/navigator/state.py:125:        if not self._authorize("clear"):
+app/modules/agent_platform/navigator/state.py:135:        if not self._authorize("snapshot"):
+app/modules/agent_platform/navigator/task_coordinator.py:101:        if self.policy.mode == ExecutionMode.DISABLED:
+app/modules/agent_platform/navigator/task_coordinator.py:112:        if not self.policy.is_allowed(operation):
+app/modules/agent_platform/navigator/tests/test_fallback_adapter.py:33:                mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/tests/test_fallback_adapter.py:41:            mode=self.policy.mode.value,
+app/modules/agent_platform/navigator/tests/test_redakcia_tajomstvi_001_050.py:379:        log = DecisionLog(f"{td}/decisions.jsonl", authorize=True)
+app/modules/agent_platform/navigator/tests/test_redakcia_tajomstvi_001_050.py:451:        log = DecisionLog(f"{td}/decisions.jsonl", authorize=True)
+
+=== 6. ZAPISOVACIE A RIZIKOVE OPERACIE ===
+app/modules/agent_platform/application/agent/agent_orchestrator.py:39:from app.modules.agent_platform.infrastructure.events.event_publisher import (
+app/modules/agent_platform/application/agent/agent_orchestrator.py:40:    EventPublisher,
+app/modules/agent_platform/application/agent/agent_orchestrator.py:79:        event_publisher: EventPublisher | None = None,
+app/modules/agent_platform/application/agent/agent_orchestrator.py:94:        self._event_publisher = event_publisher
+app/modules/agent_platform/application/agent/agent_orchestrator.py:144:    async def _safe_publish(
+app/modules/agent_platform/application/agent/agent_orchestrator.py:151:        """Best-effort event publish. Failure must never break the tool call."""
+app/modules/agent_platform/application/agent/agent_orchestrator.py:152:        publisher = self._event_publisher
+app/modules/agent_platform/application/agent/agent_orchestrator.py:153:        if publisher is None:
+app/modules/agent_platform/application/agent/agent_orchestrator.py:165:            await publisher.publish(event)
+app/modules/agent_platform/application/agent/agent_orchestrator.py:227:                    await self._safe_publish(
+app/modules/agent_platform/application/agent/agent_orchestrator.py:514:                    await self._safe_publish(
+app/modules/agent_platform/application/events/event_bus.py:10:    async def publish(self, event: PlatformEvent) -> None:
+app/modules/agent_platform/application/events/event_bus.py:17:    Deleguje na publisher (napr. SqlAlchemyEventPublisher).
+app/modules/agent_platform/application/events/event_bus.py:18:    Ak publisher nie je dany, je to no-op.
+app/modules/agent_platform/application/events/event_bus.py:21:    def __init__(self, *, publisher=None) -> None:
+app/modules/agent_platform/application/events/event_bus.py:22:        self._publisher = publisher
+app/modules/agent_platform/application/events/event_bus.py:24:    async def publish(self, event: PlatformEvent) -> None:
+app/modules/agent_platform/application/events/event_bus.py:25:        if self._publisher is None:
+app/modules/agent_platform/application/events/event_bus.py:27:        await self._publisher.publish(event)
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:63:    """Publishes an application event."""
+app/modules/agent_platform/application/pipeline/pipeline_ports.py:65:    def publish(self, event_name: str, payload: dict[str, Any]) -> None: ...
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:49:        self.events.publish(
+app/modules/agent_platform/application/pipeline/agent_pipeline.py:119:        self.events.publish(
+app/modules/agent_platform/infrastructure/ai/voice_gateway.py:70:        raise RuntimeError("edge-tts not installed. Run: pip install edge-tts") from exc
+app/modules/agent_platform/infrastructure/events/__init__.py:3:from .event_publisher import EventPublisher
+app/modules/agent_platform/infrastructure/events/__init__.py:7:    "EventPublisher",
+app/modules/agent_platform/infrastructure/events/event_publisher.py:1:"""Event publisher contract."""
+app/modules/agent_platform/infrastructure/events/event_publisher.py:8:class EventPublisher(ABC):
+app/modules/agent_platform/infrastructure/events/event_publisher.py:9:    """Infrastructure boundary for publishing Agent Platform events."""
+app/modules/agent_platform/infrastructure/events/event_publisher.py:12:    async def publish(self, event: PlatformEvent) -> None:
+app/modules/agent_platform/infrastructure/events/event_store.py:30:    Pouziva tabulku activity_events (rovnako ako SqlAlchemyEventPublisher).
+app/modules/agent_platform/infrastructure/events/sqlalchemy_event_publisher.py:1:"""SQLAlchemy event publisher – best-effort persistence to activity_events."""
+app/modules/agent_platform/infrastructure/events/sqlalchemy_event_publisher.py:12:from app.modules.agent_platform.infrastructure.events.event_publisher import (
+app/modules/agent_platform/infrastructure/events/sqlalchemy_event_publisher.py:13:    EventPublisher,
+app/modules/agent_platform/infrastructure/events/sqlalchemy_event_publisher.py:17:class SqlAlchemyEventPublisher(EventPublisher):
+app/modules/agent_platform/infrastructure/events/sqlalchemy_event_publisher.py:18:    """Best-effort publisher: writes a PlatformEvent to activity_events.
+app/modules/agent_platform/infrastructure/events/sqlalchemy_event_publisher.py:28:    async def publish(self, event: PlatformEvent) -> None:
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:11:from sqlalchemy import delete, func, select
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:315:            delete(AiMessageModel).where(
+app/modules/agent_platform/infrastructure/tools/forbidden_tool_names.py:15:        "filesystem.delete",
+app/modules/agent_platform/infrastructure/tools/forbidden_tool_names.py:31:        "audit.delete",
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:212:        # Filtruj iba published (verejné)
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:214:        summaries = [s for s in summaries if s["status"] == "published"]
+app/modules/agent_platform/infrastructure/tools/project_read.py:10:- Iba read/list. Žiadny write/delete/move.
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:334:                    "enum": ["draft", "published", "reserved", "sold", "archived"],
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:403:            "READ-ONLY. Vráti verejné (published) ponuky firmy. "
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:655:            "Nikdy nepoužíva write, delete, move ani upload operácie."
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:728:            "Write/delete/move nie sú podporované."
+app/modules/agent_platform/infrastructure/testing/phase3_adapters.py:122:    def publish(self, event_name: str, payload: dict) -> None:
+app/modules/agent_platform/infrastructure/models.py:34:        ForeignKey("ai_conversations.id", ondelete="CASCADE"),
+app/modules/agent_platform/tests/test_openlist_readonly.py:262:            verb in name for verb in ("write", "put", "remove", "delete", "move", "upload")
+app/modules/agent_platform/tests/test_project_read_production.py:229:    orch._gateway = _ScriptedGateway("shell_execute", {"cmd": "rm -rf /"})
+app/modules/agent_platform/tests/test_project_read_tools.py:227:    for name in ("project_delete_file", "project_move_file", "project_write_file"):
+app/modules/agent_platform/tests/test_card_builder.py:39:                "status": "published",
+app/modules/agent_platform/tests/test_card_builder.py:55:    assert card["status"] == "published"
+app/modules/agent_platform/tests/test_conversation_repository.py:126:async def test_get_or_create_company_id_none(session) -> None:
+app/modules/agent_platform/presentation/chat_router.py:593:# is sufficient for the single-worker deploy; a lost race only means the next
+app/modules/agent_platform/presentation/chat_router.py:665:    chat. The control row already exists on a healthy deployment.
+app/modules/agent_platform/presentation/dependencies.py:18:from app.modules.agent_platform.infrastructure.events.sqlalchemy_event_publisher import (
+app/modules/agent_platform/presentation/dependencies.py:19:    SqlAlchemyEventPublisher,
+app/modules/agent_platform/presentation/dependencies.py:279:        event_publisher=_build_event_bus(session=session),
+app/modules/agent_platform/presentation/dependencies.py:413:    return DefaultEventBus(publisher=SqlAlchemyEventPublisher(session=session))
+app/modules/agent_platform/presentation/dependencies.py:435:    """Zabal SqlAlchemyEventPublisher do DefaultEventBus."""
+app/modules/agent_platform/presentation/dependencies.py:440:    return DefaultEventBus(publisher=SqlAlchemyEventPublisher(session=session))
+app/modules/agent_platform/presentation/user_ai_chat_router.py:596:# is sufficient for the single-worker deploy; a lost race only means the next
+app/modules/agent_platform/navigator/agent_roles.py:94:        "deploy",
+app/modules/agent_platform/navigator/agent_roles.py:95:        "install",
+app/modules/agent_platform/navigator/agent_roles.py:96:        "delete",
+app/modules/agent_platform/navigator/diagnostic_workflow.py:398:        forbidden_tested = ["write", "commit", "deploy", "git_push", "db_write"]
+app/modules/agent_platform/navigator/execution_policy.py:35:            "shell_exec",
+app/modules/agent_platform/navigator/execution_policy.py:36:            "file_write",
+app/modules/agent_platform/navigator/execution_policy.py:37:            "file_delete",
+app/modules/agent_platform/navigator/execution_policy.py:38:            "git_commit",
+app/modules/agent_platform/navigator/execution_policy.py:39:            "git_push",
+app/modules/agent_platform/navigator/execution_policy.py:40:            "db_write",
+app/modules/agent_platform/navigator/execution_policy.py:41:            "db_migrate",
+app/modules/agent_platform/navigator/execution_policy.py:42:            "deploy",
+app/modules/agent_platform/navigator/execution_policy.py:43:            "install",
+app/modules/agent_platform/navigator/permissions.py:23:            "deploy",
+app/modules/agent_platform/navigator/permissions.py:24:            "install",
+app/modules/agent_platform/navigator/permissions.py:25:            "delete",
+
+=== 7. SCHVALOVACIE TESTY ===
+app/modules/agent_platform/application/approval/approval_service.py
+app/modules/agent_platform/application/approval/approval_workflow.py
+app/modules/agent_platform/application/permission/permission_engine.py
+app/modules/agent_platform/application/permission/permission_resolver.py
+app/modules/agent_platform/application/policy/policy_engine.py
+app/modules/agent_platform/application/policy/policy_evaluator.py
+app/modules/agent_platform/domain/approval/approval_decision.py
+app/modules/agent_platform/domain/approval/approval_request.py
+app/modules/agent_platform/domain/approval/approval_status.py
+app/modules/agent_platform/domain/control/agent_gate.py
+app/modules/agent_platform/domain/permission/permission_decision.py
+app/modules/agent_platform/domain/permission/permission_request.py
+app/modules/agent_platform/domain/permission/permission_scope.py
+app/modules/agent_platform/domain/policy/policy_context.py
+app/modules/agent_platform/domain/policy/policy_decision.py
+app/modules/agent_platform/domain/policy/policy_rule.py
+app/modules/agent_platform/infrastructure/permission/actor_tool_permission_engine.py
+app/modules/agent_platform/infrastructure/persistence/approval_repository.py
+app/modules/agent_platform/infrastructure/policy/allowlist_policy_engine.py
+app/modules/agent_platform/navigator/execution_policy.py
+app/modules/agent_platform/navigator/permissions.py
+app/modules/agent_platform/presentation/approvals_router.py
+app/modules/agent_platform/scripts/verify_policy_boundaries.sh
+app/modules/agent_platform/tests/test_agent_permission_gate.py
+app/modules/agent_platform/tests/test_agent_policy_gate.py
+app/modules/agent_platform/tests/test_phase4_async_execution.py
+tests/unit/test_agent_gate.py
+
+=== 8. TESTOVACIE ASSERTY SCHVALOVANIA ===
+app/modules/agent_platform/tests/test_phase3_pipeline.py:6:    AllowAllPermissionForTest,
+app/modules/agent_platform/tests/test_phase3_pipeline.py:8:    ApprovalForSelectedTools,
+app/modules/agent_platform/tests/test_phase3_pipeline.py:16:def build_runtime(approval_tools=None):
+app/modules/agent_platform/tests/test_phase3_pipeline.py:17:    approval = ApprovalForSelectedTools(approval_tools or set())
+app/modules/agent_platform/tests/test_phase3_pipeline.py:25:        permission=AllowAllPermissionForTest(),
+app/modules/agent_platform/tests/test_phase3_pipeline.py:26:        approval=approval,
+app/modules/agent_platform/tests/test_phase3_pipeline.py:34:        approval,
+app/modules/agent_platform/tests/test_phase3_pipeline.py:43:    runtime, approval, tools, audit, events = build_runtime()
+app/modules/agent_platform/tests/test_phase3_pipeline.py:56:    assert len(approval.created) == 0
+app/modules/agent_platform/tests/test_phase3_pipeline.py:62:async def test_sensitive_tool_stops_for_human_approval():
+app/modules/agent_platform/tests/test_phase3_pipeline.py:63:    runtime, approval, tools, audit, events = build_runtime({"cmep.inquiry.send"})
+app/modules/agent_platform/tests/test_phase3_pipeline.py:75:    assert result.decision.status.value == "awaiting_approval"
+app/modules/agent_platform/tests/test_phase3_pipeline.py:77:    assert len(approval.created) == 1
+app/modules/agent_platform/tests/test_phase3_pipeline.py:78:    assert approval.created[0].action == "cmep.inquiry.send"
+app/modules/agent_platform/tests/test_phase3_pipeline.py:104:    approval = ApprovalForSelectedTools(set())
+app/modules/agent_platform/tests/test_phase3_pipeline.py:112:        permission=AllowAllPermissionForTest(),
+app/modules/agent_platform/tests/test_phase3_pipeline.py:113:        approval=approval,
+app/modules/agent_platform/tests/test_phase4_async_execution.py:8:    AllowAllPermissionForTest,
+app/modules/agent_platform/tests/test_phase4_async_execution.py:10:    ApprovalForSelectedTools,
+app/modules/agent_platform/tests/test_phase4_async_execution.py:23:            permission=AllowAllPermissionForTest(),
+app/modules/agent_platform/tests/test_phase4_async_execution.py:24:            approval=ApprovalForSelectedTools(set()),
+app/modules/agent_platform/tests/test_phase4_async_execution.py:54:async def test_approval_stops_before_async_tool_execution():
+app/modules/agent_platform/tests/test_phase4_async_execution.py:61:            permission=AllowAllPermissionForTest(),
+app/modules/agent_platform/tests/test_phase4_async_execution.py:62:            approval=ApprovalForSelectedTools({"cmep.inquiry.send"}),
+app/modules/agent_platform/tests/test_phase4_async_execution.py:70:        request_id="phase4-approval-1",
+app/modules/agent_platform/tests/test_phase4_async_execution.py:76:        reason="phase4 approval test",
+app/modules/agent_platform/tests/test_phase4_async_execution.py:79:    assert result.decision.status.value == "awaiting_approval"
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:206:                "company_ids": ["unauthorized-company"],
+app/modules/agent_platform/tests/test_client_actions.py:19:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_client_actions.py:20:    ActorToolPermissionEngine,
+app/modules/agent_platform/tests/test_client_actions.py:91:        permission=ActorToolPermissionEngine(
+app/modules/agent_platform/tests/test_openlist_readonly.py:66:    with pytest.raises(PermissionError):
+app/modules/agent_platform/tests/test_openlist_readonly.py:68:    with pytest.raises(PermissionError):
+app/modules/agent_platform/tests/test_project_read_production.py:4:volanie cez AgentOrchestrator s policy + permission + audit, odmietnutie
+app/modules/agent_platform/tests/test_project_read_tools.py:182:    assert result.error_code == "PERMISSION"
+app/modules/agent_platform/tests/test_project_read_tools.py:191:    assert result.error_code == "PERMISSION"
+app/modules/agent_platform/tests/test_project_read_tools.py:242:    assert result.error_code == "PERMISSION"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:1:"""Permission gate tests – DENIED must not call handler."""
+app/modules/agent_platform/tests/test_agent_permission_gate.py:10:from app.modules.agent_platform.domain.permission.permission_decision import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:11:    PermissionOutcome,
+app/modules/agent_platform/tests/test_agent_permission_gate.py:13:from app.modules.agent_platform.domain.permission.permission_request import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:14:    PermissionRequest,
+app/modules/agent_platform/tests/test_agent_permission_gate.py:16:from app.modules.agent_platform.domain.permission.permission_scope import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:17:    PermissionScope,
+app/modules/agent_platform/tests/test_agent_permission_gate.py:21:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_agent_permission_gate.py:22:    ActorToolPermissionEngine,
+app/modules/agent_platform/tests/test_agent_permission_gate.py:75:) -> ActorToolPermissionEngine:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:76:    return ActorToolPermissionEngine(
+app/modules/agent_platform/tests/test_agent_permission_gate.py:88:) -> PermissionRequest:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:89:    return PermissionRequest(
+app/modules/agent_platform/tests/test_agent_permission_gate.py:93:        scope=PermissionScope(resource=resource, action=action),
+app/modules/agent_platform/tests/test_agent_permission_gate.py:99:async def test_permission_allows_user_for_read_tool() -> None:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:101:    assert decision.outcome == PermissionOutcome.ALLOWED
+app/modules/agent_platform/tests/test_agent_permission_gate.py:105:async def test_permission_denies_unknown_actor_type() -> None:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:107:    assert decision.outcome == PermissionOutcome.DENIED
+app/modules/agent_platform/tests/test_agent_permission_gate.py:108:    assert decision.policy_rule_id == "permission.unknown_actor_type"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:111:def test_permission_request_rejects_missing_actor() -> None:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:118:async def test_permission_denies_scope_outside_allowlist() -> None:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:120:    assert decision.outcome == PermissionOutcome.DENIED
+app/modules/agent_platform/tests/test_agent_permission_gate.py:121:    assert decision.policy_rule_id == "permission.scope_not_allowed"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:125:async def test_orchestrator_denies_when_permission_denies() -> None:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:135:        permission=engine,
+app/modules/agent_platform/tests/test_agent_permission_gate.py:146:    assert spy.calls == [], "Handler must not be called when permission denies"
+app/modules/agent_platform/tests/test_agent_permission_gate.py:150:async def test_orchestrator_calls_handler_when_permission_allows() -> None:
+app/modules/agent_platform/tests/test_agent_permission_gate.py:160:        permission=engine,
+app/modules/agent_platform/tests/test_agent_permission_gate.py:185:        permission=engine,
+app/modules/agent_platform/tests/test_agent_audit.py:12:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_agent_audit.py:13:    ActorToolPermissionEngine,
+app/modules/agent_platform/tests/test_agent_audit.py:91:    permission=None,
+app/modules/agent_platform/tests/test_agent_audit.py:100:        permission=permission,
+app/modules/agent_platform/tests/test_agent_audit.py:137:async def test_audit_called_on_permission_deny() -> None:
+app/modules/agent_platform/tests/test_agent_audit.py:140:    permission = ActorToolPermissionEngine(
+app/modules/agent_platform/tests/test_agent_audit.py:148:        permission=permission,
+app/modules/agent_platform/tests/test_agent_audit.py:152:    assert audit.calls == [("a1", "search_companies", "denied_by_permission")]
+app/modules/agent_platform/tests/test_card_builder.py:200:    from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_card_builder.py:201:        ActorToolPermissionEngine,
+app/modules/agent_platform/tests/test_card_builder.py:215:        permission=ActorToolPermissionEngine(
+app/modules/agent_platform/tests/test_card_builder.py:281:    from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_card_builder.py:282:        ActorToolPermissionEngine,
+app/modules/agent_platform/tests/test_card_builder.py:297:        permission=ActorToolPermissionEngine(
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:1:"""N1 regression: only tools that actually pass policy + permission and have an
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:15:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:16:    ActorToolPermissionEngine,
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:75:) -> ActorToolPermissionEngine:
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:76:    return ActorToolPermissionEngine(allowed_actor_types=actors, allowed_scopes=scopes)
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:88:        permission=_engine(),
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:144:        permission=_engine(),
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:154:async def test_permission_denied_tool_is_not_recorded() -> None:
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:162:        permission=_engine(actors=frozenset({"admin"})),  # user not allowed
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:171:    assert result.tool_calls == (), "Permission-denied tool must not be recorded"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:182:        permission=_engine(scopes=frozenset({("client", "action")})),
+tests/unit/test_exception_handlers.py:10:    UnauthorizedDomainError,
+tests/unit/test_exception_handlers.py:25:    @app.get("/raise-unauthorized")
+tests/unit/test_exception_handlers.py:26:    async def _raise_unauthorized():
+tests/unit/test_exception_handlers.py:27:        raise UnauthorizedDomainError("No access")
+tests/unit/test_exception_handlers.py:49:def test_unauthorized_returns_401(client):
+tests/unit/test_exception_handlers.py:50:    """UnauthorizedDomainError → 401."""
+tests/unit/test_exception_handlers.py:51:    response = client.get("/raise-unauthorized")
+tests/unit/test_rate_limit.py:75:def disabled(monkeypatch):
+tests/unit/test_rate_limit.py:105:# disabled / no-op behaviour
+tests/unit/test_rate_limit.py:109:async def test_disabled_limiter_never_raises(disabled, mem_backend):
+tests/unit/test_rate_limit.py:114:async def test_disabled_limiter_does_not_touch_redis(disabled, monkeypatch):
+tests/unit/test_rate_limit.py:116:        raise AssertionError("redis must not be consulted when disabled")
+tests/unit/test_authorization.py:11:from app.shared.domain.exceptions import ForbiddenDomainError
+tests/unit/test_authorization.py:188:    with pytest.raises(ForbiddenDomainError):
+tests/unit/test_authorization.py:204:    with pytest.raises(ForbiddenDomainError):
+tests/unit/test_authorization.py:215:    with pytest.raises(ForbiddenDomainError):
+tests/unit/test_chat_security_patterns.py:28:def test_detects_permission_escalation():
+tests/unit/test_chat_security_patterns.py:31:    assert "permission_escalation" in patterns
+tests/unit/test_turnstile.py:1:"""Turnstile verifier — disabled path, guard clauses and HTTP verify path.
+tests/unit/test_turnstile.py:73:def test_turnstile_disabled_returns_true(monkeypatch):
+tests/unit/test_turnstile.py:79:def test_turnstile_disabled_ignores_token(monkeypatch):
+tests/unit/test_agent_contracts.py:150:# ─── Permission ────────────────────────────────────────────────
+tests/unit/test_agent_contracts.py:153:def test_permission_engine_is_abc():
+tests/unit/test_agent_contracts.py:154:    from app.modules.agent_platform.application.permission.permission_engine import (
+tests/unit/test_agent_contracts.py:155:        PermissionEngine,
+tests/unit/test_agent_contracts.py:158:    assert inspect.isabstract(PermissionEngine)
+tests/unit/test_agent_contracts.py:161:def test_permission_resolver_is_abc():
+tests/unit/test_agent_contracts.py:162:    from app.modules.agent_platform.application.permission.permission_resolver import (
+tests/unit/test_agent_contracts.py:163:        PermissionResolver,
+tests/unit/test_agent_contracts.py:166:    assert inspect.isabstract(PermissionResolver)
+tests/unit/test_agent_contracts.py:169:# ─── Approval ──────────────────────────────────────────────────
+tests/unit/test_agent_contracts.py:172:def test_approval_service_is_abc():
+tests/unit/test_agent_contracts.py:173:    from app.modules.agent_platform.application.approval.approval_service import (
+tests/unit/test_agent_contracts.py:174:        ApprovalService,
+tests/unit/test_agent_contracts.py:177:    assert inspect.isabstract(ApprovalService)
+tests/unit/test_agent_contracts.py:180:def test_default_approval_service_exists():
+tests/unit/test_agent_contracts.py:181:    from app.modules.agent_platform.application.approval.approval_service import (
+tests/unit/test_agent_contracts.py:182:        DefaultApprovalService,
+tests/unit/test_agent_contracts.py:185:    assert not inspect.isabstract(DefaultApprovalService)
+tests/unit/test_agent_contracts.py:188:def test_approval_workflow_is_abc():
+tests/unit/test_agent_contracts.py:189:    from app.modules.agent_platform.application.approval.approval_workflow import (
+tests/unit/test_agent_contracts.py:190:        ApprovalWorkflow,
+tests/unit/test_agent_contracts.py:193:    assert inspect.isabstract(ApprovalWorkflow)
+tests/unit/test_agent_contracts.py:196:def test_default_approval_workflow_exists():
+tests/unit/test_agent_contracts.py:197:    from app.modules.agent_platform.application.approval.approval_workflow import (
+tests/unit/test_agent_contracts.py:198:        DefaultApprovalWorkflow,
+tests/unit/test_agent_contracts.py:201:    assert not inspect.isabstract(DefaultApprovalWorkflow)
+tests/unit/test_agent_contracts.py:395:def test_approval_repository_is_abc():
+tests/unit/test_agent_contracts.py:396:    from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+tests/unit/test_agent_contracts.py:397:        ApprovalRepository,
+tests/unit/test_agent_contracts.py:400:    assert inspect.isabstract(ApprovalRepository)
+tests/unit/test_agent_contracts.py:434:        ApprovalPort,
+tests/unit/test_agent_contracts.py:438:        PermissionPort,
+tests/unit/test_agent_contracts.py:446:        PermissionPort,
+tests/unit/test_agent_contracts.py:447:        ApprovalPort,
+tests/unit/test_main_cors.py:91:def test_create_app_docs_disabled_in_non_dev(monkeypatch):
+tests/unit/test_main_cors.py:97:    # Buď 404 (disabled) alebo 200 (enabled in dev)
+tests/unit/test_resend_sender.py:147:async def test_send_does_not_count_when_disabled(resend_ready, monkeypatch):
+tests/unit/test_website_contact_crawler.py:50:    monkeypatch.setattr(crawler, "_REDIS_DISABLED", True)
+tests/unit/test_website_contact_crawler.py:267:    monkeypatch.setattr(crawler, "_REDIS_DISABLED", True)
+tests/unit/test_timezone_naive_utc.py:8:druha padla na asyncpg. Rovnako approval_repository nikdy neukladal
+tests/unit/test_timezone_naive_utc.py:23:from app.modules.agent_platform.domain.approval.approval_request import ApprovalRequest
+tests/unit/test_timezone_naive_utc.py:24:from app.modules.agent_platform.domain.approval.approval_status import ApprovalStatus
+tests/unit/test_timezone_naive_utc.py:28:    ApprovalRequestModel,
+tests/unit/test_timezone_naive_utc.py:31:from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+tests/unit/test_timezone_naive_utc.py:32:    SqlAlchemyApprovalRepository,
+tests/unit/test_timezone_naive_utc.py:127:def _existing_approval_row() -> ApprovalRequestModel:
+tests/unit/test_timezone_naive_utc.py:128:    return ApprovalRequestModel(
+tests/unit/test_timezone_naive_utc.py:129:        approval_id="tz-existing",
+tests/unit/test_timezone_naive_utc.py:136:        status=ApprovalStatus.PENDING.value,
+tests/unit/test_timezone_naive_utc.py:142:async def test_approval_repository_decided_at_is_naive():
+tests/unit/test_timezone_naive_utc.py:147:    existing = _existing_approval_row()
+tests/unit/test_timezone_naive_utc.py:149:    repo = SqlAlchemyApprovalRepository(session)
+tests/unit/test_timezone_naive_utc.py:152:    await repo.update_status("tz-existing", ApprovalStatus.APPROVED, decided_at=decided)
+tests/unit/test_timezone_naive_utc.py:157:    assert existing.status == ApprovalStatus.APPROVED.value
+tests/unit/test_timezone_naive_utc.py:160:async def test_approval_repository_create_normalizes_timestamps():
+tests/unit/test_timezone_naive_utc.py:163:    repo = SqlAlchemyApprovalRepository(session)
+tests/unit/test_timezone_naive_utc.py:166:        ApprovalRequest(
+tests/unit/test_timezone_naive_utc.py:167:            approval_id="tz-new",
+tests/unit/test_timezone_naive_utc.py:176:            status=ApprovalStatus.PENDING,
+tests/unit/test_timezone_naive_utc.py:186:async def test_approval_repository_read_returns_aware():
+tests/unit/test_timezone_naive_utc.py:188:    session = _FakeSession(existing=_existing_approval_row())
+tests/unit/test_timezone_naive_utc.py:189:    repo = SqlAlchemyApprovalRepository(session)
+tests/unit/test_telegram_service.py:37:def test_is_enabled_false_when_disabled(monkeypatch):
+tests/unit/test_telegram_service.py:49:async def test_notify_skips_when_disabled(monkeypatch):
+tests/unit/test_telegram_service.py:50:    """Ak disabled, notify() vrati False a NESPRAVI HTTP request."""
+tests/unit/test_business_metrics.py:35:    bm.AUTO_APPROVE_TOTAL.labels(result="approved").inc()
+tests/unit/test_compliance_module.py:20:    ForbiddenDomainError,
+tests/unit/test_compliance_module.py:193:    with pytest.raises(ForbiddenDomainError):
+tests/unit/test_compliance_module.py:212:    with pytest.raises(ForbiddenDomainError):
+tests/unit/test_documents_module.py:19:    ForbiddenDomainError,
+tests/unit/test_documents_module.py:214:    with pytest.raises(ForbiddenDomainError):
+tests/unit/test_agent_gate.py:27:def test_ai_disabled_blocks_all():
+tests/unit/test_agent_gate.py:28:    g = resolve_agent_gate(ControlMode.AI_DISABLED)
+tests/unit/test_orchestrator_tool_dedup.py:12:from app.modules.agent_platform.domain.permission.permission_decision import (
+tests/unit/test_orchestrator_tool_dedup.py:13:    PermissionDecision,
+tests/unit/test_orchestrator_tool_dedup.py:14:    PermissionOutcome,
+tests/unit/test_orchestrator_tool_dedup.py:48:        return PermissionDecision(
+tests/unit/test_orchestrator_tool_dedup.py:49:            outcome=PermissionOutcome.ALLOWED,
+tests/unit/test_orchestrator_tool_dedup.py:113:        permission=_PermAllow(),
+tests/unit/test_matching_job_disabled.py:7:async def test_run_daily_matching_disabled(monkeypatch):
+tests/integration/test_company_reviews.py:4:duplicates, moderation (platform-admin only), public visibility of approved
+tests/integration/test_company_reviews.py:144:            json={"status": "approved"},
+tests/integration/test_company_reviews.py:153:            json={"status": "approved"},
+tests/integration/test_company_reviews.py:156:    assert ok.json()["data"]["status"] == "approved"
+tests/integration/test_company_reviews.py:168:async def test_owner_sees_all_states_nonmember_sees_only_approved():
+tests/modules/prediction/test_prediction_boundary.py:10:    DisabledPredictionEntitlementProvider,
+tests/modules/prediction/test_prediction_boundary.py:13:    DisabledPredictionProvider,
+tests/modules/prediction/test_prediction_boundary.py:24:async def test_disabled_provider_never_returns_zero_prediction() -> None:
+tests/modules/prediction/test_prediction_boundary.py:25:    provider = DisabledPredictionProvider()
+tests/modules/prediction/test_prediction_boundary.py:35:    assert result.status == PredictionStatus.DISABLED
+tests/modules/prediction/test_prediction_boundary.py:37:    assert provider.availability == PredictionAvailability.DISABLED
+tests/modules/prediction/test_prediction_boundary.py:58:async def test_service_disabled_is_distinct_from_not_entitled() -> None:
+tests/modules/prediction/test_prediction_boundary.py:59:    entitlement = DisabledPredictionEntitlementProvider()
+tests/modules/prediction/test_prediction_boundary.py:76:    assert result.status == PredictionStatus.DISABLED
+tests/modules/prediction/test_prediction_boundary.py:82:    entitlement = DisabledPredictionEntitlementProvider()
+tests/modules/prediction/test_prediction_boundary.py:105:    entitlement = DisabledPredictionEntitlementProvider()
+tests/modules/prediction/test_disabled_provider.py:5:from app.modules.prediction.application.disabled_provider import (
+tests/modules/prediction/test_disabled_provider.py:6:    DisabledPredictionProvider,
+tests/modules/prediction/test_disabled_provider.py:12:async def test_disabled_is_not_zero_prediction() -> None:
+tests/modules/prediction/test_disabled_provider.py:13:    provider = DisabledPredictionProvider(reason="service_disabled")
+tests/modules/prediction/test_disabled_provider.py:27:    assert result.metadata["reason"] == ("service_disabled")
+tests/modules/prediction/test_provider_registry.py:4:    DisabledPredictionProvider,
+tests/modules/prediction/test_provider_registry.py:12:    provider = DisabledPredictionProvider()
+tests/test_ops_metrics.py:42:def test_ops_details_forbidden(client):
+tests/test_ops_metrics.py:51:def test_metrics_disabled(client, monkeypatch):
+tests/test_ops_metrics.py:59:def test_metrics_forbidden(client, monkeypatch):
+
+=== 9. INTEGRACIA SCHVALOVANIA S CHAT ROUTAMI ===
+
+--- app/modules/agent_platform/presentation/chat_router.py ---
+393:            findings.append(("permission_escalation", 0.85))
+402:    "require_approval": 3,
+553:    tool_calls: list[dict] = []
+554:    client_actions: list[ClientAction] = []
+823:            def __init__(self, text, tool_calls=()):
+825:                self.tool_calls = tool_calls
+830:        nav_tool_calls = ()
+842:                nav_tool_calls = tuple(tc for a in nav_action if (tc := _to_tc(a)) and tc["name"])
+845:                nav_tool_calls = (tc,) if tc and tc["name"] else ()
+849:            tool_calls=nav_tool_calls,
+881:    _has_client_actions_pre = any(
+884:        for tc in (result.tool_calls or ())
+887:    if not result.text and _has_client_actions_pre:
+889:    elif not result.text and result.tool_calls:
+891:        names = [str(tc.get("name") or "") for tc in (result.tool_calls or ())]
+900:            "empty_response actor=%s session=%s tool_calls=%d iterations=%d",
+903:            len(result.tool_calls or ()),
+936:        "ORCH_RESULT text_len=%d tool_calls=%d iterations=%d",
+938:        len(result.tool_calls or ()),
+942:    client_actions: list[ClientAction] = []
+943:    server_tool_calls: list[dict] = []
+945:    for tc in result.tool_calls or ():
+949:                client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+952:                # frontend cannot execute it. We note it truthfully below.
+955:            server_tool_calls.append(dict(tc))
+980:        tool_calls=server_tool_calls,
+981:        client_actions=client_actions,
+
+--- app/modules/agent_platform/presentation/user_ai_chat_router.py ---
+396:            findings.append(("permission_escalation", 0.85))
+405:    "require_approval": 3,
+556:    tool_calls: list[dict] = []
+557:    client_actions: list[ClientAction] = []
+836:            def __init__(self, text, tool_calls=()):
+838:                self.tool_calls = tool_calls
+843:        nav_tool_calls = ()
+847:                nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
+849:                nav_tool_calls = ({"name": nav_action, "args": {}},)
+853:            tool_calls=nav_tool_calls,
+885:    _has_client_actions_pre = any(
+888:        for tc in (result.tool_calls or ())
+891:    if not result.text and _has_client_actions_pre:
+893:    elif not result.text and result.tool_calls:
+895:        names = [str(tc.get("name") or "") for tc in (result.tool_calls or ())]
+904:            "empty_response actor=%s session=%s tool_calls=%d iterations=%d",
+907:            len(result.tool_calls or ()),
+935:        "ORCH_RESULT text_len=%d tool_calls=%d iterations=%d",
+937:        len(result.tool_calls or ()),
+941:    client_actions: list[ClientAction] = []
+942:    server_tool_calls: list[dict] = []
+944:    for tc in result.tool_calls or ():
+948:                client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+951:                # frontend cannot execute it. We note it truthfully below.
+954:            server_tool_calls.append(dict(tc))
+981:        tool_calls=server_tool_calls,
+982:        client_actions=client_actions,
+
+--- app/modules/agent_platform/application/agent/agent_orchestrator.py ---
+14:from app.modules.agent_platform.application.permission.permission_engine import (
+17:from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+21:from app.modules.agent_platform.domain.permission.permission_decision import (
+24:from app.modules.agent_platform.domain.permission.permission_request import (
+27:from app.modules.agent_platform.domain.permission.permission_scope import (
+30:from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+31:from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
+55:    tool_calls: tuple[dict[str, Any], ...]
+73:        tool_handlers: dict[str, Any],
+75:        policy: PolicyEngine | None = None,
+76:        permission: PermissionEngine | None = None,
+88:        self._tool_handlers = dict(tool_handlers)
+90:        self._policy = policy
+91:        self._permission = permission
+203:            if not response.tool_calls:
+206:                    tool_calls=tuple(collected_calls),
+216:                    tool_calls=response.tool_calls,
+220:            for call in response.tool_calls:
+246:                    # Client actions are appended only after policy + permission
+274:                    if self._policy is not None:
+275:                        decision = await self._policy.decide(
+288:                            outcome = "denied_by_policy"
+294:                                            "error": "tool_denied_by_policy",
+306:                            outcome = "requires_approval_policy"
+312:                                            "error": "tool_requires_approval",
+324:                    if self._permission is not None:
+342:                        perm_decision = await self._permission.authorize(
+355:                            outcome = "denied_by_permission"
+361:                                            "error": "tool_denied_by_permission",
+363:                                            "rule_id": perm_decision.policy_rule_id,
+373:                            outcome = "requires_approval_permission"
+379:                                            "error": "tool_requires_permission_approval",
+381:                                            "rule_id": perm_decision.policy_rule_id,
+430:                                            "It will be executed on the current page. "
+441:                    handler = self._tool_handlers.get(tool_name)
+456:                    # Server tool call is recorded only now — after policy and
+457:                    # permission passed and a handler exists — so a denied,
+459:                    # an executed call (see N1).
+477:                        outcome = "executed" if result.success else "failed"
+523:            tool_calls=tuple(collected_calls),
+530:    if outcome in {"executed", "dispatched_to_client", "duplicate_skipped"}:
+535:        "denied_by_policy",
+536:        "denied_by_permission",
+542:    if outcome in {"requires_approval_policy", "requires_approval_permission"}:
+
+--- app/modules/agent_platform/presentation/dependencies.py ---
+21:from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+27:from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+87:    Client actions have no backend handler, but they must still pass the policy
+88:    and permission engines before being handed to the UI dispatcher.
+120:    tool_handlers: dict[str, object] = {
+133:    tool_handlers["search_nearby_companies"] = nearby_handler
+134:    tool_handlers["get_listing_transport"] = transport_handler
+156:        tool_handlers[_tool_name] = user_tools_handler
+163:        tool_handlers["project_read_file"] = project_handler
+164:        tool_handlers["project_list_dir"] = project_handler
+178:            tool_handlers[tool_name] = admin_handler
+184:    # Frontend-only client actions: allowlisted and scoped, but never executed
+188:    policy = AllowlistPolicyEngine(
+189:        allowed_tool_names=frozenset(tool_handlers.keys()) | CLIENT_ACTION_NAMES,
+191:    permission = ActorToolPermissionEngine(
+234:                "executed": AuditAction.EXECUTE,
+238:                "denied_by_policy": AuditAction.DENY,
+239:                "denied_by_permission": AuditAction.DENY,
+243:                "requires_approval_policy": AuditAction.REQUEST,
+244:                "requires_approval_permission": AuditAction.REQUEST,
+255:                success=(outcome in {"executed", "dispatched_to_client"}),
+274:        tool_handlers=tool_handlers,
+275:        policy=policy,
+276:        permission=permission,
+327:async def get_approval_service(
+330:    from app.modules.agent_platform.application.approval.approval_service import (
+333:    from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+340:async def get_approval_workflow(
+343:    from app.modules.agent_platform.application.approval.approval_workflow import (
+346:    from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+
+=== 10. ZAVERECNY STAV ===
+audit/hardening-2026-10-14
+46de096
+M  .pre-commit-config.yaml
+ M app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py
+M  app/modules/agent_platform/presentation/chat_router.py
+ M app/modules/listings/application/services.py
+?? app/modules/agent_platform/presentation/user_ai_chat_router.py
+?? cmep_ai_architektura/
+?? final_check.py
+?? waste-platform/
+
+KONIEC DAVKY 05
+Zdrojove subory neboli upravovane.

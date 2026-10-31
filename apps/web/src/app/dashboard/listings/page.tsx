@@ -130,7 +130,7 @@ export default function MyListingsPage() {
         kicker="PONUKY"
         title="Ponuky"
         subtitle="Prehľad vašich ponúk a materiálov na platforme."
-        imageUrl="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2070&auto=format&fit=crop"
+        imageUrl="/images/heroes/fotky.jpg"
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
         {!isVerified && warningKey && (
@@ -169,21 +169,7 @@ export default function MyListingsPage() {
         )}
 
         <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p
-              className="mb-3 text-[11px] uppercase tracking-[0.3em]"
-              style={{ color: GOLD }}
-            >
-              {t('listings.section')}
-            </p>
-
-            <h1
-              className="text-4xl leading-tight tracking-[-0.02em] md:text-5xl"
-              style={{ fontFamily: 'DM Serif Display, serif' }}
-            >
-              {t('listings.title')}
-            </h1>
-          </div>
+          <div></div>
 
           <Link
             href="/dashboard/listings/new"

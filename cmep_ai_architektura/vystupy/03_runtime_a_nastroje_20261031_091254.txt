@@ -1,0 +1,1831 @@
+CMEP AI - DAVKA 03
+RUNTIME A KATALOG NASTROJOV
+READ-ONLY AUDIT
+Datum: Sat Oct 31 09:12:54 CET 2026
+
+=== 1. STAV REPOZITARA ===
+audit/hardening-2026-10-14
+46de0969d99c7c775f4fec084bf4d27d8c4e790b
+## audit/hardening-2026-10-14...origin/audit/hardening-2026-10-14 [ahead 10]
+M  .pre-commit-config.yaml
+ M app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py
+M  app/modules/agent_platform/presentation/chat_router.py
+ M app/modules/listings/application/services.py
+?? app/modules/agent_platform/presentation/user_ai_chat_router.py
+?? cmep_ai_architektura/
+?? final_check.py
+?? waste-platform/
+
+=== 2. STRUKTURA TOOLS ===
+app/modules/agent_platform/application/tools/__init__.py
+app/modules/agent_platform/application/tools/company_search.py
+app/modules/agent_platform/application/tools/tool_dispatcher.py
+app/modules/agent_platform/application/tools/tool_executor.py
+app/modules/agent_platform/application/tools/tool_guard.py
+app/modules/agent_platform/application/tools/tool_handler.py
+app/modules/agent_platform/application/tools/tool_handler_registry.py
+app/modules/agent_platform/application/tools/tool_registry.py
+app/modules/agent_platform/domain/tools/__init__.py
+app/modules/agent_platform/domain/tools/tool_definition.py
+app/modules/agent_platform/domain/tools/tool_request.py
+app/modules/agent_platform/domain/tools/tool_result.py
+app/modules/agent_platform/domain/tools/tool_risk.py
+app/modules/agent_platform/infrastructure/tools/__init__.py
+app/modules/agent_platform/infrastructure/tools/client_action_validation.py
+app/modules/agent_platform/infrastructure/tools/cmep_admin_tools.py
+app/modules/agent_platform/infrastructure/tools/cmep_company_search.py
+app/modules/agent_platform/infrastructure/tools/cmep_company_search_handler.py
+app/modules/agent_platform/infrastructure/tools/cmep_listing_search_handler.py
+app/modules/agent_platform/infrastructure/tools/cmep_listing_transport_handler.py
+app/modules/agent_platform/infrastructure/tools/cmep_nearby_companies_handler.py
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py
+app/modules/agent_platform/infrastructure/tools/dispatcher_tool_executor.py
+app/modules/agent_platform/infrastructure/tools/forbidden_tool_names.py
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py
+app/modules/agent_platform/infrastructure/tools/openlist_readonly.py
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py
+app/modules/agent_platform/infrastructure/tools/project_read.py
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py
+app/modules/agent_platform/infrastructure/tools/tool_catalog.py
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py
+app/modules/agent_platform/tests/test_admin_tools.py
+app/modules/agent_platform/tests/test_project_read_tools.py
+
+=== 3. REGISTRACIA HANDLEROV ===
+app/modules/agent_platform/application/tools/tool_registry.py-5-from ...domain.tools.tool_definition import ToolDefinition
+app/modules/agent_platform/application/tools/tool_registry.py-6-
+app/modules/agent_platform/application/tools/tool_registry.py-7-
+app/modules/agent_platform/application/tools/tool_registry.py:8:class ToolRegistry(ABC):
+app/modules/agent_platform/application/tools/tool_registry.py-9-    @abstractmethod
+app/modules/agent_platform/application/tools/tool_registry.py-10-    def register(self, definition: ToolDefinition) -> None:
+app/modules/agent_platform/application/tools/tool_registry.py-11-        raise NotImplementedError
+--
+app/modules/agent_platform/infrastructure/tools/__init__.py-1-"""Tool infrastructure."""
+app/modules/agent_platform/infrastructure/tools/__init__.py-2-
+app/modules/agent_platform/infrastructure/tools/__init__.py-3-from .forbidden_tool_names import FORBIDDEN_TOOL_NAMES, is_forbidden_tool_name
+app/modules/agent_platform/infrastructure/tools/__init__.py:4:from .in_memory_tool_registry import InMemoryToolRegistry
+app/modules/agent_platform/infrastructure/tools/__init__.py:5:from .safe_tool_registry import SafeToolRegistry
+app/modules/agent_platform/infrastructure/tools/__init__.py-6-from .tool_catalog import build_initial_tool_catalog
+app/modules/agent_platform/infrastructure/tools/__init__.py-7-
+app/modules/agent_platform/infrastructure/tools/__init__.py-8-__all__ = [
+app/modules/agent_platform/infrastructure/tools/__init__.py-9-    "FORBIDDEN_TOOL_NAMES",
+app/modules/agent_platform/infrastructure/tools/__init__.py:10:    "InMemoryToolRegistry",
+app/modules/agent_platform/infrastructure/tools/__init__.py:11:    "SafeToolRegistry",
+app/modules/agent_platform/infrastructure/tools/__init__.py-12-    "build_initial_tool_catalog",
+app/modules/agent_platform/infrastructure/tools/__init__.py-13-    "is_forbidden_tool_name",
+app/modules/agent_platform/infrastructure/tools/__init__.py-14-]
+--
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-11-Concrete CMEP tools will be registered explicitly later.
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-12-"""
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-13-
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py:14:from ...application.tools.tool_registry import ToolRegistry
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-15-from ...domain.tools.tool_definition import ToolDefinition
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-16-
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-17-
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py:18:class InMemoryToolRegistry(ToolRegistry):
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-19-    def __init__(self) -> None:
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-20-        self._tools: dict[str, ToolDefinition] = {}
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_registry.py-21-
+--
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-1-"""Safety-wrapped tool registry."""
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-2-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py:3:from ...application.tools.tool_registry import ToolRegistry
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-4-from ...domain.tools.tool_definition import ToolDefinition
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-5-from .forbidden_tool_names import is_forbidden_tool_name
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-6-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-7-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py:8:class SafeToolRegistry(ToolRegistry):
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-9-    """Tool registry that rejects forbidden capability names."""
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-10-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py:11:    def __init__(self, inner: ToolRegistry) -> None:
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-12-        self._inner = inner
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-13-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-14-    def register(self, definition: ToolDefinition) -> None:
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-15-        if is_forbidden_tool_name(definition.name):
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-16-            raise ValueError(f"Forbidden tool capability: {definition.name}")
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-17-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py:18:        self._inner.register(definition)
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-19-
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-20-    def get(self, name: str) -> ToolDefinition | None:
+app/modules/agent_platform/infrastructure/tools/safe_tool_registry.py-21-        if is_forbidden_tool_name(name):
+--
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py-16-            raise ValueError("tool_name must not be empty")
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py-17-        if name in self._handlers:
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py-18-            raise ValueError(f"tool handler already registered: {name}")
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py:19:        self._handlers[name] = handler
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py-20-
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py-21-    def get(self, tool_name: str) -> ToolHandler | None:
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py-22-        return self._handlers.get(tool_name)
+--
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-1-"""Default registry-backed tool guard."""
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-2-
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-3-from ...application.tools.tool_guard import ToolGuard
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py:4:from ...application.tools.tool_registry import ToolRegistry
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-5-from ...domain.tools.tool_request import ToolRequest
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-6-from ...domain.tools.tool_result import ToolResult
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-7-
+--
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-9-class RegistryToolGuard(ToolGuard):
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-10-    """Performs structural tool checks after policy/permission decisions."""
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-11-
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py:12:    def __init__(self, registry: ToolRegistry) -> None:
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-13-        self.registry = registry
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-14-
+app/modules/agent_platform/infrastructure/tools/registry_tool_guard.py-15-    async def validate(self, request: ToolRequest) -> ToolResult | None:
+--
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-3-from ...application.tools.tool_dispatcher import ToolDispatcher
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-4-from ...application.tools.tool_guard import ToolGuard
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-5-from ...application.tools.tool_handler_registry import ToolHandlerRegistry
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py:6:from ...application.tools.tool_registry import ToolRegistry
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-7-from ...domain.tools.tool_request import ToolRequest
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-8-from ...domain.tools.tool_result import ToolResult
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-9-
+--
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-14-    def __init__(
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-15-        self,
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-16-        *,
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py:17:        registry: ToolRegistry,
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-18-        guard: ToolGuard,
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-19-        handlers: ToolHandlerRegistry,
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py-20-    ) -> None:
+--
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-6-from .dispatcher_tool_executor import DispatcherToolExecutor
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-7-from .handler_adapters import UnwiredToolHandler
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-8-from .in_memory_tool_handler_registry import InMemoryToolHandlerRegistry
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:9:from .in_memory_tool_registry import InMemoryToolRegistry
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-10-from .registry_tool_guard import RegistryToolGuard
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:11:from .safe_tool_registry import SafeToolRegistry
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-12-from .tool_catalog import build_initial_tool_catalog
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-13-
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-14-
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-15-def build_phase5_executor(*, handler_overrides: Mapping[str, object] | None = None):
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-16-    """Build registry -> guard -> dispatcher -> executor."""
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-17-
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:18:    raw_registry = InMemoryToolRegistry()
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-19-    tool_catalog = build_initial_tool_catalog()
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-20-
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-21-    for definition in tool_catalog:
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:22:        raw_registry.register(definition)
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-23-
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:24:    registry = SafeToolRegistry(raw_registry)
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-25-    handlers = InMemoryToolHandlerRegistry()
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-26-    overrides = dict(handler_overrides or {})
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-27-
+--
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-29-        handler = overrides.get(definition.name)
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-30-        if handler is None:
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-31-            handler = UnwiredToolHandler(definition.name)
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:32:        handlers.register(definition.name, handler)
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-33-
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-34-    dispatcher = CMEPToolDispatcher(
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py-35-        registry=registry,
+--
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-13-from app.modules.agent_platform.infrastructure.tools.in_memory_tool_handler_registry import (
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-14-    InMemoryToolHandlerRegistry,
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-15-)
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py:16:from app.modules.agent_platform.infrastructure.tools.in_memory_tool_registry import (
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py:17:    InMemoryToolRegistry,
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-18-)
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-19-from app.modules.agent_platform.infrastructure.tools.registry_tool_guard import (
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-20-    RegistryToolGuard,
+--
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-43-
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-44-
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-45-def build():
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py:46:    registry = InMemoryToolRegistry()
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py:47:    registry.register(
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-48-        Definition(
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-49-            "cmep.company.search",
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-50-            allowed_actor_types={"user", "admin", "ai"},
+--
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-53-
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-54-    handlers = InMemoryToolHandlerRegistry()
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-55-    handler = Handler()
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py:56:    handlers.register("cmep.company.search", handler)
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-57-
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-58-    dispatcher = CMEPToolDispatcher(
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py-59-        registry=registry,
+--
+app/modules/agent_platform/presentation/dependencies.py-130-    # Transport + nearby READ tools – pre vsetkych prihlasenych.
+app/modules/agent_platform/presentation/dependencies.py-131-    nearby_handler = CmepNearbyCompaniesHandler(session=session)
+app/modules/agent_platform/presentation/dependencies.py-132-    transport_handler = CmepListingTransportHandler(session=session)
+app/modules/agent_platform/presentation/dependencies.py:133:    tool_handlers["search_nearby_companies"] = nearby_handler
+app/modules/agent_platform/presentation/dependencies.py:134:    tool_handlers["get_listing_transport"] = transport_handler
+app/modules/agent_platform/presentation/dependencies.py-135-    tool_scopes["search_nearby_companies"] = ("recommendations", "read")
+app/modules/agent_platform/presentation/dependencies.py-136-    tool_scopes["get_listing_transport"] = ("recommendations", "read")
+app/modules/agent_platform/presentation/dependencies.py-137-    tool_schemas = tool_schemas + build_transport_tools()
+--
+app/modules/agent_platform/presentation/dependencies.py-153-        "get_company_listings",
+app/modules/agent_platform/presentation/dependencies.py-154-        "get_recommendations",
+app/modules/agent_platform/presentation/dependencies.py-155-    ):
+app/modules/agent_platform/presentation/dependencies.py:156:        tool_handlers[_tool_name] = user_tools_handler
+app/modules/agent_platform/presentation/dependencies.py-157-        tool_scopes[_tool_name] = ("listings", "read")
+app/modules/agent_platform/presentation/dependencies.py-158-    tool_schemas = tool_schemas + build_user_read_tools()
+app/modules/agent_platform/presentation/dependencies.py-159-
+app/modules/agent_platform/presentation/dependencies.py-160-    # Project READ tools — IBA pre platform admina (nie pre bežných userov).
+app/modules/agent_platform/presentation/dependencies.py-161-    if is_admin:
+app/modules/agent_platform/presentation/dependencies.py-162-        project_handler = ProjectReadHandler()
+app/modules/agent_platform/presentation/dependencies.py:163:        tool_handlers["project_read_file"] = project_handler
+app/modules/agent_platform/presentation/dependencies.py:164:        tool_handlers["project_list_dir"] = project_handler
+app/modules/agent_platform/presentation/dependencies.py-165-        tool_scopes["project_read_file"] = ("admin", "read")
+app/modules/agent_platform/presentation/dependencies.py-166-        tool_scopes["project_list_dir"] = ("admin", "read")
+app/modules/agent_platform/presentation/dependencies.py-167-        tool_schemas = tool_schemas + build_project_read_tools()
+--
+app/modules/agent_platform/presentation/dependencies.py-175-            "get_companies_with_tiers",
+app/modules/agent_platform/presentation/dependencies.py-176-            "get_my_company_context",
+app/modules/agent_platform/presentation/dependencies.py-177-        ):
+app/modules/agent_platform/presentation/dependencies.py:178:            tool_handlers[tool_name] = admin_handler
+app/modules/agent_platform/presentation/dependencies.py-179-            tool_scopes[tool_name] = ("admin", "read")
+app/modules/agent_platform/presentation/dependencies.py-180-        tool_schemas = tool_schemas + build_admin_tools()
+app/modules/agent_platform/presentation/dependencies.py-181-        # Admin-only client navigation (e.g. open_admin) is offered only here.
+
+=== 4. TOOL EXECUTOR A DISPATCHER ===
+app/modules/agent_platform/application/agent/agent_orchestrator.py:73:        tool_handlers: dict[str, Any],
+app/modules/agent_platform/application/agent/agent_orchestrator.py:88:        self._tool_handlers = dict(tool_handlers)
+app/modules/agent_platform/application/agent/agent_orchestrator.py:441:                    handler = self._tool_handlers.get(tool_name)
+app/modules/agent_platform/application/agent/agent_runtime.py:15:    async def execute_tool(
+app/modules/agent_platform/application/tools/tool_executor.py:9:class ToolExecutor(ABC):
+app/modules/agent_platform/application/tools/tool_dispatcher.py:9:class ToolDispatcher(ABC):
+app/modules/agent_platform/application/tools/tool_handler_registry.py:5:from .tool_handler import ToolHandler
+app/modules/agent_platform/application/events/event_dispatcher.py:8:class EventDispatcher(ABC):
+app/modules/agent_platform/application/events/event_dispatcher.py:14:class DefaultEventDispatcher(EventDispatcher):
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py:3:from ...application.tools.tool_handler import ToolHandler
+app/modules/agent_platform/infrastructure/tools/in_memory_tool_handler_registry.py:4:from ...application.tools.tool_handler_registry import ToolHandlerRegistry
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py:5:from ...application.tools.tool_handler_registry import ToolHandlerRegistry
+app/modules/agent_platform/infrastructure/tools/cmep_tool_dispatcher.py:11:class CMEPToolDispatcher(ToolDispatcher):
+app/modules/agent_platform/infrastructure/tools/dispatcher_tool_executor.py:9:class DispatcherToolExecutor(ToolExecutor):
+app/modules/agent_platform/infrastructure/tools/handler_adapters.py:6:from ...application.tools.tool_handler import ToolHandler
+app/modules/agent_platform/infrastructure/tools/phase5_tool_wiring.py:8:from .in_memory_tool_handler_registry import InMemoryToolHandlerRegistry
+app/modules/agent_platform/infrastructure/tools/openlist_readonly.py:10:from app.modules.agent_platform.application.tools.tool_handler import ToolHandler
+app/modules/agent_platform/infrastructure/tools/openlist_readonly.py:134:    async def call_tool(
+app/modules/agent_platform/infrastructure/tools/openlist_readonly.py:214:            data = await self._client.call_tool(
+app/modules/agent_platform/infrastructure/tools/openlist_readonly.py:286:            data = await self._client.call_tool(
+app/modules/agent_platform/infrastructure/testing/phase3_adapters.py:85:class DeterministicToolExecutor:
+app/modules/agent_platform/tests/test_phase3_pipeline.py:45:    result = await runtime.execute_tool(
+app/modules/agent_platform/tests/test_phase3_pipeline.py:65:    result = await runtime.execute_tool(
+app/modules/agent_platform/tests/test_phase3_pipeline.py:121:    result = await runtime.execute_tool(
+app/modules/agent_platform/tests/test_phase4_async_execution.py:37:    result = await runtime.execute_tool(
+app/modules/agent_platform/tests/test_phase4_async_execution.py:69:    result = await runtime.execute_tool(
+app/modules/agent_platform/tests/test_phase4_async_execution.py:89:    result = await runtime.execute_tool(
+app/modules/agent_platform/tests/test_phase4_1_dispatcher.py:13:from app.modules.agent_platform.infrastructure.tools.in_memory_tool_handler_registry import (
+app/modules/agent_platform/tests/test_client_actions.py:88:        tool_handlers={},
+app/modules/agent_platform/tests/test_openlist_readonly.py:67:        await client.call_tool("openlist.fs.put", {"path": "x"})
+app/modules/agent_platform/tests/test_openlist_readonly.py:69:        await client.call_tool("openlist.fs.remove", {"path": "x"})
+app/modules/agent_platform/tests/test_openlist_readonly.py:166:        async def call_tool(self, *a, **k):
+app/modules/agent_platform/tests/test_openlist_readonly.py:181:        async def call_tool(self, *a, **k):
+app/modules/agent_platform/tests/test_openlist_readonly.py:196:        async def call_tool(self, *a, **k):
+app/modules/agent_platform/tests/test_project_read_production.py:101:    assert "project_read_file" in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:102:    assert "project_list_dir" in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:111:    assert "project_read_file" not in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:112:    assert "project_list_dir" not in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:141:        assert name in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:142:    assert "get_platform_stats" not in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:147:    assert "get_platform_stats" in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:148:    assert "search_companies" in orch._tool_handlers
+app/modules/agent_platform/tests/test_project_read_production.py:156:    assert not any(n.startswith("external.openlist") for n in orch._tool_handlers)
+app/modules/agent_platform/tests/test_agent_policy_gate.py:109:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_policy_gate.py:133:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:133:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:158:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:183:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_audit.py:97:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_card_builder.py:212:        tool_handlers={tool_name: handler},
+app/modules/agent_platform/tests/test_card_builder.py:294:        tool_handlers={"search_listings": handler},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:85:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:107:        tool_handlers={"secret_tool": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:125:        tool_handlers={},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:142:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:160:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:179:        tool_handlers={},
+app/modules/agent_platform/presentation/dependencies.py:120:    tool_handlers: dict[str, object] = {
+app/modules/agent_platform/presentation/dependencies.py:133:    tool_handlers["search_nearby_companies"] = nearby_handler
+app/modules/agent_platform/presentation/dependencies.py:134:    tool_handlers["get_listing_transport"] = transport_handler
+app/modules/agent_platform/presentation/dependencies.py:156:        tool_handlers[_tool_name] = user_tools_handler
+app/modules/agent_platform/presentation/dependencies.py:163:        tool_handlers["project_read_file"] = project_handler
+app/modules/agent_platform/presentation/dependencies.py:164:        tool_handlers["project_list_dir"] = project_handler
+app/modules/agent_platform/presentation/dependencies.py:178:            tool_handlers[tool_name] = admin_handler
+app/modules/agent_platform/presentation/dependencies.py:189:        allowed_tool_names=frozenset(tool_handlers.keys()) | CLIENT_ACTION_NAMES,
+app/modules/agent_platform/presentation/dependencies.py:274:        tool_handlers=tool_handlers,
+
+=== 5. TOOL CATALOG ===
+"""Static initial tool catalog.
+
+Only declarations live here.
+
+There are intentionally no executable handlers in Phase 2.
+"""
+
+from ...domain.tools.tool_definition import ToolDefinition
+from ...domain.tools.tool_risk import ToolRisk
+
+
+def build_initial_tool_catalog() -> tuple[ToolDefinition, ...]:
+    """Return explicitly approved conceptual tool definitions.
+
+    These tools are NOT registered automatically into production yet.
+    They describe the future boundary only.
+    """
+
+    return (
+        ToolDefinition(
+            name="cmep.user.get_profile",
+            description="Read the current authenticated user's profile.",
+            domain="users",
+            action="read",
+            risk=ToolRisk.LOW,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.company.search",
+            description="Search CMEP companies through the company service.",
+            domain="companies",
+            action="search",
+            risk=ToolRisk.LOW,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.listing.search",
+            description="Search marketplace listings through the listing service.",
+            domain="listings",
+            action="search",
+            risk=ToolRisk.LOW,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.inquiry.prepare",
+            description="Prepare an inquiry without sending it.",
+            domain="inquiries",
+            action="prepare",
+            risk=ToolRisk.MEDIUM,
+            requires_approval=False,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.inquiry.send",
+            description="Send an inquiry through the existing inquiry service.",
+            domain="inquiries",
+            action="send",
+            risk=ToolRisk.HIGH,
+            requires_approval=True,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.notifications.read",
+            description="Read notifications available to the authenticated actor.",
+            domain="notifications",
+            action="read",
+            risk=ToolRisk.LOW,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.prediction.read",
+            description="Request an existing prediction through its provider contract.",
+            domain="prediction",
+            action="read",
+            risk=ToolRisk.MEDIUM,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="cmep.recommendations.read",
+            description="Read existing recommendation results.",
+            domain="recommendations",
+            action="read",
+            risk=ToolRisk.LOW,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+        ToolDefinition(
+            name="external.web.search",
+            description="Search the public web through an approved external gateway.",
+            domain="external_web",
+            action="search",
+            risk=ToolRisk.MEDIUM,
+            allowed_actor_types=frozenset({"user", "admin", "ai"}),
+        ),
+    )
+
+=== 6. TOOL SCHEMAS: ZOZNAM FUNKCII ===
+7:COMPANY_SEARCH_SCHEMA: dict[str, Any] = {
+10:        "name": "search_companies",
+11:        "description": (
+20:                    "description": "Fulltextové hľadanie (názov, materiál, mesto).",
+24:                    "description": "Typ firmy (napr. sro, as, zivnost).",
+28:                    "description": "Firma vie predávať (ponúka materiál).",
+32:                    "description": "Firma vie nakupovať (hľadá materiál).",
+36:                    "description": "Firma má logistiku / dopravu.",
+51:LISTING_SEARCH_SCHEMA: dict[str, Any] = {
+54:        "name": "search_listings",
+55:        "description": (
+64:                    "description": "Fulltextové hľadanie (názov, materiál).",
+68:                    "description": "Typ materiálu (wood, metal, paper, plastics, bio).",
+72:                    "description": "Lokalita (mesto, región).",
+87:def build_default_tools() -> tuple[dict[str, Any], ...]:
+91:ADMIN_PLATFORM_STATS_SCHEMA: dict[str, Any] = {
+94:        "name": "get_platform_stats",
+95:        "description": (
+104:ADMIN_RECENT_ACTIVITY_SCHEMA: dict[str, Any] = {
+107:        "name": "get_recent_activity",
+108:        "description": (
+122:ADMIN_COMPANIES_TIERS_SCHEMA: dict[str, Any] = {
+125:        "name": "get_companies_with_tiers",
+126:        "description": (
+140:ADMIN_MY_CONTEXT_SCHEMA: dict[str, Any] = {
+143:        "name": "get_my_company_context",
+144:        "description": (
+153:def build_admin_tools() -> tuple[dict[str, Any], ...]:
+166:NEARBY_COMPANIES_SCHEMA: dict[str, Any] = {
+169:        "name": "search_nearby_companies",
+170:        "description": (
+178:                "near": {"type": "string", "description": "Mesto alebo región."},
+183:                    "description": "Materiál (wood, metal, paper, plastics, bio, alebo voľný text).",
+193:LISTING_TRANSPORT_SCHEMA: dict[str, Any] = {
+196:        "name": "get_listing_transport",
+197:        "description": (
+205:                "listing_id": {"type": "string", "description": "UUID ponuky."},
+206:                "from_location": {"type": "string", "description": "Odkiaľ (mesto)."},
+217:def build_transport_tools() -> tuple[dict[str, Any], ...]:
+226:FILL_FORM_FIELD_SCHEMA: dict[str, Any] = {
+229:        "name": "fill_form_field",
+230:        "description": (
+245:                    "description": "Názov poľa (musí byť jedno z polí aktuálneho formulára).",
+248:                    "description": "Hodnota poľa (string, number, boolean).",
+257:NAVIGATE_SCHEMA: dict[str, Any] = {
+260:        "name": "navigate",
+261:        "description": (
+270:                    "description": "Relatívna cesta v rámci CMEP, napr. '/dashboard/listings/new'.",
+279:HIGHLIGHT_FIELD_SCHEMA: dict[str, Any] = {
+282:        "name": "highlight_field",
+283:        "description": (
+298:SHOW_TOAST_SCHEMA: dict[str, Any] = {
+301:        "name": "show_toast",
+302:        "description": (
+320:GET_MY_LISTINGS_SCHEMA: dict[str, Any] = {
+323:        "name": "get_my_listings",
+324:        "description": (
+335:                    "description": "Voliteľný filter podľa stavu.",
+344:GET_MY_COMPANY_SCHEMA: dict[str, Any] = {
+347:        "name": "get_my_company",
+348:        "description": (
+358:GET_LISTING_DETAILS_SCHEMA: dict[str, Any] = {
+361:        "name": "get_listing_details",
+362:        "description": (
+370:                "listing_id": {"type": "string", "description": "UUID ponuky."},
+378:GET_LISTING_STATS_SCHEMA: dict[str, Any] = {
+381:        "name": "get_listing_stats",
+382:        "description": (
+390:                "listing_id": {"type": "string", "description": "UUID ponuky."},
+398:GET_COMPANY_LISTINGS_SCHEMA: dict[str, Any] = {
+401:        "name": "get_company_listings",
+402:        "description": (
+409:                "company_id": {"type": "string", "description": "UUID firmy."},
+418:GET_RECOMMENDATIONS_SCHEMA: dict[str, Any] = {
+421:        "name": "get_recommendations",
+422:        "description": (
+430:                "listing_id": {"type": "string", "description": "UUID ponuky."},
+438:def build_user_read_tools() -> tuple[dict[str, Any], ...]:
+452:OPEN_LISTING_SCHEMA: dict[str, Any] = {
+455:        "name": "open_listing",
+456:        "description": (
+467:OPEN_COMPANY_SCHEMA: dict[str, Any] = {
+470:        "name": "open_company",
+471:        "description": "Otvorí profil firmy v UI.",
+480:OPEN_NEW_LISTING_SCHEMA: dict[str, Any] = {
+483:        "name": "open_new_listing",
+484:        "description": (
+492:OPEN_LISTINGS_LIST_SCHEMA: dict[str, Any] = {
+495:        "name": "open_listings_list",
+496:        "description": "Otvorí zoznam ponúk.",
+501:OPEN_COMPANIES_SCHEMA: dict[str, Any] = {
+504:        "name": "open_companies",
+505:        "description": "Otvorí zoznam firiem.",
+510:OPEN_DASHBOARD_SCHEMA: dict[str, Any] = {
+513:        "name": "open_dashboard",
+514:        "description": "Otvorí hlavný dashboard.",
+519:OPEN_INQUIRIES_SCHEMA: dict[str, Any] = {
+522:        "name": "open_inquiries",
+523:        "description": "Otvorí zoznam dopytov používateľa.",
+528:OPEN_NEW_COMPANY_SCHEMA: dict[str, Any] = {
+531:        "name": "open_new_company",
+532:        "description": (
+541:OPEN_DOCUMENTS_SCHEMA: dict[str, Any] = {
+544:        "name": "open_documents",
+545:        "description": "Otvorí zoznam dokumentov používateľa.",
+550:OPEN_NEW_DOCUMENT_SCHEMA: dict[str, Any] = {
+553:        "name": "open_new_document",
+554:        "description": (
+562:OPEN_CHAT_SCHEMA: dict[str, Any] = {
+565:        "name": "open_chat",
+566:        "description": "Otvorí interný chat (správy) platformy.",
+571:OPEN_SETTINGS_SCHEMA: dict[str, Any] = {
+574:        "name": "open_settings",
+575:        "description": "Otvorí nastavenia účtu (zabezpečenie, heslo).",
+580:OPEN_TRANSPORT_SCHEMA: dict[str, Any] = {
+583:        "name": "open_transport",
+584:        "description": "Otvorí stránku prepravcov.",
+589:OPEN_SUBSCRIPTION_SCHEMA: dict[str, Any] = {
+592:        "name": "open_subscription",
+593:        "description": "Otvorí stránku predplatného.",
+598:OPEN_MARKETPLACE_SCHEMA: dict[str, Any] = {
+601:        "name": "open_marketplace",
+602:        "description": "Otvorí marketplace (všetky ponuky).",
+607:OPEN_ADMIN_SCHEMA: dict[str, Any] = {
+610:        "name": "open_admin",
+611:        "description": ("Otvorí administráciu platformy. Dostupné iba pre administrátora."),
+618:CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (
+641:ADMIN_CLIENT_ACTION_SCHEMAS: tuple[dict[str, Any], ...] = (OPEN_ADMIN_SCHEMA,)
+648:OPENLIST_LIST_SCHEMA: dict[str, Any] = {
+651:        "name": "external.openlist.list",
+652:        "description": (
+662:                    "description": (
+684:OPENLIST_GET_SCHEMA: dict[str, Any] = {
+687:        "name": "external.openlist.get",
+688:        "description": (
+698:                    "description": (
+709:OPENLIST_READONLY_SCHEMAS: tuple[dict[str, Any], ...] = (
+721:PROJECT_READ_FILE_SCHEMA: dict[str, Any] = {
+724:        "name": "project_read_file",
+725:        "description": (
+733:                "path": {"type": "string", "description": "Relatívna cesta, napr. 'app/main.py'."},
+741:PROJECT_LIST_DIR_SCHEMA: dict[str, Any] = {
+744:        "name": "project_list_dir",
+745:        "description": "READ-ONLY. Vypíše obsah adresára v repozitári. Skryje .git, __pycache__, node_modules, .next, venv.",
+749:                "path": {"type": "string", "description": "Relatívna cesta. Prázdny = koreň."},
+757:def build_project_read_tools() -> tuple[dict[str, Any], ...]:
+
+=== 7. TOOL HANDLER ADAPTERS ===
+"""Adapters from Agent Platform tools to existing CMEP services."""
+
+from collections.abc import Awaitable, Callable
+from typing import Any
+
+from ...application.tools.tool_handler import ToolHandler
+from ...domain.tools.tool_request import ToolRequest
+from ...domain.tools.tool_result import ToolResult
+
+
+class CallableToolHandler(ToolHandler):
+    """Adapts an injected async application-service callable."""
+
+    def __init__(
+        self,
+        tool_name: str,
+        callback: Callable[[ToolRequest], Awaitable[Any]],
+    ) -> None:
+        self.tool_name = tool_name
+        self.callback = callback
+
+    async def handle(self, request: ToolRequest) -> ToolResult:
+        if request.tool_name != self.tool_name:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="handler_tool_mismatch",
+                error_message="Handler is registered for another tool",
+            )
+
+        data = await self.callback(request)
+
+        return ToolResult(
+            request_id=request.request_id,
+            tool_name=request.tool_name,
+            success=True,
+            data=data,
+        )
+
+
+class UnwiredToolHandler(ToolHandler):
+    """Safe placeholder until an existing CMEP service is injected."""
+
+    def __init__(self, tool_name: str) -> None:
+        self.tool_name = tool_name
+
+    async def handle(self, request: ToolRequest) -> ToolResult:
+        return ToolResult(
+            request_id=request.request_id,
+            tool_name=request.tool_name,
+            success=False,
+            error_code="tool_not_wired",
+            error_message="Tool handler is not connected to a CMEP service",
+        )
+
+
+class CompanySearchToolHandler:
+    """Phase 5 adapter for the existing CMEP company search service.
+
+    Authorization is supplied by the authenticated application boundary.
+    Tool arguments are never allowed to override the authorized company
+    scope.
+    """
+
+    _ALLOWED_ARGUMENTS = frozenset(
+        {
+            "status",
+            "company_type",
+            "seller_capability",
+            "buyer_capability",
+            "logistics_capability",
+            "q",
+            "page",
+            "page_size",
+        }
+    )
+
+    def __init__(
+        self,
+        *,
+        service,
+        is_platform_admin: bool,
+        company_ids: tuple[str, ...],
+    ):
+        self._service = service
+        self._is_platform_admin = bool(is_platform_admin)
+        self._company_ids = tuple(company_ids)
+
+    async def __call__(self, request):
+        arguments = dict(request.arguments or {})
+
+        unknown = set(arguments) - self._ALLOWED_ARGUMENTS
+        if unknown:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="invalid_arguments",
+                error_message=(
+                    "Unsupported company search arguments: " + ", ".join(sorted(unknown))
+                ),
+            )
+
+        # A non-admin with no authorized company membership has no
+        # company-search scope. Never let the model manufacture one.
+        if not self._is_platform_admin and not self._company_ids:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="company_access_denied",
+                error_message="No authorized company scope.",
+            )
+
+        page = arguments.get("page", 1)
+        page_size = arguments.get("page_size", 25)
+
+        try:
+            page = int(page)
+            page_size = int(page_size)
+        except (TypeError, ValueError):
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="invalid_arguments",
+                error_message="page and page_size must be integers.",
+            )
+
+        if page < 1:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="invalid_arguments",
+                error_message="page must be >= 1.",
+            )
+
+        if page_size < 1 or page_size > 100:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="invalid_arguments",
+                error_message="page_size must be between 1 and 100.",
+            )
+
+        items, total = await self._service.execute(
+            status=arguments.get("status"),
+            company_type=arguments.get("company_type"),
+            seller_capability=arguments.get("seller_capability"),
+            buyer_capability=arguments.get("buyer_capability"),
+            logistics_capability=arguments.get("logistics_capability"),
+            q=arguments.get("q"),
+            page=page,
+            page_size=page_size,
+            # Critical security boundary:
+            # never accept company_ids from ToolRequest.arguments.
+            company_ids=None if self._is_platform_admin else list(self._company_ids),
+        )
+
+        return ToolResult(
+            request_id=request.request_id,
+            tool_name=request.tool_name,
+            success=True,
+            data={
+                "items": items,
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+            },
+        )
+
+=== 8. ZAPOJENIE DEPENDENCY INJECTION ===
+"""Dependency injection for agent_platform presentation layer."""
+
+from __future__ import annotations
+
+import contextlib
+
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.agent_platform.application.agent.agent_orchestrator import (
+    AgentOrchestrator,
+)
+from app.modules.agent_platform.application.agent.card_builder import build_cards
+from app.modules.agent_platform.infrastructure.ai.cerebras_gateway import CerebrasModelGateway
+from app.modules.agent_platform.infrastructure.ai.chain_gateway import ChainModelGateway
+from app.modules.agent_platform.infrastructure.ai.groq_gateway import GroqModelGateway
+from app.modules.agent_platform.infrastructure.ai.mistral_gateway import MistralModelGateway
+from app.modules.agent_platform.infrastructure.events.sqlalchemy_event_publisher import (
+    SqlAlchemyEventPublisher,
+)
+from app.modules.agent_platform.infrastructure.permission.actor_tool_permission_engine import (
+    ActorToolPermissionEngine,
+)
+from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
+    SqlAlchemyAiConversationRepository,
+)
+from app.modules.agent_platform.infrastructure.policy.allowlist_policy_engine import (
+    AllowlistPolicyEngine,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_admin_tools import (
+    CmepAdminToolsHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_company_search_handler import (
+    CmepCompanySearchHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_listing_search_handler import (
+    CmepListingSearchHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_listing_transport_handler import (
+    CmepListingTransportHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_nearby_companies_handler import (
+    CmepNearbyCompaniesHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.cmep_user_tools import (
+    CmepUserToolsHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.project_read import (
+    ProjectReadHandler,
+)
+from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
+    ADMIN_CLIENT_ACTION_SCHEMAS,
+    CLIENT_ACTION_NAMES,
+    CLIENT_ACTION_SCHEMAS,
+    build_admin_tools,
+    build_default_tools,
+    build_project_read_tools,
+    build_transport_tools,
+    build_user_read_tools,
+)
+from app.modules.companies.application.entitlements import (
+    CompanyEntitlementService,
+)
+from app.modules.companies.application.services import (
+    GetCompanyService,
+    ListCompaniesService,
+)
+from app.modules.companies.infrastructure.repositories import (
+    SqlAlchemyCompanyRepository,
+)
+from app.modules.listings.application.services import ListingsService
+from app.modules.listings.infrastructure.repositories import (
+    ListingsRepositoryImpl,
+)
+from app.shared.application.side_effects import write_audit
+from app.shared.infrastructure.db.session import get_db_session
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import (
+    is_platform_admin,
+    membership_company_ids,
+)
+
+
+def client_action_scopes() -> dict[str, tuple[str, str]]:
+    """Permission scopes for frontend-only client actions.
+
+    Client actions have no backend handler, but they must still pass the policy
+    and permission engines before being handed to the UI dispatcher.
+    """
+    return dict.fromkeys(CLIENT_ACTION_NAMES, ("client", "action"))
+
+
+async def get_agent_orchestrator(
+    session: AsyncSession = Depends(get_db_session),
+    current_user=Depends(require_current_user),
+) -> AgentOrchestrator:
+    """Build orchestrator with tool handlers bound to current user's scope."""
+
+    company_repo = SqlAlchemyCompanyRepository(session)
+    list_companies_service = ListCompaniesService(company_repo)
+
+    listings_service = ListingsService(ListingsRepositoryImpl(session))
+
+    try:
+        company_ids: tuple[str, ...] = tuple(
+            str(x) for x in (membership_company_ids(current_user) or [])
+        )
+        is_admin: bool = bool(is_platform_admin(current_user))
+    except Exception:
+        company_ids = ()
+        is_admin = False
+
+    company_handler = CmepCompanySearchHandler(
+        service=list_companies_service,
+        is_platform_admin=is_admin,
+        company_ids=company_ids,
+    )
+    listing_handler = CmepListingSearchHandler(service=listings_service)
+
+    tool_handlers: dict[str, object] = {
+        "search_companies": company_handler,
+        "search_listings": listing_handler,
+    }
+    tool_scopes: dict[str, tuple[str, str]] = {
+        "search_companies": ("companies", "search"),
+        "search_listings": ("listings", "search"),
+    }
+    tool_schemas: tuple[dict[str, object], ...] = build_default_tools() + CLIENT_ACTION_SCHEMAS
+
+    # Transport + nearby READ tools – pre vsetkych prihlasenych.
+    nearby_handler = CmepNearbyCompaniesHandler(session=session)
+    transport_handler = CmepListingTransportHandler(session=session)
+    tool_handlers["search_nearby_companies"] = nearby_handler
+    tool_handlers["get_listing_transport"] = transport_handler
+    tool_scopes["search_nearby_companies"] = ("recommendations", "read")
+    tool_scopes["get_listing_transport"] = ("recommendations", "read")
+    tool_schemas = tool_schemas + build_transport_tools()
+
+    # User READ tools (identity-bound) – pre všetkých prihlásených.
+    get_company_service = GetCompanyService(company_repo)
+    user_tools_handler = CmepUserToolsHandler(
+        session=session,
+        listings_service=listings_service,
+        get_company_service=get_company_service,
+        company_ids=company_ids,
+        is_platform_admin=is_admin,
+    )
+    for _tool_name in (
+        "get_my_listings",
+        "get_my_company",
+        "get_listing_details",
+        "get_listing_stats",
+        "get_company_listings",
+        "get_recommendations",
+    ):
+        tool_handlers[_tool_name] = user_tools_handler
+        tool_scopes[_tool_name] = ("listings", "read")
+    tool_schemas = tool_schemas + build_user_read_tools()
+
+    # Project READ tools — IBA pre platform admina (nie pre bežných userov).
+    if is_admin:
+        project_handler = ProjectReadHandler()
+        tool_handlers["project_read_file"] = project_handler
+        tool_handlers["project_list_dir"] = project_handler
+        tool_scopes["project_read_file"] = ("admin", "read")
+        tool_scopes["project_list_dir"] = ("admin", "read")
+        tool_schemas = tool_schemas + build_project_read_tools()
+
+    # Admin tools are attached ONLY when the caller is a platform admin.
+    if is_admin:
+        admin_handler = CmepAdminToolsHandler(session=session)
+        for tool_name in (
+            "get_platform_stats",
+            "get_recent_activity",
+            "get_companies_with_tiers",
+            "get_my_company_context",
+        ):
+            tool_handlers[tool_name] = admin_handler
+            tool_scopes[tool_name] = ("admin", "read")
+        tool_schemas = tool_schemas + build_admin_tools()
+        # Admin-only client navigation (e.g. open_admin) is offered only here.
+        tool_schemas = tool_schemas + ADMIN_CLIENT_ACTION_SCHEMAS
+
+    # Frontend-only client actions: allowlisted and scoped, but never executed
+    # server-side. They are dispatched to the UI only after validation.
+    tool_scopes.update(client_action_scopes())
+
+    policy = AllowlistPolicyEngine(
+        allowed_tool_names=frozenset(tool_handlers.keys()) | CLIENT_ACTION_NAMES,
+    )
+    permission = ActorToolPermissionEngine(
+        allowed_actor_types=frozenset({"user", "admin"}),
+        allowed_scopes=frozenset(tool_scopes.values()),
+    )
+
+    async def _audit_agent_tool(
+        actor_id: str,
+        tool_name: str,
+        outcome: str,
+        duration_s: float,
+    ) -> None:
+        # 1. Existujuce: zapis do admin_audit_entries (best-effort).
+        with contextlib.suppress(Exception):
+            await write_audit(
+                session=session,
+                actor_user_id=actor_id,
+                action=f"agent.tool.{outcome}",
+                target_type="agent_tool",
+                details=f"tool={tool_name},duration_ms={int(duration_s * 1000)}",
+            )
+
+        # 2. Nove: zapis do agent_audit_records cez DefaultAuditService.
+        try:
+            from datetime import UTC, datetime
+            from uuid import uuid4
+
+            from app.modules.agent_platform.application.audit.audit_service import (
+                DefaultAuditService,
+            )
+            from app.modules.agent_platform.domain.audit.audit_action import (
+                AuditAction,
+            )
+            from app.modules.agent_platform.domain.audit.audit_record import (
+                AuditRecord,
+            )
+            from app.modules.agent_platform.domain.audit.audit_subject import (
+                AuditSubject,
+            )
+            from app.modules.agent_platform.infrastructure.audit.audit_store import (
+                SqlAlchemyAuditStore,
+            )
+
+            action_map = {
+                "executed": AuditAction.EXECUTE,
+                "dispatched_to_client": AuditAction.EXECUTE,
+                "failed": AuditAction.EXECUTE,
+                "exception": AuditAction.EXECUTE,
+                "denied_by_policy": AuditAction.DENY,
+                "denied_by_permission": AuditAction.DENY,
+                "tool_scope_unmapped": AuditAction.DENY,
+                "tool_not_available": AuditAction.DENY,
+                "client_action_invalid_arguments": AuditAction.DENY,
+                "requires_approval_policy": AuditAction.REQUEST,
+                "requires_approval_permission": AuditAction.REQUEST,
+            }
+            audit_action = action_map.get(outcome, AuditAction.EXECUTE)
+
+            record = AuditRecord(
+                audit_id=str(uuid4()),
+                actor_id=actor_id,
+                actor_type="user",
+                action=audit_action,
+                subject=AuditSubject(subject_type="agent_tool", subject_id=tool_name),
+                occurred_at=datetime.now(UTC),
+                success=(outcome in {"executed", "dispatched_to_client"}),
+                reason=outcome,
+                metadata={"duration_ms": int(duration_s * 1000)},
+            )
+            svc = DefaultAuditService(store=SqlAlchemyAuditStore(session))
+            await svc.record(record)
+        except Exception:
+            pass  # best-effort: never break caller
+
+    return AgentOrchestrator(
+        # Cerebras (primárny) → Groq (1. fallback) → Mistral (2. fallback).
+        gateway=ChainModelGateway(
+            [
+                CerebrasModelGateway(),
+                GroqModelGateway(),
+                MistralModelGateway(),
+            ]
+        ),
+        tool_schemas=tool_schemas,
+        tool_handlers=tool_handlers,
+        policy=policy,
+        permission=permission,
+        tool_scopes=tool_scopes,
+        audit=_audit_agent_tool,
+        event_publisher=_build_event_bus(session=session),
+        model="openai/gpt-oss-120b",
+        client_tool_names=CLIENT_ACTION_NAMES,
+        card_builder=build_cards,
+    )
+
+
+async def get_company_entitlement_service(
+    session: AsyncSession = Depends(get_db_session),
+) -> CompanyEntitlementService:
+    """Build a CompanyEntitlementService bound to the request DB session."""
+    repo = SqlAlchemyCompanyRepository(session)
+    return CompanyEntitlementService(repository=repo)
+
+
+async def get_ai_conversation_repository(
+    session: AsyncSession = Depends(get_db_session),
+) -> SqlAlchemyAiConversationRepository:
+    """Build AI conversation repository bound to request session."""
+    return SqlAlchemyAiConversationRepository(session=session)
+
+
+async def get_control_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.control.control_service import (
+        DefaultControlService,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.control_repository import (
+        SqlAlchemyControlRepository,
+    )
+
+    return DefaultControlService(repository=SqlAlchemyControlRepository(session))
+
+
+async def get_alert_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.alerts.alert_service import (
+        DefaultAlertService,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.alert_repository import (
+        SqlAlchemyAlertRepository,
+    )
+
+    return DefaultAlertService(repository=SqlAlchemyAlertRepository(session))
+
+
+async def get_approval_service(
+    session: AsyncSession = Depends(get_db_session),
+):
+    from app.modules.agent_platform.application.approval.approval_service import (
+        DefaultApprovalService,
+    )
+    from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
+        SqlAlchemyApprovalRepository,
+    )
+
+    return DefaultApprovalService(repository=SqlAlchemyApprovalRepository(session))
+
+
+async def get_approval_workflow(
+
+=== 9. ORCHESTRATOR: REGISTRACIA A VOLANIE ===
+9-from collections.abc import Awaitable, Callable, Mapping
+10-from dataclasses import dataclass
+11-from datetime import UTC, datetime
+12-from typing import Any
+13-
+14:from app.modules.agent_platform.application.permission.permission_engine import (
+15-    PermissionEngine,
+16-)
+17:from app.modules.agent_platform.application.policy.policy_engine import PolicyEngine
+18-from app.modules.agent_platform.domain.events.event_source import EventSource
+19-from app.modules.agent_platform.domain.events.event_type import PlatformEventType
+20-from app.modules.agent_platform.domain.events.platform_event import PlatformEvent
+21:from app.modules.agent_platform.domain.permission.permission_decision import (
+22-    PermissionOutcome,
+23-)
+24:from app.modules.agent_platform.domain.permission.permission_request import (
+25-    PermissionRequest,
+26-)
+27:from app.modules.agent_platform.domain.permission.permission_scope import (
+28-    PermissionScope,
+29-)
+30:from app.modules.agent_platform.domain.policy.policy_context import PolicyContext
+31:from app.modules.agent_platform.domain.policy.policy_decision import PolicyOutcome
+32-from app.modules.agent_platform.domain.tools.tool_request import ToolRequest
+33-from app.modules.agent_platform.infrastructure.ai.model_gateway import ModelGateway
+34-from app.modules.agent_platform.infrastructure.ai.model_request import (
+35-    ModelMessage,
+36-    ModelRequest,
+--
+39-from app.modules.agent_platform.infrastructure.events.event_publisher import (
+40-    EventPublisher,
+41-)
+42-from app.modules.agent_platform.infrastructure.tools.client_action_validation import (
+43-    ClientActionValidation,
+44:    validate_client_action,
+45-)
+46-
+47-MAX_TOOL_ITERATIONS = 6
+48-# Upper bound on cards collected across a whole turn (dedup by type+id).
+49-MAX_TOTAL_CARDS = 24
+50-
+51-
+52-@dataclass(frozen=True, slots=True)
+53-class OrchestrationResult:
+54-    text: str
+55:    tool_calls: tuple[dict[str, Any], ...]
+56-    iterations: int
+57-    provider: str | None = None
+58-    cards: tuple[dict[str, Any], ...] = ()
+59-
+60-
+61-class AgentOrchestrator:
+62-    """Coordinates model reasoning and tool execution.
+63-
+64-    The orchestrator never authorizes itself – authorization happens in the
+65:    tool handlers, which are wired with the caller's scope.
+66-    """
+67-
+68-    def __init__(
+69-        self,
+70-        *,
+71-        gateway: ModelGateway,
+72:        tool_schemas: tuple[dict[str, Any], ...],
+73:        tool_handlers: dict[str, Any],
+74-        model: str,
+75:        policy: PolicyEngine | None = None,
+76:        permission: PermissionEngine | None = None,
+77-        tool_scopes: dict[str, tuple[str, str]] | None = None,
+78:        audit: Callable[[str, str, str, float], Awaitable[None]] | None = None,
+79-        event_publisher: EventPublisher | None = None,
+80-        client_tool_names: frozenset[str] | None = None,
+81-        client_action_validator: (
+82-            Callable[[str, Mapping[str, Any]], ClientActionValidation] | None
+83-        ) = None,
+84-        card_builder: Callable[[str, Any], list[dict[str, Any]]] | None = None,
+85-    ) -> None:
+86-        self._gateway = gateway
+87:        self._tool_schemas = tuple(tool_schemas)
+88:        self._tool_handlers = dict(tool_handlers)
+89-        self._model = model
+90:        self._policy = policy
+91:        self._permission = permission
+92-        self._tool_scopes = dict(tool_scopes or {})
+93:        self._audit = audit
+94-        self._event_publisher = event_publisher
+95-        self._client_tool_names: frozenset[str] = frozenset(client_tool_names or ())
+96-        # Secure by default: validation is always applied to client actions.
+97-        self._client_action_validator: Callable[
+98-            [str, Mapping[str, Any]], ClientActionValidation
+99:        ] = client_action_validator or validate_client_action
+100-        # Optional card builder: maps a successful tool result to UI cards.
+101-        self._card_builder = card_builder
+102-
+103-    def _collect_cards(
+104-        self,
+--
+126-                if len(cards) >= MAX_TOTAL_CARDS:
+127-                    return
+128-                seen.add(key)
+129-                cards.append(dict(card))
+130-
+131:    async def _safe_audit(
+132-        self,
+133-        actor_id: str,
+134-        tool_name: str,
+135-        outcome: str,
+136-        duration_s: float,
+137-    ) -> None:
+138:        """Best-effort audit. Failure must never break the tool call."""
+139:        if self._audit is None:
+140-            return
+141-        with contextlib.suppress(Exception):
+142:            await self._audit(actor_id, tool_name, outcome, duration_s)
+143-
+144-    async def _safe_publish(
+145-        self,
+146-        actor_id: str,
+147-        tool_name: str,
+--
+193-                ModelRequest(
+194-                    request_id=str(uuid.uuid4()),
+195-                    model=self._model,
+196-                    messages=tuple(messages),
+197-                    temperature=0.2,
+198:                    tools=self._tool_schemas,
+199-                    tool_choice="auto",
+200-                )
+201-            )
+202-
+203:            if not response.tool_calls:
+204-                return OrchestrationResult(
+205-                    text=response.text.strip(),
+206:                    tool_calls=tuple(collected_calls),
+207-                    iterations=iteration + 1,
+208-                    provider=response.provider_metadata.get("provider"),
+209-                    cards=tuple(collected_cards),
+210-                )
+211-
+212-            messages.append(
+213-                ModelMessage(
+214-                    role="assistant",
+215-                    content=response.text or None,
+216:                    tool_calls=response.tool_calls,
+217-                )
+218-            )
+219-
+220:            for call in response.tool_calls:
+221-                t0 = time.monotonic()
+222-                tool_name = ""
+223-                outcome = "not_started"
+224-                _fn_pre = call.get("function", {}) or {}
+225-                _tool_pre = _fn_pre.get("name", "")
+--
+241-                            else dict(raw_args or {})
+242-                        )
+243-                    except (TypeError, ValueError):
+244-                        args = {}
+245-
+246:                    # Client actions are appended only after policy + permission
+247:                    # pass and their arguments are validated, so a denied or
+248-                    # malformed action is never handed to the frontend.
+249-                    is_client_action = tool_name in self._client_tool_names
+250-                    # Deduplicate identical server tool invocations within a turn
+251-                    # (LLM sometimes repeats the same call across iterations).
+252-                    if not is_client_action and tool_name:
+--
+269-                                    tool_call_id=call.get("id", ""),
+270-                                )
+271-                            )
+272-                            continue
+273-
+274:                    if self._policy is not None:
+275:                        decision = await self._policy.decide(
+276-                            PolicyContext(
+277-                                actor_id=actor_id,
+278-                                actor_type=actor_type,
+279-                                agent_id=None,
+280-                                action="tool.call",
+--
+283-                                risk_level=None,
+284-                                attributes={},
+285-                            )
+286-                        )
+287-                        if decision.outcome == PolicyOutcome.DENY:
+288:                            outcome = "denied_by_policy"
+289-                            messages.append(
+290-                                ModelMessage(
+291-                                    role="tool",
+292-                                    content=json.dumps(
+293-                                        {
+294:                                            "error": "tool_denied_by_policy",
+295-                                            "tool_name": tool_name,
+296-                                            "rule_id": decision.rule_id,
+297-                                            "reason": decision.reason,
+298-                                        },
+299-                                        ensure_ascii=False,
+--
+301-                                    tool_call_id=call.get("id", ""),
+302-                                )
+303-                            )
+304-                            continue
+305-                        if decision.outcome == PolicyOutcome.REQUIRE_APPROVAL:
+306:                            outcome = "requires_approval_policy"
+307-                            messages.append(
+308-                                ModelMessage(
+309-                                    role="tool",
+310-                                    content=json.dumps(
+311-                                        {
+--
+319-                                    tool_call_id=call.get("id", ""),
+320-                                )
+321-                            )
+322-                            continue
+323-
+324:                    if self._permission is not None:
+325-                        scope_pair = self._tool_scopes.get(tool_name)
+326-                        if scope_pair is None:
+327-                            outcome = "tool_scope_unmapped"
+328-                            messages.append(
+329-                                ModelMessage(
+--
+337-                                    ),
+338-                                    tool_call_id=call.get("id", ""),
+339-                                )
+340-                            )
+341-                            continue
+342:                        perm_decision = await self._permission.authorize(
+343-                            PermissionRequest(
+344-                                request_id=str(uuid.uuid4()),
+345-                                actor_id=actor_id,
+346-                                actor_type=actor_type,
+347-                                scope=PermissionScope(
+--
+350-                                ),
+351-                                reason="agent_tool_call",
+352-                            )
+353-                        )
+354-                        if perm_decision.outcome == PermissionOutcome.DENIED:
+355:                            outcome = "denied_by_permission"
+356-                            messages.append(
+357-                                ModelMessage(
+358-                                    role="tool",
+359-                                    content=json.dumps(
+360-                                        {
+361:                                            "error": "tool_denied_by_permission",
+362-                                            "tool_name": tool_name,
+363:                                            "rule_id": perm_decision.policy_rule_id,
+364-                                            "reason": perm_decision.reason,
+365-                                        },
+366-                                        ensure_ascii=False,
+367-                                    ),
+368-                                    tool_call_id=call.get("id", ""),
+369-                                )
+370-                            )
+371-                            continue
+372-                        if perm_decision.outcome == PermissionOutcome.APPROVAL_REQUIRED:
+373:                            outcome = "requires_approval_permission"
+374-                            messages.append(
+375-                                ModelMessage(
+376-                                    role="tool",
+377-                                    content=json.dumps(
+378-                                        {
+379:                                            "error": "tool_requires_permission_approval",
+380-                                            "tool_name": tool_name,
+381:                                            "rule_id": perm_decision.policy_rule_id,
+382-                                            "reason": perm_decision.reason,
+383-                                        },
+384-                                        ensure_ascii=False,
+385-                                    ),
+386-                                    tool_call_id=call.get("id", ""),
+387-                                )
+388-                            )
+389-                            continue
+390-
+391:                    # Client-side action: nevykonávame handler, iba validujeme
+392-                    # argumenty a potvrdíme modelu že frontend to vykoná.
+393-                    if is_client_action:
+394-                        validation = self._client_action_validator(tool_name, args)
+395-                        if not validation.valid:
+396-                            outcome = "client_action_invalid_arguments"
+--
+425-                                    {
+426-                                        "success": True,
+427-                                        "client_action": True,
+428-                                        "note": (
+429-                                            "Client action dispatched to frontend. "
+430:                                            "It will be executed on the current page. "
+431-                                            "You may now summarize or ask a follow-up."
+432-                                        ),
+433-                                    },
+434-                                    ensure_ascii=False,
+435-                                ),
+436-                                tool_call_id=call.get("id", ""),
+437-                            )
+438-                        )
+439-                        continue
+440-
+441:                    handler = self._tool_handlers.get(tool_name)
+442:                    if handler is None:
+443-                        outcome = "tool_not_available"
+444-                        messages.append(
+445-                            ModelMessage(
+446-                                role="tool",
+447-                                content=json.dumps(
+--
+451-                                tool_call_id=call.get("id", ""),
+452-                            )
+453-                        )
+454-                        continue
+455-
+456:                    # Server tool call is recorded only now — after policy and
+457:                    # permission passed and a handler exists — so a denied,
+458-                    # unmapped or unknown tool never surfaces in the response as
+459:                    # an executed call (see N1).
+460-                    collected_calls.append(
+461-                        {"name": tool_name, "arguments": args, "id": call.get("id", "")}
+462-                    )
+463-                    _args_key = json.dumps(args, sort_keys=True, ensure_ascii=False)
+464-                    _seen_server_calls.add((tool_name, _args_key))
+465-
+466-                    try:
+467:                        result = await handler.handle(
+468-                            ToolRequest(
+469-                                request_id=str(uuid.uuid4()),
+470-                                tool_name=tool_name,
+471-                                actor_id=actor_id,
+472-                                actor_type=actor_type,
+473-                                arguments=args,
+474-                                reason="agent_tool_call",
+475-                            )
+476-                        )
+477:                        outcome = "executed" if result.success else "failed"
+478-                        payload = {
+479-                            "success": result.success,
+480-                            "data": result.data,
+481-                            "error_code": result.error_code,
+482-                            "error_message": result.error_message,
+--
+502-                            content=json.dumps(payload, ensure_ascii=False, default=str),
+503-                            tool_call_id=call.get("id", ""),
+504-                        )
+505-                    )
+506-                finally:
+507:                    await self._safe_audit(
+508-                        actor_id,
+509-                        tool_name,
+510-                        outcome,
+511-                        time.monotonic() - t0,
+512-                    )
+--
+518-                        EventSource.TOOL,
+519-                    )
+520-
+521-        return OrchestrationResult(
+522-            text="Prepáč, nepodarilo sa mi dokončiť odpoveď v rozumnom čase.",
+523:            tool_calls=tuple(collected_calls),
+524-            iterations=MAX_TOOL_ITERATIONS,
+525-            cards=tuple(collected_cards),
+526-        )
+527-
+528-
+529-def _outcome_to_event_type(outcome: str) -> PlatformEventType:
+530:    if outcome in {"executed", "dispatched_to_client", "duplicate_skipped"}:
+531-        return PlatformEventType.TOOL_EXECUTED
+532-    if outcome in {"failed", "exception"}:
+533-        return PlatformEventType.TOOL_FAILED
+534-    if outcome in {
+535:        "denied_by_policy",
+536:        "denied_by_permission",
+537-        "tool_scope_unmapped",
+538-        "tool_not_available",
+539-        "client_action_invalid_arguments",
+540-    }:
+541-        return PlatformEventType.TOOL_DENIED
+542:    if outcome in {"requires_approval_policy", "requires_approval_permission"}:
+543-        return PlatformEventType.APPROVAL_REQUESTED
+544-    return PlatformEventType.TOOL_FAILED
+
+=== 10. SERVEROVE A KLIENTSKE AKCIE ===
+app/modules/agent_platform/domain/control/agent_gate.py:31:# Keep in sync with the mutating entries of ``CLIENT_ACTION_NAMES``.
+app/modules/agent_platform/domain/control/agent_gate.py:32:MUTATING_CLIENT_ACTIONS: frozenset[str] = frozenset({"fill_form_field"})
+app/modules/agent_platform/domain/control/agent_gate.py:56:        return self.allow_mutations or name not in MUTATING_CLIENT_ACTIONS
+app/modules/agent_platform/domain/memory/ai_message.py:17:    tool_calls: str | None
+app/modules/agent_platform/domain/memory/ai_message.py:27:        if not self.content.strip() and not self.tool_calls:
+app/modules/agent_platform/domain/memory/ai_message.py:28:            raise ValueError("content or tool_calls is required")
+app/modules/agent_platform/application/agent/agent_response.py:11:    tool_calls: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+app/modules/agent_platform/application/agent/agent_orchestrator.py:44:    validate_client_action,
+app/modules/agent_platform/application/agent/agent_orchestrator.py:55:    tool_calls: tuple[dict[str, Any], ...]
+app/modules/agent_platform/application/agent/agent_orchestrator.py:99:        ] = client_action_validator or validate_client_action
+app/modules/agent_platform/application/agent/agent_orchestrator.py:203:            if not response.tool_calls:
+app/modules/agent_platform/application/agent/agent_orchestrator.py:206:                    tool_calls=tuple(collected_calls),
+app/modules/agent_platform/application/agent/agent_orchestrator.py:216:                    tool_calls=response.tool_calls,
+app/modules/agent_platform/application/agent/agent_orchestrator.py:220:            for call in response.tool_calls:
+app/modules/agent_platform/application/agent/agent_orchestrator.py:523:            tool_calls=tuple(collected_calls),
+app/modules/agent_platform/infrastructure/ai/model_request.py:12:    tool_calls: tuple[dict[str, Any], ...] | None = None
+app/modules/agent_platform/infrastructure/ai/model_response.py:33:    tool_calls: tuple[dict[str, Any], ...] = field(default_factory=tuple)
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:42:            if msg.tool_calls is not None:
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:43:                payload["tool_calls"] = list(msg.tool_calls)
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:108:        tool_calls_raw = message.get("tool_calls") or []
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:110:        tool_calls: list[dict[str, Any]] = []
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:111:        for tc in tool_calls_raw:
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:113:            tool_calls.append(
+app/modules/agent_platform/infrastructure/ai/groq_gateway.py:128:            tool_calls=tuple(tool_calls),
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:63:            if msg.tool_calls is not None:
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:64:                payload["tool_calls"] = list(msg.tool_calls)
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:126:        tool_calls_raw = message.get("tool_calls") or []
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:128:        tool_calls: list[dict[str, Any]] = []
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:129:        for tc in tool_calls_raw:
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:131:            tool_calls.append(
+app/modules/agent_platform/infrastructure/ai/cerebras_gateway.py:146:            tool_calls=tuple(tool_calls),
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:59:            if msg.tool_calls is not None:
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:60:                payload["tool_calls"] = list(msg.tool_calls)
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:122:        tool_calls_raw = message.get("tool_calls") or []
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:124:        tool_calls: list[dict[str, Any]] = []
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:125:        for tc in tool_calls_raw:
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:127:            tool_calls.append(
+app/modules/agent_platform/infrastructure/ai/mistral_gateway.py:142:            tool_calls=tuple(tool_calls),
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:55:        tool_calls=model.tool_calls,
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:87:        tool_calls: str | None = None,
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:189:        tool_calls: str | None = None,
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:202:            tool_calls=tool_calls,
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:237:                tool_calls=m.get("tool_calls"),
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:285:        if row.tool_calls:
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:287:                parsed = json.loads(row.tool_calls)
+app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py:326:            tool_calls=json.dumps(meta or {}, ensure_ascii=False),
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:224:# vo `tool_calls`, frontend ich aplikuje na aktuálnu stránku.
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:644:CLIENT_ACTION_NAMES: frozenset[str] = frozenset(
+app/modules/agent_platform/infrastructure/tools/client_action_validation.py:9:* only names from ``CLIENT_ACTION_NAMES`` are accepted (no unknown actions);
+app/modules/agent_platform/infrastructure/tools/client_action_validation.py:25:    CLIENT_ACTION_NAMES,
+app/modules/agent_platform/infrastructure/tools/client_action_validation.py:187:def validate_client_action(
+app/modules/agent_platform/infrastructure/tools/client_action_validation.py:196:    if tool_name not in CLIENT_ACTION_NAMES:
+app/modules/agent_platform/infrastructure/models.py:40:    tool_calls = Column(Text, nullable=True)  # JSON string, optional
+app/modules/agent_platform/tests/test_client_actions.py:26:    validate_client_action,
+app/modules/agent_platform/tests/test_client_actions.py:29:    CLIENT_ACTION_NAMES,
+app/modules/agent_platform/tests/test_client_actions.py:48:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_client_actions.py:49:                tool_calls=(
+app/modules/agent_platform/tests/test_client_actions.py:61:            tool_calls=(),
+app/modules/agent_platform/tests/test_client_actions.py:80:    return dict.fromkeys(CLIENT_ACTION_NAMES, ("client", "action"))
+app/modules/agent_platform/tests/test_client_actions.py:90:        policy=AllowlistPolicyEngine(allowed_tool_names=CLIENT_ACTION_NAMES),
+app/modules/agent_platform/tests/test_client_actions.py:97:        client_tool_names=CLIENT_ACTION_NAMES,
+app/modules/agent_platform/tests/test_client_actions.py:105:    result = validate_client_action("not_a_client_action", {})
+app/modules/agent_platform/tests/test_client_actions.py:119:        result = validate_client_action("navigate", {"url": url})
+app/modules/agent_platform/tests/test_client_actions.py:124:    result = validate_client_action("navigate", {"url": "/dashboard/listings/new"})
+app/modules/agent_platform/tests/test_client_actions.py:130:    assert validate_client_action("open_listing", {}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:131:    assert validate_client_action("open_listing", {"listing_id": "../secret"}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:132:    result = validate_client_action("open_listing", {"listing_id": "abc-123_def"})
+app/modules/agent_platform/tests/test_client_actions.py:137:    assert validate_client_action("fill_form_field", {"field": "title", "value": "x"}).valid
+app/modules/agent_platform/tests/test_client_actions.py:138:    assert validate_client_action("fill_form_field", {"field": "root", "value": "x"}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:140:        validate_client_action("fill_form_field", {"field": "title", "value": {"a": 1}}).valid
+app/modules/agent_platform/tests/test_client_actions.py:144:        validate_client_action("fill_form_field", {"field": "quantity", "value": "abc"}).valid
+app/modules/agent_platform/tests/test_client_actions.py:147:    assert validate_client_action("fill_form_field", {"field": "quantity", "value": 5}).valid
+app/modules/agent_platform/tests/test_client_actions.py:166:        assert validate_client_action("fill_form_field", {"field": field, "value": value}).valid, (
+app/modules/agent_platform/tests/test_client_actions.py:171:    assert validate_client_action(
+app/modules/agent_platform/tests/test_client_actions.py:176:        validate_client_action("fill_form_field", {"field": "logoUrl", "value": "x"}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:179:    assert validate_client_action("highlight_field", {"field": "legalName"}).valid
+app/modules/agent_platform/tests/test_client_actions.py:180:    assert validate_client_action("highlight_field", {"field": "logoUrl"}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:184:    assert validate_client_action("show_toast", {"message": "hi"}).valid
+app/modules/agent_platform/tests/test_client_actions.py:185:    assert validate_client_action("show_toast", {"message": "hi", "level": "warning"}).valid
+app/modules/agent_platform/tests/test_client_actions.py:186:    assert validate_client_action("show_toast", {"message": "hi", "level": "loud"}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:187:    assert validate_client_action("show_toast", {"message": ""}).valid is False
+app/modules/agent_platform/tests/test_client_actions.py:191:    result = validate_client_action("show_toast", {"message": "hi", "injected": "x"})
+app/modules/agent_platform/tests/test_client_actions.py:206:        result = validate_client_action(name, {"junk": "x"})
+app/modules/agent_platform/tests/test_client_actions.py:222:    assert "open_admin" in CLIENT_ACTION_NAMES
+app/modules/agent_platform/tests/test_client_actions.py:237:    assert [tc["name"] for tc in result.tool_calls] == ["open_dashboard"]
+app/modules/agent_platform/tests/test_client_actions.py:238:    assert result.tool_calls[0]["arguments"] == {}
+app/modules/agent_platform/tests/test_client_actions.py:249:    assert all(tc["name"] != "open_listing" for tc in result.tool_calls)
+app/modules/agent_platform/tests/test_client_actions.py:272:    assert set(scopes) == set(CLIENT_ACTION_NAMES)
+app/modules/agent_platform/tests/test_client_actions.py:279:    assert chat_router.CLIENT_TOOL_NAMES == CLIENT_ACTION_NAMES
+app/modules/agent_platform/tests/test_project_read_production.py:65:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_project_read_production.py:66:                tool_calls=(
+app/modules/agent_platform/tests/test_project_read_production.py:81:            tool_calls=(),
+app/modules/agent_platform/tests/test_project_read_production.py:189:    assert result.tool_calls
+app/modules/agent_platform/tests/test_project_read_production.py:190:    assert result.tool_calls[0]["name"] == "project_read_file"
+app/modules/agent_platform/tests/test_context_builder.py:18:        tool_calls=None,
+app/modules/agent_platform/tests/test_agent_policy_gate.py:47:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_agent_policy_gate.py:48:                tool_calls=(
+app/modules/agent_platform/tests/test_agent_policy_gate.py:60:            tool_calls=(),
+app/modules/agent_platform/tests/test_agent_permission_gate.py:54:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_agent_permission_gate.py:55:                tool_calls=(
+app/modules/agent_platform/tests/test_agent_permission_gate.py:67:            tool_calls=(),
+app/modules/agent_platform/tests/test_agent_audit.py:51:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_agent_audit.py:52:                tool_calls=(
+app/modules/agent_platform/tests/test_agent_audit.py:64:            tool_calls=(),
+app/modules/agent_platform/tests/test_card_builder.py:182:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_card_builder.py:183:                tool_calls=(
+app/modules/agent_platform/tests/test_card_builder.py:195:            tool_calls=(),
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:2:executed handler may appear in the final ``OrchestrationResult.tool_calls``.
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:54:                finish_reason="tool_calls",
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:55:                tool_calls=(
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:67:            tool_calls=(),
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:95:    names = [tc["name"] for tc in result.tool_calls]
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:96:    assert names == ["search_companies"], "Executed tool must appear in tool_calls"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:97:    assert result.tool_calls[0]["id"] == "call_1"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:115:    assert result.tool_calls == (), "Denied tool must not appear as an executed call"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:132:    assert result.tool_calls == (), "Handler-less (unknown) tool must not be recorded"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:151:    assert result.tool_calls == (), "Scope-unmapped tool must not be recorded"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:171:    assert result.tool_calls == (), "Permission-denied tool must not be recorded"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:189:    names = [tc["name"] for tc in result.tool_calls]
+app/modules/agent_platform/tests/test_summarizer.py:39:                tool_calls=None,
+app/modules/agent_platform/tests/test_summarizer.py:58:            tool_calls=None,
+app/modules/agent_platform/presentation/chat_router.py:29:from app.modules.agent_platform.infrastructure.tools.tool_schemas import CLIENT_ACTION_NAMES
+app/modules/agent_platform/presentation/chat_router.py:264:CLIENT_TOOL_NAMES: frozenset[str] = CLIENT_ACTION_NAMES
+app/modules/agent_platform/presentation/chat_router.py:543:class ClientAction(BaseModel):
+app/modules/agent_platform/presentation/chat_router.py:553:    tool_calls: list[dict] = []
+app/modules/agent_platform/presentation/chat_router.py:554:    client_actions: list[ClientAction] = []
+app/modules/agent_platform/presentation/chat_router.py:823:            def __init__(self, text, tool_calls=()):
+app/modules/agent_platform/presentation/chat_router.py:825:                self.tool_calls = tool_calls
+app/modules/agent_platform/presentation/chat_router.py:830:        nav_tool_calls = ()
+app/modules/agent_platform/presentation/chat_router.py:842:                nav_tool_calls = tuple(tc for a in nav_action if (tc := _to_tc(a)) and tc["name"])
+app/modules/agent_platform/presentation/chat_router.py:845:                nav_tool_calls = (tc,) if tc and tc["name"] else ()
+app/modules/agent_platform/presentation/chat_router.py:849:            tool_calls=nav_tool_calls,
+app/modules/agent_platform/presentation/chat_router.py:881:    _has_client_actions_pre = any(
+app/modules/agent_platform/presentation/chat_router.py:884:        for tc in (result.tool_calls or ())
+app/modules/agent_platform/presentation/chat_router.py:887:    if not result.text and _has_client_actions_pre:
+app/modules/agent_platform/presentation/chat_router.py:889:    elif not result.text and result.tool_calls:
+app/modules/agent_platform/presentation/chat_router.py:891:        names = [str(tc.get("name") or "") for tc in (result.tool_calls or ())]
+app/modules/agent_platform/presentation/chat_router.py:900:            "empty_response actor=%s session=%s tool_calls=%d iterations=%d",
+app/modules/agent_platform/presentation/chat_router.py:903:            len(result.tool_calls or ()),
+app/modules/agent_platform/presentation/chat_router.py:936:        "ORCH_RESULT text_len=%d tool_calls=%d iterations=%d",
+app/modules/agent_platform/presentation/chat_router.py:938:        len(result.tool_calls or ()),
+app/modules/agent_platform/presentation/chat_router.py:942:    client_actions: list[ClientAction] = []
+app/modules/agent_platform/presentation/chat_router.py:943:    server_tool_calls: list[dict] = []
+app/modules/agent_platform/presentation/chat_router.py:945:    for tc in result.tool_calls or ():
+app/modules/agent_platform/presentation/chat_router.py:949:                client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+app/modules/agent_platform/presentation/chat_router.py:955:            server_tool_calls.append(dict(tc))
+app/modules/agent_platform/presentation/chat_router.py:980:        tool_calls=server_tool_calls,
+app/modules/agent_platform/presentation/chat_router.py:981:        client_actions=client_actions,
+app/modules/agent_platform/presentation/dependencies.py:53:    CLIENT_ACTION_NAMES,
+app/modules/agent_platform/presentation/dependencies.py:90:    return dict.fromkeys(CLIENT_ACTION_NAMES, ("client", "action"))
+app/modules/agent_platform/presentation/dependencies.py:189:        allowed_tool_names=frozenset(tool_handlers.keys()) | CLIENT_ACTION_NAMES,
+app/modules/agent_platform/presentation/dependencies.py:281:        client_tool_names=CLIENT_ACTION_NAMES,
+app/modules/agent_platform/presentation/user_ai_chat_router.py:29:from app.modules.agent_platform.infrastructure.tools.tool_schemas import CLIENT_ACTION_NAMES
+app/modules/agent_platform/presentation/user_ai_chat_router.py:264:CLIENT_TOOL_NAMES: frozenset[str] = CLIENT_ACTION_NAMES
+app/modules/agent_platform/presentation/user_ai_chat_router.py:546:class ClientAction(BaseModel):
+app/modules/agent_platform/presentation/user_ai_chat_router.py:556:    tool_calls: list[dict] = []
+app/modules/agent_platform/presentation/user_ai_chat_router.py:557:    client_actions: list[ClientAction] = []
+app/modules/agent_platform/presentation/user_ai_chat_router.py:836:            def __init__(self, text, tool_calls=()):
+app/modules/agent_platform/presentation/user_ai_chat_router.py:838:                self.tool_calls = tool_calls
+app/modules/agent_platform/presentation/user_ai_chat_router.py:843:        nav_tool_calls = ()
+app/modules/agent_platform/presentation/user_ai_chat_router.py:847:                nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:849:                nav_tool_calls = ({"name": nav_action, "args": {}},)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:853:            tool_calls=nav_tool_calls,
+app/modules/agent_platform/presentation/user_ai_chat_router.py:885:    _has_client_actions_pre = any(
+app/modules/agent_platform/presentation/user_ai_chat_router.py:888:        for tc in (result.tool_calls or ())
+app/modules/agent_platform/presentation/user_ai_chat_router.py:891:    if not result.text and _has_client_actions_pre:
+app/modules/agent_platform/presentation/user_ai_chat_router.py:893:    elif not result.text and result.tool_calls:
+app/modules/agent_platform/presentation/user_ai_chat_router.py:895:        names = [str(tc.get("name") or "") for tc in (result.tool_calls or ())]
+app/modules/agent_platform/presentation/user_ai_chat_router.py:904:            "empty_response actor=%s session=%s tool_calls=%d iterations=%d",
+app/modules/agent_platform/presentation/user_ai_chat_router.py:907:            len(result.tool_calls or ()),
+app/modules/agent_platform/presentation/user_ai_chat_router.py:935:        "ORCH_RESULT text_len=%d tool_calls=%d iterations=%d",
+app/modules/agent_platform/presentation/user_ai_chat_router.py:937:        len(result.tool_calls or ()),
+app/modules/agent_platform/presentation/user_ai_chat_router.py:941:    client_actions: list[ClientAction] = []
+app/modules/agent_platform/presentation/user_ai_chat_router.py:942:    server_tool_calls: list[dict] = []
+app/modules/agent_platform/presentation/user_ai_chat_router.py:944:    for tc in result.tool_calls or ():
+app/modules/agent_platform/presentation/user_ai_chat_router.py:948:                client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
+app/modules/agent_platform/presentation/user_ai_chat_router.py:954:            server_tool_calls.append(dict(tc))
+app/modules/agent_platform/presentation/user_ai_chat_router.py:981:        tool_calls=server_tool_calls,
+app/modules/agent_platform/presentation/user_ai_chat_router.py:982:        client_actions=client_actions,
+
+=== 11. NAPOJENIE NA CMEP SLUZBY ===
+app/modules/agent_platform/application/agent/card_builder.py:67:    # search_listings uses snake_case, the user tools use camelCase.
+app/modules/agent_platform/application/agent/card_builder.py:163:    if tool_name in {"search_listings", "get_my_listings", "get_company_listings"}:
+app/modules/agent_platform/application/agent/card_builder.py:169:    elif tool_name in {"search_companies", "search_nearby_companies"}:
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:22:from ....companies.application.services import GetCompanyService
+app/modules/agent_platform/infrastructure/tools/cmep_user_tools.py:76:        get_company_service: GetCompanyService,
+app/modules/agent_platform/infrastructure/tools/openlist_readonly.py:156:        # result and avoids exposing the transport envelope to Agent Platform.
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:10:        "name": "search_companies",
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:54:        "name": "search_listings",
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:193:LISTING_TRANSPORT_SCHEMA: dict[str, Any] = {
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:196:        "name": "get_listing_transport",
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:217:def build_transport_tools() -> tuple[dict[str, Any], ...]:
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:218:    """Transport + nearby tools. Available to every authenticated user."""
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:219:    return (NEARBY_COMPANIES_SCHEMA, LISTING_TRANSPORT_SCHEMA)
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:580:OPEN_TRANSPORT_SCHEMA: dict[str, Any] = {
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:583:        "name": "open_transport",
+app/modules/agent_platform/infrastructure/tools/tool_schemas.py:635:    OPEN_TRANSPORT_SCHEMA,
+app/modules/agent_platform/infrastructure/tools/client_action_validation.py:76:        "open_transport",
+app/modules/agent_platform/infrastructure/tools/cmep_listing_transport_handler.py:1:"""READ-ONLY tool: compute transport route for a listing.
+app/modules/agent_platform/infrastructure/tools/cmep_listing_transport_handler.py:21:class CmepListingTransportHandler:
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:71:    class FakeCompanyService:
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:79:    service = FakeCompanyService()
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:116:    class FakeCompanyService:
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:121:        service=FakeCompanyService(),
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:149:    class FakeCompanyService:
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:154:        service=FakeCompanyService(),
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:181:    class FakeCompanyService:
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:189:    service = FakeCompanyService()
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:242:    class FakeCompanyService:
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py:260:    service = FakeCompanyService()
+app/modules/agent_platform/tests/test_project_read_production.py:140:    for name in ("search_companies", "search_listings", "get_my_listings"):
+app/modules/agent_platform/tests/test_project_read_production.py:148:    assert "search_companies" in orch._tool_handlers
+app/modules/agent_platform/tests/test_role_aware_prompt.py:42:    assert "search_companies" in p1 and "search_companies" in p2
+app/modules/agent_platform/tests/test_agent_policy_gate.py:79:    policy = AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"}))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:87:    policy = AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"}))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:88:    decision = await policy.decide(_ctx("search_companies"))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:94:    policy = AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"}))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:104:    policy = AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"}))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:109:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_policy_gate.py:126:    gateway = _FakeGateway(tool_name="search_companies")
+app/modules/agent_platform/tests/test_agent_policy_gate.py:128:    policy = AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"}))
+app/modules/agent_platform/tests/test_agent_policy_gate.py:133:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_policy_gate.py:144:    assert spy.calls == ["search_companies"]
+app/modules/agent_platform/tests/test_agent_permission_gate.py:126:    gateway = _FakeGateway(tool_name="search_companies")
+app/modules/agent_platform/tests/test_agent_permission_gate.py:133:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:136:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:151:    gateway = _FakeGateway(tool_name="search_companies")
+app/modules/agent_platform/tests/test_agent_permission_gate.py:158:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:161:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_agent_permission_gate.py:171:    assert spy.calls == ["search_companies"]
+app/modules/agent_platform/tests/test_agent_permission_gate.py:176:    gateway = _FakeGateway(tool_name="search_companies")
+app/modules/agent_platform/tests/test_agent_permission_gate.py:183:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_audit.py:97:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_agent_audit.py:110:    orch = _orch(tool_name="search_companies", spy=spy, audit=audit)
+app/modules/agent_platform/tests/test_agent_audit.py:112:    assert audit.calls == [("a1", "search_companies", "executed")]
+app/modules/agent_platform/tests/test_agent_audit.py:113:    assert spy.calls == ["search_companies"]
+app/modules/agent_platform/tests/test_agent_audit.py:120:    orch = _orch(tool_name="search_companies", spy=spy, audit=audit)
+app/modules/agent_platform/tests/test_agent_audit.py:122:    assert audit.calls == [("a1", "search_companies", "failed")]
+app/modules/agent_platform/tests/test_agent_audit.py:130:    orch = _orch(tool_name="search_companies", spy=spy, audit=audit, policy=policy)
+app/modules/agent_platform/tests/test_agent_audit.py:132:    assert audit.calls == [("a1", "search_companies", "denied_by_policy")]
+app/modules/agent_platform/tests/test_agent_audit.py:145:        tool_name="search_companies",
+app/modules/agent_platform/tests/test_agent_audit.py:149:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_agent_audit.py:152:    assert audit.calls == [("a1", "search_companies", "denied_by_permission")]
+app/modules/agent_platform/tests/test_agent_audit.py:170:    orch = _orch(tool_name="search_companies", spy=spy, audit=audit)
+app/modules/agent_platform/tests/test_agent_audit.py:172:    assert spy.calls == ["search_companies"]
+app/modules/agent_platform/tests/test_agent_audit.py:178:    orch = _orch(tool_name="search_companies", spy=spy, audit=None)
+app/modules/agent_platform/tests/test_agent_audit.py:180:    assert spy.calls == ["search_companies"]
+app/modules/agent_platform/tests/test_card_builder.py:29:def test_search_listings_snake_case() -> None:
+app/modules/agent_platform/tests/test_card_builder.py:45:    cards = build_cards("search_listings", data)
+app/modules/agent_platform/tests/test_card_builder.py:84:def test_search_companies() -> None:
+app/modules/agent_platform/tests/test_card_builder.py:98:    cards = build_cards("search_companies", data)
+app/modules/agent_platform/tests/test_card_builder.py:138:    assert build_cards("search_listings", None) == []
+app/modules/agent_platform/tests/test_card_builder.py:139:    assert build_cards("search_listings", {"items": "not-a-list"}) == []
+app/modules/agent_platform/tests/test_card_builder.py:143:    assert build_cards("search_listings", {"items": [{"title": "no id"}]}) == []
+app/modules/agent_platform/tests/test_card_builder.py:145:    assert build_cards("search_companies", {"items": [{"id": "../x", "legal_name": "x"}]}) == []
+app/modules/agent_platform/tests/test_card_builder.py:150:    cards = build_cards("search_listings", {"items": items})
+app/modules/agent_platform/tests/test_card_builder.py:207:    tool_name = "search_listings"
+app/modules/agent_platform/tests/test_card_builder.py:229:            tool_name="search_listings",
+app/modules/agent_platform/tests/test_card_builder.py:234:    orch = _orch(_Gateway([("search_listings", "{}")]), handler)
+app/modules/agent_platform/tests/test_card_builder.py:247:            tool_name="search_listings",
+app/modules/agent_platform/tests/test_card_builder.py:252:    orch = _orch(_Gateway([("search_listings", "{}")]), handler)
+app/modules/agent_platform/tests/test_card_builder.py:264:            tool_name="search_listings",
+app/modules/agent_platform/tests/test_card_builder.py:269:    orch = _orch(_Gateway([("search_listings", "{}"), ("search_listings", "{}")]), handler)
+app/modules/agent_platform/tests/test_card_builder.py:289:        ToolResult(request_id="r", tool_name="search_listings", success=True, data={"items": []})
+app/modules/agent_platform/tests/test_card_builder.py:292:        gateway=_Gateway([("search_listings", "{}")]),
+app/modules/agent_platform/tests/test_card_builder.py:294:        tool_handlers={"search_listings": handler},
+app/modules/agent_platform/tests/test_card_builder.py:296:        policy=AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_listings"})),
+app/modules/agent_platform/tests/test_card_builder.py:301:        tool_scopes={"search_listings": ("listings", "search")},
+app/modules/agent_platform/tests/test_admin_tools.py:50:            tool_name="search_companies",
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:80:    gateway = _FakeGateway("search_companies")
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:85:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:87:        policy=AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"})),
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:89:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:94:    assert spy.calls == ["search_companies"], "Allowed tool must execute"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:96:    assert names == ["search_companies"], "Executed tool must appear in tool_calls"
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:109:        policy=AllowlistPolicyEngine(allowed_tool_names=frozenset({"search_companies"})),
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:137:    gateway = _FakeGateway("search_companies")
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:142:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:155:    gateway = _FakeGateway("search_companies")
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:160:        tool_handlers={"search_companies": spy},
+app/modules/agent_platform/tests/test_orchestrator_collected_calls.py:163:        tool_scopes={"search_companies": ("companies", "search")},
+app/modules/agent_platform/presentation/chat_router.py:60:- search_companies(q, company_type, seller_capability, buyer_capability, logistics_capability)
+app/modules/agent_platform/presentation/chat_router.py:61:- search_listings(q, material_type, location)
+app/modules/agent_platform/presentation/chat_router.py:63:- get_listing_transport(listing_id, from_location)
+app/modules/agent_platform/presentation/chat_router.py:81:  - search_listings(q="cement") — konkurencia
+app/modules/agent_platform/presentation/chat_router.py:82:  - search_companies(q="cement", buyer_capability=true) — kto kupuje
+app/modules/agent_platform/presentation/chat_router.py:92:→ zavolaj search_companies(q="piliny", buyer_capability=true)
+app/modules/agent_platform/presentation/chat_router.py:95:→ zavolaj search_listings(material_type="wood")
+app/modules/agent_platform/presentation/dependencies.py:39:from app.modules.agent_platform.infrastructure.tools.cmep_listing_transport_handler import (
+app/modules/agent_platform/presentation/dependencies.py:40:    CmepListingTransportHandler,
+app/modules/agent_platform/presentation/dependencies.py:58:    build_transport_tools,
+app/modules/agent_platform/presentation/dependencies.py:65:    GetCompanyService,
+app/modules/agent_platform/presentation/dependencies.py:121:        "search_companies": company_handler,
+app/modules/agent_platform/presentation/dependencies.py:122:        "search_listings": listing_handler,
+app/modules/agent_platform/presentation/dependencies.py:125:        "search_companies": ("companies", "search"),
+app/modules/agent_platform/presentation/dependencies.py:126:        "search_listings": ("listings", "search"),
+app/modules/agent_platform/presentation/dependencies.py:130:    # Transport + nearby READ tools – pre vsetkych prihlasenych.
+app/modules/agent_platform/presentation/dependencies.py:132:    transport_handler = CmepListingTransportHandler(session=session)
+app/modules/agent_platform/presentation/dependencies.py:134:    tool_handlers["get_listing_transport"] = transport_handler
+app/modules/agent_platform/presentation/dependencies.py:136:    tool_scopes["get_listing_transport"] = ("recommendations", "read")
+app/modules/agent_platform/presentation/dependencies.py:137:    tool_schemas = tool_schemas + build_transport_tools()
+app/modules/agent_platform/presentation/dependencies.py:140:    get_company_service = GetCompanyService(company_repo)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:60:- search_companies(q, company_type, seller_capability, buyer_capability, logistics_capability)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:61:- search_listings(q, material_type, location)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:63:- get_listing_transport(listing_id, from_location)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:81:  - search_listings(q="cement") — konkurencia
+app/modules/agent_platform/presentation/user_ai_chat_router.py:82:  - search_companies(q="cement", buyer_capability=true) — kto kupuje
+app/modules/agent_platform/presentation/user_ai_chat_router.py:92:→ zavolaj search_companies(q="piliny", buyer_capability=true)
+app/modules/agent_platform/presentation/user_ai_chat_router.py:95:→ zavolaj search_listings(material_type="wood")
+app/modules/agent_platform/navigator/navigator_bridge.py:30:    "open_transport": ("prepravcovia", "prepravcovia, doprava, logistika"),
+
+=== 12. DUPLICITNE DEFINICIE A NAZVY NASTROJOV ===
+      2 "name": "app"
+      1 "name": "waste-platform"
+      1 "name": "show_toast"
+      1 "name": "search_nearby_companies"
+      1 "name": "search_listings"
+      1 "name": "search_companies"
+      1 "name": "safe"
+      1 "name": "project_read_file"
+      1 "name": "project_list_dir"
+      1 "name": "open_transport"
+      1 "name": "open_subscription"
+      1 "name": "open_settings"
+      1 "name": "open_new_listing"
+      1 "name": "open_new_document"
+      1 "name": "open_new_company"
+      1 "name": "open_marketplace"
+      1 "name": "open_listings_list"
+      1 "name": "open_listing"
+      1 "name": "open_inquiries"
+      1 "name": "open_documents"
+      1 "name": "open_dashboard"
+      1 "name": "open_company"
+      1 "name": "open_companies"
+      1 "name": "open_chat"
+      1 "name": "open_admin"
+      1 "name": "navigate"
+      1 "name": "highlight_field"
+      1 "name": "get_recommendations"
+      1 "name": "get_recent_activity"
+      1 "name": "get_platform_stats"
+      1 "name": "get_my_listings"
+      1 "name": "get_my_company_context"
+      1 "name": "get_my_company"
+      1 "name": "get_listing_transport"
+      1 "name": "get_listing_stats"
+      1 "name": "get_listing_details"
+      1 "name": "get_company_listings"
+      1 "name": "get_companies_with_tiers"
+      1 "name": "fill_form_field"
+      1 "name": "external.openlist.list"
+      1 "name": "external.openlist.get"
+
+=== 13. TESTY RUNTIME A NASTROJOV ===
+app/modules/agent_platform/tests/test_admin_tools.py
+app/modules/agent_platform/tests/test_phase5_tool_wiring.py
+app/modules/agent_platform/tests/test_project_read_tools.py
+tests/api/test_exception_handlers.py
+tests/unit/test_cmep_company_search_handler.py
+tests/unit/test_exception_handlers.py
+tests/unit/test_orchestrator_tool_dedup.py
+
+=== 14. ZAVERECNY STAV ===
+audit/hardening-2026-10-14
+46de096
+M  .pre-commit-config.yaml
+ M app/modules/agent_platform/infrastructure/persistence/ai_conversation_repository.py
+M  app/modules/agent_platform/presentation/chat_router.py
+ M app/modules/listings/application/services.py
+?? app/modules/agent_platform/presentation/user_ai_chat_router.py
+?? cmep_ai_architektura/
+?? final_check.py
+?? waste-platform/
+
+KONIEC DAVKY 03
+Zdrojove subory neboli upravovane.
