@@ -21,6 +21,40 @@ type Status = { enabled: boolean; verifiedAt?: string | null };
 type SetupResp = { secret: string; otpauthUri: string; qrSvg: string };
 type VerifyResp = { ok: boolean; backupCodes: string[] };
 
+function getQrImageUrl(svg: string): string | null {
+  if (typeof DOMParser === 'undefined' || svg.length > 200_000) return null;
+
+  try {
+    const document = new DOMParser().parseFromString(svg, 'image/svg+xml');
+    const root = document.documentElement;
+    if (
+      root.localName !== 'svg' ||
+      root.namespaceURI !== 'http://www.w3.org/2000/svg' ||
+      document.querySelector('parsererror') ||
+      document.doctype !== null ||
+      document.childNodes.length !== 1 ||
+      root.children.length !== 1
+    ) return null;
+
+    const rootAttrs = new Set(['width', 'height', 'viewBox', 'version', 'xmlns']);
+    if ([...root.attributes].some((attr) => !rootAttrs.has(attr.name))) return null;
+    if (!/^\d+(?:\.\d+)?px$/.test(root.getAttribute('width') ?? '')) return null;
+    if (!/^\d+(?:\.\d+)?px$/.test(root.getAttribute('height') ?? '')) return null;
+    if (!/^0 0 \d+(?:\.\d+)? \d+(?:\.\d+)?$/.test(root.getAttribute('viewBox') ?? '')) return null;
+
+    const path = root.children[0];
+    if (path.localName !== 'path' || path.namespaceURI !== root.namespaceURI) return null;
+    if ([...path.childNodes].some((node) => node.nodeType !== Node.TEXT_NODE || node.textContent?.trim())) return null;
+    if ([...path.attributes].some((attr) => !['d', 'fill'].includes(attr.name))) return null;
+    if (path.getAttribute('fill') !== '#000000') return null;
+    if (!/^[MmLlHhVvCcSsQqTtAaZz0-9.,\s+-]+$/.test(path.getAttribute('d') ?? '')) return null;
+
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  } catch {
+    return null;
+  }
+}
+
 const cardStyle = {
   borderColor: 'color-mix(in srgb, #c9a84c 25%, transparent)',
   background: 'rgba(201,168,76,0.03)',
@@ -90,6 +124,7 @@ export default function SecuritySettingsPage() {
   }
 
   const enabled = status.data?.enabled ?? false;
+  const qrImageUrl = setupData ? getQrImageUrl(setupData.qrSvg) : null;
 
   return (
     <AppShell>
@@ -156,8 +191,15 @@ export default function SecuritySettingsPage() {
               <div
                 className="mt-3 inline-block rounded-xl border p-3"
                 style={{ background: '#fff', borderColor: 'rgba(201,168,76,0.3)' }}
-                dangerouslySetInnerHTML={{ __html: setupData.qrSvg }}
-              />
+              >
+                {qrImageUrl ? (
+                  <img src={qrImageUrl} alt="QR kód na nastavenie dvojfaktorového overenia" />
+                ) : (
+                  <p className="max-w-xs text-sm" style={{ color: '#5b5143' }}>
+                    QR kód sa nepodarilo bezpečne zobraziť. Použi manuálny kľúč nižšie.
+                  </p>
+                )}
+              </div>
               <p className="mt-3 text-xs" style={{ color: MUTED }}>
                 Alebo zadaj manuálne: <code style={{ color: GOLD_BRIGHT }}>{setupData.secret}</code>
               </p>

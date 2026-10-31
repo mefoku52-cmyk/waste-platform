@@ -10,21 +10,16 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (data: LoginInput): Promise<LoginResponse> =>
       authApi.login({ email: data.email, password: data.password }),
-    onSuccess: (response: LoginResponse, variables) => {
+    onSuccess: (response: LoginResponse) => {
       // Ak je aktivna 2FA, NEUKLADAME tokeny (ziadne este neprisli).
       // Caller (login-form) musi spravit druhy krok.
       if (response.requires2fa) {
         return;
       }
-      if (!response.accessToken || !response.refreshToken) {
+      if (!response.accessToken) {
         return;
       }
-      const remember = variables.remember !== false;
-      tokenStore.setTokens(
-        response.accessToken,
-        response.refreshToken,
-        remember,
-      );
+      tokenStore.setToken(response.accessToken);
       queryClient.invalidateQueries({ queryKey: ['auth-user'] });
     },
   });

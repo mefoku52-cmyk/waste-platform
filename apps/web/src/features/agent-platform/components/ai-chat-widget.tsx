@@ -376,7 +376,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   if (tierLoading) {
     return (
       <div className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg" style={{ background: '#1a1a1a' }}>
-        <span className="text-xs" style={{ color: MUTED }}>...</span>
+        <span className="text-xs text-gray-400">...</span>
       </div>
     );
   }

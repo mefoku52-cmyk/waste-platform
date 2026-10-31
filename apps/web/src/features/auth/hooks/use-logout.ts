@@ -11,10 +11,8 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      const refreshToken = tokenStore.getRefreshToken();
-      if (refreshToken) {
-        await authApi.logout(refreshToken);
-      }
+      // Revoke the refresh-token family through the CSRF-protected HttpOnly cookie.
+      await authApi.logout(null).catch(() => undefined);
       return true;
     },
     onSettled: async () => {

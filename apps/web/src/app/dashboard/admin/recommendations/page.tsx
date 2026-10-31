@@ -1,5 +1,7 @@
 'use client';
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useAuthRequired, useIsPlatformAdmin } from '@/features/auth';
@@ -18,7 +20,7 @@ const MUTED = '#9a8f7c';
 type ListingRow = { id: string; title: string; materialType?: string; location?: string };
 
 async function fetchListings(): Promise<ListingRow[]> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(config.apiBaseUrl + '/listings', {
     headers: {
       'Content-Type': 'application/json',

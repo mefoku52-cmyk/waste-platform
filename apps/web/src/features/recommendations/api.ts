@@ -1,3 +1,4 @@
+import { tokenStore } from '@/lib/auth/token-store';
 import { config } from '../../lib/config';
 
 export type RecommendationCandidate = {
@@ -38,7 +39,7 @@ function errorDetail(body: unknown, fallback: string): string {
 export async function getListingRecommendations(
   listingId: string,
 ): Promise<RecommendationsResponse> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(
     config.apiBaseUrl + '/recommendations/listings/' + listingId,
     {
@@ -58,7 +59,7 @@ export async function getListingRecommendations(
 }
 
 export async function postListingViewed(listingId: string): Promise<void> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(config.apiBaseUrl + '/events', {
     method: 'POST',
     headers: {

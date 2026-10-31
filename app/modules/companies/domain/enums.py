@@ -21,3 +21,4 @@ class SubscriptionTier(StrEnum):
     FREE = "free"
     PRO = "pro"
     AI = "ai"
+    AI_NAVIGATION = "ai_navigation"

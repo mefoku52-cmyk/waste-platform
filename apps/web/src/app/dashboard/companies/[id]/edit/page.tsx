@@ -1,5 +1,7 @@
 'use client';
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
@@ -34,7 +36,7 @@ type CompanyData = {
 };
 
 async function fetchCompany(id: string): Promise<CompanyData> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(`${config.apiBaseUrl}/companies/${id}`, {
     headers: {
       'Content-Type': 'application/json',

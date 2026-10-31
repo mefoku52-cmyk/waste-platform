@@ -36,4 +36,8 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute("DROP TABLE IF EXISTS activity_events")
+    # Upgrade is idempotent and this table may predate the revision (e.g. it
+    # was created by raw bootstrap SQL). Provenance cannot be determined, so
+    # dropping it could destroy existing application data. Intentionally keep
+    # the table on downgrade.
+    pass
