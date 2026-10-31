@@ -16,7 +16,10 @@ from app.modules.analytics.infrastructure.models import (
     AnalyticsEventModel,  # noqa: F401
 )
 from app.modules.auth.infrastructure.models import RefreshSessionModel  # noqa: F401
-from app.modules.billing.infrastructure.models import BillingPaymentOrderModel  # noqa: F401
+from app.modules.billing.infrastructure.models import (  # noqa: F401
+    BillingPaymentOrderModel,
+    BillingWebhookEventModel,
+)
 from app.modules.chat.infrastructure.models import ChatMessageModel, ChatThreadModel  # noqa: F401
 from app.modules.companies.infrastructure.models import CompanyModel  # noqa: F401
 from app.modules.company_memberships.infrastructure.models import (

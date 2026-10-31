@@ -541,6 +541,7 @@
   "documents": {
     "section": "DOKUMENTY",
     "title": "Dokumenty",
+    "heroSubtitle": "Správa vašich dokumentov a zmlúv.",
     "addButton": "+ Pridať dokument",
     "empty": "Žiadne dokumenty.",
     "emptyHint": "Nahraj dokumenty, ktoré chceš zdieľať s firmami.",
@@ -557,6 +558,7 @@
     "newTitle": "Pridať firmu",
     "kicker": "Firmy",
     "title": "Firmy na platforme",
+    "heroSubtitle": "Prehľad firiem na platforme. Zaregistruj svoju firmu a dostaň sa do popredia.",
     "add": "Pridať firmu",
     "filter": "Filter podľa materiálu",
     "loading": "Načítavam…",
@@ -674,6 +676,7 @@
   "inquiries": {
     "section": "DOPYTY",
     "title": "Dopyty",
+    "heroSubtitle": "Prehľad vašich prijatých a odoslaných dopytov.",
     "received": "Prijaté",
     "sent": "Odoslané",
     "loading": "Načítavam dopyty…",

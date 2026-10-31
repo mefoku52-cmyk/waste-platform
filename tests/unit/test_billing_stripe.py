@@ -13,7 +13,7 @@ are monkeypatched. Covers:
 
 import logging
 from types import SimpleNamespace
-from unittest.mock import MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -21,7 +21,10 @@ import stripe
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.modules.billing.infrastructure.models import BillingPaymentOrderModel
+from app.modules.billing.infrastructure.models import (
+    BillingPaymentOrderModel,
+    BillingWebhookEventModel,
+)
 from app.modules.companies.infrastructure.models import CompanyModel
 from app.modules.listings.infrastructure.models import ListingsModel
 from app.shared.infrastructure.db.session import get_db_session
@@ -57,6 +60,7 @@ class _FakeDbSession:
             promoted_until=None, promoted_tier=None,
         )
         self.company = SimpleNamespace(id=COMPANY_ID, stripe_subscription_id=None, subscription_tier="free")
+        self.webhook_events = {}
 
     async def get(self, model, key):
         if model is ListingsModel and str(key) == LISTING_ID:
@@ -70,6 +74,11 @@ class _FakeDbSession:
     def add(self, value):
         if isinstance(value, BillingPaymentOrderModel):
             self.order = value
+        elif isinstance(value, BillingWebhookEventModel):
+            self.webhook_events[value.event_id] = value
+
+    async def flush(self):
+        return None
 
     async def execute(self, statement, *args, **kwargs):
         if getattr(statement, "is_update", False):
@@ -80,8 +89,37 @@ class _FakeDbSession:
                 self.company.stripe_subscription_id = None
             return _FakeResult(rowcount=1)
         descriptions = getattr(statement, "column_descriptions", [])
+        if descriptions and descriptions[0].get("entity") is BillingWebhookEventModel:
+            params = statement.compile().params
+            event_id = next(
+                (value for key, value in params.items() if "event_id" in key), None
+            )
+            return _FakeResult(self.webhook_events.get(str(event_id)))
         if descriptions and descriptions[0].get("entity") is CompanyModel:
+            params = statement.compile().params
+            for key, value in params.items():
+                if key.startswith("id_") and str(self.company.id) != str(value):
+                    return _FakeResult()
+                if key.startswith("stripe_subscription_id_") and str(self.company.stripe_subscription_id) != str(value):
+                    return _FakeResult()
             return _FakeResult(self.company)
+        if descriptions and descriptions[0].get("entity") is BillingPaymentOrderModel:
+            candidate = self.order
+            if candidate is None:
+                return _FakeResult()
+            params = statement.compile().params
+            for key, value in params.items():
+                if key.startswith("order_ref") and getattr(candidate, "order_ref", None) != value:
+                    return _FakeResult()
+                if key.startswith("provider_") and getattr(candidate, "provider", None) != value:
+                    return _FakeResult()
+                if key.startswith("product_kind") and getattr(candidate, "product_kind", None) != value:
+                    return _FakeResult()
+                if key.startswith("stripe_subscription_id") and getattr(candidate, "stripe_subscription_id", None) != value:
+                    return _FakeResult()
+                if key.startswith("status_") and getattr(candidate, "status", None) != value:
+                    return _FakeResult()
+            return _FakeResult(candidate)
         return _FakeResult(self.order)
 
     async def commit(self):
@@ -124,6 +162,22 @@ def _unset_stripe_keys(monkeypatch):
 
     monkeypatch.setattr(settings, "STRIPE_SECRET_KEY", None, raising=False)
     monkeypatch.setattr(settings, "STRIPE_WEBHOOK_SECRET", None, raising=False)
+
+
+def _set_gopay_config(monkeypatch, amount=5000):
+    from app.core.config import settings
+    from app.modules.billing.presentation import router as billing_router
+
+    cfg = {
+        "client_id": "client",
+        "client_secret": "secret",
+        "goid": "1234567890",
+        "api": "https://gw.sandbox.gopay.com",
+        "return_url": "https://trc-cmep.sk/payment/return",
+        "notify_url": "https://trc-cmep.sk/api/v1/billing/notify",
+    }
+    monkeypatch.setattr(billing_router, "_cfg", lambda: cfg)
+    monkeypatch.setitem(settings.__dict__, "GOPAY_PRO_AMOUNT_CENTS", amount)
 
 
 def _checkout_body(**over):
@@ -305,6 +359,7 @@ def test_webhook_skips_promote_when_no_listing_id(client, monkeypatch):
     with patch(
         "stripe.Webhook.construct_event",
         return_value={
+            "id": "evt_missing_order_ref",
             "type": "checkout.session.completed",
             "data": {"object": {"metadata": {"kind": "promote", "days": "7", "tier": "top"}}},
         },
@@ -323,6 +378,7 @@ def test_webhook_skips_promote_when_kind_not_promote(client, monkeypatch):
     with patch(
         "stripe.Webhook.construct_event",
         return_value={
+            "id": "evt_untracked_kind",
             "type": "checkout.session.completed",
             "data": {"object": {"metadata": {"kind": "donation", "listing_id": "list-9"}}},
         },
@@ -377,6 +433,7 @@ def test_subscription_checkout_is_recurring_and_company_admin_scoped(client, mon
     args = create.call_args.kwargs
     assert args["mode"] == "subscription"
     assert args["line_items"][0]["price_data"]["recurring"] == {"interval": "month"}
+    assert args["line_items"][0]["price_data"]["unit_amount"] == 9900
     assert args["metadata"]["tier"] == "ai_navigation"
     assert args["subscription_data"]["metadata"]["order_ref"] == fake_session.order.order_ref
 
@@ -389,7 +446,9 @@ def test_subscription_webhook_grants_exact_tier_and_records_subscription(client,
         tier="ai_navigation", amount_cents=9900, currency="EUR", status="pending",
     )
     event = {
+        "id": "evt_sub_checkout",
         "type": "checkout.session.completed",
+        "created": 100,
         "data": {"object": {
             "id": "cs_sub", "mode": "subscription", "payment_status": "paid",
             "amount_total": 9900, "currency": "eur", "subscription": "sub_live_123",
@@ -408,7 +467,15 @@ def test_webhook_uses_cancellation_event_to_downgrade_matching_subscription(clie
     _set_stripe_keys(monkeypatch)
     fake_session.company.stripe_subscription_id = "sub_cancelled"
     fake_session.company.subscription_tier = "ai"
-    event = {"type": "customer.subscription.deleted", "data": {"object": {"id": "sub_cancelled"}}}
+    fake_session.order = BillingPaymentOrderModel(
+        id=uuid4(), order_ref="cancel-order", provider="stripe", provider_ref="cs_cancel",
+        stripe_subscription_id="sub_cancelled", user_id=USER_ID, company_id=COMPANY_ID,
+        product_kind="subscription", tier="ai", amount_cents=2900, currency="EUR", status="applied",
+    )
+    event = {
+        "id": "evt_sub_deleted", "type": "customer.subscription.deleted", "created": 200,
+        "data": {"object": {"id": "sub_cancelled"}},
+    }
     with patch("stripe.Webhook.construct_event", return_value=event):
         r = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
     assert r.status_code == 200
@@ -429,7 +496,9 @@ def test_subscription_status_event_removes_entitlement_without_losing_recovery_l
         tier="ai", amount_cents=2900, currency="EUR", status="applied",
     )
     event = {
+        "id": "evt_sub_unpaid",
         "type": "customer.subscription.updated",
+        "created": 300,
         "data": {"object": {"id": "sub_past_due", "status": "unpaid"}},
     }
     with patch("stripe.Webhook.construct_event", return_value=event):
@@ -602,3 +671,194 @@ def test_checkout_only_uses_params_supported_by_sdk_api_version(client, monkeypa
     assert not unsupported, f"unsupported Session.create params: {sorted(unsupported)}"
     # card-only intent preserved through the current API's replacement param
     assert kwargs.get("allowed_payment_method_types") == ["card"]
+
+
+# ---------------------------------------------------------------------------
+# Follow-up security regressions: GoPay binding and Stripe event lifecycle
+# ---------------------------------------------------------------------------
+
+
+def test_gopay_checkout_uses_server_owned_price_and_assigns_order_ref(
+    client, monkeypatch, fake_session
+):
+    from app.modules.billing.presentation import router as billing_router
+
+    _set_gopay_config(monkeypatch, amount=6400)
+
+    class _Response:
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"id": 123456, "gw_url": "https://gw.sandbox.gopay.com/pay/123456"}
+
+    class _AsyncClient:
+        body = None
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            return None
+
+        async def post(self, url, **kwargs):
+            self.body = kwargs["json"]
+            return _Response()
+
+    fake_http = _AsyncClient()
+    payload = {
+        "company_id": COMPANY_ID,
+        "tier": "pro",
+        "amount_cents": 1,
+        "currency": "USD",
+    }
+    with (
+        patch.object(billing_router, "_token", new=AsyncMock(return_value="access-token")),
+        patch.object(billing_router.httpx, "AsyncClient", return_value=fake_http),
+    ):
+        response = client.post("/api/v1/billing/checkout", json=payload)
+
+    assert response.status_code == 200, response.text
+    assert fake_http.body["amount"] == 6400
+    assert fake_http.body["currency"] == "EUR"
+    assert fake_http.body["order_number"] == response.json()["order_number"]
+    assert fake_session.order.order_ref == response.json()["order_number"]
+    assert fake_session.order.tier == "pro"
+    assert fake_session.order.amount_cents == 6400
+
+
+def _gopay_paid_response(**overrides):
+    value = {
+        "id": "123456",
+        "order_number": "gopay-order-1",
+        "state": "PAID",
+        "amount": 5000,
+        "currency": "EUR",
+        "target": {"type": "ACCOUNT", "goid": 1234567890},
+    }
+    value.update(overrides)
+    return value
+
+
+def _gopay_order():
+    return BillingPaymentOrderModel(
+        id=uuid4(),
+        order_ref="gopay-order-1",
+        provider="gopay",
+        provider_ref="123456",
+        user_id=USER_ID,
+        company_id=COMPANY_ID,
+        product_kind="subscription",
+        tier="pro",
+        amount_cents=5000,
+        currency="EUR",
+        status="pending",
+    )
+
+
+def test_gopay_callback_applies_only_matching_verified_order(client, monkeypatch, fake_session):
+    from app.modules.billing.presentation import router as billing_router
+
+    _set_gopay_config(monkeypatch)
+    fake_session.order = _gopay_order()
+    with patch.object(
+        billing_router,
+        "_payment",
+        new=AsyncMock(return_value=_gopay_paid_response()),
+    ):
+        response = client.get("/api/v1/billing/notify?id=123456")
+
+    assert response.status_code == 200, response.text
+    assert fake_session.order.status == "applied"
+    assert fake_session.company.subscription_tier == "pro"
+    with patch.object(
+        billing_router,
+        "_payment",
+        new=AsyncMock(return_value=_gopay_paid_response()),
+    ):
+        duplicate = client.get("/api/v1/billing/notify?id=123456")
+    assert duplicate.status_code == 200
+    assert duplicate.json()["updated"] == 0
+
+
+def test_gopay_callback_rejects_wrong_merchant_or_conflicting_order(client, monkeypatch, fake_session):
+    from app.modules.billing.presentation import router as billing_router
+
+    _set_gopay_config(monkeypatch)
+    fake_session.order = _gopay_order()
+    wrong_merchant = _gopay_paid_response(target={"type": "ACCOUNT", "goid": 999})
+    with patch.object(billing_router, "_payment", new=AsyncMock(return_value=wrong_merchant)):
+        response = client.get("/api/v1/billing/notify?id=123456")
+    assert response.status_code == 400
+    assert fake_session.order.status == "pending"
+
+    conflicting_order = _gopay_paid_response(order_number="another-order")
+    with patch.object(billing_router, "_payment", new=AsyncMock(return_value=conflicting_order)):
+        response = client.get("/api/v1/billing/notify?id=123456")
+    assert response.status_code == 404
+    assert fake_session.order.status == "pending"
+
+
+def test_stripe_webhook_requires_persisted_checkout_session_id(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake_session.order = _promotion_order(provider_ref=None)
+    with patch("stripe.Webhook.construct_event", return_value=_promotion_event()):
+        response = client.post(
+            "/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"}
+        )
+    assert response.status_code == 400
+    assert fake_session.order.status == "pending"
+    assert fake_session.listing.promoted_tier is None
+
+
+def test_duplicate_stripe_event_id_is_acknowledged_once(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake_session.order = _promotion_order()
+    with patch("stripe.Webhook.construct_event", return_value=_promotion_event()):
+        first = client.post(
+            "/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"}
+        )
+        first_until = fake_session.listing.promoted_until
+        second = client.post(
+            "/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"}
+        )
+    assert first.status_code == second.status_code == 200
+    assert second.json().get("duplicate") is True
+    assert fake_session.listing.promoted_until == first_until
+    assert list(fake_session.webhook_events) == ["evt_123"]
+
+
+def test_stale_stripe_subscription_event_cannot_revert_newer_state(
+    client, monkeypatch, fake_session
+):
+    _set_stripe_keys(monkeypatch)
+    fake_session.company.stripe_subscription_id = "sub_live_123"
+    fake_session.company.subscription_tier = "ai"
+    fake_session.order = BillingPaymentOrderModel(
+        id=uuid4(),
+        order_ref="sub-recovery-order",
+        provider="stripe",
+        provider_ref="cs_sub",
+        stripe_subscription_id="sub_live_123",
+        stripe_last_event_created=200,
+        user_id=USER_ID,
+        company_id=COMPANY_ID,
+        product_kind="subscription",
+        tier="ai",
+        amount_cents=2900,
+        currency="EUR",
+        status="applied",
+    )
+    event = {
+        "id": "evt_stale",
+        "type": "customer.subscription.updated",
+        "created": 199,
+        "data": {"object": {"id": "sub_live_123", "status": "unpaid"}},
+    }
+    with patch("stripe.Webhook.construct_event", return_value=event):
+        response = client.post(
+            "/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"}
+        )
+    assert response.status_code == 200
+    assert fake_session.company.subscription_tier == "ai"
+    assert fake_session.order.stripe_last_event_created == 200

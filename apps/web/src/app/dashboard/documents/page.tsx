@@ -20,17 +20,13 @@ export default function DocumentsPage() {
   return (
     <AppShell>
       <PremiumHero
-        kicker="DOKUMENTY"
-        title="Dokumenty"
-        subtitle="Správa vašich dokumentov a zmlúv."
+        kicker={t('documents.section')}
+        title={t('documents.title')}
+        subtitle={t('documents.heroSubtitle')}
         imageUrl="https://images.unsplash.com/photo-1568667256549-094345857637?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
-        <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            
-            
-          </div>
+        <div className="mb-7 flex justify-end">
           <Link href="/dashboard/documents/new" className="rounded-full border px-4 py-2 text-sm" style={{ borderColor: 'rgba(201,168,76,0.48)', color: GOLD_BRIGHT }}>
             + {t('documents.addButton')}
           </Link>

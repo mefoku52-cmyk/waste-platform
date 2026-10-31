@@ -533,6 +533,7 @@
   "documents": {
     "section": "DOCUMENTS",
     "title": "Documents",
+    "heroSubtitle": "Manage your documents and contracts.",
     "addButton": "+ Add document",
     "empty": "No documents.",
     "emptyHint": "Upload documents you want to share with companies.",
@@ -549,6 +550,7 @@
     "newTitle": "Add company",
     "kicker": "Companies",
     "title": "Companies on the platform",
+    "heroSubtitle": "Browse companies on the platform. Register your company to get noticed.",
     "add": "Add company",
     "filter": "Filter by material",
     "loading": "Loading…",
@@ -666,6 +668,7 @@
   "inquiries": {
     "section": "INQUIRIES",
     "title": "Inquiries",
+    "heroSubtitle": "An overview of your received and sent inquiries.",
     "received": "Received",
     "sent": "Sent",
     "loading": "Loading inquiries…",
