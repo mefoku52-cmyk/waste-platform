@@ -533,6 +533,7 @@
   "documents": {
     "section": "DOKUMENTE",
     "title": "Dokumente",
+    "heroSubtitle": "Verwalten Sie Ihre Dokumente und Verträge.",
     "addButton": "+ Dokument hinzufügen",
     "empty": "Keine Dokumente.",
     "emptyHint": "Laden Sie Dokumente hoch, die Sie teilen möchten.",
@@ -549,6 +550,7 @@
     "newTitle": "Unternehmen hinzufügen",
     "kicker": "Firmen",
     "title": "Firmen auf der Plattform",
+    "heroSubtitle": "Entdecken Sie Firmen auf der Plattform. Registrieren Sie Ihre Firma für mehr Sichtbarkeit.",
     "add": "Firma hinzufügen",
     "filter": "Nach Material filtern",
     "loading": "Laden…",
@@ -666,6 +668,7 @@
   "inquiries": {
     "section": "ANFRAGEN",
     "title": "Anfragen",
+    "heroSubtitle": "Übersicht über Ihre empfangenen und gesendeten Anfragen.",
     "received": "Eingegangen",
     "sent": "Gesendet",
     "loading": "Anfragen werden geladen…",

@@ -95,9 +95,9 @@ async def get_document(
     if entity is None:
         raise NotFoundDomainError(f"Document {id} not found")
     if not is_platform_admin(current_user):
-        status_value = getattr(entity.status, "value", entity.status)
-        if status_value != "approved":
-            _ensure_document_access(entity, current_user)
+        # Moderation/approval status does not change tenant ownership. Public
+        # document sharing, if needed, must use a separate explicitly public route.
+        _ensure_document_access(entity, current_user)
 
     return DocumentResponse(data=_to_data(entity))
 
@@ -145,15 +145,17 @@ async def update_document(
     if existing is None:
         raise NotFoundDomainError(f"Document {id} not found")
 
-    _ensure_document_access(existing, current_user)
+    platform_admin = is_platform_admin(current_user)
+    if not platform_admin:
+        _ensure_document_access(existing, current_user)
 
     from app.shared.domain.exceptions import ForbiddenDomainError
 
-    if request.status is not None and not is_platform_admin(current_user):
+    if request.status is not None and not platform_admin:
         raise ForbiddenDomainError("Only platform administrators can change document status")
 
     target_company_id = request.companyId if request.companyId is not None else existing.company_id
-    if target_company_id not in _allowed_company_ids(current_user):
+    if not platform_admin and target_company_id not in _allowed_company_ids(current_user):
         from app.shared.domain.exceptions import ForbiddenDomainError
 
         raise ForbiddenDomainError("You do not have access to this company")

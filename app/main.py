@@ -178,13 +178,21 @@ def create_app() -> FastAPI:
             app.include_router(api_router, prefix="/api/v1")
         mounted.append("shared.api_router")
     except Exception as e:
-        logger.exception("Failed to include shared.api_router")
-        skipped.append({"module": "shared.api_router", "error": str(e)})
+        # This router contains the required API surface. Do not start a
+        # seemingly healthy service if it failed to import or register.
+        # Keep exception details in server logs only; never expose them via
+        # health responses or an HTTP error body.
+        logger.error(
+            "Failed to include required shared.api_router (%s)",
+            type(e).__name__,
+        )
+        raise RuntimeError(
+            "Required API router could not be initialized"
+        ) from None
 
     app.state.mounted_routers = mounted
-    app.state.skipped_routers = skipped
 
-    logger.info("Mounted routers=%s skipped=%s", mounted, skipped)
+    logger.info("Mounted routers=%s", mounted)
 
     from app.shared.presentation.ops_router import router as ops_router
 

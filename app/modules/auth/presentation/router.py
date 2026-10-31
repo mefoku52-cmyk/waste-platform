@@ -1,4 +1,8 @@
-from fastapi import APIRouter, Depends, Request, Response, status
+import hmac
+import os
+import secrets
+
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 
 from app.modules.auth.presentation.dependencies import (
     get_auth_service,
@@ -12,6 +16,7 @@ from app.modules.auth.presentation.dependencies import (
 )
 from app.modules.auth.presentation.schemas import (
     AuthTokenPairResponse,
+    BrowserAuthResponse,
     CurrentUserResponse,
     ForgotPasswordRequest,
     LoginRequest,
@@ -34,6 +39,85 @@ from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.error_schemas import error_responses
 
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+_BROWSER_REFRESH_COOKIE = "cmep_browser_refresh"
+_BROWSER_CSRF_COOKIE = "cmep_browser_csrf"
+_BROWSER_COOKIE_PATH = "/api/v1/auth/browser"
+
+
+def _allowed_browser_origins() -> set[str]:
+    from app.core.config import settings
+
+    configured = getattr(settings, "CORS_ORIGINS", []) or []
+    if isinstance(configured, str):
+        configured = [item.strip() for item in configured.split(",") if item.strip()]
+    allowed = {str(item).rstrip("/") for item in configured if str(item).strip() != "*"}
+    if str(getattr(settings, "app_env", "")).lower() in {"development", "test"}:
+        allowed.update({"http://localhost:3000", "http://127.0.0.1:3000"})
+    return allowed
+
+
+def _require_browser_origin(request: Request) -> None:
+    origin = (request.headers.get("origin") or "").rstrip("/")
+    if not origin or origin not in _allowed_browser_origins():
+        raise HTTPException(status_code=403, detail="Browser origin is not allowed")
+
+
+def _require_browser_csrf(request: Request) -> None:
+    _require_browser_origin(request)
+    cookie = request.cookies.get(_BROWSER_CSRF_COOKIE) or ""
+    header = request.headers.get("x-csrf-token") or ""
+    if not cookie or not header or not hmac.compare_digest(cookie, header):
+        raise HTTPException(status_code=403, detail="CSRF validation failed")
+
+
+async def _rate_limit_browser(request: Request, route: str, limits: tuple[tuple[int, int], ...]) -> None:
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    ip = client_ip(request)
+    for limit, period in limits:
+        await check_rate_limit(f"auth-browser:{route}:{ip}:{period}", limit=limit, period=period)
+
+
+def _browser_refresh_max_age() -> int:
+    from app.core.config import settings
+
+    jwt_settings = getattr(settings, "jwt", None)
+    refresh_days = int(getattr(jwt_settings, "refresh_token_expire_days", 14) or 14)
+    token_lifetime = max(1, refresh_days * 24 * 60 * 60)
+    try:
+        configured = int(os.getenv("AUTH_REFRESH_COOKIE_MAX_AGE_SECONDS", str(token_lifetime)))
+    except (TypeError, ValueError):
+        configured = token_lifetime
+    return max(1, min(configured, token_lifetime))
+
+
+def _browser_cookie_options() -> dict:
+    from app.core.config import settings
+
+    app_env = str(os.getenv("APP_ENV") or getattr(settings, "app_env", "production")).lower()
+    secure = app_env not in {"development", "dev", "test"}
+    same_site = str(os.getenv("AUTH_COOKIE_SAMESITE", "lax")).lower()
+    if same_site not in {"lax", "strict", "none"}:
+        same_site = "lax"
+    if same_site == "none":
+        secure = True
+    return {"httponly": True, "secure": secure, "samesite": same_site, "path": _BROWSER_COOKIE_PATH}
+
+
+def _set_browser_credentials(response: Response, refresh_token: str, csrf_token: str) -> None:
+    options = _browser_cookie_options()
+    max_age = _browser_refresh_max_age()
+    response.set_cookie(_BROWSER_REFRESH_COOKIE, refresh_token, max_age=max_age, **options)
+    response.set_cookie(_BROWSER_CSRF_COOKIE, csrf_token, max_age=max_age, **options)
+    response.headers["Cache-Control"] = "no-store"
+
+
+def _clear_browser_credentials(response: Response) -> None:
+    options = _browser_cookie_options()
+    response.delete_cookie(_BROWSER_REFRESH_COOKIE, **options)
+    response.delete_cookie(_BROWSER_CSRF_COOKIE, **options)
+    response.headers["Cache-Control"] = "no-store"
 
 
 @router.post(
@@ -101,6 +185,120 @@ async def two_factor_login(
         tokenType=result.token_type,
         expiresIn=result.expires_in,
     )
+
+
+@router.get("/browser/csrf")
+async def browser_csrf(request: Request, response: Response):
+    """Issue a short-lived CSRF nonce before a cookie-based browser refresh."""
+    _require_browser_origin(request)
+    await _rate_limit_browser(request, "csrf", ((60, 60), (300, 3600)))
+    csrf_token = secrets.token_urlsafe(32)
+    response.set_cookie(_BROWSER_CSRF_COOKIE, csrf_token, max_age=_browser_refresh_max_age(), **_browser_cookie_options())
+    response.headers["Cache-Control"] = "no-store"
+    return {"csrfToken": csrf_token}
+
+
+@router.post("/browser/login", response_model=BrowserAuthResponse)
+async def browser_login(
+    request: Request,
+    response: Response,
+    payload: LoginRequest,
+    service=Depends(get_login_service),
+):
+    _require_browser_origin(request)
+    response.headers["Cache-Control"] = "no-store"
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    ip = client_ip(request)
+    await check_rate_limit(f"login:{ip}", limit=10, period=60)
+    await check_rate_limit(f"login:email:{payload.email.lower().strip()}", limit=5, period=60)
+    result = await service.execute(email=payload.email, password=payload.password)
+    if result.requires_2fa:
+        return BrowserAuthResponse(requires2fa=True, twoFactorToken=result.two_factor_token)
+    csrf_token = secrets.token_urlsafe(32)
+    _set_browser_credentials(response, result.refresh_token, csrf_token)
+    return BrowserAuthResponse(
+        accessToken=result.access_token,
+        tokenType=result.token_type,
+        expiresIn=result.expires_in,
+        csrfToken=csrf_token,
+    )
+
+
+@router.post("/browser/2fa/login", response_model=BrowserAuthResponse)
+async def browser_two_factor_login(
+    request: Request,
+    response: Response,
+    payload: TwoFactorLoginRequest,
+    service=Depends(get_login_service),
+    jwt_service=Depends(get_jwt_service),
+):
+    _require_browser_origin(request)
+    response.headers["Cache-Control"] = "no-store"
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    await check_rate_limit(f"2fa-login:{client_ip(request)}", limit=10, period=60)
+    try:
+        decoded = await jwt_service.decode_2fa_token(payload.twoFactorToken)
+    except Exception as exc:
+        from app.shared.domain.exceptions import UnauthorizedDomainError
+
+        raise UnauthorizedDomainError("Invalid or expired 2FA token") from exc
+    user_id = decoded.get("sub")
+    if not user_id:
+        from app.shared.domain.exceptions import UnauthorizedDomainError
+
+        raise UnauthorizedDomainError("Invalid 2FA token payload")
+    await check_rate_limit(f"2fa-login:user:{user_id}", limit=5, period=300)
+    result = await service.complete_login(user_id=str(user_id), code=payload.code)
+    csrf_token = secrets.token_urlsafe(32)
+    _set_browser_credentials(response, result.refresh_token, csrf_token)
+    return BrowserAuthResponse(
+        accessToken=result.access_token,
+        tokenType=result.token_type,
+        expiresIn=result.expires_in,
+        csrfToken=csrf_token,
+    )
+
+
+@router.post("/browser/refresh", response_model=BrowserAuthResponse)
+async def browser_refresh(
+    request: Request,
+    response: Response,
+    service=Depends(get_refresh_token_service),
+):
+    _require_browser_csrf(request)
+    await _rate_limit_browser(request, "refresh", ((10, 60), (100, 3600)))
+    refresh_token = request.cookies.get(_BROWSER_REFRESH_COOKIE)
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Browser session expired")
+    dto = await service.execute(refresh_token=refresh_token)
+    csrf_token = secrets.token_urlsafe(32)
+    _set_browser_credentials(response, dto.refresh_token, csrf_token)
+    return BrowserAuthResponse(
+        accessToken=dto.access_token,
+        tokenType=dto.token_type,
+        expiresIn=dto.expires_in,
+        csrfToken=csrf_token,
+    )
+
+
+@router.post("/browser/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def browser_logout(
+    request: Request,
+    response: Response,
+    service=Depends(get_logout_service),
+):
+    await _rate_limit_browser(request, "logout", ((20, 60), (120, 3600)))
+    refresh_token = request.cookies.get(_BROWSER_REFRESH_COOKIE)
+    if refresh_token:
+        _require_browser_csrf(request)
+    else:
+        _require_browser_origin(request)
+    await service.execute(refresh_token=refresh_token)
+    _clear_browser_credentials(response)
+    response.status_code = status.HTTP_204_NO_CONTENT
+    return response
 
 
 # ─────────────────────────────────────────────────────────────

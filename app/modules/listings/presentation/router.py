@@ -2,8 +2,10 @@
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi import status as http_status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.billing.infrastructure.models import BillingPaymentOrderModel
 from app.modules.companies.presentation.dependencies import (
     get_entitlement_service,
 )
@@ -419,8 +421,9 @@ async def promote_listing(
         if str(existing.company_id) not in my_companies:
             raise ConflictDomainError("Nemáš oprávnenie topovať túto ponuku.")
 
-    # Platba: promote vyžaduje overený Stripe Checkout Session (F-16).
-    # Platform admin môže topovať bez platby (interné/comp).
+    # Paid promotion is fulfilled exactly once by the signed Stripe webhook.
+    # This endpoint only acknowledges the already-applied order; it must never
+    # turn a reusable Checkout Session into a second promotion.
     if not is_platform_admin(current_user):
         sid = (payload.stripe_session_id or "").strip()
         if not sid:
@@ -431,17 +434,38 @@ async def promote_listing(
             from app.core.config import settings
 
             stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", None)
-            session = stripe.checkout.Session.retrieve(sid)
+            stripe_session = stripe.checkout.Session.retrieve(sid)
         except Exception:
             raise HTTPException(status_code=402, detail="Invalid Stripe session")
-        if getattr(session, "payment_status", None) != "paid":
+        if getattr(stripe_session, "payment_status", None) != "paid":
             raise HTTPException(status_code=402, detail="Payment not completed")
-        # Zabezpečenie: session metadata musí odkazovať na toto listing_id
-        meta = getattr(session, "metadata", None) or {}
-        if str(meta.get("listing_id", "")) not in ("", str(listing_id)):
+        meta = getattr(stripe_session, "metadata", None) or {}
+        if (
+            meta.get("kind") != "promote"
+            or str(meta.get("listing_id") or "") != str(listing_id)
+            or str(meta.get("company_id") or "") != str(existing.company_id)
+            or str(meta.get("user_id") or "") != str(current_user_id(current_user) or "")
+            or str(meta.get("tier") or "") != payload.tier
+            or str(meta.get("days") or "") != str(payload.days)
+        ):
             raise HTTPException(status_code=402, detail="Session does not match listing")
-
-    await service.promote(listing_id, days=payload.days, tier=payload.tier)
+        order_result = await session.execute(
+            select(BillingPaymentOrderModel).where(
+                BillingPaymentOrderModel.provider == "stripe",
+                BillingPaymentOrderModel.provider_ref == sid,
+                BillingPaymentOrderModel.product_kind == "promotion",
+                BillingPaymentOrderModel.listing_id == str(listing_id),
+                BillingPaymentOrderModel.company_id == str(existing.company_id),
+                BillingPaymentOrderModel.user_id == str(current_user_id(current_user) or ""),
+            )
+        )
+        order = order_result.scalar_one_or_none()
+        if order is None or order.tier != payload.tier or order.duration_days != payload.days:
+            raise HTTPException(status_code=402, detail="No matching server payment order")
+        if order.status != "applied":
+            raise HTTPException(status_code=409, detail="Payment fulfillment is still pending")
+    else:
+        await service.promote(listing_id, days=payload.days, tier=payload.tier)
     updated = await service.get_by_id(listing_id)
 
     await write_audit(

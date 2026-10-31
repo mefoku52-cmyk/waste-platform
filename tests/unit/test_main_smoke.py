@@ -1,9 +1,11 @@
 """Smoke tests for app.main — routes, middleware, security headers."""
 
+import builtins
+
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.main import app, create_app
 
 
 @pytest.fixture
@@ -13,6 +15,20 @@ def client():
 
 def test_app_loads():
     assert app is not None
+
+
+def test_required_api_router_import_failure_fails_app_startup(monkeypatch):
+    original_import = builtins.__import__
+
+    def failing_import(name, *args, **kwargs):
+        if name == "app.shared.presentation.api_router":
+            raise ImportError("sensitive internal detail")
+        return original_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", failing_import)
+    with pytest.raises(RuntimeError, match="Required API router could not be initialized") as exc:
+        create_app()
+    assert "sensitive internal detail" not in str(exc.value)
 
 
 def test_health_endpoint_returns_200(client):

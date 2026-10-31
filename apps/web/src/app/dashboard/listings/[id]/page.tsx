@@ -1,5 +1,7 @@
 'use client';
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -94,7 +96,7 @@ function getGallery(data: ListingData): string[] {
 }
 
 async function fetchListing(listingId: string): Promise<ListingData> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(`${config.apiBaseUrl}/listings/${listingId}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -117,7 +119,7 @@ type ListingStats = {
 };
 
 async function fetchListingStats(listingId: string): Promise<ListingStats> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(`${config.apiBaseUrl}/listings/${listingId}/stats`, {
     headers: {
       'Content-Type': 'application/json',

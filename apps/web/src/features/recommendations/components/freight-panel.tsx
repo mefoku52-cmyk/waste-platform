@@ -1,5 +1,7 @@
 'use client';
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import { useQuery } from '@tanstack/react-query';
 import { config } from '../../../lib/config';
 import { useT } from '@/lib/i18n/context';
@@ -12,7 +14,7 @@ type Carrier = {
 };
 
 async function fetchCarriers(near: string): Promise<Carrier[]> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(
     config.apiBaseUrl + '/recommendations/carriers?near=' + encodeURIComponent(near),
     {

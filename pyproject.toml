@@ -49,7 +49,7 @@ dependencies = [
     "pyotp>=2.9.0",
     "qrcode>=7.4.2",
     "redis>=5.0.1",
-    "sqlalchemy>=2.0.0",
+    "sqlalchemy[asyncio]>=2.0.0",
     "typing-extensions>=4.8.0",
     "uvicorn[standard]>=0.24.0",
 ]
@@ -131,6 +131,7 @@ addopts = "-ra -q --strict-markers --cov=app --cov-report=term-missing"
 testpaths = ["app/tests", "app/modules", "tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",

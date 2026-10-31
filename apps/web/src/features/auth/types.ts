@@ -45,4 +45,5 @@ export interface LoginResponse {
   refreshToken?: string | null;
   tokenType?: string;
   expiresIn?: number;
+  csrfToken?: string | null;
 }

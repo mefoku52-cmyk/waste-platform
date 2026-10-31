@@ -172,6 +172,11 @@ def test_openapi_has_all_auth_endpoints():
     for p in [
         "/api/v1/auth/login",
         "/api/v1/auth/2fa/login",
+        "/api/v1/auth/browser/csrf",
+        "/api/v1/auth/browser/login",
+        "/api/v1/auth/browser/2fa/login",
+        "/api/v1/auth/browser/refresh",
+        "/api/v1/auth/browser/logout",
         "/api/v1/auth/2fa/status",
         "/api/v1/auth/2fa/setup",
         "/api/v1/auth/2fa/verify",

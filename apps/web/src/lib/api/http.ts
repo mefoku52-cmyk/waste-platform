@@ -2,7 +2,30 @@ import { config } from '../config';
 import { tokenStore } from '../auth/token-store';
 import { ApiError, toApiError } from './api-error';
 
-type HttpOptions = RequestInit & { timeoutMs?: number };
+type HttpOptions = RequestInit & { timeoutMs?: number; skipAuthRefresh?: boolean };
+
+let refreshInFlight: Promise<string | null> | null = null;
+
+async function renewAccessToken(): Promise<string | null> {
+  if (!refreshInFlight) {
+    refreshInFlight = (async () => {
+      try {
+        const { authApi } = await import('../../features/auth/api');
+        const session = await authApi.refreshBrowser();
+        if (session.accessToken) {
+          tokenStore.setToken(session.accessToken);
+          return session.accessToken;
+        }
+        return null;
+      } catch {
+        return null;
+      } finally {
+        refreshInFlight = null;
+      }
+    })();
+  }
+  return refreshInFlight;
+}
 
 async function request<T>(path: string, options: HttpOptions = {}): Promise<T> {
   const baseUrl = config.apiBaseUrl;
@@ -23,9 +46,14 @@ async function request<T>(path: string, options: HttpOptions = {}): Promise<T> {
   const timer = window.setTimeout(() => controller.abort(), timeoutMs);
   let response: Response;
   try {
-    const { timeoutMs: _ignoredTimeout, ...fetchOptions } = options;
+    const {
+      timeoutMs: _ignoredTimeout,
+      skipAuthRefresh: _skipAuthRefresh,
+      ...fetchOptions
+    } = options;
     response = await fetch(url, {
       ...fetchOptions,
+      credentials: fetchOptions.credentials ?? 'include',
       headers,
       signal: controller.signal,
     });
@@ -39,10 +67,26 @@ async function request<T>(path: string, options: HttpOptions = {}): Promise<T> {
   }
   window.clearTimeout(timer);
 
+  if (
+    response.status === 401 &&
+    token &&
+    !options.skipAuthRefresh &&
+    !path.startsWith('/auth/browser/') &&
+    !path.startsWith('/auth/login') &&
+    !path.startsWith('/auth/2fa/login') &&
+    path !== '/auth/refresh' &&
+    path !== '/auth/logout'
+  ) {
+    const renewed = await renewAccessToken();
+    if (renewed) {
+      return request<T>(path, { ...options, skipAuthRefresh: true });
+    }
+  }
+
   if (!response.ok) {
     if (response.status === 401) {
       tokenStore.clearToken();
-      if (typeof window !== 'undefined') {
+      if (typeof window !== 'undefined' && !path.startsWith('/auth/')) {
         window.location.href = '/login';
       }
     }

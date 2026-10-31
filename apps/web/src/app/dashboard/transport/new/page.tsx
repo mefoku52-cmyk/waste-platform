@@ -1,5 +1,7 @@
 "use client";
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { config } from "@/lib/config";
@@ -61,7 +63,7 @@ export default function NewTransportPage() {
     }
 
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = tokenStore.getToken();
       const meRes = await fetch(`${config.apiBaseUrl}/auth/me`, {
         headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       });

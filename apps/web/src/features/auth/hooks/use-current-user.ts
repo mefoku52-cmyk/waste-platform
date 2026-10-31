@@ -9,8 +9,12 @@ export const useCurrentUser = () => {
   return useQuery<User | null>({
     queryKey: ['auth-user', token],
     queryFn: async () => {
-      if (!token) return null;
       try {
+        if (!tokenStore.getToken()) {
+          const session = await authApi.refreshBrowser();
+          if (!session.accessToken) return null;
+          tokenStore.setToken(session.accessToken);
+        }
         const me: any = await authApi.getMe();
         if (me?.user) {
           return {
@@ -35,7 +39,7 @@ export const useCurrentUser = () => {
         throw error;
       }
     },
-    enabled: !!token,
+    enabled: true,
     staleTime: 1000 * 60 * 5,
     retry: 2,
   });

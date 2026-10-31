@@ -1,20 +1,21 @@
 """Bridge - realna AI logika pre navigatora s FALLBACKOM a dynamickym zoznamom stranok."""
 from __future__ import annotations
-import os
+
 import json
 import logging
+import os
 from typing import Any
 
-from app.modules.agent_platform.navigator.task_intake import TaskIntake
-from app.modules.agent_platform.navigator.task_coordinator import TaskCoordinator
-from app.modules.agent_platform.navigator.execution_policy import ExecutionPolicy, ExecutionMode
-from app.modules.agent_platform.navigator.agent_roles import AgentRoleManager, Agent, AgentRole
-from app.modules.agent_platform.navigator.generic_api_adapter import GenericAPIAdapter
+from app.modules.agent_platform.navigator.agent_roles import Agent, AgentRole, AgentRoleManager
+from app.modules.agent_platform.navigator.execution_policy import ExecutionMode, ExecutionPolicy
 from app.modules.agent_platform.navigator.fallback_adapter import FallbackAdapter
+from app.modules.agent_platform.navigator.generic_api_adapter import GenericAPIAdapter
+from app.modules.agent_platform.navigator.task_coordinator import TaskCoordinator
+from app.modules.agent_platform.navigator.task_intake import TaskIntake
 
 _log = logging.getLogger("cmep.navigator.bridge")
 
-# Stranky, ktore vie navigator otvorit. 
+# Stranky, ktore vie navigator otvorit.
 # KLUCE musia existovat vo frontende (NO_ARG_NAV_ACTIONS v ai-chat-widget.tsx)
 NAV_PAGES = {
     "open_dashboard": ("dashboard", "prehlad, domov, uvodna stranka"),
@@ -30,8 +31,6 @@ NAV_PAGES = {
     "open_transport": ("prepravcovia", "prepravcovia, doprava, logistika"),
     "open_subscription": ("predplatné", "predplatne, cennik, tarify, plan"),
     "open_marketplace": ("marketplace", "vsetky ponuky, trh, marketplace"),
-    "select_plan_ai": ("AI plan", "vybrat AI plan, chcem AI"),
-    "select_plan_ai_nav": ("AI Navigacia plan", "vybrat AI navigaciu, chcem navigaciu"),
 }
 
 
@@ -49,7 +48,8 @@ def build_nav_prompt(user_message: str) -> str:
         'v tvare {"action": "nazov_akcie"} a nic ine. Pouzi presne jeden nazov zo zoznamu.\n'
         "2. Ak chce stranku, ktora v zozname nie je (napr. predplatne, prepravcovia), "
         "alebo sa pyta na nieco ine, odpovedz normalnym textom bez JSON. "
-        "Nikdy nevymyslaj nazov akcie."
+        "Nikdy nevymyslaj nazov akcie.\n"
+        "Nikdy nevyberaj platený plán ani nespúšťaj platbu; môžeš iba otvoriť stránku predplatného."
     )
 
 
@@ -66,18 +66,18 @@ class NavigatorBridge:
         self._coordinator = TaskCoordinator(
             policy=self._policy, role_manager=self._role_manager, max_attempts=1, default_timeout=10
         )
-        
+
         adapters = {}
-        
+
         # GROQ - hlavny model
         if os.environ.get("GROQ_API_KEY"):
             adapters["groq"] = GenericAPIAdapter(
                 name="groq", api_url="https://api.groq.com/openai/v1/chat/completions",
-                api_key_env="GROQ_API_KEY", 
+                api_key_env="GROQ_API_KEY",
                 model_name=os.environ.get("GROQ_MODEL", "llama3-8b-8192"),
                 policy=self._policy,
             )
-            
+
         # CEREBRAS - fallback 1
         if os.environ.get("CEREBRAS_API_KEY"):
             adapters["cerebras"] = GenericAPIAdapter(
@@ -86,7 +86,7 @@ class NavigatorBridge:
                 model_name=os.environ.get("CEREBRAS_MODEL", "llama3.1-8b"),
                 policy=self._policy,
             )
-            
+
         # MISTRAL - fallback 2
         if os.environ.get("MISTRAL_API_KEY"):
             adapters["mistral"] = GenericAPIAdapter(
@@ -109,19 +109,19 @@ class NavigatorBridge:
     ) -> Any:
         try:
             assignment = self._intake.accept(title=user_message[:100], description=user_message)
-            
+
             history_text = ""
             if conversation_history:
                 history_text = "Predchadzajuca konverzacia:\n" + "\n".join([f"{m.role}: {m.content}" for m in conversation_history[-3:]]) + "\n\n"
 
             ai_prompt = history_text + build_nav_prompt(user_message)
-            
+
             if not self._adapter:
                 reply = "CHYBA: Na serveri nie su nastavene API kluce."
             else:
                 response = self._adapter.infer(ai_prompt)
                 action = None
-                
+
                 if not response.available:
                     reply = f"Chyba AI: {response.error}."
                 elif not response.result:
@@ -132,7 +132,7 @@ class NavigatorBridge:
                         clean_result = raw_text.replace("```json", "").replace("```", "").strip()
                         if clean_result.startswith("{") and clean_result.endswith("}"):
                             data = json.loads(clean_result)
-                            
+
                             # Podpora pre jednu akciu alebo zoznam akcii
                             if "actions" in data and isinstance(data["actions"], list):
                                 valid_actions = [a for a in data["actions"] if a in NAV_PAGES]
@@ -156,7 +156,7 @@ class NavigatorBridge:
                 "status": "ok", "reply": reply, "source": "navigator",
                 "session_id": session_id, "action": action if isinstance(action, list) else ([action] if action else []), "tasks": [t.id for t in assignment.tasks],
             }
-            
+
         except Exception as exc:
             _log.exception("NAVIGATOR: exception: %s", exc)
             if old_orchestrator is not None:

@@ -534,6 +534,7 @@
   "documents": {
     "section": "DOCUMENTS",
     "title": "Documents",
+    "heroSubtitle": "Gérez vos documents et contrats.",
     "addButton": "+ Ajouter un document",
     "empty": "Aucun document.",
     "emptyHint": "Téléchargez les documents à partager.",
@@ -550,6 +551,7 @@
     "newTitle": "Ajouter une entreprise",
     "kicker": "Entreprises",
     "title": "Entreprises de la plateforme",
+    "heroSubtitle": "Découvrez les entreprises de la plateforme. Inscrivez la vôtre pour gagner en visibilité.",
     "add": "Ajouter une entreprise",
     "filter": "Filtrer par matériau",
     "loading": "Chargement…",
@@ -667,6 +669,7 @@
   "inquiries": {
     "section": "DEMANDES",
     "title": "Demandes",
+    "heroSubtitle": "Aperçu de vos demandes reçues et envoyées.",
     "received": "Reçues",
     "sent": "Envoyées",
     "loading": "Chargement des demandes…",

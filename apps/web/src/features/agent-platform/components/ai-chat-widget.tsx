@@ -52,9 +52,7 @@ const NO_ARG_NAV_ACTIONS: Record<string, { path: string; label: string }> = {
   open_chat: { path: dashboardRoutes.chat, label: 'chat' },
   open_transport: { path: dashboardRoutes.transport, label: 'prepravcovia' },
   open_subscription: { path: dashboardRoutes.subscription, label: 'predplatné' },
-  open_marketplace: { path: '', label: 'CLICK:tab-marketplace' },
-  select_plan_ai: { path: '', label: 'CLICK:btn-select-ai' },
-  select_plan_ai_nav: { path: '', label: 'CLICK:btn-select-ai-nav' },
+  open_marketplace: { path: `${dashboardRoutes.listings}?tab=marketplace`, label: 'marketplace' },
   open_settings: { path: dashboardRoutes.settings, label: 'nastavenia' },
   open_admin: { path: dashboardRoutes.admin, label: 'administráciu' },
 };
@@ -378,7 +376,7 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   if (tierLoading) {
     return (
       <div className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg" style={{ background: '#1a1a1a' }}>
-        <span className="text-xs" style={{ color: MUTED }}>...</span>
+        <span className="text-xs text-gray-400">...</span>
       </div>
     );
   }

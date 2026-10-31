@@ -105,3 +105,14 @@ class LoginResponse(BaseModel):
     refreshToken: str | None = None
     tokenType: str = "Bearer"
     expiresIn: int = 0
+
+
+class BrowserAuthResponse(BaseModel):
+    """Browser auth response: refresh credentials stay in an HttpOnly cookie."""
+
+    requires2fa: bool = False
+    twoFactorToken: str | None = None
+    accessToken: str | None = None
+    tokenType: str = "Bearer"
+    expiresIn: int = 0
+    csrfToken: str | None = None
