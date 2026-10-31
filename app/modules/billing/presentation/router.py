@@ -11,10 +11,14 @@ from urllib.parse import urlencode, urlsplit
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
-from sqlalchemy import or_, select, update
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 from app.core.config import settings
-from app.modules.billing.infrastructure.models import BillingPaymentOrderModel
+from app.modules.billing.infrastructure.models import (
+    BillingPaymentOrderModel,
+    BillingWebhookEventModel,
+)
 from app.modules.companies.infrastructure.models import CompanyModel
 from app.modules.listings.infrastructure.models import ListingsModel
 from app.shared.infrastructure.db.session import get_db_session
@@ -80,6 +84,45 @@ def _stripe_int(value: object, field: str) -> int:
         return int(value)
     except (TypeError, ValueError):
         raise HTTPException(status_code=400, detail=f"Invalid payment {field}")
+
+
+async def _claim_stripe_event(session, event_id: str, event_type: str) -> bool:
+    result = await session.execute(
+        select(BillingWebhookEventModel).where(
+            BillingWebhookEventModel.provider == "stripe",
+            BillingWebhookEventModel.event_id == event_id,
+        )
+    )
+    if result.scalar_one_or_none() is not None:
+        return False
+    session.add(
+        BillingWebhookEventModel(
+            provider="stripe",
+            event_id=event_id,
+            event_type=event_type,
+        )
+    )
+    try:
+        await session.flush()
+    except IntegrityError:
+        # A concurrent delivery may have claimed the unique event ID after the
+        # read above. Roll back, then confirm the exact receipt now exists.
+        await session.rollback()
+        duplicate = await session.execute(
+            select(BillingWebhookEventModel).where(
+                BillingWebhookEventModel.provider == "stripe",
+                BillingWebhookEventModel.event_id == event_id,
+            )
+        )
+        if duplicate.scalar_one_or_none() is not None:
+            return False
+        raise
+    return True
+
+
+async def _ack_stripe_event(session) -> dict[str, bool]:
+    await session.commit()
+    return {"received": True}
 
 
 class CheckoutRequest(BaseModel):
@@ -164,7 +207,7 @@ async def billing_checkout(
     if not _ready(cfg) or amount <= 0:
         raise HTTPException(status_code=503, detail="gopay_not_configured")
 
-        order_ref = uuid.uuid4().hex[:20]
+    order_ref = uuid.uuid4().hex[:20]
     order = BillingPaymentOrderModel(
         order_ref=order_ref,
         provider="gopay",
@@ -232,40 +275,52 @@ async def billing_notify(request: Request, session=Depends(get_db_session)):
         payment_id = str(form.get("id") or "")
     if not payment_id:
         raise HTTPException(status_code=400, detail="payment_id_missing")
+    if not payment_id.isdigit() or len(payment_id) > 20:
+        raise HTTPException(status_code=400, detail="payment_id_invalid")
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    await check_rate_limit(f"gopay-notify:{client_ip(request)}", limit=120, period=60)
 
     # GoPay notification is only a pointer. Entitlements come from the local
     # order written before checkout, never from caller-controlled extra params.
     data = await _payment(cfg, payment_id)
     returned_id = str(data.get("id") or "")
-    if returned_id and returned_id != str(payment_id):
+    if not returned_id or returned_id != str(payment_id):
         raise HTTPException(status_code=400, detail="payment_id_mismatch")
     provider_ref = returned_id or str(payment_id)
-    order_ref = str(data.get("order_number") or _param(data, "order_ref") or "")
-    order_lookup = (
-        or_(
-            BillingPaymentOrderModel.provider_ref == provider_ref,
-            BillingPaymentOrderModel.order_ref == order_ref,
-        )
-        if order_ref
-        else BillingPaymentOrderModel.provider_ref == provider_ref
-    )
+    order_ref = str(data.get("order_number") or "")
+    if not order_ref:
+        raise HTTPException(status_code=400, detail="payment_order_number_missing")
+    target = data.get("target")
+    if not isinstance(target, dict) or target.get("type") != "ACCOUNT":
+        raise HTTPException(status_code=400, detail="payment_target_mismatch")
+    try:
+        returned_goid = int(target.get("goid"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=400, detail="payment_target_mismatch")
+    if returned_goid != _goid_int(cfg):
+        raise HTTPException(status_code=400, detail="payment_target_mismatch")
     result = await session.execute(
         select(BillingPaymentOrderModel)
         .where(
             BillingPaymentOrderModel.provider == "gopay",
-            order_lookup,
+            BillingPaymentOrderModel.order_ref == order_ref,
         )
         .with_for_update()
     )
     order = result.scalar_one_or_none()
     if order is None:
         raise HTTPException(status_code=404, detail="payment_order_not_found")
+    if order.provider_ref and str(order.provider_ref) != provider_ref:
+        raise HTTPException(status_code=400, detail="payment_order_reference_mismatch")
+    if not order.provider_ref:
+        order.provider_ref = provider_ref
     state = str(data.get("state") or "")
     if order.status == "applied":
         return {"ok": True, "state": state, "updated": 0}
     if state != "PAID":
         return {"ok": True, "state": state, "updated": 0}
-    if int(data.get("amount", -1)) != order.amount_cents:
+    if _stripe_int(data.get("amount"), "amount") != order.amount_cents:
         raise HTTPException(status_code=400, detail="payment_amount_mismatch")
     if str(data.get("currency") or "").upper() != order.currency:
         raise HTTPException(status_code=400, detail="payment_currency_mismatch")
@@ -292,13 +347,6 @@ async def _payment(cfg: dict[str, str], payment_id: str) -> dict:
     if resp.status_code >= 300:
         raise HTTPException(status_code=502, detail="gopay_status_failed")
     return resp.json()
-
-
-def _param(data: dict, name: str) -> str:
-    for row in data.get("additional_params") or []:
-        if str(row.get("name")) == name:
-            return str(row.get("value") or "")
-    return ""
 
 
 # ============================================================
@@ -502,16 +550,29 @@ async def stripe_webhook(request: Request, session=Depends(get_db_session)):
     except stripe.error.SignatureVerificationError:
         raise HTTPException(status_code=400, detail="Invalid signature")
 
-    event_type = event.get("type")
+    event_type = str(event.get("type") or "")
+    handled_events = {
+        "checkout.session.completed",
+        "customer.subscription.updated",
+        "customer.subscription.deleted",
+    }
+    if event_type not in handled_events:
+        return {"received": True}
+    event_id = str(event.get("id") or "")
+    if not event_id:
+        raise HTTPException(status_code=400, detail="Stripe event ID missing")
+    if not await _claim_stripe_event(session, event_id, event_type):
+        return {"received": True, "duplicate": True}
+
     if event_type == "checkout.session.completed":
         checkout = event.get("data", {}).get("object", {}) or {}
         metadata = checkout.get("metadata", {}) or {}
-        order_ref = str(metadata.get("order_ref") or "")
         if metadata.get("kind") not in {"promote", "subscription"}:
-            return {"received": True}
+            return await _ack_stripe_event(session)
+        order_ref = str(metadata.get("order_ref") or "")
         if not order_ref:
-            logger.error("stripe.checkout.completed has no server order reference; event=%s", event.get("id", "-"))
-            return {"received": True}
+            logger.error("stripe.checkout.completed has no server order reference; event=%s", event_id)
+            return await _ack_stripe_event(session)
         result = await session.execute(
             select(BillingPaymentOrderModel)
             .where(BillingPaymentOrderModel.order_ref == order_ref)
@@ -520,18 +581,21 @@ async def stripe_webhook(request: Request, session=Depends(get_db_session)):
         order = result.scalar_one_or_none()
         if order is None or order.provider != "stripe":
             logger.error("stripe.checkout.completed references unknown order_ref=%s", order_ref)
-            return {"received": True}
-        if order.status == "applied":
-            return {"received": True}
+            return await _ack_stripe_event(session)
         if order.status != "pending":
-            return {"received": True}
-        if order.provider_ref and str(checkout.get("id") or "") != order.provider_ref:
+            return await _ack_stripe_event(session)
+
+        checkout_id = str(checkout.get("id") or "")
+        if not checkout_id or not order.provider_ref or checkout_id != str(order.provider_ref):
             raise HTTPException(status_code=400, detail="Checkout session mismatch")
         if str(checkout.get("currency") or "").upper() != order.currency:
             raise HTTPException(status_code=400, detail="Payment currency mismatch")
         if _stripe_int(checkout.get("amount_total"), "amount") != order.amount_cents:
             raise HTTPException(status_code=400, detail="Payment amount mismatch")
-        if str(metadata.get("user_id") or "") != order.user_id or str(metadata.get("company_id") or "") != order.company_id:
+        if (
+            str(metadata.get("user_id") or "") != order.user_id
+            or str(metadata.get("company_id") or "") != order.company_id
+        ):
             raise HTTPException(status_code=400, detail="Payment owner mismatch")
         if order.product_kind == "promotion":
             if checkout.get("mode") != "payment" or metadata.get("kind") != "promote":
@@ -570,50 +634,57 @@ async def stripe_webhook(request: Request, session=Depends(get_db_session)):
             company.subscription_tier = order.tier
             company.stripe_subscription_id = str(subscription)
             order.stripe_subscription_id = str(subscription)
+            order.stripe_last_event_created = _stripe_int(event.get("created"), "event created")
         else:
             raise HTTPException(status_code=400, detail="Unknown payment order type")
-        order.provider_ref = order.provider_ref or str(checkout.get("id") or "")
         order.status = "applied"
         order.processed_at = datetime.now(UTC)
         await session.commit()
-    elif event_type == "customer.subscription.updated":
-        subscription = event.get("data", {}).get("object", {}) or {}
-        subscription_id = str(subscription.get("id") or "")
-        subscription_status = str(subscription.get("status") or "").lower()
-        if subscription_id:
-            order_result = await session.execute(
-                select(BillingPaymentOrderModel)
-                .where(
-                    BillingPaymentOrderModel.provider == "stripe",
-                    BillingPaymentOrderModel.product_kind == "subscription",
-                    BillingPaymentOrderModel.stripe_subscription_id == subscription_id,
-                    BillingPaymentOrderModel.status == "applied",
-                )
-                .limit(1)
+        return {"received": True}
+
+    event_created = _stripe_int(event.get("created"), "event created")
+    subscription = event.get("data", {}).get("object", {}) or {}
+    subscription_id = str(subscription.get("id") or "")
+    if not subscription_id:
+        return await _ack_stripe_event(session)
+
+    order_result = await session.execute(
+        select(BillingPaymentOrderModel)
+        .where(
+            BillingPaymentOrderModel.provider == "stripe",
+            BillingPaymentOrderModel.product_kind == "subscription",
+            BillingPaymentOrderModel.stripe_subscription_id == subscription_id,
+            BillingPaymentOrderModel.status == "applied",
+        )
+        .with_for_update()
+    )
+    order = order_result.scalar_one_or_none()
+    if order is None:
+        return await _ack_stripe_event(session)
+    last_created = order.stripe_last_event_created
+    if last_created is not None and event_created <= last_created:
+        return await _ack_stripe_event(session)
+
+    company_result = await session.execute(
+        select(CompanyModel)
+        .where(
+            CompanyModel.id == order.company_id,
+            CompanyModel.stripe_subscription_id == subscription_id,
+        )
+        .with_for_update()
+    )
+    company = company_result.scalar_one_or_none()
+    order.stripe_last_event_created = event_created
+    if company is not None:
+        if event_type == "customer.subscription.updated":
+            subscription_status = str(subscription.get("status") or "").lower()
+            company.subscription_tier = (
+                order.tier if subscription_status in {"active", "trialing"} else "free"
             )
-            order = order_result.scalar_one_or_none()
-            if order is not None:
-                tier = order.tier if subscription_status in {"active", "trialing"} else "free"
-                await session.execute(
-                    update(CompanyModel)
-                    .where(
-                        CompanyModel.id == order.company_id,
-                        CompanyModel.stripe_subscription_id == subscription_id,
-                    )
-                    .values(subscription_tier=tier)
-                )
-                await session.commit()
-    elif event_type == "customer.subscription.deleted":
-        subscription = event.get("data", {}).get("object", {}) or {}
-        subscription_id = str(subscription.get("id") or "")
-        if subscription_id:
-            result = await session.execute(
-                update(CompanyModel)
-                .where(CompanyModel.stripe_subscription_id == subscription_id)
-                .values(subscription_tier="free", stripe_subscription_id=None)
-            )
-            await session.commit()
-            logger.info("stripe.subscription.deleted subscription_id=%s affected=%s", subscription_id, result.rowcount)
+        else:
+            company.subscription_tier = "free"
+            company.stripe_subscription_id = None
+    await session.commit()
     return {"received": True}
 
 

@@ -70,17 +70,13 @@ export default function CompaniesPage() {
   return (
     <AppShell>
       <PremiumHero
-        kicker="FIRMY"
-        title="Firmy"
-        subtitle="Prehľad firiem na platforme. Zaregistruj svoju firmu a dostaň sa do popredia."
+        kicker={t('companies.kicker')}
+        title={t('companies.title')}
+        subtitle={t('companies.heroSubtitle')}
         imageUrl="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-5xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            
-            
-          </div>
+        <div className="flex justify-end">
           <Link href="/dashboard/companies/new" className="rounded-full border px-4 py-2 text-sm" style={{ borderColor: 'rgba(201,168,76,0.48)', color: GOLD_BRIGHT }}>
             + {t('companies.add')}
           </Link>

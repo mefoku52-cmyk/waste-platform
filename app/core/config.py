@@ -235,6 +235,12 @@ class Settings(BaseSettings):
                 "rate_limit",
                 self.rate_limit.model_copy(update={"enabled": bool(self.RATE_LIMIT_ENABLED)}),
             )
+        else:
+            object.__setattr__(
+                self,
+                "rate_limit",
+                self.rate_limit.model_copy(update={"enabled": not is_development}),
+            )
 
         # --- JWT secret: v produkcii nesmie byt prazdny ani placeholder. ---
         raw_secret = str(self.JWT_SECRET_KEY or "").strip()

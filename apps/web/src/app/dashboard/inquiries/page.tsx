@@ -19,14 +19,12 @@ export default function InquiriesPage() {
   return (
     <AppShell>
       <PremiumHero
-        kicker="DOPYTY"
-        title="Dopyty"
-        subtitle="Prehľad vašich prijatých a odoslaných dopytov."
+        kicker={t('inquiries.section')}
+        title={t('inquiries.title')}
+        subtitle={t('inquiries.heroSubtitle')}
         imageUrl="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2070&auto=format&fit=crop"
       />
       <div className="mx-auto w-full max-w-6xl px-4 py-7 pb-12 sm:px-6 sm:py-10">
-        
-
         <section className="mt-8">
           <div className="rounded-2xl border p-5 sm:p-6" style={BOX_STYLE}>
             <div className="mb-4 flex items-baseline gap-3">

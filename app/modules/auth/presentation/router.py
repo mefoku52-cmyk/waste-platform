@@ -71,6 +71,27 @@ def _require_browser_csrf(request: Request) -> None:
         raise HTTPException(status_code=403, detail="CSRF validation failed")
 
 
+async def _rate_limit_browser(request: Request, route: str, limits: tuple[tuple[int, int], ...]) -> None:
+    from app.shared.infrastructure.rate_limit import check_rate_limit, client_ip
+
+    ip = client_ip(request)
+    for limit, period in limits:
+        await check_rate_limit(f"auth-browser:{route}:{ip}:{period}", limit=limit, period=period)
+
+
+def _browser_refresh_max_age() -> int:
+    from app.core.config import settings
+
+    jwt_settings = getattr(settings, "jwt", None)
+    refresh_days = int(getattr(jwt_settings, "refresh_token_expire_days", 14) or 14)
+    token_lifetime = max(1, refresh_days * 24 * 60 * 60)
+    try:
+        configured = int(os.getenv("AUTH_REFRESH_COOKIE_MAX_AGE_SECONDS", str(token_lifetime)))
+    except (TypeError, ValueError):
+        configured = token_lifetime
+    return max(1, min(configured, token_lifetime))
+
+
 def _browser_cookie_options() -> dict:
     from app.core.config import settings
 
@@ -86,7 +107,7 @@ def _browser_cookie_options() -> dict:
 
 def _set_browser_credentials(response: Response, refresh_token: str, csrf_token: str) -> None:
     options = _browser_cookie_options()
-    max_age = max(60, int(os.getenv("AUTH_REFRESH_COOKIE_MAX_AGE_SECONDS", str(30 * 24 * 60 * 60))))
+    max_age = _browser_refresh_max_age()
     response.set_cookie(_BROWSER_REFRESH_COOKIE, refresh_token, max_age=max_age, **options)
     response.set_cookie(_BROWSER_CSRF_COOKIE, csrf_token, max_age=max_age, **options)
     response.headers["Cache-Control"] = "no-store"
@@ -170,8 +191,9 @@ async def two_factor_login(
 async def browser_csrf(request: Request, response: Response):
     """Issue a short-lived CSRF nonce before a cookie-based browser refresh."""
     _require_browser_origin(request)
+    await _rate_limit_browser(request, "csrf", ((60, 60), (300, 3600)))
     csrf_token = secrets.token_urlsafe(32)
-    response.set_cookie(_BROWSER_CSRF_COOKIE, csrf_token, max_age=30 * 24 * 60 * 60, **_browser_cookie_options())
+    response.set_cookie(_BROWSER_CSRF_COOKIE, csrf_token, max_age=_browser_refresh_max_age(), **_browser_cookie_options())
     response.headers["Cache-Control"] = "no-store"
     return {"csrfToken": csrf_token}
 
@@ -227,6 +249,7 @@ async def browser_two_factor_login(
         from app.shared.domain.exceptions import UnauthorizedDomainError
 
         raise UnauthorizedDomainError("Invalid 2FA token payload")
+    await check_rate_limit(f"2fa-login:user:{user_id}", limit=5, period=300)
     result = await service.complete_login(user_id=str(user_id), code=payload.code)
     csrf_token = secrets.token_urlsafe(32)
     _set_browser_credentials(response, result.refresh_token, csrf_token)
@@ -245,6 +268,7 @@ async def browser_refresh(
     service=Depends(get_refresh_token_service),
 ):
     _require_browser_csrf(request)
+    await _rate_limit_browser(request, "refresh", ((10, 60), (100, 3600)))
     refresh_token = request.cookies.get(_BROWSER_REFRESH_COOKIE)
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Browser session expired")
@@ -265,6 +289,7 @@ async def browser_logout(
     response: Response,
     service=Depends(get_logout_service),
 ):
+    await _rate_limit_browser(request, "logout", ((20, 60), (120, 3600)))
     refresh_token = request.cookies.get(_BROWSER_REFRESH_COOKIE)
     if refresh_token:
         _require_browser_csrf(request)
