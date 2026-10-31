@@ -29,8 +29,8 @@ export function LoginForm() {
         setErr('Neočakávaný stav. Skús znova.');
         return;
       }
-      if (response.accessToken && response.refreshToken) {
-        tokenStore.setTokens(response.accessToken, response.refreshToken, true);
+      if (response.accessToken) {
+        tokenStore.setToken(response.accessToken);
         router.push('/dashboard');
       } else {
         setErr('Chýbajú tokeny v odpovedi.');

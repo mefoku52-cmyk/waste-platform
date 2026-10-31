@@ -48,6 +48,11 @@ PUBLIC_ROUTES: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/api/v1/auth/verify-email"),
         ("POST", "/api/v1/auth/resend-verification"),
         ("POST", "/api/v1/auth/2fa/login"),
+        ("GET", "/api/v1/auth/browser/csrf"),
+        ("POST", "/api/v1/auth/browser/login"),
+        ("POST", "/api/v1/auth/browser/2fa/login"),
+        ("POST", "/api/v1/auth/browser/refresh"),
+        ("POST", "/api/v1/auth/browser/logout"),
         # --- registration ---
         ("POST", "/api/v1/users"),
         # --- public company directory (SEO) ---

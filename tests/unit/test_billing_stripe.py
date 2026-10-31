@@ -12,23 +12,83 @@ are monkeypatched. Covers:
 """
 
 import logging
-from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import uuid4
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
+from uuid import UUID, uuid4
 
 import pytest
 import stripe
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.modules.billing.infrastructure.models import BillingPaymentOrderModel
+from app.modules.companies.infrastructure.models import CompanyModel
+from app.modules.listings.infrastructure.models import ListingsModel
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
+
+COMPANY_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+LISTING_ID = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+USER_ID = "cccccccc-cccc-4ccc-8ccc-cccccccccccc"
 
 
 class _FakeUser:
     def __init__(self):
-        self.id = str(uuid4())
+        self.id = USER_ID
         self.email = "test@example.com"
         self.isPlatformAdmin = False
-        self.memberships = []
+        self.memberships = [SimpleNamespace(companyId=COMPANY_ID, membershipRole="owner")]
+
+
+class _FakeResult:
+    def __init__(self, value=None, rowcount=0):
+        self.value = value
+        self.rowcount = rowcount
+
+    def scalar_one_or_none(self):
+        return self.value
+
+
+class _FakeDbSession:
+    def __init__(self):
+        self.order = None
+        self.listing = SimpleNamespace(
+            id=UUID(LISTING_ID), company_id=UUID(COMPANY_ID),
+            promoted_until=None, promoted_tier=None,
+        )
+        self.company = SimpleNamespace(id=COMPANY_ID, stripe_subscription_id=None, subscription_tier="free")
+
+    async def get(self, model, key):
+        if model is ListingsModel and str(key) == LISTING_ID:
+            return self.listing
+        if model is CompanyModel and str(key) == COMPANY_ID:
+            return self.company
+        if model is BillingPaymentOrderModel and self.order is not None:
+            return self.order if key == getattr(self.order, "id", None) else None
+        return None
+
+    def add(self, value):
+        if isinstance(value, BillingPaymentOrderModel):
+            self.order = value
+
+    async def execute(self, statement, *args, **kwargs):
+        if getattr(statement, "is_update", False):
+            self.company.subscription_tier = "free"
+            values = getattr(statement, "_values", {})
+            value_names = {getattr(column, "key", str(column)) for column in values}
+            if "stripe_subscription_id" in value_names:
+                self.company.stripe_subscription_id = None
+            return _FakeResult(rowcount=1)
+        descriptions = getattr(statement, "column_descriptions", [])
+        if descriptions and descriptions[0].get("entity") is CompanyModel:
+            return _FakeResult(self.company)
+        return _FakeResult(self.order)
+
+    async def commit(self):
+        return None
+
+    async def rollback(self):
+        return None
 
 
 @pytest.fixture
@@ -36,9 +96,18 @@ def client():
     return TestClient(app)
 
 
+@pytest.fixture
+def fake_session():
+    return _FakeDbSession()
+
+
 @pytest.fixture(autouse=True)
-def _override_auth():
+def _override_auth(fake_session):
+    async def _db_session():
+        yield fake_session
+
     app.dependency_overrides[require_current_user] = lambda: _FakeUser()
+    app.dependency_overrides[get_db_session] = _db_session
     yield
     app.dependency_overrides.clear()
 
@@ -60,11 +129,11 @@ def _unset_stripe_keys(monkeypatch):
 def _checkout_body(**over):
     body = {
         "kind": "promote",
-        "listing_id": "list-1",
+        "listing_id": LISTING_ID,
         "days": 7,
         "tier": "top",
-        "success_url": "https://example.com/success",
-        "cancel_url": "https://example.com/cancel",
+        "success_url": "https://trc-cmep.sk/success",
+        "cancel_url": "https://trc-cmep.sk/cancel",
     }
     body.update(over)
     return body
@@ -108,7 +177,10 @@ def test_checkout_creates_session_with_metadata(client, monkeypatch):
     assert body["url"] == "https://checkout.stripe.com/c/pay_123"
     md = create.call_args.kwargs["metadata"]
     assert md["kind"] == "promote"
-    assert md["listing_id"] == "list-1"
+    assert md["listing_id"] == LISTING_ID
+    assert md["company_id"] == COMPANY_ID
+    assert md["user_id"] == USER_ID
+    assert md["order_ref"]
     assert md["days"] == "7"
     assert md["tier"] == "top"
 
@@ -142,47 +214,59 @@ def test_webhook_rejects_bad_signature(client, monkeypatch):
     assert "Invalid signature" in r.text
 
 
-def test_webhook_promotes_listing_on_completed(client, monkeypatch):
-    _set_stripe_keys(monkeypatch)
-    fake_session = MagicMock()
-    mock_svc = AsyncMock()
+def _promotion_order(**overrides):
+    values = {
+        "id": uuid4(), "order_ref": "order-123", "provider": "stripe",
+        "provider_ref": "cs_123", "user_id": USER_ID, "company_id": COMPANY_ID,
+        "listing_id": LISTING_ID, "product_kind": "promotion", "tier": "gold",
+        "duration_days": 30, "amount_cents": 3000, "currency": "EUR", "status": "pending",
+        "stripe_subscription_id": None, "processed_at": None,
+    }
+    values.update(overrides)
+    return BillingPaymentOrderModel(**values)
 
-    with (
-        patch(
-            "stripe.Webhook.construct_event",
-            return_value={
-                "type": "checkout.session.completed",
-                "data": {
-                    "object": {
-                        "metadata": {
-                            "kind": "promote",
-                            "listing_id": "list-42",
-                            "days": "30",
-                            "tier": "gold",
-                        }
-                    }
-                },
+
+def _promotion_event():
+    return {
+        "id": "evt_123",
+        "type": "checkout.session.completed",
+        "data": {"object": {
+            "id": "cs_123", "mode": "payment", "payment_status": "paid",
+            "amount_total": 3000, "currency": "eur",
+            "metadata": {
+                "kind": "promote", "order_ref": "order-123", "listing_id": LISTING_ID,
+                "company_id": COMPANY_ID, "user_id": USER_ID, "days": "30", "tier": "gold",
             },
-        ),
-        patch(
-            "app.modules.listings.application.services.ListingsService",
-            return_value=mock_svc,
-        ),
-        patch(
-            "app.modules.billing.presentation.router.get_db_session",
-            return_value=fake_session,
-        ),
-    ):
-        r = client.post(
-            "/api/v1/billing/stripe/webhook",
-            content=b"{}",
-            headers={"stripe-signature": "ok"},
-        )
+        }},
+    }
 
+
+def test_webhook_promotes_listing_once_and_validates_server_order(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake_session.order = _promotion_order()
+    with patch("stripe.Webhook.construct_event", return_value=_promotion_event()):
+        r = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
     assert r.status_code == 200, r.text
-    assert r.json() == {"received": True}
-    # Overíme, že promote metóda bola zavolaná
-    mock_svc.promote.assert_awaited_once()
+    assert fake_session.order.status == "applied"
+    assert fake_session.listing.promoted_tier == "gold"
+    first_until = fake_session.listing.promoted_until
+
+    # A duplicate provider event must not grant the same paid period twice.
+    with patch("stripe.Webhook.construct_event", return_value=_promotion_event()):
+        duplicate = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
+    assert duplicate.status_code == 200, duplicate.text
+    assert fake_session.listing.promoted_until == first_until
+
+
+def test_webhook_rejects_mismatched_payment_amount(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake_session.order = _promotion_order()
+    event = _promotion_event()
+    event["data"]["object"]["amount_total"] = 1
+    with patch("stripe.Webhook.construct_event", return_value=event):
+        r = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
+    assert r.status_code == 400
+    assert fake_session.order.status == "pending"
 
 
 def test_webhook_other_event_types_are_ignored(client, monkeypatch):
@@ -218,21 +302,12 @@ def test_webhook_rejects_invalid_payload(client, monkeypatch):
 
 def test_webhook_skips_promote_when_no_listing_id(client, monkeypatch):
     _set_stripe_keys(monkeypatch)
-    mock_svc = AsyncMock()
-
-    with (
-        patch(
-            "stripe.Webhook.construct_event",
-            return_value={
-                "type": "checkout.session.completed",
-                "data": {
-                    "object": {
-                        "metadata": {"kind": "promote", "days": "7", "tier": "top"},
-                    }
-                },
-            },
-        ),
-        patch("app.modules.listings.application.services.ListingsService", return_value=mock_svc),
+    with patch(
+        "stripe.Webhook.construct_event",
+        return_value={
+            "type": "checkout.session.completed",
+            "data": {"object": {"metadata": {"kind": "promote", "days": "7", "tier": "top"}}},
+        },
     ):
         r = client.post(
             "/api/v1/billing/stripe/webhook",
@@ -241,26 +316,16 @@ def test_webhook_skips_promote_when_no_listing_id(client, monkeypatch):
         )
 
     assert r.status_code == 200
-    mock_svc.promote.assert_not_awaited()
 
 
 def test_webhook_skips_promote_when_kind_not_promote(client, monkeypatch):
     _set_stripe_keys(monkeypatch)
-    mock_svc = AsyncMock()
-
-    with (
-        patch(
-            "stripe.Webhook.construct_event",
-            return_value={
-                "type": "checkout.session.completed",
-                "data": {
-                    "object": {
-                        "metadata": {"kind": "donation", "listing_id": "list-9"},
-                    }
-                },
-            },
-        ),
-        patch("app.modules.listings.application.services.ListingsService", return_value=mock_svc),
+    with patch(
+        "stripe.Webhook.construct_event",
+        return_value={
+            "type": "checkout.session.completed",
+            "data": {"object": {"metadata": {"kind": "donation", "listing_id": "list-9"}}},
+        },
     ):
         r = client.post(
             "/api/v1/billing/stripe/webhook",
@@ -269,41 +334,111 @@ def test_webhook_skips_promote_when_kind_not_promote(client, monkeypatch):
         )
 
     assert r.status_code == 200
-    mock_svc.promote.assert_not_awaited()
 
 
-def test_webhook_swallows_promote_exception(client, monkeypatch):
+def test_webhook_ignores_untracked_legacy_checkout_without_granting_promotion(client, monkeypatch, fake_session):
     _set_stripe_keys(monkeypatch)
-    mock_svc = AsyncMock()
-    mock_svc.promote.side_effect = RuntimeError("db down")
-
-    with (
-        patch(
-            "stripe.Webhook.construct_event",
-            return_value={
-                "type": "checkout.session.completed",
-                "data": {
-                    "object": {
-                        "metadata": {
-                            "kind": "promote",
-                            "listing_id": "list-7",
-                            "days": "7",
-                            "tier": "top",
-                        }
-                    }
-                },
-            },
-        ),
-        patch("app.modules.listings.application.services.ListingsService", return_value=mock_svc),
-    ):
-        r = client.post(
-            "/api/v1/billing/stripe/webhook",
-            content=b"{}",
-            headers={"stripe-signature": "ok"},
-        )
-
+    with patch("stripe.Webhook.construct_event", return_value=_promotion_event()):
+        r = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
     assert r.status_code == 200
-    assert r.json() == {"received": True}
+    assert fake_session.listing.promoted_tier is None
+
+
+def test_checkout_rejects_unapproved_return_origin(client, monkeypatch):
+    _set_stripe_keys(monkeypatch)
+    with patch("stripe.checkout.Session.create") as create:
+        r = client.post("/api/v1/billing/stripe/checkout", json=_checkout_body(success_url="https://evil.example/steal"))
+    assert r.status_code == 422
+    create.assert_not_called()
+
+
+def test_checkout_rejects_listing_from_another_company(client, monkeypatch):
+    _set_stripe_keys(monkeypatch)
+    app.dependency_overrides[require_current_user] = lambda: SimpleNamespace(
+        id=USER_ID, email="test@example.com", isPlatformAdmin=False, memberships=[]
+    )
+    with patch("stripe.checkout.Session.create") as create:
+        r = client.post("/api/v1/billing/stripe/checkout", json=_checkout_body())
+    assert r.status_code == 403
+    create.assert_not_called()
+
+
+def test_subscription_checkout_is_recurring_and_company_admin_scoped(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake = MagicMock(url="https://checkout.stripe.com/c/sub", id="cs_sub")
+    body = {
+        "tier": "ai_navigation", "company_id": COMPANY_ID,
+        "success_url": "https://trc-cmep.sk/dashboard/subscription?success=true",
+        "cancel_url": "https://trc-cmep.sk/dashboard/subscription?cancelled=true",
+    }
+    with patch("stripe.checkout.Session.create", return_value=fake) as create:
+        r = client.post("/api/v1/billing/stripe/subscription", json=body)
+    assert r.status_code == 200, r.text
+    args = create.call_args.kwargs
+    assert args["mode"] == "subscription"
+    assert args["line_items"][0]["price_data"]["recurring"] == {"interval": "month"}
+    assert args["metadata"]["tier"] == "ai_navigation"
+    assert args["subscription_data"]["metadata"]["order_ref"] == fake_session.order.order_ref
+
+
+def test_subscription_webhook_grants_exact_tier_and_records_subscription(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake_session.order = BillingPaymentOrderModel(
+        id=uuid4(), order_ref="sub-order", provider="stripe", provider_ref="cs_sub",
+        user_id=USER_ID, company_id=COMPANY_ID, product_kind="subscription",
+        tier="ai_navigation", amount_cents=9900, currency="EUR", status="pending",
+    )
+    event = {
+        "type": "checkout.session.completed",
+        "data": {"object": {
+            "id": "cs_sub", "mode": "subscription", "payment_status": "paid",
+            "amount_total": 9900, "currency": "eur", "subscription": "sub_live_123",
+            "metadata": {"kind": "subscription", "order_ref": "sub-order", "tier": "ai_navigation", "company_id": COMPANY_ID, "user_id": USER_ID},
+        }},
+    }
+    with patch("stripe.Webhook.construct_event", return_value=event):
+        r = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
+    assert r.status_code == 200, r.text
+    assert fake_session.order.status == "applied"
+    assert fake_session.company.subscription_tier == "ai_navigation"
+    assert fake_session.company.stripe_subscription_id == "sub_live_123"
+
+
+def test_webhook_uses_cancellation_event_to_downgrade_matching_subscription(client, monkeypatch, fake_session):
+    _set_stripe_keys(monkeypatch)
+    fake_session.company.stripe_subscription_id = "sub_cancelled"
+    fake_session.company.subscription_tier = "ai"
+    event = {"type": "customer.subscription.deleted", "data": {"object": {"id": "sub_cancelled"}}}
+    with patch("stripe.Webhook.construct_event", return_value=event):
+        r = client.post("/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"})
+    assert r.status_code == 200
+    assert fake_session.company.subscription_tier == "free"
+    assert fake_session.company.stripe_subscription_id is None
+
+
+def test_subscription_status_event_removes_entitlement_without_losing_recovery_link(
+    client, monkeypatch, fake_session
+):
+    _set_stripe_keys(monkeypatch)
+    fake_session.company.stripe_subscription_id = "sub_past_due"
+    fake_session.company.subscription_tier = "ai"
+    fake_session.order = BillingPaymentOrderModel(
+        id=uuid4(), order_ref="sub-recovery-order", provider="stripe",
+        provider_ref="cs_sub", stripe_subscription_id="sub_past_due",
+        user_id=USER_ID, company_id=COMPANY_ID, product_kind="subscription",
+        tier="ai", amount_cents=2900, currency="EUR", status="applied",
+    )
+    event = {
+        "type": "customer.subscription.updated",
+        "data": {"object": {"id": "sub_past_due", "status": "unpaid"}},
+    }
+    with patch("stripe.Webhook.construct_event", return_value=event):
+        response = client.post(
+            "/api/v1/billing/stripe/webhook", content=b"{}", headers={"stripe-signature": "ok"}
+        )
+    assert response.status_code == 200, response.text
+    assert fake_session.company.subscription_tier == "free"
+    assert fake_session.company.stripe_subscription_id == "sub_past_due"
 
 
 # ---------------------------------------------------------------------------

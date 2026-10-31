@@ -215,6 +215,19 @@ def test_router_document_access_forbids_foreign_company():
         _ensure_document_access(entity, user)
 
 
+async def test_approved_document_still_requires_company_membership():
+    from app.modules.documents.presentation.router import get_document
+
+    entity = _entity(status=DocumentStatus.APPROVED)
+    repo = FakeDocumentRepository()
+    await repo.create(entity)
+    service = DocumentService(repo)
+    other_company_member = _current_user([uuid4()])
+
+    with pytest.raises(ForbiddenDomainError):
+        await get_document(str(entity.id), other_company_member, service)
+
+
 def test_router_create_forbids_foreign_company():
     from app.modules.documents.presentation.router import _allowed_company_ids
 
@@ -236,3 +249,51 @@ def test_router_update_status_requires_platform_admin():
 
     # …ale status mení len admin (overené v update_document vetve).
     assert not member.is_platform_admin
+
+
+async def test_platform_admin_can_patch_document_outside_membership():
+    from app.modules.documents.presentation.router import update_document
+    from app.modules.documents.presentation.schemas import DocumentUpdateRequest
+
+    entity = _entity()
+    repo = FakeDocumentRepository()
+    await repo.create(entity)
+    service = DocumentService(repo)
+    admin = _current_user([], is_admin=True)
+    admin.roleCodes = ["platform_admin"]
+
+    response = await update_document(str(entity.id), DocumentUpdateRequest(title="Admin update"), admin, service)
+
+    assert response.data.title == "Admin update"
+    assert response.data.companyId == entity.company_id
+
+
+async def test_non_admin_patch_foreign_document_is_forbidden():
+    from app.modules.documents.presentation.router import update_document
+    from app.modules.documents.presentation.schemas import DocumentUpdateRequest
+
+    entity = _entity()
+    repo = FakeDocumentRepository()
+    await repo.create(entity)
+    service = DocumentService(repo)
+    member = _current_user([uuid4()])
+
+    with pytest.raises(ForbiddenDomainError):
+        await update_document(str(entity.id), DocumentUpdateRequest(title="Unauthorized"), member, service)
+
+
+async def test_non_admin_cannot_reassign_document_outside_membership():
+    from app.modules.documents.presentation.router import update_document
+    from app.modules.documents.presentation.schemas import DocumentUpdateRequest
+
+    company_id = uuid4()
+    entity = _entity(company_id=company_id)
+    repo = FakeDocumentRepository()
+    await repo.create(entity)
+    service = DocumentService(repo)
+    member = _current_user([company_id])
+
+    with pytest.raises(ForbiddenDomainError):
+        await update_document(
+            str(entity.id), DocumentUpdateRequest(companyId=uuid4()), member, service
+        )

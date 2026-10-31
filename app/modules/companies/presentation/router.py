@@ -15,6 +15,7 @@ from app.modules.companies.presentation.dependencies import (
 from app.modules.companies.presentation.mappers import to_company_data
 from app.modules.companies.presentation.schemas import (
     CompanyCreateRequest,
+    CompanyDirectoryData,
     CompanyResponse,
     CompanyStatusTransitionRequest,
     CompanyUpdateRequest,
@@ -71,7 +72,8 @@ async def list_companies(
     current_user=Depends(require_current_user),
     service=Depends(get_list_companies_service),
 ):
-    if _is_admin(current_user) or directory:
+    directory_mode = directory and not _is_admin(current_user)
+    if _is_admin(current_user) or directory_mode:
         company_ids = None
     else:
         company_ids = [
@@ -90,8 +92,30 @@ async def list_companies(
         page_size=pageSize,
         company_ids=company_ids,
     )
+    if directory_mode:
+        # Never serialize CompanyData here: it contains tax, direct contact,
+        # street address and internal verification/audit identifiers.
+        response_items = [
+            CompanyDirectoryData(
+                id=item.id,
+                status=item.status,
+                legalName=item.legal_name,
+                tradingName=item.trading_name,
+                registrationNumber=item.registration_number,
+                companyType=item.company_type,
+                logoUrl=item.logo_url,
+                countryCode=item.country_code,
+                city=item.city,
+                sellerCapability=item.seller_capability,
+                buyerCapability=item.buyer_capability,
+                logisticsCapability=item.logistics_capability,
+            )
+            for item in items
+        ]
+    else:
+        response_items = [to_company_data(item) for item in items]
     return PaginatedCompaniesResponse(
-        items=[to_company_data(item) for item in items],
+        items=response_items,
         meta=PaginationMeta(page=page, pageSize=pageSize, total=total),
     )
 

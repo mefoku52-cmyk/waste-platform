@@ -32,7 +32,6 @@ class CompanyCreateRequest(BaseModel):
     addressLine2: str | None = None
     latitude: float | None = None
     longitude: float | None = None
-    acceptedMaterialTypes: str | None = None
 
 
 class CompanyUpdateRequest(BaseModel):
@@ -89,6 +88,23 @@ class CompanyData(BaseModel):
     updatedByUserId: UUID | None
 
 
+class CompanyDirectoryData(BaseModel):
+    """Intentionally limited fields exposed by the cross-tenant directory."""
+
+    id: UUID
+    status: CompanyStatus
+    legalName: str
+    tradingName: str | None
+    registrationNumber: str
+    companyType: CompanyType
+    logoUrl: str | None = None
+    countryCode: str
+    city: str
+    sellerCapability: bool
+    buyerCapability: bool
+    logisticsCapability: bool
+
+
 class CompanyResponse(BaseModel):
     data: CompanyData
 
@@ -100,7 +116,9 @@ class PaginationMeta(BaseModel):
 
 
 class PaginatedCompaniesResponse(BaseModel):
-    items: list[CompanyData]
+    # Directory entries use a strictly smaller public schema; ordinary list
+    # results retain the existing full member/admin response schema.
+    items: list[CompanyData | CompanyDirectoryData]
     meta: PaginationMeta
 
 

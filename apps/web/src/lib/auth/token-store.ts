@@ -1,46 +1,37 @@
+/** Browser-session token storage. Tokens are deliberately never persisted. */
+let accessToken: string | null = null;
+
+function clearLegacyStorage(): void {
+  if (typeof window === 'undefined') return;
+  // Remove tokens previously written by older releases on first interaction.
+  window.localStorage.removeItem('accessToken');
+  window.localStorage.removeItem('refreshToken');
+  window.localStorage.removeItem('rememberMe');
+}
+
 export const tokenStore = {
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    clearLegacyStorage();
+    return accessToken;
   },
-
   setToken(token: string): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('accessToken', token);
+    clearLegacyStorage();
+    accessToken = token;
   },
-
+  /** Refresh tokens are intentionally not exposed to browser JavaScript storage. */
   getRefreshToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('refreshToken');
+    clearLegacyStorage();
+    return null;
   },
-
-  setRefreshToken(token: string): void {
-    if (typeof window === 'undefined') return;
-    localStorage.setItem('refreshToken', token);
+  /** Compatibility shim for existing callers; the value is never retained. */
+  setRefreshToken(_token: string): void {
+    clearLegacyStorage();
   },
-
-  setTokens(
-    accessToken: string,
-    refreshToken?: string | null,
-    remember?: boolean,
-  ): void {
-    if (typeof window === 'undefined') return;
-
-    localStorage.setItem('accessToken', accessToken);
-
-    if (refreshToken) {
-      localStorage.setItem('refreshToken', refreshToken);
-    }
-
-    if (typeof remember !== 'undefined') {
-      localStorage.setItem('rememberMe', String(remember));
-    }
+  setTokens(access: string, _refresh?: string | null, _remember?: boolean): void {
+    this.setToken(access);
   },
-
   clearToken(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('rememberMe');
+    accessToken = null;
+    clearLegacyStorage();
   },
 };

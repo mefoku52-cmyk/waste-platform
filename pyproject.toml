@@ -131,6 +131,7 @@ addopts = "-ra -q --strict-markers --cov=app --cov-report=term-missing"
 testpaths = ["app/tests", "app/modules", "tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 markers = [
     "unit: Unit tests",
     "integration: Integration tests",

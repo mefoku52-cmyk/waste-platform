@@ -1,5 +1,7 @@
 "use client";
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import { useRouter } from "next/navigation";
 import { config } from "@/lib/config";
 
@@ -13,7 +15,7 @@ export default function SubscriptionPage() {
 
   async function handleSelectPlan(tier: string) {
     try {
-      const token = localStorage.getItem("accessToken");
+      const token = tokenStore.getToken();
       // Získame company_id používateľa
       let companyId = null;
       try {

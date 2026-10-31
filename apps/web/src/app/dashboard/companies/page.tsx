@@ -1,5 +1,7 @@
 'use client';
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import Link from 'next/link';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -28,7 +30,7 @@ function cleanFilter(raw: string): string {
 }
 
 async function fetchCompanies(page: number): Promise<{ items: Company[]; total: number }> {
-  const token = localStorage.getItem('accessToken');
+  const token = tokenStore.getToken();
   const res = await fetch(`${config.apiBaseUrl}/companies?page=${page}&pageSize=${PAGE_SIZE}&directory=true`, {
     headers: {
       'Content-Type': 'application/json',

@@ -1,5 +1,7 @@
 'use client';
 
+import { tokenStore } from '@/lib/auth/token-store';
+
 import { useEffect, useMemo, useState } from 'react';
 import { config } from '../../../lib/config';
 import { useT } from '@/lib/i18n/context';
@@ -51,7 +53,7 @@ export function TransportPanel({ origin, destination }: Props) {
       setLoading(true);
       setError('');
       try {
-        const token = localStorage.getItem('accessToken');
+        const token = tokenStore.getToken();
         const q =
           'origin=' +
           encodeURIComponent(from) +

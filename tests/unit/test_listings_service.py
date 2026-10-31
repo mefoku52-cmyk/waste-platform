@@ -150,7 +150,9 @@ async def test_find_matches_and_stats(service):
     created = await service.create(_entity(material_type="PET"))
     matches = await service.find_matches(material_type="PET", exclude_company_ids=None)
     assert len(matches) >= 1
-    stats = await service.get_stats(str(created.id))
+    stats = await service.get_stats(
+        str(created.id), owner_company_ids=[created.company_id]
+    )
     assert isinstance(stats, dict)
     await service.record_view(str(created.id), user_id="u1")
 
