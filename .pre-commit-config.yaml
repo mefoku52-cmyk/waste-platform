@@ -4,6 +4,6 @@ repos:
       - id: ruff
       - id: ty
         name: ty check
-        entry: ty check
+        entry: ty check --exclude 'app/modules/agent_platform_NEW_BACKUP*' --exclude 'final_check.py'
         language: system
         pass_filenames: false

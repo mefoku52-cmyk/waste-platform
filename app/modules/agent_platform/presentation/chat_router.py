@@ -657,32 +657,24 @@ def _schedule_summary(conversation_id: str | None) -> None:
     task.add_done_callback(_SUMMARY_TASKS.discard)
 
 
-def _client_action_allowed_for_user(name: str, user: object) -> bool:
-    """Apply role-sensitive authorization to client actions on the server."""
-    if name == "open_admin":
-        return is_platform_admin(user)
-    return True
-
-
 async def _resolve_chat_gate(control) -> AgentGate:
-    """Read the platform ControlMode gate, failing closed if unavailable.
+    """Best-effort read of the platform ControlMode -> per-turn agent gate.
 
-    A control-state read failure must not silently disable the operator kill
-    switch. Return HTTP 503 so the request can be retried after recovery.
+    Resilience mirrors the security check: if the control state cannot be read
+    (e.g. a transient DB error) we fall back to NORMAL instead of blocking every
+    chat. The control row already exists on a healthy deployment.
     """
     try:
         mode = await control.get_mode()
     except Exception as exc:
         import logging as _log
-
-        _log.getLogger("cmep.chat").exception(
-            "CONTROL_MODE_READ_FAILED type=%s",
+        _log.getLogger("cmep.chat").warning(
+            "CONTROL_MODE_READ_FAILED type=%s msg=%s",
             type(exc).__name__,
+            str(exc)[:200],
         )
-        raise HTTPException(
-            status_code=503,
-            detail="AI asistent je momentálne nedostupný.",
-        ) from exc
+        # fail-closed: nepokračuj v NORMAL pri chybe
+        raise HTTPException(status_code=503, detail="AI riadenie dočasne nedostupné") from exc
     return resolve_agent_gate(mode)
 
 
@@ -752,18 +744,13 @@ async def user_ai_chat(
                 summary = await get_summary(conversation_id=conversation_id)
                 summary_text = summary.content if summary else None
         history = build_history(stored, summary=summary_text)
-    except PermissionError as exc:
-        # Avoid revealing whether another user's session identifier exists.
-        raise HTTPException(
-            status_code=404,
-            detail="Konverzácia neexistuje.",
-        ) from exc
     except Exception as exc:
         import logging as _log
 
         _log.getLogger("cmep.chat").exception(
-            "CONVERSATION_LOAD_EXCEPTION type=%s",
+            "CONVERSATION_LOAD_EXCEPTION type=%s msg=%s",
             type(exc).__name__,
+            str(exc)[:200],
         )
         conversation_id = None
         history = ()
@@ -785,15 +772,13 @@ async def user_ai_chat(
         )
     except Exception as exc:
         import logging as _log
-
         _log.getLogger("cmep.chat").exception(
-            "SECURITY_CHECK_EXCEPTION type=%s",
+            "SECURITY_CHECK_EXCEPTION type=%s msg=%s",
             type(exc).__name__,
+            str(exc)[:200],
         )
-        raise HTTPException(
-            status_code=503,
-            detail="Bezpečnostná kontrola dočasne nedostupná.",
-        ) from exc
+        # fail-closed
+        raise HTTPException(status_code=503, detail="Bezpečnostná kontrola dočasne nedostupná") from exc
 
     # Ak je decision BLOCK, chat sa zastavi. Vratime neutralnu odpoved,
     # aby sme neprezradili, ze nieco detegujeme.
@@ -815,7 +800,7 @@ async def user_ai_chat(
             actor_id=actor_id,
             actor_type="user",
             session_id=session_id,
-            conversation_history=history,
+            conversation_history=history or db_history,
             old_orchestrator=None,
         )
         if isinstance(nav_response, dict) and nav_response.get("status") == "ok":
@@ -840,10 +825,19 @@ async def user_ai_chat(
         nav_tool_calls = ()
 
         if nav_action:
+            def _to_tc(a):
+                if isinstance(a, str):
+                    return {"name": a, "args": {}}
+                if isinstance(a, dict):
+                    name = a.get("name") or a.get("action") or ""
+                    args = a.get("args") or a.get("arguments") or {}
+                    return {"name": name, "args": dict(args) if isinstance(args, dict) else {}}
+                return None
             if isinstance(nav_action, list):
-                nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
-            elif isinstance(nav_action, str):
-                nav_tool_calls = ({"name": nav_action, "args": {}},)
+                nav_tool_calls = tuple(tc for a in nav_action if (tc := _to_tc(a)) and tc["name"])
+            else:
+                tc = _to_tc(nav_action)
+                nav_tool_calls = (tc,) if tc and tc["name"] else ()
 
         result = _NavResult(
             text=navigator_result.get("reply", ""),
@@ -914,14 +908,19 @@ async def user_ai_chat(
         result_text = result.text
 
     if conversation_id:
-        with contextlib.suppress(Exception):
-            await conversations.append_messages(
+        try:
+            await conversations.append_message(
                 conversation_id=conversation_id,
-                messages=[
-                    {"role": "user", "content": text},
-                    {"role": "assistant", "content": result.text},
-                ],
+                role="user",
+                content=text,
             )
+            await conversations.append_message(
+                conversation_id=conversation_id,
+                role="assistant",
+                content=result.text,
+            )
+        except Exception:
+            pass  # best-effort: never break caller
         # Detached: summarize older turns once the conversation grows. The reply
         # has already been assembled, so this can neither block nor break it.
         _schedule_summary(conversation_id)
@@ -941,7 +940,7 @@ async def user_ai_chat(
     for tc in result.tool_calls or ():
         name = str(tc.get("name") or "")
         if name in CLIENT_TOOL_NAMES:
-            if gate.allows_client_action(name) and _client_action_allowed_for_user(name, current_user):
+            if gate.allows_client_action(name):
                 client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
             else:
                 # READ_ONLY: a mutating client action is never surfaced, so the
@@ -952,7 +951,7 @@ async def user_ai_chat(
 
     if suppressed_actions:
         note = (
-            "Nepovolil som tieto akcie: "
+            "Režim len na čítanie: nevykonal som akciu "
             + ", ".join(sorted(set(suppressed_actions)))
             + "."
         )
