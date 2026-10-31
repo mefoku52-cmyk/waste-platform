@@ -123,7 +123,10 @@ class SqlAlchemyAiConversationRepository(AiConversationRepository):
         uid = _uuid_or_none(user_id)
         cid = _uuid_or_none(company_id)
 
-        stmt = select(AiConversationModel).where(AiConversationModel.session_id == session_id)
+        stmt = select(AiConversationModel).where(
+            AiConversationModel.session_id == session_id,
+            AiConversationModel.user_id == _uuid_or_none(user_id)  # KRITICKE: vzdy podla user_id
+        )
         existing = (await self._session.execute(stmt)).scalar_one_or_none()
         if existing is not None:
             if existing.user_id != uid:

@@ -724,7 +724,16 @@ async def user_ai_chat(
             source="user-ai",
             session_id=payload.session_id or "",
         )
-    session_id = payload.session_id or str(uuid.uuid4())
+    # KRITICKE: session_id MUSI patrit danemu pouzivatelovi!
+    session_id = payload.session_id
+    if session_id:
+        # Overime, ci session_id patri danemu pouzivatelovi
+        existing = await conversations.get_by_session_id(session_id)
+        if existing and str(existing.user_id) != str(actor_id):
+            # Toto nie je jeho session! Vygenerujeme nove.
+            session_id = str(uuid.uuid4())
+    if not session_id:
+        session_id = str(uuid.uuid4())
 
     conversation_id: str | None = None
     history = ()
