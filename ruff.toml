@@ -19,6 +19,8 @@ extend-exclude = [
     "test_debug.py",
     "fix_diagnostics.sh",
     "fix_pyright_errors.sh",
+    # Archivovany mrtvy kod — nie je produkcny, nelintuje sa ani neformatuje.
+    "_archive",
 ]
 
 [lint]
@@ -58,6 +60,8 @@ ignore = [
 ]
 
 [lint.per-file-ignores]
+# Archiv — mrtvy kod z backupov, ziadne pravidla neplatia (ani pri explicitnom zadani hookom).
+"_archive/**" = ["ALL"]
 # __init__.py majú zámerné re-exporty a star imports
 "**/__init__.py" = [
     "F401",  # unused imports (re-export)

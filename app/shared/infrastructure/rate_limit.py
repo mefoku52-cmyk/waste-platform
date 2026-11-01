@@ -19,7 +19,7 @@ async def _client():
         port = getattr(settings.redis, "port", 6379)
         url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
         r = redis.from_url(url, decode_responses=True)
-        await r.ping()
+        await r.ping()  # ty: ignore[invalid-await]
         return r
     except Exception:
         return None

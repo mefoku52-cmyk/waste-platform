@@ -63,14 +63,9 @@ class AiConversationRepository(ABC):
     @abstractmethod
     async def get_by_session_id(self, session_id: str) -> AiConversation | None:
         """Vráti konverzáciu podľa session_id (bez kontroly user_id - na kontrolu vlastníctva)."""
-        stmt = select(AiConversationModel).where(
-            AiConversationModel.session_id == session_id
-        )
-        model = (await self._session.execute(stmt)).scalar_one_or_none()
-        if model is None:
-            return None
-        return _to_conv(model)
+        ...
 
+    @abstractmethod
     async def get_or_create(
         self,
         *,

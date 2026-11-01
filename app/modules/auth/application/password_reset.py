@@ -48,7 +48,7 @@ class PasswordResetService:
             port = getattr(settings.redis, "port", 6379)
             url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
             self.redis = redis.from_url(url, decode_responses=True)
-            await self.redis.ping()
+            await self.redis.ping()  # ty: ignore[invalid-await]
             return self.redis
         except Exception:
             self.redis = None

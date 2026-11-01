@@ -326,29 +326,27 @@ async def send_outreach_email(
 
     if not result.ok:
         # Fallback na SMTP VŽDY, ak Resend zlyhá (napr. 403 - doména nie je overená)
-        if True:
-            ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
-            if ok:
-                await write_audit(
-                    session=session,
-                    actor_user_id=current_user_id(current_user),
-                    action="lead_outreach.send",
-                    target_type="email",
-                    target_id=payload.to,
-                    details=f"via=smtp,subject={payload.subject[:80]}",
-                )
-                await write_activity_event(
-                    session=session,
-                    event_type="lead_outreach.send",
-                    actor_user_id=current_user_id(current_user),
-                    company_id=None,
-                    listing_id=None,
-                    payload=f"to={payload.to},via=smtp",
-                )
-                _fire_and_forget(TelegramService.notify_sent(payload.to, ok=True))
-                return SendResponse(ok=True, message="Email odoslaný cez SMTP.")
-            return SendResponse(ok=False, message="SMTP zlyhalo.")
-        return SendResponse(ok=False, message=result.message)
+        ok = send_email(to=payload.to, subject=payload.subject, body=payload.body)
+        if ok:
+            await write_audit(
+                session=session,
+                actor_user_id=current_user_id(current_user),
+                action="lead_outreach.send",
+                target_type="email",
+                target_id=payload.to,
+                details=f"via=smtp,subject={payload.subject[:80]}",
+            )
+            await write_activity_event(
+                session=session,
+                event_type="lead_outreach.send",
+                actor_user_id=current_user_id(current_user),
+                company_id=None,
+                listing_id=None,
+                payload=f"to={payload.to},via=smtp",
+            )
+            _fire_and_forget(TelegramService.notify_sent(payload.to, ok=True))
+            return SendResponse(ok=True, message="Email odoslaný cez SMTP.")
+        return SendResponse(ok=False, message="SMTP zlyhalo.")
 
     await write_audit(
         session=session,

@@ -149,7 +149,7 @@ def create_app() -> FastAPI:
             import redis.asyncio as _redis
 
             client = _redis.from_url(settings.REDIS_URL, socket_timeout=2)
-            await client.ping()
+            await client.ping()  # ty: ignore[invalid-await]
             await client.aclose()
             checks["redis"] = "ok"
         except Exception as exc:

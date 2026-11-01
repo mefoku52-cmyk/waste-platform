@@ -22,7 +22,6 @@ from app.modules.agent_platform.domain.control.agent_gate import (
     AgentGate,
     resolve_agent_gate,
 )
-from app.modules.agent_platform.domain.control.control_mode import ControlMode
 from app.modules.agent_platform.infrastructure.ai.voice_gateway import synthesize_with_edge_tts
 from app.modules.agent_platform.infrastructure.persistence.ai_conversation_repository import (
     SqlAlchemyAiConversationRepository,
@@ -658,6 +657,13 @@ def _schedule_summary(conversation_id: str | None) -> None:
     task.add_done_callback(_SUMMARY_TASKS.discard)
 
 
+def _client_action_allowed_for_user(name: str, user: object) -> bool:
+    """Apply role-sensitive authorization to client actions on the server."""
+    if name == "open_admin":
+        return is_platform_admin(user)
+    return True
+
+
 async def _resolve_chat_gate(control) -> AgentGate:
     """Best-effort read of the platform ControlMode -> per-turn agent gate.
 
@@ -675,7 +681,6 @@ async def _resolve_chat_gate(control) -> AgentGate:
             str(exc)[:200],
         )
         # fail-closed: nepokračuj v NORMAL pri chybe
-        from fastapi import HTTPException
         raise HTTPException(status_code=503, detail="AI riadenie dočasne nedostupné") from exc
     return resolve_agent_gate(mode)
 
@@ -730,7 +735,7 @@ async def user_ai_chat(
     session_id = payload.session_id
     if not session_id:
         session_id = str(uuid.uuid4())
-    
+
     # Skusime ziskat alebo vytvorit konverzaciu pre tohto pouzivatela.
     # Ak session_id patri niekomu inemu, get_or_create vyhodi PermissionError.
     try:
@@ -797,7 +802,6 @@ async def user_ai_chat(
             str(exc)[:200],
         )
         # fail-closed
-        from fastapi import HTTPException
         raise HTTPException(status_code=503, detail="Bezpečnostná kontrola dočasne nedostupná") from exc
 
     # Ak je decision BLOCK, chat sa zastavi. Vratime neutralnu odpoved,
@@ -816,14 +820,7 @@ async def user_ai_chat(
         bridge = get_navigator_bridge()
         # Ziskame históriu z databázy (ak existuje)
         db_history = ()
-        if conversation_id:
-            try:
-                # Toto je zjednodušené, reálne by sme mali použiť conversations.get_history()
-                # Ale keďže máme 'history' premennú, použijeme tú
-                pass
-            except Exception:
-                pass
-        
+
         nav_response = await bridge.respond(
             system_prompt=system_prompt,
             user_message=text,
@@ -853,7 +850,7 @@ async def user_ai_chat(
         # Ziskame akcie z navigatora (moze to byt string alebo zoznam)
         nav_action = navigator_result.get("action")
         nav_tool_calls = ()
-        
+
         if nav_action:
             def _to_tc(a):
                 if isinstance(a, str):
@@ -970,7 +967,7 @@ async def user_ai_chat(
     for tc in result.tool_calls or ():
         name = str(tc.get("name") or "")
         if name in CLIENT_TOOL_NAMES:
-            if gate.allows_client_action(name):
+            if gate.allows_client_action(name) and _client_action_allowed_for_user(name, current_user):
                 client_actions.append(ClientAction(name=name, args=dict(tc.get("arguments") or {})))
             else:
                 # READ_ONLY: a mutating client action is never surfaced, so the
