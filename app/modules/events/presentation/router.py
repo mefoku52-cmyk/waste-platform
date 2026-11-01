@@ -11,6 +11,7 @@ from app.shared.presentation.authorization import (
     current_user_id,
     is_platform_admin,
     membership_company_ids,
+    require_company_member,
 )
 from app.shared.presentation.error_schemas import error_responses
 
@@ -20,6 +21,7 @@ ALLOWED = {
     "inquiry_opened",
     "route_calculated",
     "user_feedback",
+    "user_reported",
 }
 
 router = APIRouter(prefix="/events", tags=["events"])
@@ -34,28 +36,45 @@ async def create_event(
     kind = body.eventType.strip()
     if kind not in ALLOWED:
         raise HTTPException(status_code=422, detail="Unknown eventType")
+
     company_id = body.companyId
-    if not company_id:
+    if company_id:
+        # IDOR fix: explicitne companyId musi patrit firme, ktorej je user clenom
+        # (platform admin vynimku ma vnutri require_company_member).
+        require_company_member(current_user, company_id, action="record event for")
+    elif body.listingId:
+        # Spravna atribucia: event nad inzeratom patri VLASTNIKOVI inzeratu,
+        # nie firme divaka. Tuto hodnotu cita recommendations service
+        # (event_hits) — predtym fallback na memberships[0] systematicky
+        # kreslil "kto zareagoval na moj inzerat" a dal sa falsovat.
+        from sqlalchemy import select as _select
+
+        from app.modules.listings.infrastructure.models import ListingsModel
+
+        listing_row = (
+            await session.execute(
+                _select(ListingsModel.company_id).where(ListingsModel.id == body.listingId)
+            )
+        ).first()
+        company_id = str(listing_row[0]) if listing_row else None
+    else:
         memberships = list(membership_company_ids(current_user) or [])
         company_id = str(memberships[0]) if memberships else None
+
+    payload = body.payload
+    if payload is not None and not isinstance(payload, str):
+        # Frontend posiela payload ako objekt (napr. {"reason": ...}); stlpec je Text.
+        payload = json.dumps(payload, ensure_ascii=False)[:2000]
+
     row = ActivityEventModel(
         event_type=kind,
         actor_user_id=str(current_user_id(current_user)),
         company_id=company_id,
         listing_id=body.listingId,
-        payload=body.payload,
+        payload=payload,
     )
     session.add(row)
-    commit = getattr(session, "commit", None)
-    if commit:
-        result = commit()
-        if hasattr(result, "__await__"):
-            await result
-    flush = getattr(session, "flush", None)
-    if flush:
-        result = flush()
-        if hasattr(result, "__await__"):
-            await result
+    await session.commit()
     return EventOut(id=str(row.id), eventType=row.event_type)
 
 

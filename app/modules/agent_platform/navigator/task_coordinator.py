@@ -127,16 +127,24 @@ class TaskCoordinator:
 
         for attempt in range(1, attempts + 1):
             try:
-                with ThreadPoolExecutor(max_workers=1) as executor:
-                    future = executor.submit(func)
-                    try:
-                        last_result = future.result(timeout=timeout_val)
-                    except FuturesTimeoutError:
-                        last_error = f"Casovy limit vyprsel ({timeout_val}s)"
-                        continue
-                    except Exception as exc:
-                        last_error = type(exc).__name__
-                        continue
+                # POZOR: nepouzivame `with ThreadPoolExecutor(...)` — jeho
+                # __exit__ robi shutdown(wait=True), takze pri timeoute by sa
+                # cakalo na dobehnutie zaveseneho vlakna a timeout by nemal
+                # ziadny efekt. shutdown(wait=False) necha vlakno dobehnut
+                # na pozadi (zamerne — vid docstring vyssie).
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(func)
+                try:
+                    last_result = future.result(timeout=timeout_val)
+                except FuturesTimeoutError:
+                    last_error = f"Casovy limit vyprsel ({timeout_val}s)"
+                    executor.shutdown(wait=False)
+                    continue
+                except Exception as exc:
+                    last_error = type(exc).__name__
+                    executor.shutdown(wait=False)
+                    continue
+                executor.shutdown(wait=False)
 
                 # Úspešné vykonanie
                 duration_ms = round((time.monotonic() - start_total) * 1000, 2)
