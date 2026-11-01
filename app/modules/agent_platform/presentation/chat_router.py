@@ -725,14 +725,22 @@ async def user_ai_chat(
             session_id=payload.session_id or "",
         )
     # KRITICKE: session_id MUSI patrit danemu pouzivatelovi!
+    # Namiesto get_by_session_id (ktora padala) pouzijeme get_or_create,
+    # ktora uz obsahuje kontrolu vlastnictva.
     session_id = payload.session_id
-    if session_id:
-        # Overime, ci session_id patri danemu pouzivatelovi
-        existing = await conversations.get_by_session_id(session_id)
-        if existing and str(existing.user_id) != str(actor_id):
-            # Toto nie je jeho session! Vygenerujeme nove.
-            session_id = str(uuid.uuid4())
     if not session_id:
+        session_id = str(uuid.uuid4())
+    
+    # Skusime ziskat alebo vytvorit konverzaciu pre tohto pouzivatela.
+    # Ak session_id patri niekomu inemu, get_or_create vyhodi PermissionError.
+    try:
+        await conversations.get_or_create(
+            session_id=session_id,
+            user_id=actor_id,
+            company_id=None,
+        )
+    except PermissionError:
+        # Session patri niekomu inemu - vygenerujeme nove
         session_id = str(uuid.uuid4())
 
     conversation_id: str | None = None
