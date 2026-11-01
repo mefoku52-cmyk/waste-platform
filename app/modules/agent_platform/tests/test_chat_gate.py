@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from fastapi import HTTPException
 
-from app.modules.agent_platform.presentation import chat_router
+from app.modules.agent_platform.presentation import user_ai_chat_router as chat_router
 from app.modules.companies.domain.enums import SubscriptionTier
 
 

@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import require_company_member
 
 from ..infrastructure.models import TransportOffer
 from .schemas import TransportOfferCreateRequest, TransportOfferResponse
@@ -20,6 +21,10 @@ async def create_transport_offer(
     session: AsyncSession = Depends(get_db_session),
     current_user=Depends(require_current_user),
 ):
+    # IDOR fix: companyId berieme z requestu, tak ho musíme overiť voči
+    # členstvu volajúceho — inak by každý prihlásený user mohol vytvárať
+    # ponuky v mene cudzej firmy.
+    require_company_member(current_user, payload.companyId, action="create transport offer for")
 
     from datetime import datetime
 

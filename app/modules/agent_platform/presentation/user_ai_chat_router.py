@@ -13,6 +13,7 @@ from app.modules.agent_platform.application.agent.agent_orchestrator import (
     AgentOrchestrator,
 )
 from app.modules.agent_platform.application.agent.intent_classifier import (
+    Intent,
     IntentResult,
     classify_intent,
     intent_hint,
@@ -284,7 +285,7 @@ _KNOWN_PAGE_TYPES: frozenset[str] = frozenset(
         "other",
     }
 )
-_SAFE_ROUTE_RE = re.compile(r"^/[A-Za-z0-9/_-.%]*$")
+_SAFE_ROUTE_RE = re.compile(r"^/[A-Za-z0-9/_.%-]*$")
 _SAFE_CONTEXT_ID_RE = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 
 
@@ -316,9 +317,7 @@ def _build_page_context_block(page_context: dict | None) -> str:
     entity_label = _sanitize_context_text(page_context.get("entity_label"), 140)
 
     lines = [
-        "
-
-KONTEXT AKTUALNEJ STRANKY:",
+        "\n\nKONTEXT AKTUALNEJ STRANKY:",
         f"- Pouzivatel je na: {path or 'neznama'} (typ: {page_type})",
     ]
     if entity_id:
@@ -337,8 +336,7 @@ KONTEXT AKTUALNEJ STRANKY:",
         "- Dalsie dostupne akcie: `highlight_field(field)`, `navigate(url)`, "
         "`show_toast(message, level)`."
     )
-    return "
-".join(lines)
+    return "\n".join(lines)
 
 
 def _detect_security_patterns(text: str) -> list[tuple[str, float]]:
@@ -808,26 +806,35 @@ async def user_ai_chat(
             session_id=session_id,
         )
 
-    # 1. Skus novy navigator (TaskCoordinator)
+    # 1. Skus novy navigator (TaskCoordinator) — ale IBA pre cisty NAVIGATE
+    # intent ("otvor ponuky", "prejdi do dopytov"...). Navigator pozna len
+    # open_* akcie a jeho modely nemaju tool schemas, takze pre vsetko ostatne
+    # (hladanie, vyplnanie formularov, karty) MUSI bezat orchestrator. Kedysi
+    # sa navigator volal pre kazdu spravu a jeho status="ok" odpoved prepisala
+    # orchestrator — tym padom nastroje nikdy nebezali.
     navigator_result = None
-    try:
-        bridge = get_navigator_bridge()
-        nav_response = await bridge.respond(
-            system_prompt=system_prompt,
-            user_message=text,
-            actor_id=actor_id,
-            actor_type="user",
-            session_id=session_id,
-            conversation_history=history,
-            old_orchestrator=None,
-        )
-        if isinstance(nav_response, dict) and nav_response.get("status") == "ok":
-            # Novy navigator uspel - vytvorime fake result pre zvyšok kodu
-            navigator_result = nav_response
-    except Exception as nav_exc:
-        import logging as _log
+    if intent_result.intent is Intent.NAVIGATE:
+        try:
+            bridge = get_navigator_bridge()
+            nav_response = await bridge.respond(
+                system_prompt=system_prompt,
+                user_message=text,
+                actor_id=actor_id,
+                actor_type="user",
+                session_id=session_id,
+                conversation_history=history,
+                old_orchestrator=None,
+            )
+            # Akceptujeme len realnu navigacnu akciu. "ok" bez akcie je
+            # free-text odpoved z maleho modelu bez nastrojov — tu prenechame
+            # orchestratorovi (vyssia kvalita + tools + gate).
+            nav_actions = nav_response.get("action") if isinstance(nav_response, dict) else None
+            if isinstance(nav_response, dict) and nav_response.get("status") == "ok" and nav_actions:
+                navigator_result = nav_response
+        except Exception as nav_exc:
+            import logging as _log
 
-        _log.getLogger("cmep.chat").warning("NAVIGATOR_BRIDGE_EXCEPTION: %s", str(nav_exc)[:200])
+            _log.getLogger("cmep.chat").warning("NAVIGATOR_BRIDGE_EXCEPTION: %s", str(nav_exc)[:200])
 
     # 2. Ak novy navigator uspel, pouzijeme jeho odpoved
     if navigator_result is not None:
@@ -844,9 +851,11 @@ async def user_ai_chat(
 
         if nav_action:
             if isinstance(nav_action, list):
-                nav_tool_calls = tuple({"name": a, "args": {}} for a in nav_action if a)
+                nav_tool_calls = tuple(
+                    {"name": a, "arguments": {}} for a in nav_action if a
+                )
             elif isinstance(nav_action, str):
-                nav_tool_calls = ({"name": nav_action, "args": {}},)
+                nav_tool_calls = ({"name": nav_action, "arguments": {}},)
 
         result = _NavResult(
             text=navigator_result.get("reply", ""),
@@ -873,12 +882,12 @@ async def user_ai_chat(
                 type(exc).__name__,
                 str(exc)[:200],
             )
-        return UserAiChatResponse(
-            status="unavailable",
-            reply=None,
-            source="user-ai",
-            session_id=session_id,
-        )
+            return UserAiChatResponse(
+                status="unavailable",
+                reply=None,
+                source="user-ai",
+                session_id=session_id,
+            )
 
     # Ak AI zavolala iba client actions a nevrátila text, vráť potvrdenie
     # (počítajú sa len akcie, ktoré control gate dovolí zobraziť).
@@ -959,9 +968,7 @@ async def user_ai_chat(
             + ", ".join(sorted(set(suppressed_actions)))
             + "."
         )
-        result_text = f"{result_text}
-
-{note}" if result_text else note
+        result_text = f"{result_text}\n\n{note}" if result_text else note
 
     audio_base64 = None
     if payload.voice_response and result_text.strip():
