@@ -1,16 +1,27 @@
-"""Multi-photo support for listings with ordering and primary flag."""
+"""Multi-photo and document versioning with ACL.
+
+Company-scoped. Only members of the owning company can read/write.
+"""
 
 from __future__ import annotations
 
 from datetime import datetime
+from enum import Enum
 from uuid import UUID
 
 from pydantic import BaseModel
 
 
+class PhotoAccess(str, Enum):
+    OWNER = "owner"
+    COMPANY_MEMBER = "company_member"
+    NONE = "none"
+
+
 class ListingPhoto(BaseModel):
     id: UUID
     listing_id: UUID
+    company_id: UUID
     storage_key: str
     mime_type: str
     size_bytes: int
@@ -23,6 +34,7 @@ class ListingPhoto(BaseModel):
 class DocumentVersion(BaseModel):
     id: UUID
     document_id: UUID
+    company_id: UUID
     version: int
     storage_key: str
     mime_type: str
@@ -32,16 +44,13 @@ class DocumentVersion(BaseModel):
     change_note: str | None = None
 
 
-class PhotoService:
-    """Placeholder service; full impl would enforce ACL, size and MIME checks."""
+class PhotoACL:
+    """Simple company-scoped ACL."""
 
-    def __init__(self) -> None:
-        self._photos: dict[UUID, list[ListingPhoto]] = {}
+    @staticmethod
+    def can_read(user_company_ids: set[UUID], photo: ListingPhoto) -> bool:
+        return photo.company_id in user_company_ids
 
-    def add_photo(self, photo: ListingPhoto) -> None:
-        self._photos.setdefault(photo.listing_id, []).append(photo)
-        # Ensure only one primary
-        if photo.is_primary:
-            for p in self._photos[photo.listing_id]:
-                if p.id != photo.id:
-                    p.is_primary = False
+    @staticmethod
+    def can_write(user_company_ids: set[UUID], photo: ListingPhoto) -> bool:
+        return photo.company_id in user_company_ids
