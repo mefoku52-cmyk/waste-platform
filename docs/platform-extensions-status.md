@@ -2,27 +2,28 @@
 
 Branch: feat/platform-extensions
 
-## Celkové zhrnutie
+## Module 8: Multi-photo + Document Versioning + ACL
 
-Všetky 8 modulov majú základné vrstvy na vetve. Žiadny nie je plne IMPLEMENTED.
+### Status: PARTIAL
 
-| Modul | Stav | Hlavné hotové časti |
-|-------|------|---------------------|
-| 1. Webhooks | PARTIAL | Signing, SSRF, delivery, router, návrh migrácie |
-| 2. Command Bus | PARTIAL | In-memory bus + registration |
-| 3. Partner OAuth | PARTIAL | Domain + scopes |
-| 4. CQRS Light | PARTIAL | Listings projection |
-| 5. Saga | PARTIAL | Inquiry process manager |
-| 6. Observability | PARTIAL | Business span helpers |
-| 7. AI Approval | PARTIAL | DB-backed gate, orchestrator wiring, router, self-approval |
-| 8. Multi-photo | PARTIAL | Model, repo, router + membership ACL, MIME/size, magic-bytes helper, document version model |
+#### Done
+- Domain + PhotoACL
+- SQLAlchemy model + repository
+- Proposed migration
+- Router wired to repository
+- Owning company resolved from listings table
+- Membership ACL via require_company_member
+- MIME + size validation
+- Magic-byte validation wired into POST (is_valid_image_content)
+- Document version model
+- Unit tests (ACL, MIME, magic-bytes)
+- Slovak documentation
 
-## Module 8 – posledné doplnenia
-- `infrastructure/magic_bytes.py` – overenie skutočného obsahu (JPEG/PNG/WEBP)
-- `infrastructure/models/document_version.py` – základný model verzií dokumentov
+#### Remaining
+- Full stream-based size enforcement during upload
+- Document versioning endpoints
+- Integration tests with real DB (cross-tenant + invalid upload leaves no record)
 
-## Čo ďalej
-1. Zapoj magic-byte kontrolu do photos_router (prijímať bytes namiesto storage_key).
-2. Repository + endpoint pre document versions.
-3. Integračné testy s reálnou DB.
-4. Rovnaký postup pre zvyšné moduly (1–6) podľa priority.
+#### Files updated this step
+- presentation/photos_router.py (magic-byte check)
+- tests/unit/test_magic_bytes.py
