@@ -1,45 +1,46 @@
-# CMEP Platform Extensions – Implementation Status (updated)
+# CMEP Platform Extensions – Implementation Status (review-ready progress)
 
 Branch: feat/platform-extensions
 Base: main @ 834f389
 
-## Modules
+## Module Status
 
-### 1. Outbound Webhooks – PARTIAL
-- Domain models, HMAC signing, SSRF guard, delivery service, basic router
-- Missing: DB persistence, full admin CRUD, tests, migration, event emission from business flows
+| Module | Status | Notes |
+|--------|--------|-------|
+| 1. Outbound Webhooks | PARTIAL | Signing, SSRF, delivery, router, proposed migration, unit tests |
+| 2. Command Bus | PARTIAL | Bus + example registration |
+| 3. Partner OAuth | PARTIAL | Domain models + scopes |
+| 4. CQRS Light | PARTIAL | Listings projection |
+| 5. Saga | PARTIAL | Inquiry process manager |
+| 6. Observability | PARTIAL | Business span helpers |
+| 7. AI Approval | PARTIAL | Approval service |
+| 8. Multi-photo | PARTIAL | Domain models |
 
-### 2. Idempotent Command Bus – PARTIAL
-- In-memory bus with idempotency key
-- Missing: DB-backed store, transaction boundaries, registration of real commands
+## Key Files Added This Session
+- docs/platform-extensions/migrations/proposed_webhooks.py
+- tests/unit/test_webhook_signing.py
+- app/shared/infrastructure/commands/registration.py
+- app/modules/webhooks/infrastructure/ssrf.py
+- app/modules/agent_platform/application/approval_service.py
+- app/modules/listings/domain/photos.py
+- app/modules/read_models/listings.py
+- app/modules/workflows/inquiry_process.py
+- app/shared/infrastructure/observability/business.py
 
-### 3. Partner OAuth 2.0 – PARTIAL
-- Domain models and scopes
-- Missing: token issuance/refresh, middleware, client registry, rate limits
+## Integration Notes
+- api_router.py is protected. Proposed registration:
+  ```python
+  from app.modules.webhooks.presentation.router import router as webhooks_router
+  api_router.include_router(webhooks_router)
+  ```
+- No production migrations executed.
+- All work remains on feat/platform-extensions.
 
-### 4. CQRS Light – PARTIAL
-- Listings read model (in-memory)
-- Missing: other projections, event-driven sync, Redis/materialized view
+## Remaining for full review-ready
+- Full DB repositories and services
+- Event emission hooks in existing flows
+- Complete routers with auth
+- Broader test coverage
+- OAuth token issuance implementation
 
-### 5. Saga / Process Manager – PARTIAL
-- Inquiry process manager (in-memory)
-- Missing: persistence, permission re-checks, recovery
-
-### 6. Business Observability – PARTIAL
-- OpenTelemetry span helpers (optional import)
-- Missing: metrics, correlation ID middleware, full instrumentation
-
-### 7. AI Approval Workflow – PARTIAL
-- ApprovalRequest model and service
-- Missing: integration into AgentOrchestrator, UI endpoints, audit
-
-### 8. Multi-photo + Document Versioning – PARTIAL
-- Domain models for photos and versions
-- Missing: upload endpoints, ACL, MIME/size enforcement, storage adapter
-
-## Safety
-- No changes to main or protected files
-- No production migrations or deploys
-- All work remains on feat/platform-extensions
-
-Revoke the temporary PAT immediately.
+Revoke temporary PAT.
