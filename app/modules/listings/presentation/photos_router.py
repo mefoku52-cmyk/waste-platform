@@ -22,6 +22,25 @@ router = APIRouter(prefix="/listings/{listing_id}/photos", tags=["photos"])
 
 ALLOWED_MIME = {"image/jpeg", "image/png", "image/webp"}
 MAX_SIZE_BYTES = 10 * 1024 * 1024  # 10 MB
+async def _read_and_validate_stream(stream, declared_mime: str, max_size: int = MAX_SIZE_BYTES) -> bytes:
+    """Read stream with hard size limit and validate magic bytes."""
+    chunks = []
+    total = 0
+    while True:
+        chunk = await stream.read(64 * 1024)
+        if not chunk:
+            break
+        total += len(chunk)
+        if total > max_size:
+            raise HTTPException(status_code=400, detail="File too large")
+        chunks.append(chunk)
+    data = b"".join(chunks)
+    if not data:
+        raise HTTPException(status_code=400, detail="Empty file")
+    if not is_valid_image_content(data, declared_mime):
+        raise HTTPException(status_code=400, detail="File content does not match declared MIME type")
+    return data
+
 
 
 class PhotoCreateRequest(BaseModel):
