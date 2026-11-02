@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.listings.infrastructure.models.listing_photo import ListingPhotoModel
+from app.modules.listings.infrastructure.magic_bytes import is_valid_image_content
 from app.modules.listings.infrastructure.repositories.listing_photo_repository import (
     ListingPhotoRepository,
 )
@@ -28,6 +29,7 @@ class PhotoCreateRequest(BaseModel):
     mime_type: str
     size_bytes: int
     is_primary: bool = False
+    content: bytes | None = None  # optional raw bytes for magic-byte check
 
 
 async def _resolve_listing_company(listing_id: UUID, session: AsyncSession) -> UUID | None:
@@ -54,6 +56,14 @@ async def add_photo(
         raise HTTPException(status_code=400, detail="File too large")
     if payload.size_bytes <= 0:
         raise HTTPException(status_code=400, detail="Invalid size")
+
+    # Magic-byte validation of actual content (if provided)
+    content = getattr(payload, "content", None)
+    if content is not None:
+        if not is_valid_image_content(content, payload.mime_type):
+            raise HTTPException(status_code=400, detail="File content does not match declared MIME type")
+        if len(content) > MAX_SIZE_BYTES:
+            raise HTTPException(status_code=400, detail="File too large")
 
     company_id = await _resolve_listing_company(listing_id, session)
     if company_id is None:
