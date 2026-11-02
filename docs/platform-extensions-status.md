@@ -2,24 +2,26 @@
 
 Branch: feat/platform-extensions
 
-## Module 7: AI Approval Workflow
-Status: PARTIAL (real context wired, create path done)
-
 ## Module 8: Multi-photo + Document Versioning + ACL
-Status: PARTIAL
 
-### Done
-- Domain models with company_id
-- Simple company-scoped ACL (PhotoACL.can_read / can_write)
-- Basic router skeleton
+### Status: PARTIAL
 
-### Remaining
-- Full repository and DB model
-- Upload endpoint with MIME/size checks
-- Document versioning
-- Proposed migration
-- Integration with existing listings
+#### Done
+- Domain models with company_id and PhotoACL
+- SQLAlchemy model (ListingPhotoModel)
+- Repository (ListingPhotoRepository)
+- Proposed migration (docs/platform-extensions/migrations/proposed_listing_photos.py)
+- Router with MIME type and size checks (max 10 MB, jpeg/png/webp)
 
-### Files
-- app/modules/listings/domain/photos.py
-- app/modules/listings/presentation/photos_router.py
+#### Remaining
+- Full persistence wiring in router
+- Document versioning implementation
+- Integration with existing listings service
+- Tests
+
+#### Files
+- domain/photos.py
+- infrastructure/models/listing_photo.py
+- infrastructure/repositories/listing_photo_repository.py
+- presentation/photos_router.py
+- docs/platform-extensions/migrations/proposed_listing_photos.py
