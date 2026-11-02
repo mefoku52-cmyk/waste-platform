@@ -1,9 +1,10 @@
-"""SSRF-protected HTTP client for webhook delivery."""
+"""SSRF-protected HTTP client for webhook delivery with DNS resolve."""
 
 from __future__ import annotations
 
 import ipaddress
 import logging
+import socket
 from urllib.parse import urlparse
 
 import httpx
@@ -21,8 +22,19 @@ BLOCKED_NETWORKS = [
 ]
 
 
+def _is_blocked_ip(ip_str: str) -> bool:
+    try:
+        ip = ipaddress.ip_address(ip_str)
+        for net in BLOCKED_NETWORKS:
+            if ip in net:
+                return True
+    except ValueError:
+        pass
+    return False
+
+
 def is_safe_url(url: str) -> bool:
-    """Reject private, loopback and link-local addresses."""
+    """Reject private, loopback and link-local addresses after DNS resolve."""
     try:
         parsed = urlparse(url)
         if parsed.scheme not in ("https", "http"):
@@ -30,14 +42,18 @@ def is_safe_url(url: str) -> bool:
         hostname = parsed.hostname
         if not hostname:
             return False
-        # Resolve and check (simplified; full impl would use async getaddrinfo)
+
+        # Resolve all addresses
         try:
-            ip = ipaddress.ip_address(hostname)
-            for net in BLOCKED_NETWORKS:
-                if ip in net:
+            infos = socket.getaddrinfo(hostname, None)
+            for info in infos:
+                ip = info[4][0]
+                if _is_blocked_ip(ip):
+                    logger.warning("Blocked SSRF attempt to %s (%s)", url, ip)
                     return False
-        except ValueError:
-            pass  # hostname, not IP – allow for now (DNS rebinding protection needed in prod)
+        except socket.gaierror:
+            return False
+
         return True
     except Exception:
         return False
@@ -46,5 +62,5 @@ def is_safe_url(url: str) -> bool:
 async def safe_post(url: str, json: dict, headers: dict, timeout: float = 10.0) -> httpx.Response:
     if not is_safe_url(url):
         raise ValueError("Webhook URL blocked by SSRF protection")
-    async with httpx.AsyncClient(timeout=timeout) as client:
+    async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
         return await client.post(url, json=json, headers=headers)
