@@ -31,9 +31,14 @@ class PhotoCreateRequest(BaseModel):
 
 
 async def _resolve_listing_company(listing_id: UUID, session: AsyncSession) -> UUID | None:
-    """Resolve owning company_id from listing. Placeholder – replace with real ListingRepository."""
-    # In full impl query listings table
-    return None
+    """Resolve owning company_id from the listings table (trusted source)."""
+    from sqlalchemy import select
+    from app.modules.listings.infrastructure.models import ListingsModel
+
+    result = await session.execute(
+        select(ListingsModel.company_id).where(ListingsModel.id == listing_id)
+    )
+    return result.scalar_one_or_none()
 
 
 @router.post("", status_code=201)
