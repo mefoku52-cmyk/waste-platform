@@ -15,16 +15,18 @@ Branch: feat/platform-extensions
 - Membership ACL via require_company_member
 - MIME + size validation
 - Magic-byte validation
-- Stream-based size limit helper (_read_and_validate_stream)
+- Stream-based size limit helper
 - Document version model
-- Unit tests (ACL, MIME, magic-bytes, stream rules)
+- Unit tests
 - Slovak documentation
+- SQLite-based integration test file: tests/integration/test_module8_photos.py
 
 #### Remaining
-- Full integration of _read_and_validate_stream into the public POST (requires UploadFile)
+- Full UploadFile + _read_and_validate_stream wiring in public POST
 - Document versioning endpoints
-- Integration tests with real DB (cross-tenant + invalid upload leaves no record)
+- Real PostgreSQL integration tests (environment not available here)
+- Cross-tenant integration scenarios against live DB
 
-#### Files updated this step
-- presentation/photos_router.py (stream helper)
-- tests/unit/test_stream_validation.py
+#### Test notes
+- tests/integration/test_module8_photos.py uses existing SQLite fixtures from tests/conftest.py
+- Covers: missing listing, magic-bytes, MIME whitelist, size constant, model persistence
