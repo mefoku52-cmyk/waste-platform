@@ -1,6 +1,7 @@
 """Bridge - realna AI logika pre navigatora s FALLBACKOM a dynamickym zoznamom stranok."""
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import os
@@ -108,6 +109,8 @@ class NavigatorBridge:
         session_id: str, conversation_history: tuple = (), old_orchestrator: Any = None,
     ) -> Any:
         try:
+            action: Any = None
+            reply = ""
             assignment = self._intake.accept(title=user_message[:100], description=user_message)
 
             history_text = ""
@@ -116,41 +119,64 @@ class NavigatorBridge:
 
             ai_prompt = history_text + build_nav_prompt(user_message)
 
-            if not self._adapter:
+            adapter = self._adapter
+            if not adapter:
                 reply = "CHYBA: Na serveri nie su nastavene API kluce."
             else:
-                response = self._adapter.infer(ai_prompt)
-                action = None
+                # Inferencia ide cez TaskCoordinator (opravnenia agenta,
+                # ExecutionPolicy, timeout, bezpecne spracovanie chyb).
+                # Coordinator aj adapter su synchronne (urllib) — cele volanie
+                # bezí vo vlakne, aby neblokovalo event loop.
+                task_id = assignment.tasks[0].id if assignment.tasks else "nav-infer"
+                task_result = await asyncio.to_thread(
+                    self._coordinator.run,
+                    task_id,
+                    lambda: adapter.infer(ai_prompt),
+                    "navigator",
+                    None,  # max_attempts: default z bridge (1)
+                    None,  # timeout: default z bridge (10 s)
+                    "diagnose",
+                )
 
-                if not response.available:
-                    reply = f"Chyba AI: {response.error}."
-                elif not response.result:
-                    reply = "AI nevrátila žiadnu odpoveď."
+                if task_result.status != "completed" or task_result.result is None:
+                    _log.warning(
+                        "NAVIGATOR_TASK_FAILED task=%s status=%s error=%s",
+                        task_id, task_result.status, task_result.error,
+                    )
+                    reply = "Nepodarilo sa mi odpovedať, skús to znova."
                 else:
-                    raw_text = response.result.strip()
-                    try:
-                        clean_result = raw_text.replace("```json", "").replace("```", "").strip()
-                        if clean_result.startswith("{") and clean_result.endswith("}"):
-                            data = json.loads(clean_result)
+                    response = task_result.result
+                    action = None
 
-                            # Podpora pre jednu akciu alebo zoznam akcii
-                            if "actions" in data and isinstance(data["actions"], list):
-                                valid_actions = [a for a in data["actions"] if a in NAV_PAGES]
-                                if valid_actions:
-                                    reply = "Otváram: " + ", ".join([NAV_PAGES[a][0] for a in valid_actions]) + "."
-                                    action = valid_actions # Posleme zoznam
+                    if not response.available:
+                        reply = f"Chyba AI: {response.error}."
+                    elif not response.result:
+                        reply = "AI nevrátila žiadnu odpoveď."
+                    else:
+                        raw_text = response.result.strip()
+                        try:
+                            clean_result = raw_text.replace("```json", "").replace("```", "").strip()
+                            if clean_result.startswith("{") and clean_result.endswith("}"):
+                                data = json.loads(clean_result)
+
+                                # Podpora pre jednu akciu alebo zoznam akcii
+                                if "actions" in data and isinstance(data["actions"], list):
+                                    valid_actions = [a for a in data["actions"] if a in NAV_PAGES]
+                                    if valid_actions:
+                                        reply = "Otváram: " + ", ".join([NAV_PAGES[a][0] for a in valid_actions]) + "."
+                                        action = valid_actions # Posleme zoznam
+                                    else:
+                                        reply = raw_text
+                                elif "action" in data and isinstance(data["action"], str) and data["action"] in NAV_PAGES:
+                                    action = data["action"]
+                                    reply = nav_reply(action)
                                 else:
-                                    reply = raw_text
-                            elif "action" in data and isinstance(data["action"], str) and data["action"] in NAV_PAGES:
-                                action = data["action"]
-                                reply = nav_reply(action)
+                                    action = None
+                                    reply = raw_text # Alebo "Tuto stranku neviem otvorit."
                             else:
-                                action = None
-                                reply = raw_text # Alebo "Tuto stranku neviem otvorit."
-                        else:
+                                reply = raw_text
+                        except Exception:
                             reply = raw_text
-                    except Exception:
-                        reply = raw_text
 
             return {
                 "status": "ok", "reply": reply, "source": "navigator",
@@ -165,7 +191,14 @@ class NavigatorBridge:
                     actor_id=actor_id, actor_type=actor_type, session_id=session_id,
                     conversation_history=conversation_history,
                 )
-            return {"status": "unavailable", "reply": f"Chyba: {type(exc).__name__}", "source": "navigator"}
+            return {
+                "status": "unavailable",
+                "reply": "Nepodarilo sa mi odpovedať, skús to znova.",
+                "source": "navigator",
+                "session_id": session_id,
+                "action": [],
+                "tasks": [],
+            }
 
 _bridge_instance: NavigatorBridge | None = None
 
