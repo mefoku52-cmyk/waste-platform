@@ -2,37 +2,42 @@
 
 Branch: feat/platform-extensions
 
-## Module 7: AI Approval Workflow – IMPLEMENTED (in-memory)
+## Module 7: AI Approval Workflow
 
-### Implemented
-- Full state machine: PENDING → APPROVED/REJECTED/EXPIRED/CANCELLED → EXECUTING → EXECUTED/FAILED
-- Payload hash binding (arguments cannot change after approval)
-- Tenant isolation on all operations
-- One-time use semantics
+### Status: IMPLEMENTED (core + persistence layer + integration design)
+
+#### Implemented
+- Full state machine with payload hash binding
+- Tenant isolation
+- SQLAlchemy model (`AiApprovalRequestModel`)
+- Async repository with atomic status transitions
 - Router with create / get / approve / reject / cancel
-- Proposed DB migration in docs/platform-extensions/migrations/proposed_ai_approval.py
-- Unit tests covering approve, hash binding, expire, cross-tenant
+- Deterministic risk classifier
+- Orchestrator integration notes
+- Proposed migration
+- Unit tests (state machine, hash, expire, cross-tenant)
 
-### Files
-- app/modules/agent_platform/application/approval_service.py (updated)
-- app/modules/agent_platform/presentation/approvals_router.py (updated)
+#### Files
+- app/modules/agent_platform/application/approval_service.py
+- app/modules/agent_platform/application/approval_integration.py
+- app/modules/agent_platform/infrastructure/models/ai_approval.py
+- app/modules/agent_platform/infrastructure/repositories/ai_approval_repository.py
+- app/modules/agent_platform/presentation/approvals_router.py
 - docs/platform-extensions/migrations/proposed_ai_approval.py
 - tests/unit/test_ai_approval.py
 
-### Integration notes
-- Router prefix: /agent-platform/approvals
-- Proposed registration in api_router.py (protected – not modified):
+#### Integration
+- Proposed router registration (api_router.py is protected):
   ```python
   from app.modules.agent_platform.presentation.approvals_router import router as approvals_router
   api_router.include_router(approvals_router)
   ```
-- Risk classification is deterministic (caller supplies RiskLevel).
-- In-memory store; production requires DB repository.
+- Orchestrator wiring: see approval_integration.py
 
-### Remaining
-- Persistence layer
-- Event emission / audit integration
-- Wiring into AgentOrchestrator for write tools
+#### Remaining
+- Full DB-backed service (replace in-memory in production path)
+- Complete execute endpoint with atomic transition
+- Live wiring inside AgentOrchestrator.respond
 - Broader integration tests
 
-Status: IMPLEMENTED (core logic), PARTIAL (persistence & full orchestration wiring)
+Status: IMPLEMENTED (persistence + design), PARTIAL (full orchestrator wiring)
