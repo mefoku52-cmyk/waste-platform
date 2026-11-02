@@ -7,21 +7,26 @@ Branch: feat/platform-extensions
 ### Status: PARTIAL
 
 #### Done
-- Domain models with company_id and PhotoACL
-- SQLAlchemy model (ListingPhotoModel)
-- Repository (ListingPhotoRepository)
-- Proposed migration (docs/platform-extensions/migrations/proposed_listing_photos.py)
-- Router with MIME type and size checks (max 10 MB, jpeg/png/webp)
+- Domain models with company_id
+- PhotoACL (company-scoped can_read / can_write)
+- SQLAlchemy model
+- Repository
+- Proposed migration
+- Router with MIME type and size checks (max 10 MB)
+- Unit tests for ACL and upload constraints
 
 #### Remaining
-- Full persistence wiring in router
-- Document versioning implementation
-- Integration with existing listings service
-- Tests
+- Full persistence wiring in router (repo.add + ACL check against membership)
+- Document versioning
+- Integration tests
 
 #### Files
 - domain/photos.py
 - infrastructure/models/listing_photo.py
 - infrastructure/repositories/listing_photo_repository.py
 - presentation/photos_router.py
+- tests/unit/test_listing_photos.py
 - docs/platform-extensions/migrations/proposed_listing_photos.py
+
+#### ACL
+Only members of the owning company can read or write photos.
