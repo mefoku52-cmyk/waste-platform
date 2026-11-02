@@ -1,28 +1,28 @@
 # CMEP Platform Extensions – Implementation Status
 
 Branch: feat/platform-extensions
+HEAD: cc067f65 (will update after this commit)
 
 ## Module 8: Multi-photo + Document Versioning + ACL
 
 ### Status: PARTIAL
 
 #### Done
-- Domain models + PhotoACL
+- Domain + PhotoACL
 - SQLAlchemy model + repository
 - Proposed migration
 - Router wired to ListingPhotoRepository
-- Membership ACL via require_company_member (after resolving company from listing)
-- MIME/size validation
+- Owning company resolved from `listings` table (trusted)
+- Membership ACL via `require_company_member`
+- MIME + size validation
 - Unit tests
 - Slovak documentation
 
 #### Remaining
-- Real listing → company resolution (currently placeholder returns None)
-- Content-level file validation
+- Magic-byte content verification
 - Document versioning
-- Integration tests with real DB
+- Integration tests with real DB (cross-tenant)
 
 #### Files
-- presentation/photos_router.py (repository + ACL wiring)
-- infrastructure/repositories/listing_photo_repository.py
-- docs/platform-extensions/module-8-photos.md
+- `app/modules/listings/presentation/photos_router.py` (updated)
+- `docs/platform-extensions/module-8-photos.md` (updated)
