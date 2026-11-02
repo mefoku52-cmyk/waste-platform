@@ -2,22 +2,22 @@
 
 Branch: feat/platform-extensions
 
-## Module 8: Multi-photo + Document Versioning + ACL
+## Modul 8: Multi-photo + Document Versioning + ACL
 
-### Status: PARTIAL
+### Stav: PARTIAL
 
-#### Done
-- Domain models + PhotoACL
+#### Hotové
+- Domain modely + PhotoACL
 - SQLAlchemy model + repository
-- Proposed migration
-- Router with MIME/size validation
-- Unit tests (ACL + upload rules)
-- Documentation: docs/platform-extensions/module-8-photos.md
+- Návrh migrácie
+- Router s kontrolou MIME a veľkosti
+- Unit testy (ACL + upload pravidlá)
+- Dokumentácia v slovenčine: docs/platform-extensions/module-8-photos.md
 
-#### Remaining
-- Full router → repository + membership ACL wiring
+#### Zostáva
+- Plné prepojenie routera na repository + membership ACL
 - Document versioning
-- Integration tests
+- Integračné testy
 
-#### Files
-See docs/platform-extensions/module-8-photos.md
+#### Poznámka
+UUID sa používajú, pretože všetky entity v CMEP majú UUID primárne kľúče.
