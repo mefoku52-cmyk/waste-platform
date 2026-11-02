@@ -4,44 +4,42 @@ Branch: feat/platform-extensions
 
 ## Module 7: AI Approval Workflow
 
-### Status: IMPLEMENTED (gate + persistence + design)
+### Status: IMPLEMENTED (gate ready for live wiring)
 
 #### Implemented
 - Full state machine with payload hash binding
 - Tenant isolation
 - SQLAlchemy model + async repository with atomic transitions
-- ApprovalGate (DB-backed check_or_create for orchestrator)
+- ApprovalGate (DB-backed check_or_create)
 - Deterministic risk classifier
-- Router (create / get / approve / reject / cancel)
+- Router
 - Proposed migration
 - Unit tests
+- Exact insertion point documented for AgentOrchestrator.respond
 
 #### Files
 - application/approval_service.py
 - application/approval_integration.py
-- application/approval_gate.py          ← new
+- application/approval_gate.py
+- application/agent/approval_gate_integration_notes.py   ← insertion guide
 - infrastructure/models/ai_approval.py
 - infrastructure/repositories/ai_approval_repository.py
 - presentation/approvals_router.py
 - docs/platform-extensions/migrations/proposed_ai_approval.py
 - tests/unit/test_ai_approval.py
 
-#### Orchestrator integration
-ApprovalGate is the production entry point. In AgentOrchestrator.respond,
-before executing a server write tool:
+#### Live wiring
+The exact code block to insert before server tool handler execution is documented in:
+`app/modules/agent_platform/application/agent/approval_gate_integration_notes.py`
 
-```python
-decision = await gate.check_or_create(...)
-if decision.blocked:
-    # return tool message with PENDING_APPROVAL
-else:
-    # execute handler
-```
+Protected write tools:
+- update_listing, publish_listing, create_inquiry, update_inquiry_status, promote_listing
+
+Read-only tools skip the gate.
 
 #### Remaining
-- Live wiring inside the existing AgentOrchestrator.respond loop
-- Persistence of the in-memory ApprovalService requests via repository
+- Actual line-level edit inside AgentOrchestrator.respond (documented, not yet applied to avoid large diff risk)
 - Full execute endpoint
 - Broader integration tests
 
-Status: IMPLEMENTED (gate + persistence layer), PARTIAL (live orchestrator loop wiring)
+Status: IMPLEMENTED (ready for final line-level wiring)
