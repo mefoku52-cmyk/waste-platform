@@ -4,34 +4,29 @@ Branch: feat/platform-extensions
 
 ## Module 7: AI Approval Workflow
 
-### Status: IMPLEMENTED (live wiring done)
+### Status: PARTIAL
 
 #### Done
-- ApprovalGate is fully DB-backed
-- Live wiring of check_approval() inside AgentOrchestrator.respond
-  (inserted before handler.handle, after policy/permission)
+- Syntax and structure of ApprovalGate block in AgentOrchestrator.respond fixed
+- ApprovalGate is DB-backed
 - Router is DB-backed
-- Server-side risk classification only
-- Self-approval blocked
+- Server-side risk classification
+- Self-approval blocked in approve endpoint
 - Hash and expiry checks
 - Model, repository, proposed migration
 - Unit tests
 
-#### Remaining
-- company_id is currently a placeholder UUID in the orchestrator
-  (must be replaced with real trusted context)
-- Full execute endpoint (EXECUTING → EXECUTED/FAILED)
+#### Remaining (blocking IMPLEMENTED)
+- Real company_id from trusted context (currently blocks if None)
+- Real DB session injection into check_approval (currently session=None)
+- Full execute lifecycle (EXECUTING → EXECUTED/FAILED)
 - Integration tests with real DB
 
 #### Files
-- application/agent/agent_orchestrator.py (live wiring)
+- application/agent/agent_orchestrator.py (fixed wiring)
 - application/approval_gate.py
 - application/approval_orchestrator_hook.py
 - presentation/approvals_router.py
 
-#### Integration
-Router registration (protected file not modified):
-```python
-from app.modules.agent_platform.presentation.approvals_router import router as approvals_router
-api_router.include_router(approvals_router)
-```
+#### Note
+Placeholder UUID removed. If tenant context is missing, the operation is blocked.
