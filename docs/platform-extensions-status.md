@@ -2,22 +2,27 @@
 
 Branch: feat/platform-extensions
 
-## Modul 8: Multi-photo + Document Versioning + ACL
+## Module 8: Multi-photo + Document Versioning + ACL
 
-### Stav: PARTIAL
+### Status: PARTIAL
 
-#### Hotové
-- Domain modely + PhotoACL
+#### Done
+- Domain models + PhotoACL
 - SQLAlchemy model + repository
-- Návrh migrácie
-- Router s kontrolou MIME a veľkosti
-- Unit testy (ACL + upload pravidlá)
-- Dokumentácia v slovenčine: docs/platform-extensions/module-8-photos.md
+- Proposed migration
+- Router wired to ListingPhotoRepository
+- Membership ACL via require_company_member (after resolving company from listing)
+- MIME/size validation
+- Unit tests
+- Slovak documentation
 
-#### Zostáva
-- Plné prepojenie routera na repository + membership ACL
+#### Remaining
+- Real listing → company resolution (currently placeholder returns None)
+- Content-level file validation
 - Document versioning
-- Integračné testy
+- Integration tests with real DB
 
-#### Poznámka
-UUID sa používajú, pretože všetky entity v CMEP majú UUID primárne kľúče.
+#### Files
+- presentation/photos_router.py (repository + ACL wiring)
+- infrastructure/repositories/listing_photo_repository.py
+- docs/platform-extensions/module-8-photos.md
