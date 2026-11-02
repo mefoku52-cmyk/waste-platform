@@ -1,28 +1,28 @@
 # CMEP Platform Extensions – Implementation Status
 
 Branch: feat/platform-extensions
-HEAD: cc067f65 (will update after this commit)
 
-## Module 8: Multi-photo + Document Versioning + ACL
+## Celkové zhrnutie
 
-### Status: PARTIAL
+Všetky 8 modulov majú základné vrstvy na vetve. Žiadny nie je plne IMPLEMENTED.
 
-#### Done
-- Domain + PhotoACL
-- SQLAlchemy model + repository
-- Proposed migration
-- Router wired to ListingPhotoRepository
-- Owning company resolved from `listings` table (trusted)
-- Membership ACL via `require_company_member`
-- MIME + size validation
-- Unit tests
-- Slovak documentation
+| Modul | Stav | Hlavné hotové časti |
+|-------|------|---------------------|
+| 1. Webhooks | PARTIAL | Signing, SSRF, delivery, router, návrh migrácie |
+| 2. Command Bus | PARTIAL | In-memory bus + registration |
+| 3. Partner OAuth | PARTIAL | Domain + scopes |
+| 4. CQRS Light | PARTIAL | Listings projection |
+| 5. Saga | PARTIAL | Inquiry process manager |
+| 6. Observability | PARTIAL | Business span helpers |
+| 7. AI Approval | PARTIAL | DB-backed gate, orchestrator wiring, router, self-approval |
+| 8. Multi-photo | PARTIAL | Model, repo, router + membership ACL, MIME/size, magic-bytes helper, document version model |
 
-#### Remaining
-- Magic-byte content verification
-- Document versioning
-- Integration tests with real DB (cross-tenant)
+## Module 8 – posledné doplnenia
+- `infrastructure/magic_bytes.py` – overenie skutočného obsahu (JPEG/PNG/WEBP)
+- `infrastructure/models/document_version.py` – základný model verzií dokumentov
 
-#### Files
-- `app/modules/listings/presentation/photos_router.py` (updated)
-- `docs/platform-extensions/module-8-photos.md` (updated)
+## Čo ďalej
+1. Zapoj magic-byte kontrolu do photos_router (prijímať bytes namiesto storage_key).
+2. Repository + endpoint pre document versions.
+3. Integračné testy s reálnou DB.
+4. Rovnaký postup pre zvyšné moduly (1–6) podľa priority.
