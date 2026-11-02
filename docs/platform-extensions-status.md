@@ -4,29 +4,34 @@ Branch: feat/platform-extensions
 
 ## Module 7: AI Approval Workflow
 
-### Status: PARTIAL
+### Status: IMPLEMENTED (live wiring done)
 
 #### Done
-- ApprovalGate is fully DB-backed (create, get, atomic transition, hash, expiry)
-- Orchestrator hook exists (`approval_orchestrator_hook.py`)
-- Router switched to DB path
+- ApprovalGate is fully DB-backed
+- Live wiring of check_approval() inside AgentOrchestrator.respond
+  (inserted before handler.handle, after policy/permission)
+- Router is DB-backed
 - Server-side risk classification only
-- Self-approval blocked in approve endpoint
-- Model, repository, proposed migration, unit tests
+- Self-approval blocked
+- Hash and expiry checks
+- Model, repository, proposed migration
+- Unit tests
 
-#### Not done
-- Live insertion of `check_approval()` inside `AgentOrchestrator.respond`
-  (insertion point documented; file is large)
-- Full execute endpoint with EXECUTING → EXECUTED/FAILED
+#### Remaining
+- company_id is currently a placeholder UUID in the orchestrator
+  (must be replaced with real trusted context)
+- Full execute endpoint (EXECUTING → EXECUTED/FAILED)
 - Integration tests with real DB
 
 #### Files
+- application/agent/agent_orchestrator.py (live wiring)
 - application/approval_gate.py
 - application/approval_orchestrator_hook.py
-- application/approval_integration.py
-- infrastructure/models/ai_approval.py
-- infrastructure/repositories/ai_approval_repository.py
-- presentation/approvals_router.py (DB-backed)
+- presentation/approvals_router.py
 
-#### Next required step
-Insert the call from `approval_orchestrator_hook.py` into the tool loop in `agent_orchestrator.py` after policy/permission checks.
+#### Integration
+Router registration (protected file not modified):
+```python
+from app.modules.agent_platform.presentation.approvals_router import router as approvals_router
+api_router.include_router(approvals_router)
+```
