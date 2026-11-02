@@ -1,46 +1,38 @@
-# CMEP Platform Extensions – Implementation Status (review-ready progress)
+# CMEP Platform Extensions – Implementation Status
 
 Branch: feat/platform-extensions
-Base: main @ 834f389
 
-## Module Status
+## Module 7: AI Approval Workflow – IMPLEMENTED (in-memory)
 
-| Module | Status | Notes |
-|--------|--------|-------|
-| 1. Outbound Webhooks | PARTIAL | Signing, SSRF, delivery, router, proposed migration, unit tests |
-| 2. Command Bus | PARTIAL | Bus + example registration |
-| 3. Partner OAuth | PARTIAL | Domain models + scopes |
-| 4. CQRS Light | PARTIAL | Listings projection |
-| 5. Saga | PARTIAL | Inquiry process manager |
-| 6. Observability | PARTIAL | Business span helpers |
-| 7. AI Approval | PARTIAL | Approval service |
-| 8. Multi-photo | PARTIAL | Domain models |
+### Implemented
+- Full state machine: PENDING → APPROVED/REJECTED/EXPIRED/CANCELLED → EXECUTING → EXECUTED/FAILED
+- Payload hash binding (arguments cannot change after approval)
+- Tenant isolation on all operations
+- One-time use semantics
+- Router with create / get / approve / reject / cancel
+- Proposed DB migration in docs/platform-extensions/migrations/proposed_ai_approval.py
+- Unit tests covering approve, hash binding, expire, cross-tenant
 
-## Key Files Added This Session
-- docs/platform-extensions/migrations/proposed_webhooks.py
-- tests/unit/test_webhook_signing.py
-- app/shared/infrastructure/commands/registration.py
-- app/modules/webhooks/infrastructure/ssrf.py
-- app/modules/agent_platform/application/approval_service.py
-- app/modules/listings/domain/photos.py
-- app/modules/read_models/listings.py
-- app/modules/workflows/inquiry_process.py
-- app/shared/infrastructure/observability/business.py
+### Files
+- app/modules/agent_platform/application/approval_service.py (updated)
+- app/modules/agent_platform/presentation/approvals_router.py (updated)
+- docs/platform-extensions/migrations/proposed_ai_approval.py
+- tests/unit/test_ai_approval.py
 
-## Integration Notes
-- api_router.py is protected. Proposed registration:
+### Integration notes
+- Router prefix: /agent-platform/approvals
+- Proposed registration in api_router.py (protected – not modified):
   ```python
-  from app.modules.webhooks.presentation.router import router as webhooks_router
-  api_router.include_router(webhooks_router)
+  from app.modules.agent_platform.presentation.approvals_router import router as approvals_router
+  api_router.include_router(approvals_router)
   ```
-- No production migrations executed.
-- All work remains on feat/platform-extensions.
+- Risk classification is deterministic (caller supplies RiskLevel).
+- In-memory store; production requires DB repository.
 
-## Remaining for full review-ready
-- Full DB repositories and services
-- Event emission hooks in existing flows
-- Complete routers with auth
-- Broader test coverage
-- OAuth token issuance implementation
+### Remaining
+- Persistence layer
+- Event emission / audit integration
+- Wiring into AgentOrchestrator for write tools
+- Broader integration tests
 
-Revoke temporary PAT.
+Status: IMPLEMENTED (core logic), PARTIAL (persistence & full orchestration wiring)
