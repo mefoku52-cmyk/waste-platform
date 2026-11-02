@@ -3,23 +3,23 @@
 Branch: feat/platform-extensions
 
 ## Module 7: AI Approval Workflow
+Status: PARTIAL (real context wired, create path done)
 
-### Status: PARTIAL
+## Module 8: Multi-photo + Document Versioning + ACL
+Status: PARTIAL
 
-#### Done
-- Fail-closed risk classification
-- ApprovalGate is DB-backed
-- Hook requires real session and company_id
-- Real company_id and db_session passed from chat router
-- Router create now persists real AiApprovalRequestModel via repository
-- Self-approval blocked
-- Hash and expiry checks
-- Model, repository, proposed migration
-- Unit tests
+### Done
+- Domain models with company_id
+- Simple company-scoped ACL (PhotoACL.can_read / can_write)
+- Basic router skeleton
 
-#### Remaining (blocking IMPLEMENTED)
-- Full execute lifecycle (EXECUTING → EXECUTED/FAILED) with original payload
-- Integration tests with real DB
+### Remaining
+- Full repository and DB model
+- Upload endpoint with MIME/size checks
+- Document versioning
+- Proposed migration
+- Integration with existing listings
 
-#### Files changed this step
-- presentation/approvals_router.py (real DB create)
+### Files
+- app/modules/listings/domain/photos.py
+- app/modules/listings/presentation/photos_router.py
