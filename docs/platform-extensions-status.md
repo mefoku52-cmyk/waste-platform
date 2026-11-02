@@ -7,26 +7,27 @@ Branch: feat/platform-extensions
 ### Status: PARTIAL
 
 #### Done
-- Syntax and structure of ApprovalGate block in AgentOrchestrator.respond fixed
+- Fail-closed risk classification (unknown tools = HIGH_RISK)
 - ApprovalGate is DB-backed
-- Router is DB-backed
-- Server-side risk classification
+- Router is DB-backed (create path still partial)
 - Self-approval blocked in approve endpoint
 - Hash and expiry checks
+- Syntax-correct wiring in orchestrator (blocks if no tenant context)
 - Model, repository, proposed migration
 - Unit tests
 
 #### Remaining (blocking IMPLEMENTED)
-- Real company_id from trusted context (currently blocks if None)
-- Real DB session injection into check_approval (currently session=None)
+- Real company_id injection from trusted context into orchestrator
+- Real DB session injection into check_approval
+- Complete create in approvals_router (repo.add)
 - Full execute lifecycle (EXECUTING → EXECUTED/FAILED)
 - Integration tests with real DB
 
 #### Files
-- application/agent/agent_orchestrator.py (fixed wiring)
+- application/approval_integration.py (fail-closed)
+- application/agent/agent_orchestrator.py
 - application/approval_gate.py
-- application/approval_orchestrator_hook.py
 - presentation/approvals_router.py
 
 #### Note
-Placeholder UUID removed. If tenant context is missing, the operation is blocked.
+Placeholder UUID removed. Missing tenant context blocks the operation.
