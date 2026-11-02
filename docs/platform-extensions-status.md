@@ -1,38 +1,45 @@
-# CMEP Platform Extensions – Implementation Status
+# CMEP Platform Extensions – Implementation Status (updated)
 
 Branch: feat/platform-extensions
 Base: main @ 834f389
 
-## Completed / In Progress
+## Modules
 
-### 1. Outbound Webhooks (Etapa A) – PARTIAL
-- app/modules/webhooks/__init__.py
-- app/modules/webhooks/domain/models.py (event types, endpoint, delivery)
-- app/modules/webhooks/infrastructure/signing.py (HMAC-SHA256 + replay protection)
-- app/modules/webhooks/application/delivery_service.py (retry + DLQ skeleton)
+### 1. Outbound Webhooks – PARTIAL
+- Domain models, HMAC signing, SSRF guard, delivery service, basic router
+- Missing: DB persistence, full admin CRUD, tests, migration, event emission from business flows
 
-Still needed: router, repository, SSRF guard, admin endpoints, tests, migration.
+### 2. Idempotent Command Bus – PARTIAL
+- In-memory bus with idempotency key
+- Missing: DB-backed store, transaction boundaries, registration of real commands
 
-### 2. Idempotent Command Bus (Etapa B) – PARTIAL
-- app/shared/infrastructure/commands/bus.py
+### 3. Partner OAuth 2.0 – PARTIAL
+- Domain models and scopes
+- Missing: token issuance/refresh, middleware, client registry, rate limits
 
-Still needed: registration of business commands, DB-backed idempotency, integration with inquiry/listing/promote.
+### 4. CQRS Light – PARTIAL
+- Listings read model (in-memory)
+- Missing: other projections, event-driven sync, Redis/materialized view
 
-### 3. Partner OAuth 2.0 (Etapa C) – PARTIAL
-- app/modules/partner_oauth/domain/models.py (scopes + application/token)
+### 5. Saga / Process Manager – PARTIAL
+- Inquiry process manager (in-memory)
+- Missing: persistence, permission re-checks, recovery
 
-Still needed: token issuance, middleware, client registry, rate limits.
+### 6. Business Observability – PARTIAL
+- OpenTelemetry span helpers (optional import)
+- Missing: metrics, correlation ID middleware, full instrumentation
 
-### 4–8. Remaining
-- CQRS Light (read_models)
-- Saga / Process Manager (workflows)
-- Business Observability (OpenTelemetry)
-- AI Approval Workflow
-- Multi-photo + Document Versioning
+### 7. AI Approval Workflow – PARTIAL
+- ApprovalRequest model and service
+- Missing: integration into AgentOrchestrator, UI endpoints, audit
 
-## Notes
-- No changes to main, config.py, JWT, or protected files.
-- No production deploy or migration execution.
-- Token used for creation should be revoked immediately.
+### 8. Multi-photo + Document Versioning – PARTIAL
+- Domain models for photos and versions
+- Missing: upload endpoints, ACL, MIME/size enforcement, storage adapter
 
-Next batches will complete the remaining layers and tests.
+## Safety
+- No changes to main or protected files
+- No production migrations or deploys
+- All work remains on feat/platform-extensions
+
+Revoke the temporary PAT immediately.
