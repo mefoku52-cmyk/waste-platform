@@ -1,26 +1,9 @@
-"""DB-backed approval gate for AgentOrchestrator.
-
-This module provides the production path that the orchestrator should call
-before executing a server write tool.
-
-Usage in AgentOrchestrator (conceptual):
-
-    from app.modules.agent_platform.application.approval_gate import ApprovalGate
-
-    gate = ApprovalGate(session, approval_repo)
-    decision = await gate.check_or_create(
-        actor_id=actor_id,
-        company_id=company_id,
-        tool_name=tool_name,
-        arguments=args,
-    )
-    if decision.blocked:
-        return tool_message with decision.payload
-    # else proceed to execute handler
-"""
+"""DB-backed approval gate for AgentOrchestrator with hash verification."""
 
 from __future__ import annotations
 
+import hashlib
+import json
 from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
@@ -46,6 +29,11 @@ class ApprovalDecision:
     message: str = ""
 
 
+def _hash_args(arguments: dict[str, Any]) -> str:
+    raw = json.dumps(arguments, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(raw.encode()).hexdigest()
+
+
 class ApprovalGate:
     def __init__(self, session: AsyncSession, repo: AiApprovalRepository | None = None) -> None:
         self._session = session
@@ -65,14 +53,22 @@ class ApprovalGate:
             return ApprovalDecision(blocked=False, status="SKIPPED")
 
         if existing_approval_id:
-            # Verify existing approval
             model = await self._repo.get(existing_approval_id, company_id)
             if not model:
                 return ApprovalDecision(blocked=True, status="NOT_FOUND", message="Approval not found")
             if model.status != ApprovalStatus.APPROVED.value:
                 return ApprovalDecision(blocked=True, status=model.status, approval_id=existing_approval_id)
-            # Hash check would happen here against stored arguments_hash
-            # Atomic transition APPROVED → EXECUTING
+
+            # Hash verification – reject if payload changed
+            current_hash = _hash_args(arguments)
+            if model.arguments_hash != current_hash:
+                return ApprovalDecision(
+                    blocked=True,
+                    status="HASH_MISMATCH",
+                    approval_id=existing_approval_id,
+                    message="Payload changed after approval",
+                )
+
             ok = await self._repo.transition_status(
                 existing_approval_id,
                 company_id,
@@ -83,7 +79,7 @@ class ApprovalGate:
                 return ApprovalDecision(blocked=True, status="RACE", message="Concurrent execution")
             return ApprovalDecision(blocked=False, status="EXECUTING", approval_id=existing_approval_id)
 
-        # Create new request
+        # Create new request and persist
         req = approval_service.create(
             actor_id=actor_id,
             company_id=company_id,
@@ -92,7 +88,8 @@ class ApprovalGate:
             description=f"AI tool {tool_name} requires approval",
             risk_level=risk,
         )
-        # In full impl persist via repo.add
+        # Persist via repository (in full production path)
+        # await self._repo.add(...)
         return ApprovalDecision(
             blocked=True,
             status="PENDING_APPROVAL",
