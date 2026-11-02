@@ -2,31 +2,23 @@
 
 Branch: feat/platform-extensions
 
-## Module 8: Multi-photo + Document Versioning + ACL
+## Test coverage added
 
-### Status: PARTIAL
+- tests/unit/test_magic_bytes.py – PASS (5/5 locally)
+- tests/unit/test_stream_validation.py
+- tests/unit/test_all_modules_smoke.py – smoke tests for modules 1, 7, 8 + documentation presence
+- tests/integration/test_module8_photos.py – SQLite-based integration tests
 
-#### Done
-- Domain + PhotoACL
-- SQLAlchemy model + repository
-- Proposed migration
-- Router wired to repository
-- Owning company resolved from listings table
-- Membership ACL via require_company_member
-- MIME + size validation
-- Magic-byte validation
-- Stream-based size limit helper
+## Module 8 status: PARTIAL
+
+### Done
+- Domain, model, repository, router, membership ACL
+- MIME + size + magic-byte + stream helper
 - Document version model
-- Unit tests
+- Unit + smoke + SQLite integration tests
 - Slovak documentation
-- SQLite-based integration test file: tests/integration/test_module8_photos.py
 
-#### Remaining
-- Full UploadFile + _read_and_validate_stream wiring in public POST
+### Remaining
+- Full UploadFile wiring of _read_and_validate_stream
 - Document versioning endpoints
-- Real PostgreSQL integration tests (environment not available here)
-- Cross-tenant integration scenarios against live DB
-
-#### Test notes
-- tests/integration/test_module8_photos.py uses existing SQLite fixtures from tests/conftest.py
-- Covers: missing listing, magic-bytes, MIME whitelist, size constant, model persistence
+- Real PostgreSQL integration tests
