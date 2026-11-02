@@ -4,32 +4,29 @@ Branch: feat/platform-extensions
 
 ## Module 7: AI Approval Workflow
 
-### Status: PARTIAL (DB-backed gate ready, live orchestrator wiring pending)
+### Status: PARTIAL
 
-#### Implemented
-- ApprovalGate is fully DB-backed (creates and reads via AiApprovalRepository)
-- Hash verification before transition
-- Expiry check
-- Atomic APPROVED → EXECUTING transition
+#### Done
+- ApprovalGate is fully DB-backed (create, get, atomic transition, hash, expiry)
+- Orchestrator hook exists (`approval_orchestrator_hook.py`)
+- Router switched to DB path
 - Server-side risk classification only
-- Router, model, repository, proposed migration
-- Unit tests
-- Orchestrator hook: approval_orchestrator_hook.py
+- Self-approval blocked in approve endpoint
+- Model, repository, proposed migration, unit tests
 
-#### Not yet done
-- Live insertion of check_approval() inside AgentOrchestrator.respond
-  (file is large; insertion point is documented in approval_gate_integration_notes.py)
-- Self-approval prevention (requires role check in approve endpoint)
+#### Not done
+- Live insertion of `check_approval()` inside `AgentOrchestrator.respond`
+  (insertion point documented; file is large)
+- Full execute endpoint with EXECUTING → EXECUTED/FAILED
 - Integration tests with real DB
 
 #### Files
-- application/approval_gate.py (DB-backed)
+- application/approval_gate.py
 - application/approval_orchestrator_hook.py
 - application/approval_integration.py
 - infrastructure/models/ai_approval.py
 - infrastructure/repositories/ai_approval_repository.py
-- presentation/approvals_router.py
+- presentation/approvals_router.py (DB-backed)
 
 #### Next required step
-Insert the call from approval_orchestrator_hook.py into the tool loop in agent_orchestrator.py
-after policy/permission checks and before handler execution.
+Insert the call from `approval_orchestrator_hook.py` into the tool loop in `agent_orchestrator.py` after policy/permission checks.
