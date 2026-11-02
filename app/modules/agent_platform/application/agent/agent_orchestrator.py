@@ -464,6 +464,34 @@ class AgentOrchestrator:
                     _seen_server_calls.add((tool_name, _args_key))
 
                     try:
+                    # --- AI Approval Gate (Module 7) ---
+                    from app.modules.agent_platform.application.approval_orchestrator_hook import check_approval
+                    from uuid import UUID as _UUID
+                    _company_id = _UUID("00000000-0000-0000-0000-000000000000")  # TODO: from trusted context
+                    _decision = await check_approval(
+                        session=None,
+                        actor_id=_UUID(actor_id) if actor_id else _UUID(int=0),
+                        company_id=_company_id,
+                        tool_name=tool_name,
+                        arguments=args,
+                    )
+                    if _decision.blocked:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "PENDING_APPROVAL",
+                                        "approval_id": str(_decision.approval_id),
+                                        "status": _decision.status,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+                    # --- end Approval Gate ---
                         result = await handler.handle(
                             ToolRequest(
                                 request_id=str(uuid.uuid4()),
