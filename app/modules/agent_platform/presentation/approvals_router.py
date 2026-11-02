@@ -41,9 +41,32 @@ async def create_approval(
     if risk in (RiskLevel.READ_ONLY, RiskLevel.LOW_RISK):
         raise HTTPException(status_code=400, detail="Tool does not require approval")
 
+    from datetime import UTC, datetime, timedelta
+    from uuid import uuid4
+    from app.modules.agent_platform.infrastructure.models.ai_approval import AiApprovalRequestModel
+    import hashlib, json
+
+    def _hash(args):
+        return hashlib.sha256(json.dumps(args, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+    req_id = uuid4()
+    model = AiApprovalRequestModel(
+        id=req_id,
+        actor_id=current_user.user.id,
+        company_id=payload.company_id,
+        tool_name=payload.tool_name,
+        arguments=payload.arguments,
+        arguments_hash=_hash(payload.arguments),
+        description=payload.description,
+        risk_level=risk.value,
+        status=ApprovalStatus.PENDING.value,
+        expires_at=datetime.now(UTC) + timedelta(minutes=15),
+        created_at=datetime.now(UTC),
+    )
     repo = AiApprovalRepository(session)
-    # In full impl construct model and repo.add
-    return {"status": "PENDING", "message": "Approval request created (DB path)"}
+    await repo.add(model)
+    await session.flush()
+    return {"id": str(req_id), "status": "PENDING"}
 
 
 @router.post("/{request_id}/approve")
