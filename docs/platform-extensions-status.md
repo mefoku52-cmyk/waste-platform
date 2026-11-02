@@ -4,42 +4,32 @@ Branch: feat/platform-extensions
 
 ## Module 7: AI Approval Workflow
 
-### Status: IMPLEMENTED (gate ready for live wiring)
+### Status: PARTIAL (DB-backed gate ready, live orchestrator wiring pending)
 
 #### Implemented
-- Full state machine with payload hash binding
-- Tenant isolation
-- SQLAlchemy model + async repository with atomic transitions
-- ApprovalGate (DB-backed check_or_create)
-- Deterministic risk classifier
-- Router
-- Proposed migration
+- ApprovalGate is fully DB-backed (creates and reads via AiApprovalRepository)
+- Hash verification before transition
+- Expiry check
+- Atomic APPROVED → EXECUTING transition
+- Server-side risk classification only
+- Router, model, repository, proposed migration
 - Unit tests
-- Exact insertion point documented for AgentOrchestrator.respond
+- Orchestrator hook: approval_orchestrator_hook.py
+
+#### Not yet done
+- Live insertion of check_approval() inside AgentOrchestrator.respond
+  (file is large; insertion point is documented in approval_gate_integration_notes.py)
+- Self-approval prevention (requires role check in approve endpoint)
+- Integration tests with real DB
 
 #### Files
-- application/approval_service.py
+- application/approval_gate.py (DB-backed)
+- application/approval_orchestrator_hook.py
 - application/approval_integration.py
-- application/approval_gate.py
-- application/agent/approval_gate_integration_notes.py   ← insertion guide
 - infrastructure/models/ai_approval.py
 - infrastructure/repositories/ai_approval_repository.py
 - presentation/approvals_router.py
-- docs/platform-extensions/migrations/proposed_ai_approval.py
-- tests/unit/test_ai_approval.py
 
-#### Live wiring
-The exact code block to insert before server tool handler execution is documented in:
-`app/modules/agent_platform/application/agent/approval_gate_integration_notes.py`
-
-Protected write tools:
-- update_listing, publish_listing, create_inquiry, update_inquiry_status, promote_listing
-
-Read-only tools skip the gate.
-
-#### Remaining
-- Actual line-level edit inside AgentOrchestrator.respond (documented, not yet applied to avoid large diff risk)
-- Full execute endpoint
-- Broader integration tests
-
-Status: IMPLEMENTED (ready for final line-level wiring)
+#### Next required step
+Insert the call from approval_orchestrator_hook.py into the tool loop in agent_orchestrator.py
+after policy/permission checks and before handler execution.
