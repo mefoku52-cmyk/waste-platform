@@ -1,28 +1,6 @@
-"""Thin wrapper that AgentOrchestrator.respond should call before write tools.
+"""Orchestrator hook – requires real session and company_id.
 
-Insert this call in agent_orchestrator.py inside the tool loop,
-after policy and permission checks, before handler invocation:
-
-    from app.modules.agent_platform.application.approval_orchestrator_hook import check_approval
-
-    decision = await check_approval(
-        session=db_session,          # must be injected
-        actor_id=UUID(actor_id),
-        company_id=company_id,       # from context
-        tool_name=tool_name,
-        arguments=args,
-    )
-    if decision.blocked:
-        messages.append(ModelMessage(
-            role="tool",
-            content=json.dumps({
-                "error": "PENDING_APPROVAL",
-                "approval_id": str(decision.approval_id),
-                "status": decision.status,
-            }),
-            tool_call_id=call.get("id", ""),
-        ))
-        continue
+Call this from AgentOrchestrator.respond with values passed from the chat router.
 """
 
 from __future__ import annotations
@@ -43,6 +21,8 @@ async def check_approval(
     arguments: dict[str, Any],
     existing_approval_id: UUID | None = None,
 ) -> ApprovalDecision:
+    if session is None or company_id is None:
+        raise RuntimeError("Approval requires real DB session and company context")
     gate = ApprovalGate(session)
     return await gate.check_or_create(
         actor_id=actor_id,
