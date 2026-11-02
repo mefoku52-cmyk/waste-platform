@@ -14,16 +14,17 @@ Branch: feat/platform-extensions
 - Owning company resolved from listings table
 - Membership ACL via require_company_member
 - MIME + size validation
-- Magic-byte validation wired into POST (is_valid_image_content)
+- Magic-byte validation
+- Stream-based size limit helper (_read_and_validate_stream)
 - Document version model
-- Unit tests (ACL, MIME, magic-bytes)
+- Unit tests (ACL, MIME, magic-bytes, stream rules)
 - Slovak documentation
 
 #### Remaining
-- Full stream-based size enforcement during upload
+- Full integration of _read_and_validate_stream into the public POST (requires UploadFile)
 - Document versioning endpoints
 - Integration tests with real DB (cross-tenant + invalid upload leaves no record)
 
 #### Files updated this step
-- presentation/photos_router.py (magic-byte check)
-- tests/unit/test_magic_bytes.py
+- presentation/photos_router.py (stream helper)
+- tests/unit/test_stream_validation.py
