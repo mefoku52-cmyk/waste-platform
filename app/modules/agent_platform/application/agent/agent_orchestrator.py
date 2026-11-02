@@ -463,13 +463,25 @@ class AgentOrchestrator:
                     _args_key = json.dumps(args, sort_keys=True, ensure_ascii=False)
                     _seen_server_calls.add((tool_name, _args_key))
 
-                    try:
                     # --- AI Approval Gate (Module 7) ---
                     from app.modules.agent_platform.application.approval_orchestrator_hook import check_approval
                     from uuid import UUID as _UUID
-                    _company_id = _UUID("00000000-0000-0000-0000-000000000000")  # TODO: from trusted context
+                    # company_id must come from trusted context (membership). Block if missing.
+                    _company_id = None  # TODO: inject from request context
+                    if _company_id is None:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {"error": "TENANT_CONTEXT_MISSING", "tool_name": tool_name},
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
                     _decision = await check_approval(
-                        session=None,
+                        session=None,  # must be injected
                         actor_id=_UUID(actor_id) if actor_id else _UUID(int=0),
                         company_id=_company_id,
                         tool_name=tool_name,
@@ -492,6 +504,7 @@ class AgentOrchestrator:
                         )
                         continue
                     # --- end Approval Gate ---
+                    try:
                         result = await handler.handle(
                             ToolRequest(
                                 request_id=str(uuid.uuid4()),
