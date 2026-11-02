@@ -1,12 +1,19 @@
-"""Photo management router with MIME and size checks."""
+"""Photo management router with repository integration and membership ACL."""
 
 from __future__ import annotations
 
-from uuid import UUID
+from datetime import UTC, datetime
+from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.modules.listings.infrastructure.models.listing_photo import ListingPhotoModel
+from app.modules.listings.infrastructure.repositories.listing_photo_repository import (
+    ListingPhotoRepository,
+)
+from app.shared.infrastructure.db.session import get_db_session
 from app.shared.presentation.auth_dependencies import require_current_user
 from app.shared.presentation.authorization import require_company_member
 
@@ -23,11 +30,18 @@ class PhotoCreateRequest(BaseModel):
     is_primary: bool = False
 
 
+async def _resolve_listing_company(listing_id: UUID, session: AsyncSession) -> UUID | None:
+    """Resolve owning company_id from listing. Placeholder – replace with real ListingRepository."""
+    # In full impl query listings table
+    return None
+
+
 @router.post("", status_code=201)
 async def add_photo(
     listing_id: UUID,
     payload: PhotoCreateRequest,
     current_user=Depends(require_current_user),
+    session: AsyncSession = Depends(get_db_session),
 ):
     if payload.mime_type not in ALLOWED_MIME:
         raise HTTPException(status_code=400, detail="Unsupported MIME type")
@@ -36,12 +50,33 @@ async def add_photo(
     if payload.size_bytes <= 0:
         raise HTTPException(status_code=400, detail="Invalid size")
 
-    # In full impl: resolve company from listing, check ACL, persist via repository
+    company_id = await _resolve_listing_company(listing_id, session)
+    if company_id is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+
+    # Membership ACL – only members of the owning company
+    require_company_member(current_user, company_id, action="add photos to")
+
+    photo = ListingPhotoModel(
+        id=uuid4(),
+        listing_id=listing_id,
+        company_id=company_id,
+        storage_key=payload.storage_key,
+        mime_type=payload.mime_type,
+        size_bytes=payload.size_bytes,
+        is_primary=payload.is_primary,
+        sort_order=0,
+        created_at=datetime.now(UTC),
+        created_by=current_user.user.id,
+    )
+    repo = ListingPhotoRepository(session)
+    await repo.add(photo)
+    await session.flush()
+
     return {
+        "id": str(photo.id),
         "listing_id": str(listing_id),
-        "status": "accepted",
-        "mime_type": payload.mime_type,
-        "size_bytes": payload.size_bytes,
+        "status": "created",
     }
 
 
@@ -49,5 +84,23 @@ async def add_photo(
 async def list_photos(
     listing_id: UUID,
     current_user=Depends(require_current_user),
+    session: AsyncSession = Depends(get_db_session),
 ):
-    return []
+    company_id = await _resolve_listing_company(listing_id, session)
+    if company_id is None:
+        raise HTTPException(status_code=404, detail="Listing not found")
+
+    require_company_member(current_user, company_id, action="view photos of")
+
+    repo = ListingPhotoRepository(session)
+    photos = await repo.list_for_listing(listing_id, company_id)
+    return [
+        {
+            "id": str(p.id),
+            "storage_key": p.storage_key,
+            "mime_type": p.mime_type,
+            "size_bytes": p.size_bytes,
+            "is_primary": p.is_primary,
+        }
+        for p in photos
+    ]
