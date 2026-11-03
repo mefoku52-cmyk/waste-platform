@@ -178,7 +178,7 @@ export default function LandingPage() {
         </header>
 
         {/* HERO */}
-        <section className="relative overflow-hidden">
+        <section className="relative z-10 overflow-hidden">
           <div
             className="absolute inset-0 z-0"
             aria-hidden="true"
@@ -219,9 +219,18 @@ export default function LandingPage() {
               
             </div>
 
-            <div className="mt-12 flex justify-center">
-              <img src="/trc-logo.jpg" alt="RC" className="max-w-md w-full opacity-90" />
-            </div>
+          </div>
+        </section>
+
+
+        {/* LOGO POD HERO – spodná vizuálna vrstva */}
+        <section className="relative z-0 -mt-24 pb-8" aria-label="Logo TRČ">
+          <div className="mx-auto flex max-w-6xl justify-center px-4">
+            <img
+              src="/trc-logo.jpg"
+              alt="TRČ"
+              className="w-full max-w-md opacity-90"
+            />
           </div>
         </section>
 
