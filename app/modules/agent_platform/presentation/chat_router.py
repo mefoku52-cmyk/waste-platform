@@ -10,6 +10,7 @@ tento modul ju re-exportuje, aby mount v ``api_router.py`` ostal nedotknutý.
 from __future__ import annotations
 
 from app.modules.agent_platform.presentation.user_ai_chat_router import (
+    is_platform_admin,
     BASE_RULES,
     _build_page_context_block,
     _build_system_prompt,
@@ -24,5 +25,6 @@ __all__ = [
     "_build_system_prompt",
     "_check_ai_entitlement",
     "_detect_security_patterns",
+    "is_platform_admin",
     "router",
 ]

@@ -33,7 +33,6 @@ async def lifespan(app: FastAPI):
 
 def _cors_origins() -> list[str]:
     """Vrati zoznam povolenych CORS origins.
-
     Zdroj pravdy: settings.CORS_ORIGINS (env CORS_ORIGINS alebo
     CORS_ALLOWED_ORIGINS). Dev domény sa pridávajú len v development.
     Ak by env bolo prazdne, drzime bezpecny produkcny fallback.
@@ -77,7 +76,6 @@ def create_app() -> FastAPI:
         root_path=settings.ROOT_PATH or "",
         lifespan=lifespan,
     )
-
     register_http_exception_handlers(app)
 
     from fastapi.exceptions import RequestValidationError
@@ -104,7 +102,6 @@ def create_app() -> FastAPI:
     # RateLimit je vnutri SecurityHeaders (LIFO), aby 429 odpovede mali hlavicky.
     app.add_middleware(RateLimitMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
-
     mounted: list[str] = []
     skipped: list[dict[str, str]] = []
 
@@ -147,7 +144,6 @@ def create_app() -> FastAPI:
         # --- Redis ---
         try:
             import redis.asyncio as _redis
-
             client = _redis.from_url(settings.REDIS_URL, socket_timeout=2)
             await client.ping()
             await client.aclose()
@@ -178,17 +174,15 @@ def create_app() -> FastAPI:
             app.include_router(api_router, prefix="/api/v1")
         mounted.append("shared.api_router")
     except Exception as e:
-        # This router contains the required API surface. Do not start a
-        # seemingly healthy service if it failed to import or register.
-        # Keep exception details in server logs only; never expose them via
-        # health responses or an HTTP error body.
+        import traceback
         logger.error(
-            "Failed to include required shared.api_router (%s)",
-            type(e).__name__,
+            "Failed to include required shared.api_router: %s\n%s",
+            str(e),
+            traceback.format_exc()
         )
         raise RuntimeError(
             "Required API router could not be initialized"
-        ) from None
+        ) from e
 
     app.state.mounted_routers = mounted
 

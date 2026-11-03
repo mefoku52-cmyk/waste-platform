@@ -35,7 +35,7 @@ class InvalidTransitionDetails(BaseModel):
 
 
 class InvalidTransitionApiErrorResponse(ApiErrorResponse):
-    details: InvalidTransitionDetails | dict[str, Any] | None = None
+    details: dict[str, Any] | list[Any] | str | None = None
 
 
 def error_responses(*status_codes: int):

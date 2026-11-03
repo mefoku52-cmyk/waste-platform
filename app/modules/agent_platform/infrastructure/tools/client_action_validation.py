@@ -76,9 +76,6 @@ _NO_ARG_ACTIONS = frozenset(
         "open_subscription",
         "open_marketplace",
         "open_admin",
-        "open_transport",
-        "open_subscription",
-        "open_marketplace",
     }
 )
 
