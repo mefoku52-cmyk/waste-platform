@@ -173,6 +173,8 @@ class AgentOrchestrator:
         actor_type: str = "user",
         session_id: str | None = None,
         conversation_history: tuple[ModelMessage, ...] | None = None,
+        company_id: str | None = None,
+        db_session: Any | None = None,
     ) -> OrchestrationResult:
         session_id = session_id or str(uuid.uuid4())
         messages: list[ModelMessage] = [
@@ -463,6 +465,47 @@ class AgentOrchestrator:
                     _args_key = json.dumps(args, sort_keys=True, ensure_ascii=False)
                     _seen_server_calls.add((tool_name, _args_key))
 
+                    # --- AI Approval Gate (Module 7) ---
+                    from app.modules.agent_platform.application.approval_orchestrator_hook import check_approval
+                    from uuid import UUID as _UUID
+                    # company_id must come from trusted context (membership). Block if missing.
+                    _company_id = company_id
+                    if _company_id is None or db_session is None:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {"error": "TENANT_OR_SESSION_MISSING", "tool_name": tool_name},
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+                    _decision = await check_approval(
+                        session=db_session,
+                        actor_id=_UUID(actor_id) if actor_id else _UUID(int=0),
+                        company_id=_UUID(_company_id),
+                        tool_name=tool_name,
+                        arguments=args,
+                    )
+                    if _decision.blocked:
+                        messages.append(
+                            ModelMessage(
+                                role="tool",
+                                content=json.dumps(
+                                    {
+                                        "error": "PENDING_APPROVAL",
+                                        "approval_id": str(_decision.approval_id),
+                                        "status": _decision.status,
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                tool_call_id=call.get("id", ""),
+                            )
+                        )
+                        continue
+                    # --- end Approval Gate ---
                     try:
                         result = await handler.handle(
                             ToolRequest(

@@ -871,6 +871,8 @@ async def user_ai_chat(
                 actor_type="user",
                 session_id=session_id,
                 conversation_history=history,
+                company_id=_first_company_id(current_user),
+                db_session=session,
             )
         except Exception as exc:
             import logging as _log

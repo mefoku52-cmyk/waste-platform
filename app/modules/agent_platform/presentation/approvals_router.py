@@ -1,133 +1,92 @@
-"""Admin-only approvals endpoints."""
+"""AI Approval Workflow router – DB-backed.
+
+Risk level is determined server-side. Client cannot set it.
+"""
 
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.agent_platform.application.approval.approval_service import (
-    DefaultApprovalService,
-)
-from app.modules.agent_platform.domain.approval.approval_decision import ApprovalDecision
-from app.modules.agent_platform.domain.approval.approval_status import ApprovalStatus
-from app.modules.agent_platform.infrastructure.models import ApprovalRequestModel
-from app.modules.agent_platform.infrastructure.persistence.approval_repository import (
-    SqlAlchemyApprovalRepository,
+from app.modules.agent_platform.application.approval_integration import classify_risk
+from app.modules.agent_platform.application.approval_service import ApprovalStatus, RiskLevel
+from app.modules.agent_platform.infrastructure.repositories.ai_approval_repository import (
+    AiApprovalRepository,
 )
 from app.shared.infrastructure.db.session import get_db_session
-from app.shared.presentation.auth_dependencies import require_admin
-from app.shared.presentation.authorization import current_user_id
+from app.shared.presentation.auth_dependencies import require_current_user
+from app.shared.presentation.authorization import require_company_member
 
-router = APIRouter(
-    prefix="/agent-platform/approvals",
-    tags=["agent-platform-approvals"],
-)
+router = APIRouter(prefix="/agent-platform/approvals", tags=["ai-approvals"])
 
 
-class DecideRequest(BaseModel):
-    reason: str
+class CreateApprovalRequest(BaseModel):
+    company_id: UUID
+    tool_name: str
+    arguments: dict
+    description: str
 
 
-@router.get("")
-async def list_approvals(
-    limit: int = Query(default=50, ge=1, le=200),
-    status: str | None = Query(default=None),
-    current_user=Depends(require_admin),
+@router.post("", status_code=201)
+async def create_approval(
+    payload: CreateApprovalRequest,
+    current_user=Depends(require_current_user),
     session: AsyncSession = Depends(get_db_session),
-) -> dict:
-    stmt = select(ApprovalRequestModel).order_by(desc(ApprovalRequestModel.created_at))
-    if status:
-        stmt = stmt.where(ApprovalRequestModel.status == status)
-    stmt = stmt.limit(limit)
-    rows = (await session.execute(stmt)).scalars().all()
-    return {
-        "items": [
-            {
-                "approvalId": r.approval_id,
-                "requestedBy": r.requested_by,
-                "requestedByType": r.requested_by_type,
-                "action": r.action,
-                "target": r.target,
-                "reason": r.reason,
-                "riskLevel": r.risk_level,
-                "status": r.status,
-                "createdAt": r.created_at.isoformat() if r.created_at else None,
-                "expiresAt": r.expires_at.isoformat() if r.expires_at else None,
-                "decidedBy": r.decided_by,
-                "decidedAt": r.decided_at.isoformat() if r.decided_at else None,
-                "decisionReason": r.decision_reason,
-            }
-            for r in rows
-        ],
-        "count": len(rows),
-    }
+):
+    require_company_member(current_user, payload.company_id, action="request AI approval for")
+    risk = classify_risk(payload.tool_name)  # server-side only
+    if risk in (RiskLevel.READ_ONLY, RiskLevel.LOW_RISK):
+        raise HTTPException(status_code=400, detail="Tool does not require approval")
 
+    from datetime import UTC, datetime, timedelta
+    from uuid import uuid4
+    from app.modules.agent_platform.infrastructure.models.ai_approval import AiApprovalRequestModel
+    import hashlib, json
 
-async def _decide(
-    approval_id: str,
-    target_status: ApprovalStatus,
-    reason: str,
-    actor: str,
-    session: AsyncSession,
-) -> dict:
-    repo = SqlAlchemyApprovalRepository(session)
-    existing = await repo.get(approval_id)
-    if existing is None:
-        raise HTTPException(status_code=404, detail=f"Approval {approval_id} not found")
-    svc = DefaultApprovalService(repository=repo)
-    decision = ApprovalDecision(
-        approval_id=approval_id,
-        status=target_status,
-        decided_by=actor,
-        decided_at=datetime.now(UTC),
-        reason=reason or "admin decision",
+    def _hash(args):
+        return hashlib.sha256(json.dumps(args, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+    req_id = uuid4()
+    model = AiApprovalRequestModel(
+        id=req_id,
+        actor_id=current_user.user.id,
+        company_id=payload.company_id,
+        tool_name=payload.tool_name,
+        arguments=payload.arguments,
+        arguments_hash=_hash(payload.arguments),
+        description=payload.description,
+        risk_level=risk.value,
+        status=ApprovalStatus.PENDING.value,
+        expires_at=datetime.now(UTC) + timedelta(minutes=15),
+        created_at=datetime.now(UTC),
     )
-    result = await svc.decide(decision)
-    return {
-        "approvalId": result.approval_id,
-        "status": result.status.value,
-        "decidedBy": result.decided_by,
-    }
+    repo = AiApprovalRepository(session)
+    await repo.add(model)
+    await session.flush()
+    return {"id": str(req_id), "status": "PENDING"}
 
 
-@router.post("/{approval_id}/approve")
-async def approve(
-    approval_id: str,
-    payload: DecideRequest,
-    current_user=Depends(require_admin),
+@router.post("/{request_id}/approve")
+async def approve_request(
+    request_id: UUID,
+    company_id: UUID,
+    current_user=Depends(require_current_user),
     session: AsyncSession = Depends(get_db_session),
-) -> dict:
-    actor = current_user_id(current_user) or "admin"
-    return await _decide(approval_id, ApprovalStatus.APPROVED, payload.reason, actor, session)
-
-
-@router.post("/{approval_id}/deny")
-async def deny(
-    approval_id: str,
-    payload: DecideRequest,
-    current_user=Depends(require_admin),
-    session: AsyncSession = Depends(get_db_session),
-) -> dict:
-    actor = current_user_id(current_user) or "admin"
-    return await _decide(approval_id, ApprovalStatus.DENIED, payload.reason, actor, session)
-
-
-@router.get("/{approval_id}/is-executable")
-async def is_executable(
-    approval_id: str,
-    current_user=Depends(require_admin),
-    session: AsyncSession = Depends(get_db_session),
-) -> dict:
-    """Overi, ci approval je schvaleny a neexpirovany."""
-    from app.modules.agent_platform.application.approval.approval_workflow import (
-        DefaultApprovalWorkflow,
+):
+    require_company_member(current_user, company_id, action="approve AI operations for")
+    repo = AiApprovalRepository(session)
+    model = await repo.get(request_id, company_id)
+    if not model:
+        raise HTTPException(status_code=404, detail="Not found")
+    if model.actor_id == current_user.user.id:
+        raise HTTPException(status_code=403, detail="Cannot approve your own request")
+    # Transition PENDING → APPROVED
+    ok = await repo.transition_status(
+        request_id, company_id, ApprovalStatus.PENDING.value, ApprovalStatus.APPROVED.value
     )
-
-    repo = SqlAlchemyApprovalRepository(session)
-    wf = DefaultApprovalWorkflow(repository=repo)
-    executable = await wf.is_executable(approval_id)
-    return {"approvalId": approval_id, "executable": bool(executable)}
+    if not ok:
+        raise HTTPException(status_code=409, detail="Cannot approve")
+    return {"status": "APPROVED"}
