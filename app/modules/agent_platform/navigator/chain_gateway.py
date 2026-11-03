@@ -40,18 +40,14 @@ class ChainAdapter(ModelAdapter):
         return all(adapter._is_deterministic() for adapter in self._adapters)
 
     def _infer_impl(self, prompt: str, context: dict[str, Any] | None) -> ModelResponse:
-        last_error: str | None = None
         for adapter in self._adapters:
             if not adapter.is_available():
-                last_error = f"{adapter.name} nie je dostupný"
                 continue
             try:
                 response = adapter.infer(prompt, context)
                 if response.available:
                     return response
-                last_error = f"{adapter.name} vrátil nedostupný výsledok"
-            except Exception as exc:  # bezpečne zachytíme libovolnú chybu poskytovateľa
-                last_error = type(exc).__name__
+            except Exception:  # bezpečne zachytíme libovolnú chybu poskytovateľa
                 continue
         # Všetky adaptéry zlyhali alebo nie je dostupný žiadny.
         return ModelResponse(

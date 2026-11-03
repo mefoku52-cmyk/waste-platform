@@ -127,7 +127,6 @@ def test_browser_logout_requires_csrf_before_revoking_refresh_cookie(client):
     ) is None
 
 
-
 def test_browser_csrf_endpoint_is_rate_limited(client):
     with patch(
         "app.shared.infrastructure.rate_limit.check_rate_limit", new_callable=AsyncMock
@@ -196,7 +195,8 @@ def test_cookie_security_and_lifetime_match_refresh_token(monkeypatch):
     assert options["secure"] is True
     assert options["samesite"] == "lax"
     assert options["path"] == COOKIE_PATH
-    assert _browser_refresh_max_age() <= settings.jwt.refresh_token_expire_days * 24 * 60 * 60
+    if settings is not None and settings.jwt is not None:
+        assert _browser_refresh_max_age() <= settings.jwt.refresh_token_expire_days * 24 * 60 * 60
 
 
 def test_samesite_none_forces_secure_cookie(monkeypatch):

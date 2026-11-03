@@ -3,7 +3,7 @@
 Prechádza postupom:
 1. Zber údajov iba na čítanie (git_diag, monitor)
 2. Analýza (model_adapter, model_comparator)
-3. Návrhy (decision_log - iba zaznamenávanie,never aplikácia)
+3. Návrhy (decision_log - iba zaznamenávanie, never aplikácia)
 4. Testovacie overenie (mock adaptéry)
 5. Bezpečnostná kontrola (agent_roles, execution_policy)
 6. Report (rozlišuje overené fakty, testové výsledky, modelové výstupy, neoverené zistenia)
@@ -13,8 +13,10 @@ Nikdy neaplikuje návrhy do $HOME/waste-platform. Nevyžaduje API kľúče.
 
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from .agent_roles import Agent, AgentRole, AgentRoleManager
@@ -108,17 +110,16 @@ class DiagnosticWorkflow:
     ):
         self.repo_path = repo_path
         self.site_url = site_url
-        self.policy = policy or ExecutionPolicy()  # DISABLED je predvoleny
+        self.policy = policy or ExecutionPolicy()
         self.permission_policy = PermissionPolicy(mode=PermissionMode.DIAGNOSTIC)
         if role_manager is not None:
             role_manager.policy = self.permission_policy
             self.role_manager = role_manager
         else:
             self.role_manager = AgentRoleManager(policy=self.permission_policy)
-            # Auto-registruj predvolene agentov pre internalne kroky workflow
-            self.role_manager.register_agent(Agent(name="observer", role=AgentRole.OBSERVER))
-            self.role_manager.register_agent(Agent(name="analyst", role=AgentRole.ANALYST))
-            self.role_manager.register_agent(Agent(name="coordinator", role=AgentRole.COORDINATOR))
+        self.role_manager.register_agent(Agent(name="observer", role=AgentRole.OBSERVER))
+        self.role_manager.register_agent(Agent(name="analyst", role=AgentRole.ANALYST))
+        self.role_manager.register_agent(Agent(name="coordinator", role=AgentRole.COORDINATOR))
         self.decision_log = decision_log
         self.workflow_id = f"diag-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S-%f')}"
 
@@ -139,7 +140,6 @@ class DiagnosticWorkflow:
 
         data: dict[str, Any] = {"step": "gather", "status": "completed"}
 
-        # Git diagnostika (read-only)
         try:
             git = GitDiagnostic(self.repo_path).full_diagnostic()
             data["git"] = git
@@ -148,7 +148,6 @@ class DiagnosticWorkflow:
             data["git_error"] = type(exc).__name__
             data["status"] = "completed_with_errors"
 
-        # Monitor - web dostupnosť
         try:
             site = check_site(self.site_url)
             data["site"] = site
@@ -164,7 +163,7 @@ class DiagnosticWorkflow:
         gather_data: dict[str, Any],
         agent_name: str = "analyst",
     ) -> dict[str, Any]:
-        """Krok 2: Analýza鐵ziskanych údajov pomocou modelov."""
+        """Krok 2: Analýza získaných údajov pomocou modelov."""
         if not self._check_agent(agent_name, "analyze"):
             return {
                 "step": "analyze",
@@ -173,9 +172,7 @@ class DiagnosticWorkflow:
                 "error": f"Agent {agent_name} nemá oprávnenie 'analyze'",
             }
 
-        # Použijeme MockAdapter - nevyžaduje API kľúč, deterministický
         adapter = MockAdapter(policy=self.policy)
-
         analysis_input = {
             "git_branch": (gather_data.get("git") or {}).get("branch"),
             "git_clean": (gather_data.get("git") or {}).get("clean"),
@@ -184,13 +181,11 @@ class DiagnosticWorkflow:
             "git_error": gather_data.get("git_error"),
             "site_error": gather_data.get("site_error"),
         }
-
         prompt = (
             f"Analyzuj stav CMEP: git_branch={analysis_input['git_branch']}, "
             f"git_clean={analysis_input['git_clean']}, site_ok={analysis_input['site_ok']}, "
             f"site_status={analysis_input['site_status']}"
         )
-
         model_response = adapter.infer(prompt, context=analysis_input)
 
         model_output = ModelOutput(
@@ -215,9 +210,8 @@ class DiagnosticWorkflow:
             "analysis_input": analysis_input,
         }
 
-        # Zapíšeme rozhodnutie o analýze do decision_log (ak je k dispozícii)
         if self.decision_log is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.decision_log.add_decision(
                     decision_id=f"{self.workflow_id}-analyze",
                     decision_type="model_analysis",
@@ -231,8 +225,6 @@ class DiagnosticWorkflow:
                     verified_facts=[f"git_branch={analysis_input['git_branch']}"],
                     unverified_claims=[model_output.result] if model_output.result else [],
                 )
-            except Exception:
-                pass  # Decision log chyba nesmie zablokovať workflow
 
         return result
 
@@ -252,13 +244,8 @@ class DiagnosticWorkflow:
 
         proposals: list[dict[str, Any]] = []
 
-        # Generujeme návrhy na základe analýzy (iba návrhy, žiadna aplikácia)
-        git_data = (
-            analysis_data.get("git", {}) if isinstance(analysis_data.get("git"), dict) else {}
-        )
-        site_data = (
-            analysis_data.get("site", {}) if isinstance(analysis_data.get("site"), dict) else {}
-        )
+        git_data = analysis_data.get("git") or {}
+        site_data = analysis_data.get("site") or {}
 
         if not git_data.get("clean", True):
             proposals.append(
@@ -271,7 +258,6 @@ class DiagnosticWorkflow:
                     "reason": "Read-only režim - návrh sa nepoužije",
                 }
             )
-
         if not site_data.get("ok", True):
             proposals.append(
                 {
@@ -284,10 +270,9 @@ class DiagnosticWorkflow:
                 }
             )
 
-        # Zapíšeme návrhy do decision_log
         if self.decision_log is not None:
             for prop in proposals:
-                try:
+                with contextlib.suppress(Exception):
                     self.decision_log.add_decision(
                         decision_id=prop["id"],
                         decision_type="proposal",
@@ -298,8 +283,6 @@ class DiagnosticWorkflow:
                         unverified_claims=[prop["proposed_action"]],
                         blocker="Read-only režim - návrh nie je aplikovaný",
                     )
-                except Exception:
-                    pass
 
         return {
             "step": "propose",
@@ -323,7 +306,6 @@ class DiagnosticWorkflow:
                 "error": f"Agent {agent_name} nemá oprávnenie 'compare'",
             }
 
-        # Spustíme testy cez mock adaptéry (deterministické, bez API kľúča)
         adapter_a = MockAdapter(policy=self.policy, seed="test-a")
         adapter_b = MockAdapter(policy=self.policy, seed="test-b")
 
@@ -343,7 +325,6 @@ class DiagnosticWorkflow:
                 )
             )
 
-        # Porovnanie viacerých adapterov
         responses = {
             "adapter-a": adapter_a.infer("consistency-check"),
             "adapter-b": adapter_b.infer("consistency-check"),
@@ -383,15 +364,11 @@ class DiagnosticWorkflow:
         blockers: list[str] = []
         checks: dict[str, Any] = {}
 
-        # Kontrola ExecutionMode
         checks["execution_mode"] = self.policy.mode.value
         if self.policy.mode == ExecutionMode.DISABLED:
             blockers.append("ExecutionMode je DISABLED - žiadne vykonanie nie je povolené")
 
-        # Kontrola registrovaných agentov
         checks["registered_agents"] = self.role_manager.list_agents()
-
-        # Kontrola zakázaných operácií
         forbidden_tested = ["write", "commit", "deploy", "git_push", "db_write"]
         checks["forbidden_operations_denied"] = {}
         for op in forbidden_tested:
@@ -420,7 +397,6 @@ class DiagnosticWorkflow:
         unverified_claims: list[UnverifiedClaim] = []
         blockers: list[str] = [redact_any(b) for b in security_data.get("blockers", [])]
 
-        # Overené fakty z gather dát
         git = gather_data.get("git")
         git_error = gather_data.get("git_error")
         if git_error:
@@ -468,7 +444,6 @@ class DiagnosticWorkflow:
                 )
             )
 
-        # Modelové výstupy z analýzy
         model_out = analysis_data.get("model_output", {})
         if model_out:
             model_outputs.append(
@@ -480,7 +455,6 @@ class DiagnosticWorkflow:
                     error=model_out.get("error"),
                 )
             )
-            # Modelový výstup je neoverené tvrdenie (nie overený fakt)
             if model_out.get("result"):
                 unverified_claims.append(
                     UnverifiedClaim(
@@ -490,7 +464,6 @@ class DiagnosticWorkflow:
                     )
                 )
 
-        # Testové výsledky
         for tr in verify_data.get("test_results", []):
             test_results.append(
                 TestResult(
@@ -503,7 +476,6 @@ class DiagnosticWorkflow:
             if not tr["passed"]:
                 blockers.append(redact_any(f"Test zlyhal: {tr['test_name']}"))
 
-        # Návrhy (nie sú aplikované)
         proposals = proposals_data.get("proposals", [])
 
         overall_status = "completed"
@@ -537,26 +509,16 @@ class DiagnosticWorkflow:
             "steps": {},
         }
 
-        # Krok 1: Zber
         results["steps"]["gather"] = self.step_1_gather_readonly(agent_name)
-
-        # Krok 2: Analýza
         results["steps"]["analyze"] = self.step_2_analyze(
             results["steps"]["gather"], agent_name="analyst"
         )
-
-        # Krok 3: Návrhy
         results["steps"]["propose"] = self.step_3_proposals(
             results["steps"]["gather"], agent_name="coordinator"
         )
-
-        # Krok 4: Overenie
         results["steps"]["verify"] = self.step_4_test_verification(agent_name="analyst")
-
-        # Krok 5: Bezpečnosť
         results["steps"]["security"] = self.step_5_security_check(agent_name=agent_name)
 
-        # Krok 6: Report
         report = self.step_6_report(
             results["steps"]["gather"],
             results["steps"]["analyze"],
@@ -602,5 +564,4 @@ class DiagnosticWorkflow:
             "comparison": report.comparison,
             "overall_status": report.overall_status,
         }
-
         return results

@@ -15,6 +15,7 @@ from app.modules.agent_platform.presentation.user_ai_chat_router import (
     _build_system_prompt,
     _check_ai_entitlement,
     _detect_security_patterns,
+    is_platform_admin,
     router,
 )
 
@@ -24,5 +25,6 @@ __all__ = [
     "_build_system_prompt",
     "_check_ai_entitlement",
     "_detect_security_patterns",
+    "is_platform_admin",
     "router",
 ]
