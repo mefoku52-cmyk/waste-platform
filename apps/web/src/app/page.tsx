@@ -179,10 +179,16 @@ export default function LandingPage() {
 
         {/* HERO */}
         <section className="relative overflow-hidden">
-          <div className="absolute inset-0" style={{
-              background:
-                'radial-gradient(circle at 30% 20%, rgba(214,168,79,0.07), transparent 58%)',
-            }} />
+          <div
+            className="absolute inset-0 z-0"
+            aria-hidden="true"
+            style={{
+              backgroundImage: "linear-gradient(90deg, rgba(11,13,15,0.82) 0%, rgba(11,13,15,0.48) 55%, rgba(11,13,15,0.18) 100%), linear-gradient(0deg, rgba(11,13,15,0.65) 0%, transparent 55%), url('/cmep-hero-bg.png')",
+              backgroundPosition: "center center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            }}
+          />
           <div className="relative mx-auto max-w-6xl px-4 py-12 md:py-20">
             <div className="px-1 py-4 md:px-2 md:py-8">
               <p className="mb-3 text-[11px] uppercase tracking-[0.3em]" style={{ color: GOLD }}>
