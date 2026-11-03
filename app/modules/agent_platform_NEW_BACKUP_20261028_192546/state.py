@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import fcntl
 import json
 import os
@@ -71,10 +72,8 @@ class StateManager:
                     self._check_path(tmp)
                     os.replace(str(tmp), str(self.state_file))
                 except Exception:
-                    try:
+                    with contextlib.suppress(OSError):
                         os.unlink(tmp_path)
-                    except OSError:
-                        pass
                     raise
             finally:
                 fcntl.flock(lockf.fileno(), fcntl.LOCK_UN)
@@ -113,10 +112,8 @@ class StateManager:
                 ) as e:
                     raise StateCorruptedError(f"Stavovy subor je poskodeny: {type(e).__name__}")
                 finally:
-                    try:
+                    with contextlib.suppress(OSError):
                         os.close(fd)
-                    except OSError:
-                        pass
             finally:
                 fcntl.flock(lockf.fileno(), fcntl.LOCK_UN)
 
@@ -158,10 +155,8 @@ class StateManager:
             with os.fdopen(fd, "r", encoding="utf-8") as f:
                 content = f.read()
         except (OSError, UnicodeDecodeError) as e:
-            try:
+            with contextlib.suppress(OSError, UnboundLocalError):
                 os.close(fd)
-            except (OSError, UnboundLocalError):
-                pass
             raise StateCorruptedError(f"Nemozno citat stavovy subor: {type(e).__name__}")
         backup_path.write_text(content, encoding="utf-8")
         return backup_path

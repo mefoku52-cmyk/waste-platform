@@ -4,7 +4,7 @@ from enum import Enum
 class IntegrationStatus(str, Enum):
     """
     Stav pripojenia k externému systému.
-    
+
     Stavy:
     - PENDING: Čaká na prvé overenie pripojenia
     - ACTIVE: Pripojenie je funkčné a overené

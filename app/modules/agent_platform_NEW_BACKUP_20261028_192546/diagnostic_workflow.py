@@ -13,6 +13,7 @@ Nikdy neaplikuje návrhy do $HOME/waste-platform. Nevyžaduje API kľúče.
 
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -210,7 +211,7 @@ class DiagnosticWorkflow:
         }
 
         if self.decision_log is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self.decision_log.add_decision(
                     decision_id=f"{self.workflow_id}-analyze",
                     decision_type="model_analysis",
@@ -224,8 +225,6 @@ class DiagnosticWorkflow:
                     verified_facts=[f"git_branch={analysis_input['git_branch']}"],
                     unverified_claims=[model_output.result] if model_output.result else [],
                 )
-            except Exception:
-                pass
 
         return result
 
@@ -273,7 +272,7 @@ class DiagnosticWorkflow:
 
         if self.decision_log is not None:
             for prop in proposals:
-                try:
+                with contextlib.suppress(Exception):
                     self.decision_log.add_decision(
                         decision_id=prop["id"],
                         decision_type="proposal",
@@ -284,8 +283,6 @@ class DiagnosticWorkflow:
                         unverified_claims=[prop["proposed_action"]],
                         blocker="Read-only režim - návrh nie je aplikovaný",
                     )
-                except Exception:
-                    pass
 
         return {
             "step": "propose",

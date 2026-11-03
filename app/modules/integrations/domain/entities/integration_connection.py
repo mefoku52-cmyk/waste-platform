@@ -8,7 +8,7 @@ from app.modules.integrations.domain.value_objects.integration_status import Int
 class IntegrationConnection:
     """
     Doménový objekt predstavujúci pripojenie firmy k externému systému.
-    
+
     Atribúty:
     - id: Unikátny identifikátor pripojenia
     - company_id: Identifikátor firmy (String(36) podľa CMEP štandardu)
