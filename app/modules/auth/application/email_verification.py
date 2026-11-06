@@ -13,6 +13,8 @@ from __future__ import annotations
 import hashlib
 import logging
 import secrets
+from collections.abc import Awaitable
+from typing import cast
 
 from app.core.config import settings
 from app.modules.users.domain.enums import UserStatus
@@ -40,13 +42,13 @@ class EmailVerificationService:
         if self.redis is not None:
             return self.redis
         try:
-            import redis.asyncio as redis
+            from redis.asyncio import Redis
 
             host = getattr(settings.redis, "host", "localhost")
             port = getattr(settings.redis, "port", 6379)
             url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
-            self.redis = redis.from_url(url, decode_responses=True)
-            await self.redis.ping()
+            self.redis = Redis.from_url(url, decode_responses=True)
+            await cast(Awaitable[bool], self.redis.ping())
             return self.redis
         except Exception:
             self.redis = None

@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Awaitable
+from typing import cast
 
 from fastapi import HTTPException, Request
 
@@ -13,13 +15,13 @@ _mem: dict[str, list[float]] = {}
 
 async def _client():
     try:
-        import redis.asyncio as redis
+        from redis.asyncio import Redis
 
         host = getattr(settings.redis, "host", "localhost")
         port = getattr(settings.redis, "port", 6379)
         url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
-        r = redis.from_url(url, decode_responses=True)
-        await r.ping()
+        r = Redis.from_url(url, decode_responses=True)
+        await cast(Awaitable[bool], r.ping())
         return r
     except Exception:
         return None
