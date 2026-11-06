@@ -12,8 +12,9 @@ def _migration_module():
         / "b1a2c3d4e5f6_add_activity_events.py"
     )
     spec = spec_from_file_location("activity_events_migration", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Failed to load migration module from {path}")
     module = module_from_spec(spec)
-    assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
 

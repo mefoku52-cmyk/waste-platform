@@ -274,7 +274,9 @@ def test_dependencies_client_scopes_cover_all_action_names() -> None:
 
 
 def test_chat_router_client_names_match_schema() -> None:
-    from app.modules.agent_platform.presentation import chat_router
+    from app.modules.agent_platform.presentation import (
+        user_ai_chat_router as chat_router,
+    )
 
     assert chat_router.CLIENT_TOOL_NAMES == CLIENT_ACTION_NAMES
 
@@ -290,7 +292,9 @@ def test_validator_accepts_safe_navigation_actions() -> None:
 
 
 def test_open_admin_client_action_is_server_authorized(monkeypatch) -> None:
-    from app.modules.agent_platform.presentation import chat_router
+    from app.modules.agent_platform.presentation import (
+        user_ai_chat_router as chat_router,
+    )
 
     monkeypatch.setattr(chat_router, "is_platform_admin", lambda user: user == "admin")
     assert chat_router._client_action_allowed_for_user("open_admin", "user") is False

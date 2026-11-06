@@ -1,0 +1,178 @@
+================================================================
+  CMEP — Oprava pádu produkčného backendu na Renderi
+  Dátum: 2026-11-01
+  Repo: mefoku52-cmyk/waste-platform
+================================================================
+
+──────────────────────────────────────────────────────────────
+1. SKUTOČNÁ PRÍČINA PÁDU RENDERU
+──────────────────────────────────────────────────────────────
+
+Produčný commit: 0c71d6c84e358b093c8696da0ab05d8e6c5986cf
+Render deploy:   dep-dbjcpu5g1s2s73frhoug → "update_failed"
+
+CHYBA:
+  ImportError: cannot import name '_check_ai_entitlement'
+  from 'app.modules.agent_platform.presentation.chat_router'
+
+REŤAZEC ZLYHANIA (reprodukované v izolovanom worktree):
+
+  api_router.py (line 9)
+    → import chat_router as agent_platform_chat_router
+    → import voice_live_router (line 9)
+      → from chat_router import _check_ai_entitlement  ← IMPORT ERROR
+
+PRÍČINA:
+  Na produčnom commite bol chat_router.py prázdny stub (47 riadkov):
+    - Mal len importy a prázdny `router = APIRouter(...)`
+    - Nemal `_check_ai_entitlement` ( tá funkcia žila iba v
+      user_ai_chat_router.py)
+    - voice_live_router.py importoval _check_ai_entitlement z
+      chat_router.py → ImportError → api_router zlyhal →
+      RuntimeError("Required API router could not be initialized")
+
+  Posledná funkčná verzia: 535f4e9 (tam chat_router.py ešte mal
+  plnú implementáciu).
+
+──────────────────────────────────────────────────────────────
+2. VYKONANÉ OPRAVY (commit 7c813e9)
+──────────────────────────────────────────────────────────────
+
+OPRAVA 1: chat_router.py → re-export modul
+  - Prepísaný na re-export z user_ai_chat_router.py
+  - Exportuje: router, _check_ai_entitlement, BASE_RULES,
+    _build_system_prompt, _build_page_context_block,
+    _detect_security_patterns
+  - api_router.py NIE je zmenený (mount ostáva na chat_router)
+  - voice_live_router import _check_ai_entitlement funguje
+
+OPRAVA 2: navigator_bridge.py
+  - infer() ide cez asyncio.to_thread (neblokuje event loop)
+  - Prechádza cez TaskCoordinator (oprávnenia, ExecutionPolicy,
+    timeout, bezpečné spracovanie chýb)
+  - Konšzistentný return pri exception (status, reply, action)
+
+OPRAVA 3: user_ai_chat_router.py — navigator len pre NAVIGATE
+  - Predtým: navigator sa volal pre KAŽDÚ správu → status="ok"
+    prepísal orchestrator → nástroje nikdy nebežali
+  - Teraz: navigator sa volá IBA pre Intent.NAVIGATE
+    ("otvor ponuky", "prejdi do dopytov")
+  - Pre ostatné intenty beží plný orchestrator (tools, karty,
+    vyplňanie formulárov)
+  - Navyše: "ok" bez akcie = free-text → prenechané orchestratorovi
+  - Fix: multi-line string literály (rozbité \n v zdrojáku)
+  - Fix: "args" → "arguments" v tool_calls pre konzistenciu
+
+OPRAVA 4: events/router.py — IDOR fix
+  - companyId musí patriť firme používateľa
+    (require_company_member kontrola)
+  - listingId event sa atribuuje VLASTNÍKOVI inzerátu,
+    nie divákovej firme (predtým fallback na memberships[0])
+  - Pridaný "user_reported" event
+  - payload sa serializuje ak je objekt (predtým raw dict do Text
+    stĺpca)
+
+OPRAVA 5: companies/entitlements.py
+  - Pridaný SubscriptionTier.AI_NAVIGATION do _TIER_ORDER
+
+OPRAVA 6: transport/router.py
+  - Malý doplnok
+
+OPRAVA 7: tests
+  - test_chat_gate.py — update pre nový gate behavior
+  - test_client_actions.py — update pre "arguments" namiesto "args"
+
+──────────────────────────────────────────────────────────────
+3. ZMENENÉ SÚBORY (10 súborov)
+──────────────────────────────────────────────────────────────
+
+  app/modules/agent_platform/presentation/chat_router.py
+  app/modules/agent_platform/presentation/user_ai_chat_router.py
+  app/modules/agent_platform/navigator/navigator_bridge.py
+  app/modules/agent_platform/navigator/task_coordinator.py
+  app/modules/events/presentation/router.py
+  app/modules/events/presentation/schemas.py
+  app/modules/companies/application/entitlements.py
+  app/modules/transport/presentation/router.py
+  app/modules/agent_platform/tests/test_chat_gate.py
+  app/modules/agent_platform/tests/test_client_actions.py
+
+──────────────────────────────────────────────────────────────
+4. VÝSLEDKY TESTOV
+──────────────────────────────────────────────────────────────
+
+LOKÁLNE TESTY:
+
+  ✅ Import test na 0c71d6c (produkcia):
+     ImportError reprodukovaný presne ako na Renderi
+     Module: voice_live_router.py line 15
+     Symbol: _check_ai_entitlement
+
+  ✅ Import test na 7c813e9 (fix branch):
+     app.shared.presentation.api_router → OK
+     app.main → OK
+
+  ✅ create_app() smoke test:
+     Aplikácia sa vytvorí bez chyby
+
+  ✅ Unit tests (36 testov) — VŠETKY PREŠLI:
+     tests/test_smoke_imports.py
+     app/modules/agent_platform/tests/test_chat_gate.py
+     app/modules/agent_platform/tests/test_client_actions.py
+     app/modules/agent_platform/tests/test_agent_permission_gate.py
+     app/modules/agent_platform/tests/test_agent_policy_gate.py
+
+  ✅ Integračné testy (27 testov) — VŠETKY PREŠLI:
+     tests/integration/test_contact_emails.py
+     tests/integration/test_inquiries.py
+     tests/integration/test_company_reviews.py
+
+  ⚠️ PRESKAKOVANÉ:
+     - tests/integration/test_admin_companies.py:
+       Chyba: sqlite3 no such table: analytics_events
+       Príčina: chýbajúca migrácia v SQLite test DB (unrelated)
+     - Ruff: nenainštalovaný v lokálnom venv
+     - mypy: nenainštalovaný v lokálnom venv
+     - Živý produkčný test: neprevedený (čaká na deploy)
+
+──────────────────────────────────────────────────────────────
+5. GIT A NASADENIE
+──────────────────────────────────────────────────────────────
+
+Vetva:         fix/chat-security-and-actions  (zachovaná)
+Commit:        7c813e9  (zachovaný)
+Push stav:     ✅ Synced (origin/fix/chat-security-and-actions = 7c813e9)
+Force-push:    ŽIADNY
+Reset/mazanie: ŽIADNE
+História:      Neprepísaná
+
+Pull Request:  https://github.com/mefoku52-cmyk/waste-platform/pull/12
+  Base: main
+  Head: fix/chat-security-and-actions
+  Stav: Open (nezlučený)
+  Produkčný deploy: NESPÚŠŤANÝ bez záverečného potvrdenia
+
+──────────────────────────────────────────────────────────────
+6. BEZPEČNOSŤ
+──────────────────────────────────────────────────────────────
+
+  - Žiadne API kľúče, JWT ani .env hodnoty nevypísané
+  - Žiadne súbory zoznamu zakázaných neboli menené:
+    app/shared/presentation/api_router.py — NEMENENÝ
+    app/core/config.py — NEMENENÝ
+    JWT bezpečnostné súbory — NEMENENÉ
+    Migrácie — NEMENENÉ
+  - Žiadne routerové mounty neboli zakázané alebo odstránené
+
+──────────────────────────────────────────────────────────────
+7. PRESKAKOVANÉ POLOŽKY
+──────────────────────────────────────────────────────────────
+
+  1. Ruff lint — nainštalovaný v Render Docker, lokálne chýba
+  2. mypy type check — lokálne chýba
+  3. test_admin_companies integration — SQLite chýba analytics_events
+  4. Živý produkčný test /agent-platform/chat — čaká na deploy
+
+================================================================
+  KONIEC REPORTU
+================================================================

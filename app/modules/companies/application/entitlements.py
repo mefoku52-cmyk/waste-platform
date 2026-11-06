@@ -14,6 +14,7 @@ _TIER_ORDER: dict[SubscriptionTier, int] = {
     SubscriptionTier.FREE: 0,
     SubscriptionTier.PRO: 1,
     SubscriptionTier.AI: 2,
+    SubscriptionTier.AI_NAVIGATION: 3,
 }
 
 

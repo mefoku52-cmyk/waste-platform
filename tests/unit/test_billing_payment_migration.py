@@ -2,10 +2,11 @@ from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 from uuid import uuid4
 
+import pytest
 import sqlalchemy as sa
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
-import pytest
+from sqlalchemy.exc import IntegrityError
 
 
 def _migration_module():
@@ -16,8 +17,9 @@ def _migration_module():
         / "aa71c2f19d44_add_billing_payment_orders.py"
     )
     spec = spec_from_file_location("billing_payment_migration", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"Failed to load migration module from {path}")
     module = module_from_spec(spec)
-    assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
 
@@ -73,21 +75,20 @@ def test_payment_migration_reupgrade_and_downgrade_preserve_business_data():
                     "event_type": "checkout.session.completed",
                 },
             )
-            with pytest.raises(sa.exc.IntegrityError):
-                with connection.begin_nested():
-                    connection.execute(
-                        sa.text(
-                            "INSERT INTO billing_webhook_events "
-                            "(id, provider, event_id, event_type) "
-                            "VALUES (:id, :provider, :event_id, :event_type)"
-                        ),
-                        {
-                            "id": uuid4().hex,
-                            "provider": "stripe",
-                            "event_id": "evt_local_1",
-                            "event_type": "customer.subscription.updated",
-                        },
-                    )
+            with pytest.raises(IntegrityError), connection.begin_nested():
+                connection.execute(
+                    sa.text(
+                        "INSERT INTO billing_webhook_events "
+                        "(id, provider, event_id, event_type) "
+                        "VALUES (:id, :provider, :event_id, :event_type)"
+                    ),
+                    {
+                        "id": uuid4().hex,
+                        "provider": "stripe",
+                        "event_id": "evt_local_1",
+                        "event_type": "customer.subscription.updated",
+                    },
+                )
             connection.execute(
                 sa.text(
                     "UPDATE companies SET stripe_subscription_id=:subscription_id WHERE id=:id"
@@ -107,7 +108,6 @@ def test_payment_migration_reupgrade_and_downgrade_preserve_business_data():
                 {"id": company_id},
             ).scalar_one() == "sub_local_1"
 
-            # Re-running upgrade after the data-preserving downgrade is safe.
             migration.upgrade()
             assert connection.execute(
                 sa.text("SELECT event_id FROM billing_webhook_events WHERE id=:id"),

@@ -3,6 +3,7 @@ Trvala idempotencia cez atomicku rezervaciu v subore."""
 
 from __future__ import annotations
 
+import contextlib
 import fcntl
 import json
 import os
@@ -104,10 +105,8 @@ class ExecutionPolicy:
                 os.fsync(f.fileno())
             os.replace(tmp, str(self._state_file))
         except Exception:
-            try:
+            with contextlib.suppress(OSError):
                 os.unlink(tmp)
-            except OSError:
-                pass
             raise
 
     def request_approval(

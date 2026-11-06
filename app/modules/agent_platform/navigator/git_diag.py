@@ -62,7 +62,7 @@ class GitDiagnostic:
         self._validate_args(args)
         try:
             result = subprocess.run(
-                ["git", "-C", str(self.repo_path)] + args,
+                ["git", "-C", str(self.repo_path), *args],
                 capture_output=True,
                 text=True,
                 timeout=30,
