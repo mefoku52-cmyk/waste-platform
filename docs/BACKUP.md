@@ -7,82 +7,89 @@
 Production database: Render Postgres `waste-platform-db`
 (`dpg-dakh3fe1egvs73bs262g-a`).
 
-Backups are **always age-encrypted** before leaving the host. The plaintext
-dump is deleted after encryption; only `waste-platform-<stamp>.sql.gz.age`
-(+ a `.sha256` checksum) is kept and uploaded.
-
 ## Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/backup/backup-prod.sh` | Dump → gzip → age encrypt → verify → optional Telegram upload |
-| `scripts/backup/healthcheck.sh` | Latest backup validation (age, size, checksum, decrypt) |
-| `scripts/backup/test-backup.sh` | Self-contained end-to-end test on a throwaway local Postgres |
+| `scripts/backup/backup-prod.sh` | Production DB dump + gzip + optional age encryption + optional Telegram upload |
+| `scripts/backup/healthcheck.sh` | Last backup validation (age, size, checksum/gzip integrity) |
+| `scripts/restore.sh` | Restore a dump into a target DB; refuses production-looking targets |
+| `scripts/backup/backup-restore-test.sh` | Self-contained E2E test (temp Postgres, encrypt/decrypt/restore round-trip) |
 | `scripts/backup/backup-db.sh` | Deprecated (exits 1) |
-| `scripts/restore.sh` | Restore; refuses production targets unless `--confirm-production` |
 
-## Encryption configuration (keys NEVER inside the repo)
+## Env (backup host)
 
-`backup-prod.sh` requires keys supplied via environment variables or paths
-outside the repository. A key path that resolves inside the repo is rejected.
+| Var | Meaning |
+|-----|---------|
+| `BACKUP_AGE_RECIPIENT` | age public key (`age1...`); enables `--encrypt` |
+| `BACKUP_AGE_IDENTITY_FILE` | age private-key file; needed to decrypt/verify |
+| `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID` | needed for `--upload` |
 
-| Variable | Meaning |
-|----------|---------|
-| `BACKUP_AGE_RECIPIENT` | age public key (`age1...`) |
-| `BACKUP_AGE_RECIPIENT_FILE` | file containing the public key (alternative to the above) |
-| `BACKUP_AGE_IDENTITY_FILE` | age identity (secret key) used to verify the encrypted file decrypts |
+Secrets are read from env only and are never printed. If encryption is
+requested but the recipient is missing, the script FAILS — it never
+uploads an unencrypted dump.
 
-Without a recipient **and** an identity file the script exits non-zero and
-uploads nothing. A recommended location for the identity is
-`$HOME/.config/cmep/backup-identity.txt` (chmod 600, outside the repo).
-
-## Run
+## Manual run (Render Shell)
 
 ```
-bash scripts/backup/backup-prod.sh            # local encrypted backup
-bash scripts/backup/backup-prod.sh --upload   # + Telegram (encrypted only)
+cd /opt/render/project/src
+bash scripts/backup/backup-prod.sh --encrypt --upload
 bash scripts/backup/healthcheck.sh
-bash scripts/backup/test-backup.sh            # local self-test
 ```
 
 ## Automated run (Render Cron Job)
 
 - Type: `Cron Job`
 - Schedule: `0 3 * * *`
-- Command: `bash scripts/backup/backup-prod.sh --upload`
-- Env: web-service env + `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID`,
-  `BACKUP_AGE_RECIPIENT` (or `BACKUP_AGE_RECIPIENT_FILE`),
-  `BACKUP_AGE_IDENTITY_FILE`
+- Command: `bash scripts/backup/backup-prod.sh --encrypt --upload`
+- Env: same as web service + `BACKUP_AGE_RECIPIENT`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID`
 
 ## Retention
 
-7 days of encrypted backups (`-mtime +7` deletion). Telegram retains history.
+7 daily backups (`-mtime +7` deletion). Telegram retains history.
 
 ## Restore
 
+Use `scripts/restore.sh` — it guards against overwriting production.
+
 ```
+# 1) Decrypt + verify (if encrypted)
 age -d -i "$BACKUP_AGE_IDENTITY_FILE" waste-platform-YYYYMMDD_HHMMSS.sql.gz.age \
-  | gunzip | psql "$DATABASE_URL" -
-psql "$DATABASE_URL" -c "SELECT COUNT(*) FROM listings;"
+  > waste-platform-YYYYMMDD_HHMMSS.sql.gz
+sha256sum -c waste-platform-YYYYMMDD_HHMMSS.sql.gz.age.sha256
+
+# 2) Restore into a NON-production target (guard blocks prod names)
+DATABASE_URL="postgresql://..." bash scripts/restore.sh waste-platform-YYYYMMDD_HHMMSS.sql.gz
+
+# Overwriting production requires an explicit flag:
+bash scripts/restore.sh dump.sql.gz --confirm-production
 ```
 
-`scripts/restore.sh` refuses any target whose database name or host looks like
-production (Render host, `dpg-*` id, `cmep` / `waste-platform`) unless called
-with `--confirm-production`.
+`restore.sh` prints `SOURCE_TABLES`, `TARGET_TABLES` and `DIFF` so a
+mismatch is visible immediately.
 
-## Table count reconciliation
+### Note: 29 vs 26 tables
 
-`backup-prod.sh` prints tables in the live DB vs `CREATE TABLE` in the dump and
-their difference. The two can legitimately differ (e.g. 29 vs 26): the DB count
-includes tables in non-public schemas or partitioned tables, while the dump
-scan counts only `CREATE TABLE` lines for the dumped schema(s).
+A `SOURCE_TABLES`/`TARGET_TABLES` diff does NOT always mean data loss.
+Known reasons:
+
+- `activity_events` and `admin_audit_entries` are created by raw SQL on
+  some environments but ARE in Alembic (`b1a2c3d4e5f6`, `1577dceccd9e`).
+  A dump taken before those migrations, restored into an
+  `alembic upgrade head` DB (or vice-versa), yields a count diff.
+- `alembic_version` itself is a table and counts.
+
+Always compare the actual table NAMES, not just the count, before
+concluding anything was lost.
 
 ## Incident log
 
-- 2026-09-25 — 2026-10-05: silent backup failure. Legacy
-  `scripts/backup/backup-db.sh` dumped an empty `cmep` DB and produced 20-byte
-  `.gz` files (no size check, no healthcheck). Detected 2026-10-04. Fixed
-  2026-10-05 (deprecated the legacy script, added `backup-prod.sh` +
-  `healthcheck.sh`).
-- 2026-10-14: added age encryption, checksum + decrypt verification, table
-  count reconciliation, restore production guard and `test-backup.sh`.
+- 2026-09-25 — 2026-10-05: silent backup failure. Legacy `backup-db.sh`
+  ran `pg_dump ... | gzip > file` with no size guard; on failure gzip
+  still produced a valid 20-byte empty `.gz`, so bad backups looked
+  "present" and passed a naive existence check. No healthcheck.
+  Detected 2026-10-04. Fixed 2026-10-05 with a size guard in
+  `backup-prod.sh`.
+- 2026-10-14: added age encryption before any upload, per-file
+  `.sha256` checksum, decrypt-verify, and a production guard in
+  `restore.sh`. `healthcheck.sh` now validates `.age` checksums too.

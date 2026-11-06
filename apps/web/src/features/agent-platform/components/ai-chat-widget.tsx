@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { config } from '@/lib/config';
 import { tokenStore } from '@/lib/auth/token-store';
-import { useAuth } from '@/features/auth/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 
 import { http } from '@/lib/api/http';
