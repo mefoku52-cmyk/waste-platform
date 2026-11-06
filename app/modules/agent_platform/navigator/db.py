@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from importlib import import_module
 from typing import Any
 
 
@@ -17,7 +18,7 @@ class DatabaseInterface:
         if not self.dsn:
             return {"available": False, "reason": "DATABASE_URL nie je nastavena"}
         try:
-            import psycopg2
+            psycopg2 = import_module("psycopg2")
         except ImportError:
             return {"available": False, "reason": "psycopg2 nie je nainstalovany (neinstalujem)"}
         try:
@@ -32,7 +33,7 @@ class DatabaseInterface:
         if not self.dsn:
             return []
         try:
-            import psycopg2
+            psycopg2 = import_module("psycopg2")
 
             conn = psycopg2.connect(self.dsn)
             cur = conn.cursor()
