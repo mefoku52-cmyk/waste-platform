@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const companySchema = z.object({
   // Typ subjektu — dynamicky mení label „Obchodný názov" / „Meno a priezvisko"
   entityType: z.enum(['sole_trader', 'company', 'ngo'], {
-    errorMap: () => ({ message: 'Vyber typ subjektu' }),
+    error: () => ({ message: 'Vyber typ subjektu' }),
   }).default('company'),
 
   // Pre firmu je to obchodný názov, pre SZČO je to meno a priezvisko.
@@ -14,7 +14,7 @@ export const companySchema = z.object({
   registrationNumber: z.string().regex(/^\d{8}$/, 'IČO musí mať presne 8 číslic'),
 
   companyType: z.enum(['seller', 'buyer', 'seller_buyer', 'logistics_partner'], {
-    errorMap: () => ({ message: 'Vyber typ firmy' }),
+    error: () => ({ message: 'Vyber typ firmy' }),
   }),
   countryCode: z.string().min(2).default('SK'),
   addressLine1: z.string().min(5, 'Adresa je povinná'),
