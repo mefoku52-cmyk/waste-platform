@@ -45,6 +45,11 @@ from app.modules.agent_platform.infrastructure.tools.cmep_nearby_companies_handl
 from app.modules.agent_platform.infrastructure.tools.cmep_user_tools import (
     CmepUserToolsHandler,
 )
+from app.modules.agent_platform.infrastructure.tools.openlist_readonly import (
+    OpenListGetHandler,
+    OpenListListHandler,
+    OpenListMcpClient,
+)
 from app.modules.agent_platform.infrastructure.tools.project_read import (
     ProjectReadHandler,
 )
@@ -52,6 +57,7 @@ from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
     ADMIN_CLIENT_ACTION_SCHEMAS,
     CLIENT_ACTION_NAMES,
     CLIENT_ACTION_SCHEMAS,
+    OPENLIST_READONLY_SCHEMAS,
     build_admin_tools,
     build_default_tools,
     build_project_read_tools,
@@ -165,6 +171,20 @@ async def get_agent_orchestrator(
         tool_scopes["project_read_file"] = ("admin", "read")
         tool_scopes["project_list_dir"] = ("admin", "read")
         tool_schemas = tool_schemas + build_project_read_tools()
+
+    # OpenList READ tools — IBA pre platform admina, vyžaduje OPENLIST_MCP_TOKEN.
+    # OpenList je externý MCP server (http://127.0.0.1:5244/mcp); klient sa
+    # inicializuje len pri prvom tool volaní, takže absence tokenu sa
+    # prejaví až pri skutočnom volaní (UPSTREAM_UNAVAILABLE), nie pri build-e.
+    if is_admin:
+        _openlist_client = OpenListMcpClient()
+        openlist_list_handler = OpenListListHandler(_openlist_client)
+        openlist_get_handler = OpenListGetHandler(_openlist_client)
+        tool_handlers["external.openlist.list"] = openlist_list_handler
+        tool_handlers["external.openlist.get"] = openlist_get_handler
+        tool_scopes["external.openlist.list"] = ("openlist", "read")
+        tool_scopes["external.openlist.get"] = ("openlist", "read")
+        tool_schemas = tool_schemas + OPENLIST_READONLY_SCHEMAS
 
     # Admin tools are attached ONLY when the caller is a platform admin.
     if is_admin:

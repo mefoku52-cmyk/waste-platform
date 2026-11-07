@@ -148,12 +148,43 @@ async def test_admin_keeps_admin_tools_and_project_tools() -> None:
     assert "search_companies" in orch._tool_handlers
 
 
-async def test_openlist_not_wired_in_production() -> None:
-    """OpenList zostáva vypnutý — nesmie byť v schémach ani handlroch."""
+async def test_openlist_wired_in_production_for_admin() -> None:
+    """OpenList je zapojený pre platform admina v produkčnej ceste."""
     orch = await _build_orchestrator(_admin_user())
+    names = _schema_names(orch)
+    assert "external.openlist.list" in names
+    assert "external.openlist.get" in names
+    assert "external.openlist.list" in orch._tool_handlers
+    assert "external.openlist.get" in orch._tool_handlers
+    assert orch._tool_scopes["external.openlist.list"] == ("openlist", "read")
+    assert orch._tool_scopes["external.openlist.get"] == ("openlist", "read")
+
+
+async def test_openlist_not_wired_for_non_admin() -> None:
+    """Bežný používateľ nedostane OpenList nástroje."""
+    orch = await _build_orchestrator(_regular_user())
     names = _schema_names(orch)
     assert not any(n.startswith("external.openlist") for n in names)
     assert not any(n.startswith("external.openlist") for n in orch._tool_handlers)
+
+
+async def test_openlist_policy_denies_non_admin() -> None:
+    """Ani keby model zavolal external.openlist.list, policy ho musí odmietnuť pre bežného užívateľa."""
+    orch = await _build_orchestrator(_regular_user())
+    assert orch._policy is not None
+    decision = await orch._policy.decide(
+        PolicyContext(
+            actor_id="user-1",
+            actor_type="user",
+            agent_id=None,
+            action="tool.call",
+            target=None,
+            tool_name="external.openlist.list",
+            risk_level=None,
+            attributes={},
+        )
+    )
+    assert decision.outcome == PolicyOutcome.DENY
 
 
 # ─── end-to-end: model tool_call → handler → audit ──────────────────────────
@@ -238,10 +269,37 @@ async def test_unknown_tool_name_is_denied_by_policy_and_audited(
     assert "agent.tool.denied_by_policy" in audit_calls
 
 
-async def test_openlist_tool_call_denied_even_for_admin(
+async def test_openlist_non_admin_call_denied_by_policy(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Model, ktorý si vymyslí OpenList tool, musí dostať denied_by_policy."""
+    """Bežný používateľ volající external.openlist.list dostane denied_by_policy."""
+    audit_calls: list[str] = []
+
+    async def _fake_write_audit(**kwargs: Any) -> None:
+        audit_calls.append(kwargs["action"])
+
+    monkeypatch.setattr(dependencies, "write_audit", _fake_write_audit)
+
+    orch = await _build_orchestrator(_regular_user())
+    orch._gateway = _ScriptedGateway("external.openlist.list", {"path": "."})
+
+    await orch.respond(
+        system_prompt="sys",
+        user_message="zoznam cez openlist",
+        actor_id="user-1",
+        actor_type="user",
+    )
+
+    assert "agent.tool.denied_by_policy" in audit_calls
+
+
+async def test_openlist_admin_call_reaches_upstream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Admin volanie external.openlist.list prejde policy+permission a pokúša sa o upstream.
+
+    V testoch nie je bežiace OpenList, takže vracia UPSTREAM_UNAVAILABLE
+    (nie denied_by_policy — tool je povolený)."""
     audit_calls: list[str] = []
 
     async def _fake_write_audit(**kwargs: Any) -> None:
@@ -252,11 +310,15 @@ async def test_openlist_tool_call_denied_even_for_admin(
     orch = await _build_orchestrator(_admin_user())
     orch._gateway = _ScriptedGateway("external.openlist.list", {"path": "."})
 
-    await orch.respond(
+    result = await orch.respond(
         system_prompt="sys",
         user_message="zoznam cez openlist",
         actor_id="admin-1",
         actor_type="admin",
     )
 
-    assert "agent.tool.denied_by_policy" in audit_calls
+    # Tool bol povolený policy+permission, pokúsil sa o upstream (nie je dostupný).
+    assert result.tool_calls
+    assert result.tool_calls[0]["name"] == "external.openlist.list"
+    # Audit zaznamenal neúspešný pokus (upstream nie je dostupný).
+    assert "agent.tool.failed" in audit_calls

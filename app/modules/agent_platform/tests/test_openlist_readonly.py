@@ -1,14 +1,16 @@
 """Testy openlist_readonly modulu s MOCKS — žiadny reálny server ani údaje.
 
-OpenList NIE JE zapojený do produkčného agenta. Tieto testy overujú iba
-správanie pripraveného modulu: mapovanie chýb (nedostupný server, timeout,
-neplatné prihlasovacie údaje), path traversal, read-only allowlist a
-schémy. Nikdy nevolajú reálny `127.0.0.1:5244`.
+OpenList je zapojený do produkčnej ceste (iba pre platform admina). Tieto testy
+overujú správanie pripraveného modulu: mapovanie chýb (nedostupný server,
+timeout, neplatné prihlasovacie údaje, odpoveď príliš veľká), path traversal,
+read-only allowlist, limit veľkosti odpovede a schémy. Nikdy nevolajú reálny
+`127.0.0.1:5244`.
 """
 
 from __future__ import annotations
 
 import inspect
+import json
 
 import httpx
 import pytest
@@ -20,6 +22,7 @@ from app.modules.agent_platform.infrastructure.tools.openlist_readonly import (
     OpenListListHandler,
     OpenListMcpClient,
     OpenListPathDenied,
+    OpenListResponseTooLarge,
     resolve_openlist_path,
 )
 from app.modules.agent_platform.infrastructure.tools.tool_schemas import (
@@ -79,16 +82,33 @@ async def test_client_requires_token(monkeypatch) -> None:
 # ─── httpx mock: 401 / timeout / nedostupný server ──────────────────────────
 
 
-class _FakeResponse:
+class _FakeStreamResponse:
+    """Streaming fake HTTP response that tracks consumed chunks/bytes.
+
+    Used to verify the client stops reading once the size limit is exceeded.
+    Exposes aiter_raw(chunk_size=...) like httpx and records the request
+    headers it was created with.
+    """
+
     def __init__(
         self,
         status_code: int = 200,
         payload: dict | None = None,
         headers: dict | None = None,
+        chunks: list[bytes] | None = None,
+        request_headers: dict | None = None,
     ) -> None:
         self.status_code = status_code
-        self._payload = payload or {}
-        self.headers = headers or {}
+        self.headers = dict(headers or {})
+        self.request_headers = dict(request_headers or {})
+        if chunks is None:
+            if payload is None:
+                payload = {}
+            chunks = [json.dumps(payload).encode("utf-8")]
+        self.chunks = list(chunks)
+        self.consumed_chunks = 0
+        self.consumed_bytes = 0
+        self.closed = False
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
@@ -98,14 +118,47 @@ class _FakeResponse:
                 response=httpx.Response(self.status_code),
             )
 
-    def json(self) -> dict:
-        return self._payload
+    async def aiter_raw(self, chunk_size: int = 64 * 1024):
+        """Mirror httpx.Response.aiter_raw(chunk_size=...).
+
+        chunk_size bounds the blocks yielded; it is NOT an absolute upper
+        bound on temporary allocation inside the transport layer itself.
+        """
+        del chunk_size  # the fake yields whole chunks; chunk_size is accepted
+        # for API compatibility with the real httpx call site.
+        for chunk in self.chunks:
+            self.consumed_chunks += 1
+            self.consumed_bytes += len(chunk)
+            yield chunk
+
+    async def aclose(self) -> None:
+        self.closed = True
 
 
-def _patch_httpx(monkeypatch, response=None, exc: Exception | None = None) -> None:
+class _StreamResponseContext:
+    def __init__(self, response: _FakeStreamResponse, exc: Exception | None) -> None:
+        self._response = response
+        self._exc = exc
+
+    async def __aenter__(self):
+        if self._exc is not None:
+            raise self._exc
+        return self._response
+
+    async def __aexit__(self, *args):
+        await self._response.aclose()
+        return False
+
+
+def _patch_streaming_httpx(
+    monkeypatch,
+    response: _FakeStreamResponse | None = None,
+    exc: Exception | None = None,
+) -> None:
     class _FakeAsyncClient:
         def __init__(self, *args, **kwargs) -> None:
-            pass
+            self._response = response
+            self._exc = exc
 
         async def __aenter__(self):
             return self
@@ -114,16 +167,21 @@ def _patch_httpx(monkeypatch, response=None, exc: Exception | None = None) -> No
             return False
 
         async def post(self, url, headers=None, json=None):
-            if exc is not None:
-                raise exc
-            return response
+            if self._exc is not None:
+                raise self._exc
+            return self._response
+
+        def stream(self, method, url, headers=None, json=None):
+            if self._response is not None:
+                self._response.request_headers = dict(headers or {})
+            return _StreamResponseContext(self._response, self._exc)
 
     monkeypatch.setattr(openlist_readonly.httpx, "AsyncClient", _FakeAsyncClient)
 
 
 async def test_invalid_credentials_map_to_auth_failed(monkeypatch) -> None:
     monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
-    _patch_httpx(monkeypatch, response=_FakeResponse(status_code=401))
+    _patch_streaming_httpx(monkeypatch, response=_FakeStreamResponse(status_code=401))
     handler = OpenListListHandler(OpenListMcpClient())
     result = await handler.handle(_req("external.openlist.list", {"path": "."}))
     assert result.success is False
@@ -132,7 +190,7 @@ async def test_invalid_credentials_map_to_auth_failed(monkeypatch) -> None:
 
 async def test_timeout_maps_to_upstream_timeout(monkeypatch) -> None:
     monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
-    _patch_httpx(monkeypatch, exc=httpx.ConnectTimeout("mock timeout"))
+    _patch_streaming_httpx(monkeypatch, exc=httpx.ConnectTimeout("mock timeout"))
     handler = OpenListListHandler(OpenListMcpClient())
     result = await handler.handle(_req("external.openlist.list", {"path": "."}))
     assert result.success is False
@@ -141,7 +199,7 @@ async def test_timeout_maps_to_upstream_timeout(monkeypatch) -> None:
 
 async def test_unavailable_server_maps_to_upstream_unavailable(monkeypatch) -> None:
     monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
-    _patch_httpx(monkeypatch, exc=httpx.ConnectError("connection refused"))
+    _patch_streaming_httpx(monkeypatch, exc=httpx.ConnectError("connection refused"))
     handler = OpenListGetHandler(OpenListMcpClient())
     result = await handler.handle(_req("external.openlist.get", {"path": "app"}))
     assert result.success is False
@@ -207,18 +265,18 @@ async def test_get_rejects_traversal(monkeypatch) -> None:
 
 async def test_list_success_prefers_structured_content(monkeypatch) -> None:
     monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
-    init = _FakeResponse(
+    init = _FakeStreamResponse(
         payload={"jsonrpc": "2.0", "id": 1, "result": {}},
         headers={"Mcp-Session-Id": "sess-1"},
     )
-    call = _FakeResponse(
+    call = _FakeStreamResponse(
         payload={
             "jsonrpc": "2.0",
             "id": 2,
             "result": {"structuredContent": {"content": [{"name": "app"}]}},
         }
     )
-    responses = iter([init, _FakeResponse(payload={}), call])
+    responses = iter([init, _FakeStreamResponse(payload={}), call])
 
     class _FakeAsyncClient:
         def __init__(self, *args, **kwargs) -> None:
@@ -230,8 +288,8 @@ async def test_list_success_prefers_structured_content(monkeypatch) -> None:
         async def __aexit__(self, *args):
             return False
 
-        async def post(self, url, headers=None, json=None):
-            return next(responses)
+        def stream(self, method, url, headers=None, json=None):
+            return _StreamResponseContext(next(responses), None)
 
     monkeypatch.setattr(openlist_readonly.httpx, "AsyncClient", _FakeAsyncClient)
     handler = OpenListListHandler(OpenListMcpClient())
@@ -240,14 +298,262 @@ async def test_list_success_prefers_structured_content(monkeypatch) -> None:
     assert result.data == {"content": [{"name": "app"}]}
 
 
-# ─── modul zostáva nezapojený + schémy obsahujú iba read operácie ──────────
+# ─── response-size limit (streaming enforcement) ─────────────────────────────
 
 
-def test_openlist_not_imported_by_production_dependencies() -> None:
+def _json_bytes_of_size(size: int) -> bytes:
+    """Build a valid JSON-RPC response body of exactly `size` bytes."""
+    prefix = '{"jsonrpc":"2.0","id":1,"result":{"data":"'
+    suffix = '"}}'
+    inner_len = size - len(prefix) - len(suffix)
+    if inner_len < 0:
+        raise ValueError(f"size {size} too small for JSON wrapper")
+    inner = "X" * inner_len
+    body = f"{prefix}{inner}{suffix}"
+    data = body.encode("utf-8")
+    assert len(data) == size, f"expected {size} bytes, got {len(data)}"
+    return data
+
+
+@pytest.mark.parametrize("method", ["initialize", "tools/call"])
+async def test_oversized_initialization_and_call_rejected(monkeypatch, method) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    oversized = _json_bytes_of_size(101)
+    response = _FakeStreamResponse(status_code=200, chunks=[oversized])
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    with pytest.raises(OpenListResponseTooLarge):
+        await client._rpc(method, {"name": "x", "arguments": {}})
+    # Nothing was consumed past the limit (Content-Length absent, streamed).
+    assert response.consumed_chunks == 1  # the single oversized chunk triggered it
+    assert response.consumed_bytes == 101
+
+
+async def test_response_exactly_at_limit_is_accepted(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    body = _json_bytes_of_size(100)  # exactly at the limit
+    response = _FakeStreamResponse(status_code=200, chunks=[body])
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"  # skip initialize, exercise tools/call only
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is True
+    assert response.consumed_chunks == 1
+    assert response.consumed_bytes == 100
+
+
+async def test_response_one_byte_above_limit_is_rejected(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    body = _json_bytes_of_size(101)  # one byte above the limit
+    response = _FakeStreamResponse(status_code=200, chunks=[body])
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    assert response.consumed_bytes == 101
+
+
+async def test_oversized_content_length_rejected_before_reading(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    # Content-Length claims 101 bytes; client must reject without consuming chunks.
+    response = _FakeStreamResponse(
+        status_code=200, chunks=[b"x" * 101], headers={"content-length": "101"}
+    )
+    _patch_streaming_httpx(monkeypatch, response=response)
+    handler = OpenListListHandler(OpenListMcpClient())
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    assert response.consumed_chunks == 0
+    assert response.consumed_bytes == 0
+
+
+async def test_oversized_chunked_without_content_length_stopped_early(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    # No Content-Length header; two chunks of 60 bytes = 120 > 100.
+    # A third huge chunk is queued but must never be consumed.
+    chunks = [b"x" * 60, b"x" * 60, b"x" * 999999]
+    response = _FakeStreamResponse(status_code=200, chunks=chunks)
+    _patch_streaming_httpx(monkeypatch, response=response)
+    handler = OpenListListHandler(OpenListMcpClient())
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    # Stopped early: 2 of 3 chunks consumed, never touched the 3rd.
+    assert response.consumed_chunks == 2
+    assert response.consumed_bytes == 120
+
+
+async def test_multiple_chunks_exceeding_limit_cumulatively(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    chunks = [b"x" * 30, b"x" * 30, b"x" * 30, b"x" * 30, b"x" * 999999]
+    response = _FakeStreamResponse(status_code=200, chunks=chunks)
+    _patch_streaming_httpx(monkeypatch, response=response)
+    handler = OpenListListHandler(OpenListMcpClient())
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    # Cumulative: 30*4 = 120 > 100 at the 4th chunk; 5th never consumed.
+    assert response.consumed_chunks == 4
+    assert response.consumed_bytes == 120
+
+
+async def test_malformed_json_within_permitted_size(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    body = b"not valid json{"  # 15 bytes, within the limit, but not valid JSON
+    response = _FakeStreamResponse(status_code=200, chunks=[body])
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_UNAVAILABLE"
+    assert response.consumed_chunks == 1
+    assert response.consumed_bytes == 15
+
+
+async def test_client_and_response_closed_after_rejection(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    client_exits = []
+    response_exits = []
+
+    class _TrackingClient:
+        def __init__(self, *args, **kwargs) -> None:
+            pass
+
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *args):
+            client_exits.append(True)
+            return False
+
+        def stream(self, method, url, headers=None, json=None):
+            return _TrackingResponseContext()
+
+    class _TrackingResponseContext:
+        async def __aenter__(self):
+            return _FakeStreamResponse(status_code=200, chunks=[b"x" * 101])
+
+        async def __aexit__(self, *args):
+            response_exits.append(True)
+            return False
+
+    monkeypatch.setattr(openlist_readonly.httpx, "AsyncClient", _TrackingClient)
+    handler = OpenListListHandler(OpenListMcpClient())
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    assert client_exits == [True]
+    assert response_exits == [True]
+
+
+# ─── content-encoding / accept-encoding hardening ────────────────────────────
+
+
+async def test_sends_accept_encoding_identity(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    body = _json_bytes_of_size(50)
+    response = _FakeStreamResponse(status_code=200, chunks=[body])
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is True
+    assert response.request_headers.get("Accept-Encoding") == "identity"
+
+
+@pytest.mark.parametrize("encoding", [None, "", "identity"])
+async def test_missing_or_identity_content_encoding_accepted(monkeypatch, encoding) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    body = _json_bytes_of_size(50)
+    headers = {}
+    if encoding is not None:
+        headers["content-encoding"] = encoding
+    response = _FakeStreamResponse(status_code=200, chunks=[body], headers=headers)
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is True
+
+
+async def test_gzip_content_encoding_rejected(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    # Small compressed-on-the-wire body that would decompress past the limit.
+    response = _FakeStreamResponse(
+        status_code=200,
+        chunks=[b"\x1f\x8b\x08\x00" + b"x" * 20],
+        headers={"content-encoding": "gzip"},
+    )
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    # Rejected before consuming any chunks (header check).
+    assert response.consumed_chunks == 0
+    assert response.consumed_bytes == 0
+
+
+async def test_deflate_content_encoding_rejected(monkeypatch) -> None:
+    monkeypatch.setenv("OPENLIST_MCP_TOKEN", "mock-token-not-a-real-secret")
+    monkeypatch.setattr(openlist_readonly, "_MAX_RESPONSE_BYTES", 100)
+    response = _FakeStreamResponse(
+        status_code=200,
+        chunks=[b"x" * 10],
+        headers={"content-encoding": "deflate"},
+    )
+    _patch_streaming_httpx(monkeypatch, response=response)
+    client = OpenListMcpClient()
+    client._session_id = "sess-1"
+    handler = OpenListListHandler(client)
+    result = await handler.handle(_req("external.openlist.list", {"path": "."}))
+    assert result.success is False
+    assert result.error_code == "UPSTREAM_RESPONSE_TOO_LARGE"
+    assert response.consumed_chunks == 0
+    assert response.consumed_bytes == 0
+
+
+def test_uses_aiter_raw_with_chunk_size() -> None:
+    """Verify the implementation calls aiter_raw(chunk_size=64*1024)."""
+    source = inspect.getsource(openlist_readonly.OpenListMcpClient._rpc)
+    assert "aiter_raw(chunk_size=64 * 1024)" in source
+
+
+def test_openlist_imported_by_production_dependencies() -> None:
+    """OpenList je importovaný a zapojený do produkčnej ceste (admin-only)."""
     source = inspect.getsource(
         __import__("app.modules.agent_platform.presentation.dependencies", fromlist=["x"])
     )
-    assert "openlist" not in source.lower()
+    assert "OpenListMcpClient" in source
+    assert "OpenListListHandler" in source
+    assert "OpenListGetHandler" in source
+    assert "OPENLIST_READONLY_SCHEMAS" in source
+    assert "external.openlist.list" in source
+    assert "external.openlist.get" in source
 
 
 def test_openlist_schemas_are_readonly_names() -> None:

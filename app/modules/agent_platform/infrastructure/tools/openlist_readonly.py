@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 from typing import Any
 from urllib.parse import unquote
@@ -14,6 +15,15 @@ from app.modules.agent_platform.domain.tools.tool_result import ToolResult
 
 class OpenListPathDenied(Exception):
     pass
+
+
+class OpenListResponseTooLarge(Exception):
+    pass
+
+
+# Mirror the project-wide 1 MiB size ceiling used by project_read.py and
+# mcp_client/models.py (max_response_bytes default).
+_MAX_RESPONSE_BYTES = 1_048_576
 
 
 def resolve_openlist_path(relative: str) -> str:
@@ -75,6 +85,10 @@ class OpenListMcpClient:
                 "Authorization": self._token,
                 "Content-Type": "application/json",
                 "Accept": "application/json, text/event-stream",
+                # Request uncompressed responses so the accumulated byte count
+                # reflects the actual body size and cannot be defeated by a
+                # compressed-but-small-on-the-wire payload that expands in memory.
+                "Accept-Encoding": "identity",
             }
 
             if self._session_id:
@@ -87,31 +101,63 @@ class OpenListMcpClient:
                 "params": params,
             }
 
-            response = await client.post(
-                self._base_url,
-                headers=headers,
-                json=payload,
-            )
+            async with client.stream(
+                "POST", self._base_url, headers=headers, json=payload
+            ) as response:
+                if response.status_code in (401, 403):
+                    raise PermissionError("OpenList authentication failed")
 
-            if response.status_code in (401, 403):
-                raise PermissionError("OpenList authentication failed")
+                response.raise_for_status()
 
-            response.raise_for_status()
+                session_id = response.headers.get("Mcp-Session-Id")
+                if session_id:
+                    self._session_id = session_id
 
-            session_id = response.headers.get("Mcp-Session-Id")
-            if session_id:
-                self._session_id = session_id
+                # MCP notifications have no JSON-RPC response body.
+                if method.startswith("notifications/"):
+                    return None
 
-            # MCP notifications have no JSON-RPC response body.
-            if method.startswith("notifications/"):
-                return None
+                # Reject any content encoding other than identity (or absent).
+                # A compressed body could decompress to far more than the byte
+                # limit, defeating the accumulated-size guard.
+                content_encoding = (
+                    (response.headers.get("content-encoding") or "identity").strip().lower()
+                )
+                if content_encoding not in ("", "identity"):
+                    raise OpenListResponseTooLarge()
 
-            data = response.json()
+                # Early Content-Length hint; never the only protection.
+                content_length = response.headers.get("content-length")
+                if content_length is not None:
+                    try:
+                        cl = int(content_length)
+                    except (TypeError, ValueError):
+                        cl = None
+                    if cl is not None and cl > _MAX_RESPONSE_BYTES:
+                        raise OpenListResponseTooLarge()
 
-            if "error" in data:
-                raise RuntimeError(str(data["error"].get("message", "MCP error")))
+                chunks: list[bytes] = []
+                total = 0
+                # chunk_size bounds the blocks yielded by the httpx iterator; it
+                # is NOT an absolute upper bound on temporary allocation inside
+                # the transport layer itself.
+                async for chunk in response.aiter_raw(chunk_size=64 * 1024):
+                    total += len(chunk)
+                    if total > _MAX_RESPONSE_BYTES:
+                        # Do not retain the overshooting chunk.
+                        raise OpenListResponseTooLarge()
+                    chunks.append(chunk)
+                raw = b"".join(chunks)
 
-            return data["result"]
+        try:
+            data = json.loads(raw.decode("utf-8", errors="replace"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise RuntimeError("MCP returned invalid JSON") from exc
+
+        if "error" in data:
+            raise RuntimeError(str(data["error"].get("message", "MCP error")))
+
+        return data["result"]
 
     async def initialize(self) -> None:
         if self._session_id:
@@ -170,8 +216,6 @@ class OpenListMcpClient:
             ]
 
             if len(texts) == 1:
-                import json
-
                 try:
                     return json.loads(texts[0])
                 except json.JSONDecodeError:
@@ -251,6 +295,14 @@ class OpenListListHandler(ToolHandler):
                 error_code="UPSTREAM_TIMEOUT",
                 error_message="OpenList neodpovedal včas.",
             )
+        except OpenListResponseTooLarge:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="UPSTREAM_RESPONSE_TOO_LARGE",
+                error_message="OpenList odpoveď prekročila povolenú veľkosť.",
+            )
         except Exception:
             return ToolResult(
                 request_id=request.request_id,
@@ -318,6 +370,14 @@ class OpenListGetHandler(ToolHandler):
                 success=False,
                 error_code="UPSTREAM_TIMEOUT",
                 error_message="OpenList neodpovedal včas.",
+            )
+        except OpenListResponseTooLarge:
+            return ToolResult(
+                request_id=request.request_id,
+                tool_name=request.tool_name,
+                success=False,
+                error_code="UPSTREAM_RESPONSE_TOO_LARGE",
+                error_message="OpenList odpoveď prekročila povolenú veľkosť.",
             )
         except Exception:
             return ToolResult(
