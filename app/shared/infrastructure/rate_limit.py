@@ -2,29 +2,72 @@
 
 from __future__ import annotations
 
+import logging
 import time
-from collections.abc import Awaitable
-from typing import cast
+from uuid import uuid4
 
 from fastapi import HTTPException, Request
+from redis.asyncio import Redis
+from redis.exceptions import RedisError
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
 _mem: dict[str, list[float]] = {}
+_redis_client: Redis | None = None
+_last_redis_warning = float("-inf")
 
 
-async def _client():
-    try:
-        from redis.asyncio import Redis
+def _warn_redis_unavailable(exc: Exception) -> None:
+    global _last_redis_warning
+    now = time.monotonic()
+    if now - _last_redis_warning >= 60:
+        logger.warning(
+            "Rate limiter Redis unavailable (%s); "
+            "using process-local memory fallback",
+            type(exc).__name__,
+        )
+        _last_redis_warning = now
 
-        host = getattr(settings.redis, "host", "localhost")
-        port = getattr(settings.redis, "port", 6379)
-        url = getattr(settings.redis, "url", None) or f"redis://{host}:{port}/0"
-        r = Redis.from_url(url, decode_responses=True)
-        await cast(Awaitable[bool], r.ping())
-        return r
-    except Exception:
+
+async def _client() -> Redis | None:
+    global _redis_client
+    if _redis_client is not None:
+        return _redis_client
+    host = getattr(settings.redis, "host", "localhost")
+    port = getattr(settings.redis, "port", 6379)
+    db = getattr(settings.redis, "db", 0)
+    url = (
+        getattr(settings.redis, "url", None)
+        or f"redis://{host}:{port}/{db}"
+    )
+    if url.startswith("memory:"):
         return None
+    try:
+        _redis_client = Redis.from_url(
+            url,
+            decode_responses=True,
+            max_connections=32,
+            socket_connect_timeout=2.0,
+            socket_timeout=2.0,
+            health_check_interval=30,
+        )
+    except (ValueError, RedisError) as exc:
+        _warn_redis_unavailable(exc)
+        return None
+    return _redis_client
+
+
+async def init_rate_limit() -> None:
+    if settings.rate_limit.enabled:
+        await _client()
+
+
+async def close_rate_limit() -> None:
+    global _redis_client
+    client, _redis_client = _redis_client, None
+    if client is not None:
+        await client.aclose(close_connection_pool=True)
 
 
 async def check_rate_limit(
@@ -38,15 +81,22 @@ async def check_rate_limit(
     rk = f"rl:{key}"
     now = time.time()
     if r is not None:
-        async with r.pipeline() as pipe:
-            pipe.zremrangebyscore(rk, 0, now - period)
-            pipe.zadd(rk, {str(now): now})
-            pipe.zcard(rk)
-            pipe.expire(rk, period + 1)
-            _, _, count, _ = await pipe.execute()
-        if int(count) > limit:
-            raise HTTPException(status_code=429, detail="Príliš veľa pokusov. Skús neskôr.")
-        return
+        try:
+            async with r.pipeline(transaction=True) as pipe:
+                pipe.zremrangebyscore(rk, 0, now - period)
+                pipe.zadd(rk, {uuid4().hex: now})
+                pipe.zcard(rk)
+                pipe.expire(rk, period + 1)
+                _, _, count, _ = await pipe.execute()
+        except RedisError as exc:
+            _warn_redis_unavailable(exc)
+        else:
+            if int(count) > limit:
+                raise HTTPException(
+                    status_code=429,
+                    detail="Príliš veľa pokusov. Skús neskôr.",
+                )
+            return
     # memory fallback
     hits = [t for t in _mem.get(rk, []) if t > now - period]
     hits.append(now)
