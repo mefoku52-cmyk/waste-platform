@@ -60,3 +60,17 @@ def test_bio_waste_and_hazardous():
     assert "hazardous" in expand_material("13 02 05")
     assert "hazardous" in expand_material("160213")
     assert "hazardous" not in expand_material("170405")
+
+def test_expand_material_cache_returns_independent_sets():
+    first = expand_material("PET")
+    first.add("cache_poison")
+
+    second = expand_material("PET")
+
+    assert isinstance(second, set)
+    assert "cache_poison" not in second
+    assert "pet" in second
+
+
+def test_expand_material_cache_normalizes_equivalent_ewc_inputs():
+    assert expand_material("17-04-05") == expand_material("17 04 05")

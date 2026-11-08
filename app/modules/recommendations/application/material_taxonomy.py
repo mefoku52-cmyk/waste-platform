@@ -1,5 +1,7 @@
 """Material families for matching. Codes follow EWC-style chapter prefixes."""
 
+from functools import lru_cache
+
 FAMILIES = {
     "bio": {
         "aliases": {"bio", "kompost", "organic", "organicke", "biowaste"},
@@ -62,37 +64,66 @@ def _spaced_ewc(value: str) -> str:
     return ""
 
 
-def expand_material(raw: str | None) -> set[str]:
-    text = _norm(raw or "")
+@lru_cache(maxsize=4096)
+def _expand_material_cached(text: str) -> frozenset[str]:
+    """Return an immutable cached expansion for normalized material text."""
     if not text:
-        return set()
+        return frozenset()
+
     spaced = _spaced_ewc(text)
     if spaced:
         text = spaced
+
     out: set[str] = set()
     ranked: list[tuple[int, str, str]] = []
+
     for family, spec in FAMILIES.items():
         for prefix in spec["ewc_prefixes"]:
             ranked.append((len(_norm(prefix)), _norm(prefix), family))
+
     ranked.sort(reverse=True)
+
     for _length, prefix, family in ranked:
         if text == prefix or text.startswith(prefix + " "):
             out.add(family)
-            out |= {item.casefold() for item in FAMILIES[family]["aliases"]}
+            out |= {
+                item.casefold()
+                for item in FAMILIES[family]["aliases"]
+            }
             break
-    tokens = {part for part in text.split(" ") if part and not part.isdigit()}
+
+    tokens = {
+        part for part in text.split(" ")
+        if part and not part.isdigit()
+    }
     out |= tokens
+
     for token in list(tokens):
         for family, spec in FAMILIES.items():
-            aliases = {item.casefold() for item in spec["aliases"]}
+            aliases = {
+                item.casefold()
+                for item in spec["aliases"]
+            }
             if token in aliases or any(
-                len(alias) >= 4 and (token.startswith(alias) or alias.startswith(token))
+                len(alias) >= 4
+                and (token.startswith(alias) or alias.startswith(token))
                 for alias in aliases
             ):
                 out.add(family)
                 out |= aliases
+
     for prefix in HAZARDOUS_PREFIXES:
         if text == prefix or text.startswith(prefix + " "):
             out.add("hazardous")
             break
-    return out
+
+    return frozenset(out)
+
+
+def expand_material(raw: str | None) -> set[str]:
+    """Expand material aliases while keeping a mutable, isolated public result."""
+    text = _norm(raw or "")
+    if not text:
+        return set()
+
+    return set(_expand_material_cached(text))

@@ -39,3 +39,5 @@ edge-tts>=6.1.0
 stripe>=11.0.0
 
 cryptography>=42.0.0
+
+sentry-sdk>=2,<3
