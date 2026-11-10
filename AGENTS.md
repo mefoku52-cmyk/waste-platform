@@ -291,3 +291,11 @@ Base: `52ec19c` (df6d307 karty, d991f46 routes, 52ec19c form-filling). Baseline 
 - KROK 0-SEC nález (S1): `.env.production` bol sledovaný v histórii (`46fbc54`→`3baeef8`) s reálnymi `JWT_SECRET_KEY`/`POSTGRES_PASSWORD`/`S3_SECRET_KEY`/`MINIO_ROOT_PASSWORD`/`SMTP_PASSWORD`; aktuálne JWT/PG heslá rotované (dĺžky nesedia), ostatné NEVIEM. Repo PRIVÁTNE. Bez force-push/rewrite → bezpečná oprava = rotovať kľúče (produkčný krok). Aktuálny strom čistý (gitleaks 29 = všetko false-positive/test/ignored).
 - cmep-pg-* pôvod = starý `scripts/backup/backup-db.sh` (pg_dump|gzip bez size-checku), dnes stub; viď `docs/BACKUP.md` incident log.
 - EXTRAS (mimo zoznamu): `tests/unit/test_route_protection.py` — enumeruje /api/v1 routy a padá ak pribudne nechránená routa (FastAPI 0.141 lazy `_IncludedRouter` walk).
+
+## HLAS (voice) — stav 2026-11-10, main `8ba11d01`
+- **Dve cesty, jeden mozog:** 🎙 push-to-talk = `MediaRecorder` → `POST /agent-platform/voice/transcribe` (Groq Whisper) → text do chatu; 🎧 Live = `AudioWorklet` PCM16 → `wss://api.deepgram.com/v1/listen` (nova-3) → finálna veta → `POST /agent-platform/chat` s `voice_response:true, voice_language:'sk'` → text + `audio_base64` (Edge TTS). Hlas NIKDY neobchádza chat (tier/audit/pamäť/nástroje platia rovnako).
+- `apps/web/src/lib/ai-agent/voice-stt.ts` — protokol + tracker + **KeepAlive** (`KEEPALIVE_IDLE_MS=5000`, `INTERVAL=2000`, `needsKeepAlive`). Bez heartbeatu Deepgram zavrie socket po ~10 s ticha počas generovania odpovede.
+- `apps/web/src/features/agent-platform/components/voice-live-button.tsx` — mikrofón → PCM, reconnect max 2 s čerstvým tokenom, reset trackera pri reconnecte, `releaseAll()` uvoľní WS + tracky + AudioContext.
+- `app/modules/agent_platform/presentation/voice_live_router.py` — `POST /agent-platform/voice/token` (JWT + AI tier → Deepgram `/v1/auth/grant`, TTL 60 s, audit `agent.voice.token_granted` best-effort). `DEEPGRAM_API_KEY` sa čítа `os.getenv` pri requeste.
+- **Frontend testy (fungujú):** `npm test` = `vitest run` (vitest+jsdom+@testing-library zapojené, `vitest.config.mts` s `esbuild.jsx:'automatic'` a aliasom `@`→`src`); `npm run test:unit` = `node --test` (čisté moduly).
+- Prod overenie: chunk `app/dashboard/layout-*.js` musí obsahovať `KeepAlive`; hlavička `Permissions-Policy: … microphone=(self)` (bez toho mikrofón nefunguje).
