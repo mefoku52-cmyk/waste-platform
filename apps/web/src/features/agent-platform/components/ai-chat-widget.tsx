@@ -84,6 +84,9 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
   const [busy, setBusy] = useState(false);
   const [recording, setRecording] = useState(false);
   const [transcribing, setTranscribing] = useState(false);
+  // Priebežný (nefinálny) prepis z Live režimu — zobrazí sa ako dočasný bubble
+  // a do chatu sa odošle až finálna výpoveď.
+  const [livePartial, setLivePartial] = useState('');
   const [messages, setMessages] = useState<Msg[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('cmep_chat_history');
@@ -516,6 +519,16 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                 ) : null}
               </div>
             ))}
+            {livePartial ? (
+              <div
+                className="ml-auto max-w-[85%] whitespace-pre-wrap break-words rounded-xl px-3 py-2 text-sm italic opacity-70"
+                style={{ background: 'rgba(201,168,76,0.35)', color: '#0b0b0b' }}
+                aria-live="polite"
+                title="Priebežný prepis — odošle sa až po dokončení vety"
+              >
+                {livePartial}
+              </div>
+            ) : null}
             {(busy || transcribing) && (
               <div
                 className="max-w-[85%] rounded-xl px-3 py-2 text-sm"
@@ -557,10 +570,24 @@ export function AiChatWidget({ listingId, listingTitle }: Props) {
                 {recording ? '■' : '🎙'}
               </button>
               <VoiceLiveButton
-                onTranscript={(role, text) => {
-                  setMessages((m) => [...m, { role: role === 'user' ? 'user' : 'ai', text }]);
+                onInterim={(text) => setLivePartial(text)}
+                onFinalTranscript={async (text) => {
+                  setLivePartial('');
+                  if (busy) {
+                    // Nikdy ticho: výpoveď sa neposlala, používateľ to musí vidieť.
+                    setMessages((m) => [
+                      ...m,
+                      {
+                        role: 'ai',
+                        text: `Zachytil som „${text}“, ale ešte spracúvam predchádzajúcu odpoveď, tak som to neodoslal. Skús to znova.`,
+                      },
+                    ]);
+                    return;
+                  }
+                  await send(text, true, 'sk');
                 }}
                 onError={(msg) => {
+                  setLivePartial('');
                   setMessages((m) => [...m, { role: 'ai', text: `Hlas: ${msg}` }]);
                 }}
               />

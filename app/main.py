@@ -9,6 +9,10 @@ from sqlalchemy import text as _sql_text
 
 from app.core.config import settings
 from app.core.http_exception_handlers import register_http_exception_handlers
+from app.shared.infrastructure.rate_limit import (
+    close_rate_limit,
+    init_rate_limit,
+)
 from app.shared.infrastructure.scheduler import start_scheduler, stop_scheduler
 from app.shared.presentation.rate_limit_middleware import RateLimitMiddleware
 from app.shared.presentation.security_headers import SecurityHeadersMiddleware
@@ -23,12 +27,16 @@ async def lifespan(app: FastAPI):
         settings.app_env,
         settings.ENABLE_PUBLIC_DOCS,
     )
-    start_scheduler()
+    await init_rate_limit()
     try:
+        start_scheduler()
         yield
     finally:
-        stop_scheduler()
-        logger.info("Stopping CMEP app")
+        try:
+            stop_scheduler()
+        finally:
+            await close_rate_limit()
+            logger.info("Stopping CMEP app")
 
 
 def _cors_origins() -> list[str]:
