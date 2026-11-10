@@ -4,6 +4,9 @@ import assert from 'node:assert/strict';
 import {
   buildSttUrl,
   createUtteranceTracker,
+  KEEPALIVE_IDLE_MS,
+  KEEPALIVE_MESSAGE,
+  needsKeepAlive,
   parseSttMessage,
 } from '../src/lib/ai-agent/voice-stt.ts';
 
@@ -131,4 +134,34 @@ test('tracker drží dve rôzne výpovede oddelene (druhá sa nespojí s prvou)'
     { final: 'druhá vec' },
   );
   assert.deepEqual(tracker.push({ kind: 'utterance_end' }, 1200), { interim: '' });
+});
+
+// --- KeepAlive: Deepgram zavrie socket po ~10 s bez zvuku. Počas odpovede chatu
+// je mikrofón stlmený, takže bez heartbeatu by ďalšia veta zmizla.
+
+test('KEEPALIVE_MESSAGE je presne to, čo Deepgram očakáva', () => {
+  assert.deepEqual(JSON.parse(KEEPALIVE_MESSAGE), { type: 'KeepAlive' });
+});
+
+test('needsKeepAlive: bez zaznamenanej aktivity heartbeat neposiela', () => {
+  assert.equal(needsKeepAlive(0, 1_000_000), false);
+  assert.equal(needsKeepAlive(Number.NaN, 1_000_000), false);
+});
+
+test('needsKeepAlive: pred prahom ticho, na prahu a po ňom heartbeat', () => {
+  const t0 = 1_000_000;
+  assert.equal(needsKeepAlive(t0, t0), false);
+  assert.equal(needsKeepAlive(t0, t0 + KEEPALIVE_IDLE_MS - 1), false);
+  assert.equal(needsKeepAlive(t0, t0 + KEEPALIVE_IDLE_MS), true);
+  assert.equal(needsKeepAlive(t0, t0 + 30_000), true);
+});
+
+test('needsKeepAlive: prah sa dá skrátiť (testovateľnosť aj ladenie)', () => {
+  assert.equal(needsKeepAlive(500, 900, 500), false);
+  assert.equal(needsKeepAlive(500, 1000, 500), true);
+});
+
+test('KeepAlive prah je bezpečne pod 10 s timeoutom Deepgramu', () => {
+  assert.ok(KEEPALIVE_IDLE_MS > 0);
+  assert.ok(KEEPALIVE_IDLE_MS < 10_000);
 });

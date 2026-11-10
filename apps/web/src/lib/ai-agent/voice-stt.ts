@@ -10,6 +10,24 @@ export const STT_WS_BASE = 'wss://api.deepgram.com/v1/listen';
 export const STT_MODEL = 'nova-3';
 export const STT_LANGUAGE = 'sk';
 
+/**
+ * Deepgram zavrie live socket po ~10 s bez zvuku. Bežná odpoveď CMEP chatu
+ * trvá dlhšie (LLM reťaz), preto musí spojenie dýchať aj potichu.
+ */
+export const KEEPALIVE_IDLE_MS = 5_000;
+export const KEEPALIVE_INTERVAL_MS = 2_000;
+export const KEEPALIVE_MESSAGE = JSON.stringify({ type: 'KeepAlive' });
+
+/** True, keď od posledného odoslaného rámca ubehlo dosť na KeepAlive. */
+export function needsKeepAlive(
+  lastActivityAt: number,
+  now: number,
+  idleMs: number = KEEPALIVE_IDLE_MS,
+): boolean {
+  if (!Number.isFinite(lastActivityAt) || lastActivityAt <= 0) return false;
+  return now - lastActivityAt >= idleMs;
+}
+
 /** Sample rate, ktorý reálne posielame, musí sedieť s `sample_rate` v URL. */
 export function buildSttUrl(sampleRate: number): string {
   const rate = Number.isFinite(sampleRate) && sampleRate > 0 ? Math.round(sampleRate) : 16000;

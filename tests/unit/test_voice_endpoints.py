@@ -229,3 +229,44 @@ def test_voice_token_ok(client, monkeypatch):
     body = r.json()
     assert body["access_token"] == "dg-token-123"
     assert body["expires_in"] == 60
+
+
+def test_voice_token_writes_audit(client, monkeypatch):
+    """Vydanie hlasového tokenu musí nechať rovnakú stopu ako ostatné AI cesty."""
+    user = _FakeUser(memberships=[{"companyId": "c1"}])
+    _override(user, _FakeEntitlements({"c1"}))
+    monkeypatch.setenv("DEEPGRAM_API_KEY", "dk_test_x")
+
+    class _FakeResponse:
+        def raise_for_status(self):
+            return None
+
+        def json(self):
+            return {"access_token": "dg-token-123", "expires_in": 60}
+
+    class _FakeClient:
+        async def __aenter__(self):
+            return self
+
+        async def __aexit__(self, *exc):
+            return False
+
+        async def post(self, *args, **kwargs):
+            return _FakeResponse()
+
+    audit = AsyncMock()
+    with (
+        patch("httpx.AsyncClient", return_value=_FakeClient()),
+        patch(
+            "app.modules.agent_platform.presentation.voice_live_router.write_audit",
+            audit,
+        ),
+    ):
+        r = client.post("/api/v1/agent-platform/voice/token")
+
+    assert r.status_code == 200, r.text
+    audit.assert_awaited_once()
+    kwargs = audit.await_args.kwargs
+    assert kwargs["action"] == "agent.voice.token_granted"
+    assert kwargs["target_type"] == "agent_voice_token"
+    assert kwargs["actor_user_id"] == user.id
