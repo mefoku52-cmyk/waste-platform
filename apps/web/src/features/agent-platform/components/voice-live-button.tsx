@@ -6,6 +6,10 @@ import { http } from '@/lib/api/http';
 import {
   buildSttUrl,
   createUtteranceTracker,
+  KEEPALIVE_IDLE_MS,
+  KEEPALIVE_INTERVAL_MS,
+  KEEPALIVE_MESSAGE,
+  needsKeepAlive,
   parseSttMessage,
   type UtteranceTracker,
 } from '@/lib/ai-agent/voice-stt';
@@ -108,6 +112,8 @@ export function VoiceLiveButton({ onInterim, onFinalTranscript, onError, disable
   const stopRequestedRef = useRef(false);
   const reconnectsRef = useRef(0);
   const mountedRef = useRef(true);
+  const lastActivityRef = useRef(0);
+  const keepAliveTimerRef = useRef<number | null>(null);
 
   const callbacksRef = useRef({ onInterim, onFinalTranscript, onError });
   useEffect(() => {
@@ -123,8 +129,38 @@ export function VoiceLiveButton({ onInterim, onFinalTranscript, onError, disable
     return trackerRef.current;
   }
 
+  function stopKeepAlive() {
+    if (keepAliveTimerRef.current !== null) {
+      window.clearInterval(keepAliveTimerRef.current);
+      keepAliveTimerRef.current = null;
+    }
+    lastActivityRef.current = 0;
+  }
+
+  /**
+   * Drží Deepgram socket nažive, keď nejde zvuk (počas odpovede chatu je mikrofón
+   * stlmený a ticho >10 s by spojenie zabilo → ďalšia veta by sa stratila).
+   */
+  function startKeepAlive() {
+    stopKeepAlive();
+    lastActivityRef.current = Date.now();
+    keepAliveTimerRef.current = window.setInterval(() => {
+      const ws = wsRef.current;
+      if (!ws || ws.readyState !== WebSocket.OPEN) return;
+      const now = Date.now();
+      if (!needsKeepAlive(lastActivityRef.current, now, KEEPALIVE_IDLE_MS)) return;
+      try {
+        ws.send(KEEPALIVE_MESSAGE);
+        lastActivityRef.current = now;
+      } catch {
+        /* spojenie medzitým zmizlo — rieši onclose */
+      }
+    }, KEEPALIVE_INTERVAL_MS);
+  }
+
   /** Uvoľní všetko: WS (bez spätných volaní), audio graf, MediaStream tracky. */
   function releaseAll() {
+    stopKeepAlive();
     const ws = wsRef.current;
     if (ws) {
       ws.onopen = null;
@@ -254,6 +290,7 @@ export function VoiceLiveButton({ onInterim, onFinalTranscript, onError, disable
       if (mutedRef.current) return;
       try {
         ws.send(buffer);
+        lastActivityRef.current = Date.now();
       } catch {
         /* spojenie medzitým zmizlo — rieši onclose */
       }
@@ -385,6 +422,7 @@ export function VoiceLiveButton({ onInterim, onFinalTranscript, onError, disable
   }
 
   async function handleClose(event: CloseEvent) {
+    stopKeepAlive();
     wsRef.current = null;
     if (stopRequestedRef.current) {
       await teardown();
@@ -392,6 +430,8 @@ export function VoiceLiveButton({ onInterim, onFinalTranscript, onError, disable
     }
     if (reconnectsRef.current < MAX_RECONNECTS) {
       reconnectsRef.current += 1;
+      // Fragmenty z mŕtveho socketu nesmie nové spojenie doplniť do jednej vety.
+      getTracker().reset();
       setSafeStatus('reconnecting');
       await sleep(RECONNECT_BASE_DELAY_MS * reconnectsRef.current);
       if (stopRequestedRef.current) {
@@ -415,6 +455,7 @@ export function VoiceLiveButton({ onInterim, onFinalTranscript, onError, disable
   }
 
   function bindSocket(ws: WebSocket) {
+    startKeepAlive();
     ws.onmessage = (event) => {
       // STT posiela len JSON; binárne rámce ignorujeme.
       if (typeof event.data !== 'string') return;
