@@ -1,49 +1,33 @@
 """Deterministic scoring for recommendation candidates. No I/O."""
 
+from functools import lru_cache
 from math import asin, cos, radians, sin, sqrt
 
 from app.modules.recommendations.application.material_taxonomy import expand_material
 
 # Interné cache pre opakovane sa vyskytujuce vstupy (optimalizacia A + C).
-# Drzia sa na urovni modulu, teda pretrvavaju naprieč volaniami v rameni jednej davky
-# (napr. matching_job.py prechadza firmy x ponuky, kde sa materiály a mesta opakuju).
-_material_compat_cache: dict[tuple[str, str], int] = {}
-# -1 = material_mismatch, 1 = material_accepted, 0 = ziadne informacie o materiale
-
-_city_match_cache: dict[tuple[str, str], bool] = {}
+# lru_cache obmedzuje obsah na maxsize zaznamov, aby v dlhobeziacom procese
+# nedoslo k neovladanemu rastu pamäte. cache_info() vystavuje hits/misses/currsize.
 
 
-def _material_compat_cached(
-    accepted_text: str | None, offered_text: str | None
-) -> int:
+@lru_cache(maxsize=4096)
+def _material_compat_cached(accepted_text: str | None, offered_text: str | None) -> int:
     """Vrati -1 (mismatch), 1 (accepted), 0 (ziadne) s predpoctanim pre unikatne pary."""
-    key = (accepted_text or "", offered_text or "")
-    cached = _material_compat_cache.get(key)
-    if cached is not None:
-        return cached
-    accepted = expand_material(accepted_text)
-    offered = expand_material(offered_text)
+    accepted = expand_material(accepted_text or "")
+    offered = expand_material(offered_text or "")
     if accepted and offered and accepted.isdisjoint(offered):
-        result = -1
+        return -1
     elif accepted and offered:
-        result = 1
-    else:
-        result = 0
-    _material_compat_cache[key] = result
-    return result
+        return 1
+    return 0
 
 
+@lru_cache(maxsize=4096)
 def _city_match_cached(city: str | None, location: str | None) -> bool:
     """Vrati ci je mesto obsahované v lokácii (casefold), s predpočítaním."""
-    key = ((city or "").strip(), location or "")
-    cached = _city_match_cache.get(key)
-    if cached is not None:
-        return cached
-    c = key[0]
-    loc = key[1]
-    result = bool(c and c.casefold() in loc.casefold())
-    _city_match_cache[key] = result
-    return result
+    c = (city or "").strip()
+    loc = location or ""
+    return bool(c and c.casefold() in loc.casefold())
 
 
 def _distance_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
