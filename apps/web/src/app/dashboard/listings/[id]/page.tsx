@@ -16,6 +16,7 @@ import { TransportPanel } from '@/features/recommendations/components/transport-
 import { FreightPanel } from '@/features/recommendations/components/freight-panel';
 import { postListingViewed } from '@/features/recommendations/api';
 import { ListingInquiryButton } from '@/features/inquiries/components/listing-inquiry-button';
+import { InspectionPanel } from '@/features/inspections/components/inspection-panel';
 import { DeleteListingButton } from '@/features/listings/components/delete-listing-button';
 import { PromoteListingButton } from '@/features/listings/components/promote-listing-button';
 import { PublishListingButton } from '@/features/listings/components/publish-listing-button';
@@ -382,6 +383,15 @@ export default function ListingDetailPage() {
             />
 <TransportPanel origin={data.location || undefined} destination={destination} />
             <FreightPanel near={destination || data.location || undefined} />
+
+            {listingId && (
+              <section className="cmep-panel mt-6 rounded-2xl p-5 sm:p-7">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: GOLD }}>
+                  {t('inspections.title')}
+                </p>
+                <InspectionPanel threadId={null} listingId={listingId} />
+              </section>
+            )}
           </>
         ) : null}
       </div>

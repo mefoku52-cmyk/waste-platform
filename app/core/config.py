@@ -192,6 +192,20 @@ class Settings(BaseSettings):
     TELEGRAM_ENABLED: bool = False
     TELEGRAM_WEBHOOK_SECRET: str = ""
 
+    # --- CMEP Live Inspections (streaming) ---
+    # Dedikovany HMAC secret pre streamovacie tokeny (ZHODNY format ako
+    # cmep-streaming/backend/src/auth.js). NIE je to JWT_SECRET_KEY platformy —
+    # zdiela sa IBA medzi platformou a streamovacou sluzbou.
+    CMEP_STREAMING_SIGNING_SECRET: str = ""
+    # Verejna URL streamovacej sluzby (publish/viewer stranky), napr. http://127.0.0.1:8504
+    CMEP_STREAMING_PUBLIC_URL: str = ""
+    # URL streamovacej sluzby pre interné volania platformy (POST /internal/...),
+    # napr. http://127.0.0.1:8504. Ak nie je nastaveny, pouzije sa CMEP_STREAMING_PUBLIC_URL.
+    CMEP_STREAMING_INTERNAL_URL: str = ""
+    # Interny API kluc platform <-> streaming (X-CMEP-Internal-Key). Ak nie je
+    # nastaveny, interny verify/events interface je fail-closed vypnuty.
+    CMEP_INTERNAL_API_KEY: str = ""
+
     # Signed URL pre uploads. Ak nie je nastavené, použije sa JWT_SECRET_KEY.
     UPLOADS_SIGNING_SECRET: str = ""
     # Ak True, GET /uploads/{id} vyžaduje platný podpis. Zapni po
@@ -259,6 +273,21 @@ class Settings(BaseSettings):
                     "outside development."
                 )
         object.__setattr__(self, "JWT_SECRET_KEY", raw_secret)
+
+        # --- CMEP streaming secret: mimo devu musi byt silny ak je nastaveny. ---
+        raw_streaming = str(self.CMEP_STREAMING_SIGNING_SECRET or "").strip()
+        object.__setattr__(self, "CMEP_STREAMING_SIGNING_SECRET", raw_streaming)
+        if raw_streaming and not is_development:
+            if raw_streaming.lower() in _FORBIDDEN_PROD_SECRETS:
+                raise ValueError(
+                    "CMEP_STREAMING_SIGNING_SECRET is a known placeholder. "
+                    "Refusing to start outside development."
+                )
+            if len(raw_streaming) < MIN_PROD_SECRET_LENGTH:
+                raise ValueError(
+                    f"CMEP_STREAMING_SIGNING_SECRET must be at least {MIN_PROD_SECRET_LENGTH} "
+                    "characters outside development."
+                )
 
         # --- DATABASE_URL: v produkcii pozaduj realny Postgres, ziadny tichy SQLite fallback. ---
         raw_db = str(self.DATABASE_URL or "").strip()

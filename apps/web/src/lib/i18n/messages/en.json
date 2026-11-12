@@ -18,7 +18,9 @@
     "lastName": "Last name",
     "close": "Close",
     "loadingShort": "Loading...",
-    "backToOverview": "← Back to overview"
+    "backToOverview": "← Back to overview",
+    "inspectionId": "Inspection ID",
+    "listingId": "Listing ID"
   },
   "login": {
     "title": "Enter the exchange",
@@ -1575,5 +1577,35 @@
       "full": "Gallery is full (10)",
       "uploadFailed": "Photo upload failed."
     }
+  },
+  "inspections": {
+    "title": "Live inspection",
+    "start": "Start live inspection",
+    "join": "Join inspection",
+    "openPublisher": "Open publisher",
+    "none": "No active inspection",
+    "ended": "Inspection has ended",
+    "working": "Working…",
+    "startFailed": "Starting inspection failed",
+    "reopenFailed": "Opening publisher failed",
+    "joinFailed": "Joining inspection failed",
+    "state": "State",
+    "state_created": "Ready",
+    "state_roomCreated": "Waiting for buyer",
+    "state_requested": "Buyer requests inspection",
+    "state_accepted": "Accepted",
+    "state_live": "Live",
+    "state_ended": "Ended",
+    "invite": "Invite participant",
+    "inviteCopied": "Link copied to clipboard",
+    "end": "End inspection",
+    "endConfirm": "Are you sure you want to end the inspection?",
+    "endFailed": "Ending inspection failed",
+    "consent": "Consent to recording",
+    "roomReady": "Room ready",
+    "loginRequired": "You must be signed in to view this inspection.",
+    "notParticipant": "You are not a participant of this inspection.",
+    "ownerHint": "Actions for the seller (listing owner).",
+    "viewerHint": "Actions for the buyer (counterparty)."
   }
 }

@@ -18,7 +18,9 @@
     "lastName": "Priezvisko",
     "close": "Zavrieť",
     "loadingShort": "Načítavam...",
-    "backToOverview": "← Späť na prehľad"
+    "backToOverview": "← Späť na prehľad",
+    "inspectionId": "ID obhliadky",
+    "listingId": "ID ponuky"
   },
   "login": {
     "title": "Prihláste sa",
@@ -1583,5 +1585,35 @@
       "full": "Galéria je plná (10)",
       "uploadFailed": "Nahranie fotografie zlyhalo."
     }
+  },
+  "inspections": {
+    "title": "Živá obhliadka",
+    "start": "Spustiť živú obhliadku",
+    "join": "Pripojiť sa na obhliadku",
+    "openPublisher": "Otvoriť publisher",
+    "none": "Žiadna aktívna obhliadka",
+    "ended": "Obhliadka bola ukončená",
+    "working": "Spracúvam…",
+    "startFailed": "Spustenie obhliadky zlyhalo",
+    "reopenFailed": "Otvorenie publishera zlyhalo",
+    "joinFailed": "Pripojenie k obhliadke zlyhalo",
+    "state": "Stav",
+    "state_created": "Pripravená",
+    "state_roomCreated": "Čaká na kupujúceho",
+    "state_requested": "Kupujúci žiada obhliadku",
+    "state_accepted": "Schválená",
+    "state_live": "Prebieha",
+    "state_ended": "Ukončená",
+    "invite": "Pozvať účastníka",
+    "inviteCopied": "Odkaz skopírovaný do schránky",
+    "end": "Ukončiť obhliadku",
+    "endConfirm": "Skutočne chcete ukončiť obhliadku?",
+    "endFailed": "Ukončenie obhliadky zlyhalo",
+    "consent": "Súhlas s nahrávaním",
+    "roomReady": "Miestnosť vytvorená",
+    "loginRequired": "Musíte byť prihlásený, aby ste videli túto obhliadku.",
+    "notParticipant": "K tejto obhliadke nemáte prístup — nie ste jej účastník.",
+    "ownerHint": "Voľte akcie pre predávajúceho (vlastníka ponuky).",
+    "viewerHint": "Voľte akcie pre kupujúceho (druhá strana)."
   }
 }

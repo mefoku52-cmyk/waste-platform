@@ -30,6 +30,7 @@ from app.modules.documents.presentation.router import router as documents_router
 from app.modules.events.presentation.router import router as events_router
 from app.modules.inquiries.presentation.router import router as inquiries_router
 from app.modules.integrations.presentation.router import router as integrations_router
+from app.modules.inspections.presentation.router import router as inspections_router
 from app.modules.lead_finder.presentation.router import (
     router as lead_finder_router,
 )
@@ -102,3 +103,4 @@ api_router.include_router(transport_router)
 
 
 api_router.include_router(integrations_router)
+api_router.include_router(inspections_router)

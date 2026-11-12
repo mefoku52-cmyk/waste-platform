@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMessages, useThread } from '../hooks/use-chat-queries';
 import { chatApi } from '../api';
 import { useCurrentUser } from '../../auth/hooks/use-current-user';
+import { InspectionPanel } from '../../inspections/components/inspection-panel';
 import { useT } from '@/lib/i18n/context';
 
 const GOLD = '#c9a84c';
@@ -136,6 +137,12 @@ export const ChatWindow = ({ threadId }: { threadId: string }) => {
       >
         {t('chat.contactHidden')}
       </div>
+
+      {/* ŽIVÁ OBHLIADKA (ak je thread viazaný na ponuku) */}
+      <InspectionPanel
+        threadId={threadId}
+        listingId={(thread as any)?.data?.listingId ?? null}
+      />
 
       {/* MESSAGES */}
       <div className="flex-1 space-y-1 overflow-y-auto px-4 py-4 sm:px-5">
