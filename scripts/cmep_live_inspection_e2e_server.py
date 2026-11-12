@@ -184,6 +184,7 @@ async def seed_and_mint():
             "viewerToken": viewer_token,
             "outsiderToken": outsider_token,
         }
+        print(f"E2E_DB={_E2E_DB} pid={os.getpid()} users={len([owner, viewer, outsider])}", flush=True)
         with open(TOKEN_PATH, "w", encoding="utf-8") as f:
             json.dump(out, f)
         print("E2E_TOKENS_WRITTEN", flush=True)
