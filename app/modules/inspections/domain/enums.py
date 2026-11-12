@@ -24,9 +24,7 @@ class InspectionState(str, Enum):
     @classmethod
     def active_states(cls) -> frozenset["InspectionState"]:
         """Stavy, v ktorych je obhliadka ziva (nie je terminalna)."""
-        return frozenset(
-            {cls.CREATED, cls.ROOM_CREATED, cls.REQUESTED, cls.ACCEPTED, cls.LIVE}
-        )
+        return frozenset({cls.CREATED, cls.ROOM_CREATED, cls.REQUESTED, cls.ACCEPTED, cls.LIVE})
 
     @property
     def is_active(self) -> bool:

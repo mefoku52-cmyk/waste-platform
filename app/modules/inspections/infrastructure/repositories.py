@@ -8,7 +8,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.modules.inspections.domain.entities import InspectionEntity
 from app.modules.inspections.domain.enums import InspectionEventType, InspectionState
 from app.modules.inspections.infrastructure.mappers import (
-    apply_event_to_entity,
     inspection_to_domain,
     inspection_to_model,
 )

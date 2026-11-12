@@ -12,7 +12,9 @@ def client():
 
 
 def test_create_inspection_requires_auth(client):
-    r = client.post("/api/v1/inspections", json={"listingId": "00000000-0000-0000-0000-000000000000"})
+    r = client.post(
+        "/api/v1/inspections", json={"listingId": "00000000-0000-0000-0000-000000000000"}
+    )
     assert r.status_code == 401
 
 

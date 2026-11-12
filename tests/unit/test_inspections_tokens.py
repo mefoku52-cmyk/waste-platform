@@ -58,6 +58,7 @@ def test_mint_viewer_with_consent_has_rec_flag():
         consent_to_record=False,
     )
     claims = verify_streaming_token_self(tok.token)
+    assert claims is not None
     assert claims["role"] == "viewer"
     assert claims["rec"] == 0
 

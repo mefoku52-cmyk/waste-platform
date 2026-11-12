@@ -5,6 +5,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.modules.inspections.application.dto import InspectionData
+
 
 class CreateInspectionRequest(BaseModel):
     listingId: UUID

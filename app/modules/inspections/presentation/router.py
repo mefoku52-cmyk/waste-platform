@@ -7,8 +7,9 @@ Poznámky k bezpečnosti:
     hlavičku X-CMEP-Internal-Key; bez konfigurácie sú fail-closed (403).
 """
 
-from fastapi import APIRouter, Depends, Header, Query
 from uuid import UUID
+
+from fastapi import APIRouter, Depends, Header, Query
 
 from app.modules.auth.presentation.schemas import CurrentUserResponse
 from app.shared.presentation import authorization as authz
@@ -21,7 +22,6 @@ from .schemas import (
     ConsentResponse,
     CreateInspectionRequest,
     CreateInspectionResponse,
-    InspectionDataOut,
     InspectionEventIn,
     InspectionEventOut,
     InspectionResponse,

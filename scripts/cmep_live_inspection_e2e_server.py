@@ -1,15 +1,16 @@
 """Cross-service E2E runner for CMEP Live Inspections."""
 
 import asyncio
+import contextlib
 import json
 import os
 import signal
 import sys
 import tempfile
 import uuid
-from uuid import UUID
 from datetime import datetime
 from pathlib import Path
+from uuid import UUID
 
 # Unikatny DB subor na kazdy beh: paralelne behy (alebo zvysok z predchadzajuceho
 # behu) by si delili subor a SQLite write contention by stracal eventy/stav obhliadky.
@@ -20,25 +21,28 @@ os.environ["APP_ENV"] = "test"
 os.environ["REDIS_URL"] = "memory://"
 os.environ["RATE_LIMIT_ENABLED"] = "false"
 
-import uvicorn  # noqa: E402
-from app.main import create_app  # noqa: E402
-from app.modules.chat.infrastructure.models import ChatThreadModel  # noqa: F401
-from app.modules.company_memberships.infrastructure.models import CompanyMembershipModel  # noqa: F401
-from app.modules.inspections.infrastructure.models import (  # noqa: F401
+import uvicorn
+
+from app.main import create_app
+from app.modules.chat.infrastructure.models import ChatThreadModel
+from app.modules.company_memberships.infrastructure.models import CompanyMembershipModel
+from app.modules.inspections.infrastructure.models import (
     InspectionEventModel,
     InspectionModel,
 )
-from app.modules.listings.infrastructure.models import ListingsModel  # noqa: F401
-from app.modules.users.infrastructure.models import UserModel  # noqa: F401
-from app.shared.infrastructure.db import register_models  # noqa: F401
-from app.shared.infrastructure.db.base import Base  # noqa: F401
-from app.shared.infrastructure.db.session import async_session_factory  # noqa: F401
-from app.shared.infrastructure.security.jwt_service import JwtService  # noqa: F401
+from app.modules.listings.infrastructure.models import ListingsModel
+from app.modules.users.infrastructure.models import UserModel
+from app.shared.infrastructure.db import register_models
+from app.shared.infrastructure.db.base import Base
+from app.shared.infrastructure.db.session import async_session_factory
+from app.shared.infrastructure.security.jwt_service import JwtService
 
 APP = create_app()
 TOKEN_PATH = os.environ.get(
     "E2E_TOKENS_PATH", "/data/data/com.termux/files/usr/tmp/opencode/cmep-e2e-tokens.json"
 )
+
+
 # Port je konfigurovatelný, aby sa E2E testy neopakovali o ten istý port
 # (zvyšok z predchádzujúceho behu by inak odpovedal starou konfiguráciou).
 def _resolve_port() -> int:
@@ -62,6 +66,7 @@ def _resolve_port() -> int:
         sock.bind(("127.0.0.1", 0))
         return int(sock.getsockname()[1])
 
+
 PORT = _resolve_port()
 
 
@@ -78,15 +83,20 @@ async def seed_and_mint():
 
     async with async_session_factory() as session:
         from sqlalchemy.ext.asyncio import AsyncEngine
-        from app.shared.infrastructure.db.base import Base  # noqa: F401
-        from app.shared.infrastructure.db import register_models  # noqa: F401
 
-        engine = session.get_bind() if hasattr(session, "get_bind") else None
+        from app.shared.infrastructure.db import register_models
+        from app.shared.infrastructure.db.base import Base
         from app.shared.infrastructure.db.session import engine as _engine
 
         async with _engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        for tbl in (InspectionEventModel, InspectionModel, ChatThreadModel, ListingsModel, UserModel):
+        for tbl in (
+            InspectionEventModel,
+            InspectionModel,
+            ChatThreadModel,
+            ListingsModel,
+            UserModel,
+        ):
             await session.execute(sa_delete(tbl))
         owner = UserModel(
             id=owner_uid,
@@ -184,7 +194,9 @@ async def seed_and_mint():
             "viewerToken": viewer_token,
             "outsiderToken": outsider_token,
         }
-        print(f"E2E_DB={_E2E_DB} pid={os.getpid()} users={len([owner, viewer, outsider])}", flush=True)
+        print(
+            f"E2E_DB={_E2E_DB} pid={os.getpid()} users={len([owner, viewer, outsider])}", flush=True
+        )
         with open(TOKEN_PATH, "w", encoding="utf-8") as f:
             json.dump(out, f)
         print("E2E_TOKENS_WRITTEN", flush=True)
@@ -202,19 +214,15 @@ async def main():
 
     loop = asyncio.get_running_loop()
     for s in (signal.SIGINT, signal.SIGTERM):
-        try:
+        with contextlib.suppress(NotImplementedError):
             loop.add_signal_handler(s, _sig)
-        except NotImplementedError:
-            pass
 
     stop_task = asyncio.create_task(stop.wait())
     task.add_done_callback(lambda _t: stop_task.cancel())
     await task
     stop_task.cancel()
-    try:
+    with contextlib.suppress(Exception):
         await stop_task
-    except Exception:
-        pass
 
 
 if __name__ == "__main__":

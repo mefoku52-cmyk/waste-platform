@@ -9,6 +9,7 @@ Server-side identita a autorizacia:
 """
 
 import asyncio
+import contextlib
 from datetime import datetime, timedelta
 from uuid import UUID, uuid4
 
@@ -17,7 +18,6 @@ from sqlalchemy import or_, select
 from app.core.config import settings
 from app.modules.chat.infrastructure.models import ChatThreadModel
 from app.modules.inspections.application.dto import InspectionData
-from app.modules.listings.infrastructure.models import ListingsModel
 from app.modules.inspections.application.streaming_tokens import (
     StreamingTokenService,
 )
@@ -30,6 +30,7 @@ from app.modules.inspections.infrastructure.repositories import (
 from app.modules.inspections.infrastructure.streaming_client import (
     StreamingServiceClient,
 )
+from app.modules.listings.infrastructure.models import ListingsModel
 from app.shared.application.side_effects import write_audit
 from app.shared.domain.exceptions import (
     ConflictDomainError,
@@ -50,7 +51,13 @@ def _uid(value):
 
 
 class InspectionService:
-    def __init__(self, session, repo: InspectionRepositoryImpl, events: InspectionEventRepositoryImpl, streaming=None):
+    def __init__(
+        self,
+        session,
+        repo: InspectionRepositoryImpl,
+        events: InspectionEventRepositoryImpl,
+        streaming=None,
+    ):
         self.session = session
         self.repo = repo
         self.events = events
@@ -130,9 +137,7 @@ class InspectionService:
 
     # ─── publisher flow ───────────────────────────────────────────
 
-    async def create_inspection(
-        self, *, user_id, company_ids: list[str], listing_id
-    ) -> dict:
+    async def create_inspection(self, *, user_id, company_ids: list[str], listing_id) -> dict:
         """Vlastnik ponuky spusta zivu obhliadku. Vracia publisher pristup."""
         listing = await self._get_listing(listing_id)
         if listing is None:
@@ -193,10 +198,9 @@ class InspectionService:
         is_owner = self._is_member(company_ids, listing.company_id)
         if inspection is None:
             return {"inspection": None, "canPublish": is_owner, "canJoin": False}
-        is_assigned_viewer = (
-            inspection.viewer_user_id is not None
-            and str(inspection.viewer_user_id) == str(user_id)
-        )
+        is_assigned_viewer = inspection.viewer_user_id is not None and str(
+            inspection.viewer_user_id
+        ) == str(user_id)
         if not is_owner and not is_assigned_viewer:
             # Counterpart (ma thread na ponuke) vidie existujucu obhliadku, aby sa
             # mohol pripojit; cudzi uzivatel dostane 404 (bez vyleja existencie).
@@ -251,7 +255,9 @@ class InspectionService:
         # Counterpart pravidlo: user musi mat chat vlakno na tejto ponuke.
         thread = await self._user_thread_on_listing(listing_id, user_id, thread_id)
         if thread is None:
-            raise ForbiddenDomainError("Only the counterpart of this listing can join the inspection")
+            raise ForbiddenDomainError(
+                "Only the counterpart of this listing can join the inspection"
+            )
 
         # Miesto viewera: prve priradenie vyhrava; iny viewer po accepte -> konflikt.
         if (
@@ -347,22 +353,22 @@ class InspectionService:
             "expiresIn": token.expires_in,
         }
 
-
     async def get_inspection(self, *, user_id, company_ids: list[str], inspection_id) -> dict:
         inspection = await self.repo.get(inspection_id)
         if inspection is None:
             raise NotFoundDomainError("Inspection not found")
         listing = await self._get_listing(inspection.listing_id)
         is_owner = listing is not None and self._is_member(company_ids, listing.company_id)
-        is_viewer = (
-            inspection.viewer_user_id is not None
-            and str(inspection.viewer_user_id) == str(user_id)
+        is_viewer = inspection.viewer_user_id is not None and str(inspection.viewer_user_id) == str(
+            user_id
         )
         if not (is_owner or is_viewer):
             raise NotFoundDomainError("Inspection not found")
         return {"inspection": self._to_data(inspection)}
 
-    async def set_recording_consent(self, *, user_id, company_ids: list[str], inspection_id) -> dict:
+    async def set_recording_consent(
+        self, *, user_id, company_ids: list[str], inspection_id
+    ) -> dict:
         """Vyslovny suhlas vlastnika ponuky s nahranim (GDPR). Bez neho rec=0."""
         inspection = await self.repo.get(inspection_id)
         if inspection is None:
@@ -412,10 +418,8 @@ class InspectionService:
         )
         # Synchronizuj ukončenie do streamovacieho jadra (uzavrie miestnosť).
         # Best-effort: platformový stav (ENDED) je autoritatívny aj ak volanie zlyhá.
-        try:
+        with contextlib.suppress(Exception):
             await self.streaming.end_inspection(saved.id)
-        except Exception:
-            pass
         return {"inspection": self._to_data(saved)}
 
     # ─── interné rozhranie pre streamingsluzbu ────────────────────
@@ -455,7 +459,11 @@ class InspectionService:
             if not sub or str(inspection.owner_user_id) != str(sub):
                 return {"ok": False, "state": inspection.state.value, "reason": "not_publisher"}
         elif role == "viewer":
-            if not sub or not inspection.viewer_user_id or str(inspection.viewer_user_id) != str(sub):
+            if (
+                not sub
+                or not inspection.viewer_user_id
+                or str(inspection.viewer_user_id) != str(sub)
+            ):
                 return {"ok": False, "state": inspection.state.value, "reason": "not_viewer"}
         else:
             return {"ok": False, "state": inspection.state.value, "reason": "invalid_role"}

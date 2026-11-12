@@ -40,7 +40,9 @@ def _b64url(raw: bytes) -> str:
 
 
 def _hmac(secret: str, payload: str) -> str:
-    return _b64url(hmac.new(secret.encode("utf-8"), payload.encode("ascii"), hashlib.sha256).digest())
+    return _b64url(
+        hmac.new(secret.encode("utf-8"), payload.encode("ascii"), hashlib.sha256).digest()
+    )
 
 
 class StreamingTokenService:

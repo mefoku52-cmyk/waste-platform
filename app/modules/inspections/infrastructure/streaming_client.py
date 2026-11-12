@@ -17,11 +17,17 @@ class StreamingServiceClient:
     """Klient pre interné volania platformy → streaming."""
 
     def __init__(self, base_url: str | None = None, internal_key: str | None = None):
-        self.base_url = (base_url or getattr(settings, "CMEP_STREAMING_INTERNAL_URL", "") or "").strip().rstrip("/")
+        self.base_url = (
+            (base_url or getattr(settings, "CMEP_STREAMING_INTERNAL_URL", "") or "")
+            .strip()
+            .rstrip("/")
+        )
         if not self.base_url:
             public = (getattr(settings, "CMEP_STREAMING_PUBLIC_URL", "") or "").strip().rstrip("/")
             self.base_url = public
-        self.internal_key = (internal_key or getattr(settings, "CMEP_INTERNAL_API_KEY", "") or "").strip()
+        self.internal_key = (
+            internal_key or getattr(settings, "CMEP_INTERNAL_API_KEY", "") or ""
+        ).strip()
         self.timeout_s = 5.0
 
     @property
@@ -46,6 +52,7 @@ class StreamingServiceClient:
             return res.status_code == 200
         except Exception:
             return False
+
 
 def get_streaming_client() -> StreamingServiceClient:
     return StreamingServiceClient()

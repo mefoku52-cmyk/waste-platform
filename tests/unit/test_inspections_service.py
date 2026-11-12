@@ -11,7 +11,7 @@ import pytest
 
 from app.core.config import settings
 from app.modules.inspections.application.services import InspectionService
-from app.modules.inspections.infrastructure.models import InspectionEventModel, InspectionModel
+from app.modules.inspections.infrastructure.models import InspectionEventModel
 from app.modules.listings.infrastructure.models import ListingsModel
 from app.shared.domain.exceptions import (
     ConflictDomainError,
@@ -63,7 +63,9 @@ async def _seed_listing(db_session, company_id, status="published"):
     return row
 
 
-async def _seed_thread(db_session, listing_id, owner_user, owner_company, viewer_user, viewer_company):
+async def _seed_thread(
+    db_session, listing_id, owner_user, owner_company, viewer_user, viewer_company
+):
     from app.modules.chat.infrastructure.models import ChatThreadModel
 
     row = ChatThreadModel(
@@ -121,7 +123,9 @@ async def test_create_second_active_inspection_conflict(svc, db_session):
     listing = await _seed_listing(db_session, company)
     await svc.create_inspection(user_id=owner, company_ids=[str(company)], listing_id=listing.id)
     with pytest.raises(ConflictDomainError):
-        await svc.create_inspection(user_id=owner, company_ids=[str(company)], listing_id=listing.id)
+        await svc.create_inspection(
+            user_id=owner, company_ids=[str(company)], listing_id=listing.id
+        )
 
 
 async def test_join_requires_counterpart_thread(svc, db_session):
@@ -256,9 +260,11 @@ async def test_event_idempotency_duplicate_uid(svc, db_session):
     from sqlalchemy import select
 
     rows = (
-        (await db_session.execute(
-            select(InspectionEventModel).where(InspectionEventModel.event_uid == uid)
-        ))
+        (
+            await db_session.execute(
+                select(InspectionEventModel).where(InspectionEventModel.event_uid == uid)
+            )
+        )
         .scalars()
         .all()
     )
@@ -388,7 +394,9 @@ async def test_recording_consent_owner_only(svc, db_session):
     )
     from app.modules.inspections.application.streaming_tokens import verify_streaming_token_self
 
-    assert verify_streaming_token_self(token.token)["rec"] == 1
+    claims = verify_streaming_token_self(token.token)
+    assert claims is not None
+    assert claims["rec"] == 1
 
 
 async def test_publisher_link_reissues_url(svc, db_session):
@@ -398,7 +406,9 @@ async def test_publisher_link_reissues_url(svc, db_session):
         user_id=owner, company_ids=[str(company)], listing_id=listing.id
     )
     insp_id = created["inspection"].id
-    link = await svc.publisher_link(user_id=owner, company_ids=[str(company)], inspection_id=insp_id)
+    link = await svc.publisher_link(
+        user_id=owner, company_ids=[str(company)], inspection_id=insp_id
+    )
     assert link["role"] == "publisher"
     assert f"offer={insp_id}" in link["publishUrl"]
     with pytest.raises(NotFoundDomainError):
@@ -412,17 +422,28 @@ async def test_end_inspection_sets_ended(svc, db_session):
         user_id=owner, company_ids=[str(company)], listing_id=listing.id
     )
     insp_id = created["inspection"].id
-    ended = await svc.end_inspection(user_id=owner, company_ids=[str(company)], inspection_id=insp_id)
+    ended = await svc.end_inspection(
+        user_id=owner, company_ids=[str(company)], inspection_id=insp_id
+    )
     assert ended["inspection"].state.value == "ended"
     # Idempotencia: opakovane ukoncenie uz ukoncenej obhliadky je uspesne
     # (miestnost uz zanikla odchodom publishra) — nie konflikt.
-    again = await svc.end_inspection(user_id=owner, company_ids=[str(company)], inspection_id=insp_id)
+    again = await svc.end_inspection(
+        user_id=owner, company_ids=[str(company)], inspection_id=insp_id
+    )
     assert again["inspection"].state.value == "ended"
 
 
 async def test_active_inspection_visibility(svc, db_session):
 
-    company, owner, viewer, viewer_co, outsider, outsider_co = uuid4(), uuid4(), uuid4(), uuid4(), uuid4(), uuid4()
+    company, owner, viewer, viewer_co, outsider, outsider_co = (
+        uuid4(),
+        uuid4(),
+        uuid4(),
+        uuid4(),
+        uuid4(),
+        uuid4(),
+    )
     listing = await _seed_listing(db_session, company)
     await _seed_thread(db_session, listing.id, owner, company, viewer, viewer_co)
     created = await svc.create_inspection(
