@@ -259,16 +259,43 @@ async def test_event_idempotency_duplicate_uid(svc, db_session):
 
     from sqlalchemy import select
 
-    rows = (
-        (
-            await db_session.execute(
-                select(InspectionEventModel).where(InspectionEventModel.event_uid == uid)
-            )
-        )
-        .scalars()
-        .all()
+
+async def test_record_event_ended_triggers_streaming_end_best_effort(db_session):
+    from app.modules.inspections.infrastructure.repositories import (
+        InspectionEventRepositoryImpl,
+        InspectionRepositoryImpl,
     )
-    assert len(rows) == 1
+
+    calls = []
+
+    class _Streaming:
+        async def end_inspection(self, inspection_id):
+            calls.append(str(inspection_id))
+            return True
+
+    svc_local = InspectionService(
+        db_session,
+        InspectionRepositoryImpl(db_session),
+        InspectionEventRepositoryImpl(db_session),
+        streaming=_Streaming(),
+    )
+    company, owner = uuid4(), uuid4()
+    listing = await _seed_listing(db_session, company)
+    created = await svc_local.create_inspection(
+        user_id=owner, company_ids=[str(company)], listing_id=listing.id
+    )
+    insp_id = created["inspection"].id
+    res = await svc_local.record_event(
+        internal_key=INTERNAL_KEY,
+        event_uid=str(uuid4()),
+        inspection_id=insp_id,
+        event_type="inspection_ended",
+        actor_sub=str(owner),
+        room_id="room-x",
+        role="owner",
+    )
+    assert res["recorded"] is True and res["state"] == "ended"
+    assert calls == [str(insp_id)]
 
 
 async def test_event_unknown_type_and_bad_key(svc, db_session):

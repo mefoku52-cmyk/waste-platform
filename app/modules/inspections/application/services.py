@@ -517,5 +517,10 @@ class InspectionService:
 
         apply_event_to_entity(inspection, event_type=event_type, role=role, room_id=room_id)
         inspection.updated_at = datetime.now()
-        await self.repo.update(inspection)
-        return {"recorded": True, "state": inspection.state.value}
+        saved = await self.repo.update(inspection)
+        if saved.state == InspectionState.ENDED:
+            # Platform must stay consistent with streaming room lifecycle when end is
+            # observed via ingested events (best-effort, idempotent on streaming side).
+            with contextlib.suppress(Exception):
+                await self.streaming.end_inspection(saved.id)
+        return {"recorded": True, "state": saved.state.value}
