@@ -11,7 +11,6 @@ import pytest
 
 from app.core.config import settings
 from app.modules.inspections.application.services import InspectionService
-from app.modules.inspections.infrastructure.models import InspectionEventModel
 from app.modules.listings.infrastructure.models import ListingsModel
 from app.shared.domain.exceptions import (
     ConflictDomainError,
@@ -256,8 +255,6 @@ async def test_event_idempotency_duplicate_uid(svc, db_session):
     )
     assert first["recorded"] is True and first["state"] == "room_created"
     assert second["recorded"] is False and second["duplicate"] is True
-
-    from sqlalchemy import select
 
 
 async def test_record_event_ended_triggers_streaming_end_best_effort(db_session):
