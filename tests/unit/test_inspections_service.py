@@ -580,3 +580,80 @@ async def test_end_inspection_tolerates_streaming_failure(db_session):
         internal_key=INTERNAL_KEY, inspection_id=insp_id, sub=str(owner), role="publisher"
     )
     assert res["ok"] is False
+
+
+async def test_can_request_stream_buyer_with_thread(svc, db_session):
+    company, owner, viewer, viewer_co = uuid4(), uuid4(), uuid4(), uuid4()
+    listing = await _seed_listing(db_session, company)
+    await _seed_thread(db_session, listing.id, owner, company, viewer, viewer_co)
+
+    # kupujuci s vlaknom, bez aktivnej obhliadky
+    res = await svc.active_inspection_for_listing(
+        user_id=viewer, company_ids=[str(viewer_co)], listing_id=listing.id
+    )
+    assert res["inspection"] is None
+    assert res["canPublish"] is False
+    assert res["canRequest"] is True
+    assert res["pendingRequest"] is False
+
+
+async def test_can_request_stream_false_without_thread(svc, db_session):
+    company, _owner, stranger, stranger_co = uuid4(), uuid4(), uuid4(), uuid4()
+    listing = await _seed_listing(db_session, company)
+
+    # bez chat vlakna -> kupujuci nema ako poziadat (ziadna 404 pri absencii obhliadky,
+    # ale canRequest False a canPublish False)
+    res = await svc.active_inspection_for_listing(
+        user_id=stranger, company_ids=[str(stranger_co)], listing_id=listing.id
+    )
+    assert res["canRequest"] is False
+    assert res["canPublish"] is False
+    assert res["pendingRequest"] is False
+
+
+async def test_can_request_stream_false_for_seller(svc, db_session):
+    company, owner = uuid4(), uuid4()
+    listing = await _seed_listing(db_session, company)
+
+    res = await svc.active_inspection_for_listing(
+        user_id=owner, company_ids=[str(company)], listing_id=listing.id
+    )
+    assert res["canRequest"] is False
+
+
+async def test_pending_request_after_marker_message(svc, db_session):
+    from app.modules.chat.infrastructure.models import ChatMessageModel
+    from app.modules.inspections.application.services import STREAM_REQUEST_MARKER
+
+    company, owner, viewer, viewer_co = uuid4(), uuid4(), uuid4(), uuid4()
+    listing = await _seed_listing(db_session, company)
+    thread = await _seed_thread(db_session, listing.id, owner, company, viewer, viewer_co)
+
+    # seed marker message (ziadost kupujuceho)
+    msg = ChatMessageModel(
+        id=uuid4(),
+        thread_id=thread.id,
+        sender_user_id=viewer,
+        sender_company_id=viewer_co,
+        body=STREAM_REQUEST_MARKER,
+        created_at=datetime.now(),
+        updated_at=datetime.now(),
+        created_by_user_id=viewer,
+        updated_by_user_id=viewer,
+    )
+    db_session.add(msg)
+    await db_session.commit()
+
+    # kupujuci: pendingRequest True, canRequest False (dvojity klik neposle druhu ziadost)
+    res = await svc.active_inspection_for_listing(
+        user_id=viewer, company_ids=[str(viewer_co)], listing_id=listing.id
+    )
+    assert res["pendingRequest"] is True
+    assert res["canRequest"] is False
+
+    # predavajuci: pendingRequest True
+    res2 = await svc.active_inspection_for_listing(
+        user_id=owner, company_ids=[str(company)], listing_id=listing.id
+    )
+    assert res2["pendingRequest"] is True
+    assert res2["canRequest"] is False

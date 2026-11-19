@@ -78,6 +78,9 @@ class ActiveInspectionResponse(BaseModel):
     canPublish: bool
     canJoin: bool
     isViewer: bool = False
+    canRequest: bool = False
+    pendingRequest: bool = False
+    requestThreadId: str | None = None
 
 
 class ConsentResponse(BaseModel):

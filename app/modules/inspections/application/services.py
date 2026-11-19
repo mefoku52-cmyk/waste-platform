@@ -43,6 +43,9 @@ _ROOM_POLL_INTERVAL_S = 0.5
 _ROOM_WAIT_DEFAULT_S = 6.0
 _ROOM_WAIT_MAX_S = 15.0
 
+# Marker for a buyer's request for a live stream, sent as a chat message body.
+STREAM_REQUEST_MARKER = "[STREAM_REQUEST]"
+
 
 def _uid(value):
     if value in (None, ""):
@@ -93,6 +96,34 @@ class InspectionService:
     @staticmethod
     def _is_member(company_ids: list[str], company_id) -> bool:
         return company_id is not None and str(company_id) in {str(c) for c in company_ids}
+
+    async def _has_stream_request(self, thread_id) -> bool:
+        from app.modules.chat.infrastructure.models import ChatMessageModel
+
+        r = await self.session.execute(
+            select(ChatMessageModel)
+            .where(ChatMessageModel.thread_id == _uid(thread_id))
+            .where(ChatMessageModel.body == STREAM_REQUEST_MARKER)
+            .limit(1)
+        )
+        return r.scalar_one_or_none() is not None
+
+    async def _has_any_stream_request_for_listing(self, listing_id) -> bool:
+        from app.modules.chat.infrastructure.models import ChatMessageModel, ChatThreadModel
+
+        r = await self.session.execute(
+            select(ChatThreadModel.id).where(ChatThreadModel.listing_id == _uid(listing_id))
+        )
+        thread_ids = [row[0] for row in r.fetchall()]
+        if not thread_ids:
+            return False
+        r2 = await self.session.execute(
+            select(ChatMessageModel)
+            .where(ChatMessageModel.thread_id.in_(thread_ids))
+            .where(ChatMessageModel.body == STREAM_REQUEST_MARKER)
+            .limit(1)
+        )
+        return r2.scalar_one_or_none() is not None
 
     @staticmethod
     def _public_url() -> str:
@@ -197,7 +228,27 @@ class InspectionService:
             raise NotFoundDomainError(f"Listing {listing_id} not found")
         is_owner = self._is_member(company_ids, listing.company_id)
         if inspection is None:
-            return {"inspection": None, "canPublish": is_owner, "canJoin": False}
+            thread = await self._user_thread_on_listing(listing_id, user_id)
+            # Kupujuci s chat vlaknom na ponuke (nie clen firmy ponuky) moze poziadat
+            # o stream, ak este nepoziadal.
+            can_request = (not is_owner) and (thread is not None)
+            has_request = False
+            if can_request:
+                has_request = await self._has_stream_request(thread.id)
+                can_request = not has_request
+            if is_owner:
+                pending_request = await self._has_any_stream_request_for_listing(listing_id)
+            else:
+                pending_request = has_request
+            return {
+                "inspection": None,
+                "canPublish": is_owner,
+                "canJoin": False,
+                "isViewer": False,
+                "canRequest": can_request,
+                "pendingRequest": pending_request,
+                "requestThreadId": str(thread.id) if thread is not None else None,
+            }
         is_assigned_viewer = inspection.viewer_user_id is not None and str(
             inspection.viewer_user_id
         ) == str(user_id)
@@ -213,6 +264,8 @@ class InspectionService:
             "canPublish": is_owner,
             "canJoin": not is_owner and thread is not None,
             "isViewer": is_assigned_viewer,
+            "canRequest": False,
+            "pendingRequest": False,
         }
 
     async def join_inspection(

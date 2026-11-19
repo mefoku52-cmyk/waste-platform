@@ -42,6 +42,9 @@ export interface ActiveInspectionResponse {
   canPublish: boolean;
   canJoin: boolean;
   isViewer: boolean;
+  canRequest?: boolean;
+  pendingRequest?: boolean;
+  requestThreadId?: string | null;
 }
 
 export interface PublisherLinkResponse {
