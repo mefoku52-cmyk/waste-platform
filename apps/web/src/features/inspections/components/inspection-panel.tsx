@@ -4,7 +4,11 @@ import { useCallback, useState } from 'react';
 import { useT } from '@/lib/i18n/context';
 import { useQueryClient } from '@tanstack/react-query';
 import { inspectionsApi } from '../api';
+import { chatApi } from '../../chat/api';
 import { useActiveInspection } from '../hooks/use-inspections-queries';
+import { LiveStreamingPrototype } from './live-streaming-prototype';
+
+const STREAM_REQUEST_MARKER = '[STREAM_REQUEST]';
 import { inspectionStateLabel } from '../state-label';
 
 const GOLD = '#c9a84c';
@@ -31,11 +35,13 @@ export const InspectionPanel = ({ threadId, listingId }: { threadId?: string | n
   const [copied, setCopied] = useState(false);
   const { data } = useActiveInspection(listingId ?? undefined);
 
-  if (!listingId) return null;
   const active = (data as any)?.inspection ?? null;
   const canPublish = Boolean((data as any)?.canPublish);
   const canJoin = Boolean((data as any)?.canJoin);
   const isViewer = Boolean((data as any)?.isViewer);
+  const canRequest = Boolean((data as any)?.canRequest);
+  const pendingRequest = Boolean((data as any)?.pendingRequest);
+  const requestThreadId = (data as any)?.requestThreadId ?? threadId ?? null;
   const state = active?.state ?? null;
 
   const openUrl = useCallback((url: string) => {
@@ -56,12 +62,32 @@ export const InspectionPanel = ({ threadId, listingId }: { threadId?: string | n
     }
   }, [listingId, qc, t]);
 
+  if (!listingId) return null;
+
   const startInspection = async () => {
     setBusy(true);
     setErr(null);
     try {
       const res = await inspectionsApi.create(listingId!);
       openUrl(res.publishUrl);
+      await qc.invalidateQueries({ queryKey: ['inspection-active', listingId] });
+    } catch (e: any) {
+      setErr(e?.message || t('inspections.startFailed'));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const requestStream = async () => {
+    const tid = requestThreadId;
+    if (!tid) {
+      setErr(t('inspections.startFailed'));
+      return;
+    }
+    setBusy(true);
+    setErr(null);
+    try {
+      await chatApi.sendMessage(tid, STREAM_REQUEST_MARKER);
       await qc.invalidateQueries({ queryKey: ['inspection-active', listingId] });
     } catch (e: any) {
       setErr(e?.message || t('inspections.startFailed'));
@@ -122,6 +148,7 @@ export const InspectionPanel = ({ threadId, listingId }: { threadId?: string | n
     setErr(null);
     try {
       await inspectionsApi.end(active.id);
+      await qc.invalidateQueries({ queryKey: ['inspection-active', listingId] });
     } catch (e: any) {
       setErr(e?.message || t('inspections.endFailed'));
     } finally {
@@ -135,6 +162,7 @@ export const InspectionPanel = ({ threadId, listingId }: { threadId?: string | n
     setErr(null);
     try {
       await inspectionsApi.grantRecordingConsent(active.id);
+      await qc.invalidateQueries({ queryKey: ['inspection-active', listingId] });
     } catch (e: any) {
       setErr(e?.message || t('inspections.startFailed'));
     } finally {
@@ -147,104 +175,46 @@ export const InspectionPanel = ({ threadId, listingId }: { threadId?: string | n
     : null;
   const roomReady = active?.roomId ? t('inspections.roomReady') : null;
 
+  const liveState = (() => {
+    if (!active) {
+      if (pendingRequest && !canPublish) return 'pending' as const;
+      return 'ready' as const;
+    }
+    switch (state) {
+      case 'created':
+        return active.roomId ? ('room_created' as const) : ('starting' as const);
+      case 'room_created':
+        return 'live' as const;
+      case 'requested':
+        return isViewer ? ('requesting' as const) : ('live' as const);
+      case 'accepted':
+        return isViewer ? ('connecting' as const) : ('live' as const);
+      case 'live':
+        return isViewer ? ('connected' as const) : ('live' as const);
+      case 'ended':
+        return 'ended' as const;
+      default:
+        return 'error' as const;
+    }
+  })();
+
   return (
-    <div
-      className="flex flex-wrap items-center gap-2 border-b px-4 py-2 text-xs sm:px-5"
-      style={{ borderColor: 'color-mix(in srgb, #c9a84c 15%, transparent)' }}
-    >
-      <span
-        className="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.15em]"
-        style={{ borderColor: 'color-mix(in srgb, #c9a84c 35%, transparent)', color: GOLD }}
-      >
-        🎥 {t('inspections.title')}
-      </span>
-
-      {!active && canPublish && (
-        <button
-          type="button"
-          disabled={busy}
-          onClick={startInspection}
-          className="rounded-lg px-3 py-1 text-[11px] font-semibold transition disabled:opacity-40"
-          style={{ background: GOLD, color: '#090807' }}
-        >
-          {busy ? t('inspections.working') : t('inspections.start')}
-        </button>
-      )}
-
-      {!active && !canPublish && (
-        <span style={{ color: MUTED }}>{t('inspections.none')}</span>
-      )}
-
-      {active && state !== 'ended' && (
-        <>
-          {stateText && <span style={{ color: MUTED }}>{stateText}</span>}
-          {roomReady && <span style={{ color: GOLD_BRIGHT }}>{roomReady}</span>}
-
-          {active.ownerUserId && canPublish && (
-            <>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={reopen}
-                className="rounded-lg border px-3 py-1 text-[11px] transition disabled:opacity-40"
-                style={{ borderColor: 'color-mix(in srgb, #c9a84c 40%, transparent)', color: GOLD_BRIGHT }}
-              >
-                {busy ? t('inspections.working') : t('inspections.openPublisher')}
-              </button>
-
-              {!active.consentToRecord && (
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={grantConsent}
-                  className="rounded-lg border px-3 py-1 text-[10px] transition disabled:opacity-40"
-                  style={{ borderColor: 'color-mix(in srgb, #c9a84c 40%, transparent)', color: GOLD_BRIGHT }}
-                >
-                  {t('inspections.consent')}
-                </button>
-              )}
-
-              <button
-                type="button"
-                disabled={busy || copied}
-                onClick={inviteCopy}
-                className="rounded-lg border px-3 py-1 text-[11px] transition disabled:opacity-40"
-                style={{ borderColor: 'color-mix(in srgb, #c9a84c 40%, transparent)', color: GOLD_BRIGHT }}
-              >
-                {copied ? t('inspections.inviteCopied') : t('inspections.invite')}
-              </button>
-
-              <button
-                type="button"
-                disabled={busy}
-                onClick={endInspection}
-                className="rounded-lg px-3 py-1 text-[11px] font-semibold transition disabled:opacity-40"
-                style={{ background: DANGER, color: '#090807' }}
-              >
-                {t('inspections.end')}
-              </button>
-            </>
-          )}
-
-          {active && (canJoin || isViewer) && (
-            <button
-              type="button"
-              disabled={busy}
-              onClick={joinInspection}
-              className="rounded-lg px-3 py-1 text-[11px] font-semibold transition disabled:opacity-40"
-              style={{ background: GOLD, color: '#090807' }}
-            >
-              {busy ? t('inspections.working') : t('inspections.join')}
-            </button>
-          )}
-        </>
-      )}
-
-      {active && state === 'ended' && (
-        <span style={{ color: MUTED }}>{t('inspections.ended')}</span>
-      )}
-
-      {err && <span style={{ color: DANGER }}>{err}</span>}
-    </div>
+    <LiveStreamingPrototype
+      state={liveState}
+      busy={busy}
+      error={err}
+      canPublish={canPublish}
+      canRequest={canRequest}
+      canJoin={canJoin}
+      pendingRequest={pendingRequest}
+      isViewer={isViewer}
+      onStart={canPublish && !active ? startInspection : undefined}
+      onRequest={!canPublish && canRequest ? requestStream : undefined}
+      onJoin={active && (canJoin || isViewer) ? joinInspection : undefined}
+      onOpenPublisher={active && canPublish ? reopen : undefined}
+      onEnd={active && canPublish ? endInspection : undefined}
+      onConsent={active && canPublish && !active.consentToRecord ? grantConsent : undefined}
+      onCopyInvite={active && canPublish ? inviteCopy : undefined}
+    />
   );
 };
